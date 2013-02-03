@@ -1,0 +1,31 @@
+\contentsline {section}{\numberline {1}What is Geometric Algebra?}{2}{section.1}
+\contentsline {subsection}{\numberline {1.1}Representation of Multivectors in Sympy}{6}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Vector Basis and Metric}{7}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Representation and Reduction of Multivector Bases}{9}{subsection.1.3}
+\contentsline {subsection}{\numberline {1.4}Base Representation of Multivectors}{11}{subsection.1.4}
+\contentsline {subsection}{\numberline {1.5}Blade Representation of Multivectors}{11}{subsection.1.5}
+\contentsline {subsection}{\numberline {1.6}Outer and Inner Products, Left and Right Contractions}{13}{subsection.1.6}
+\contentsline {subsection}{\numberline {1.7}Reverse of Multivector}{14}{subsection.1.7}
+\contentsline {subsection}{\numberline {1.8}Reciprocal Frames}{15}{subsection.1.8}
+\contentsline {subsection}{\numberline {1.9}Geometric Derivative}{15}{subsection.1.9}
+\contentsline {section}{\numberline {2}Installation}{17}{section.2}
+\contentsline {section}{\numberline {3}Module Components}{19}{section.3}
+\contentsline {subsection}{\numberline {3.1}Initializing Multivector Class}{19}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Instantiating a Multivector}{21}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Basic Multivector Class Functions}{22}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Basic Multivector Functions}{24}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.5}Multivector Derivatives}{26}{subsection.3.5}
+\contentsline {section}{\numberline {4}Vector Manifolds}{27}{section.4}
+\contentsline {section}{\numberline {5}Printing}{29}{section.5}
+\contentsline {subsection}{\numberline {5.1}Standard Printing}{29}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Latex Printing}{29}{subsection.5.2}
+\contentsline {subsection}{\numberline {5.3}Other Printing Functions}{32}{subsection.5.3}
+\contentsline {section}{\numberline {6}Examples}{36}{section.6}
+\contentsline {subsection}{\numberline {6.1}Algebra}{36}{subsection.6.1}
+\contentsline {subsubsection}{\numberline {6.1.1}BAC-CAB Formulas}{36}{subsubsection.6.1.1}
+\contentsline {subsubsection}{\numberline {6.1.2}Reciprocal Frame}{37}{subsubsection.6.1.2}
+\contentsline {subsubsection}{\numberline {6.1.3}Lorentz-Transformation}{39}{subsubsection.6.1.3}
+\contentsline {subsection}{\numberline {6.2}Calculus}{40}{subsection.6.2}
+\contentsline {subsubsection}{\numberline {6.2.1}Derivatives in Spherical Coordinates}{40}{subsubsection.6.2.1}
+\contentsline {subsubsection}{\numberline {6.2.2}Maxwell's Equations}{41}{subsubsection.6.2.2}
+\contentsline {subsubsection}{\numberline {6.2.3}Dirac Equation}{43}{subsubsection.6.2.3}

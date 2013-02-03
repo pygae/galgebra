@@ -1,0 +1,38 @@
+\documentclass[10pt,letter,fleqn]{report}
+\pagestyle{empty}
+\usepackage[latin1]{inputenc}
+\usepackage[dvips,landscape,top=1cm,nohead,nofoot]{geometry}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{tensor}
+\setlength{\parindent}{0pt}
+\newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
+\newcommand{\lp}{\left (}
+\newcommand{\rp}{\right )}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\llt}{\left <}
+\newcommand{\rgt}{\right >}
+\newcommand{\abs}[1]{\left |{#1}\right | }
+\newcommand{\pdiff}[2]{\bfrac{\partial {#1}}{\partial {#2}}}
+\newcommand{\lbrc}{\left \{}
+\newcommand{\rbrc}{\right \}}
+\newcommand{\W}{\wedge}
+\newcommand{\prm}[1]{{#1}'}
+\newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
+\newcommand{\R}{\dagger}
+\newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
+\newcommand{\grade}[1]{\left < {#1} \right >}
+\newcommand{\f}[2]{{#1}\lp{#2}\rp}
+\begin{document}
+\begin{equation*} \bm{x} = u \cos{\left (v \right )}\bm{e_{x}}+u \sin{\left (v \right )}\bm{e_{y}}+\left ( u \cos{\left (v \right )} + w\right ) \bm{e_{z}} \end{equation*}
+\begin{equation*} \bm{x}_u = \cos{\left (v \right )}\bm{e_{x}}+\sin{\left (v \right )}\bm{e_{y}}+\cos{\left (v \right )}\bm{e_{z}} \end{equation*}
+\begin{equation*} \bm{x}_v = - u \sin{\left (v \right )}\bm{e_{x}}+u \cos{\left (v \right )}\bm{e_{y}}- u \sin{\left (v \right )}\bm{e_{z}} \end{equation*}
+\begin{equation*} \bm{x}_w = \bm{e_{z}} \end{equation*}
+\begin{equation*} \bm{x}^u = \cos{\left (v \right )}\bm{e_{x}}+\sin{\left (v \right )}\bm{e_{y}} \end{equation*}
+\begin{equation*} \bm{x}^v = - \frac{\sin{\left (v \right )}}{u}\bm{e_{x}}+\frac{\cos{\left (v \right )}}{u}\bm{e_{y}} \end{equation*}
+\begin{equation*} \bm{x}^w = -\bm{e_{x}}+\bm{e_{z}} \end{equation*}
+
+\end{document}

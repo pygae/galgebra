@@ -1,0 +1,81 @@
+import os,sys
+
+print_cnt = 1
+
+def adjust_print(line):
+    new_line = ''
+    indent = line.find('print')*' '
+    line = line.strip()
+    line = line.replace('print ','')
+    varlst = line.split(',')
+    if len(varlst) == 1:
+        new_line = indent+'print '+var_lst[0]
+        return(new_line)
+    for var in varlst:
+        if "'" in var or '"' in var:
+            pass
+        else:
+            new_line = indent+'print '+var+'\n'
+    return(new_line)
+
+def assert_print(line):
+    global print_cnt
+    new_line = ''
+    indent = line.find('print')*' '
+    line = line.strip()
+    line = line.replace('print ','')
+    varlst = line.split(',')
+    if len(varlst) == 1:
+        new_line = indent+'assert str('+var_lst[0]+') == @'+str(print_cnt)+'\n'
+        print_cnt += 1
+        return(new_line)
+    for var in varlst:
+        if "'" in var or '"' in var:
+            pass
+        else:
+            new_line = indent+'assert str('+var+') == @'+str(print_cnt)+'\n'
+            print_cnt += 1
+    return(new_line)
+
+
+pgmfile = open('inner.py','r')
+pgmlst  = pgmfile.readlines()
+pgmfile.close()
+
+pgmstr  = ''
+teststr = ''
+for line in pgmlst:
+    if 'enhance_print' in line:
+        pass
+    elif 'print' in line:
+        new_line = adjust_print(line)
+        pgmstr += new_line
+        new_line = assert_print(line)
+        teststr  += new_line
+    else:
+        pgmstr  += line
+        teststr += line
+
+datafile = open('data.py','w')
+datafile.write(pgmstr)
+datafile.close()
+
+os.system('python data.py > data.txt')
+
+datafile = open('data.txt','r')
+datalst = datafile.readlines()
+datafile.close()
+print datalst
+datalst.reverse()
+
+for data in datalst:
+    print_cnt -= 1
+    teststr = teststr.replace('@'+str(print_cnt),"'"+data.strip()+"'")
+
+teststr += '\nprint "Test Completed"'
+
+testfile = open('test_inner.py','w')
+testfile.write(teststr)
+testfile.close()
+os.system('python test_inner.py')
+

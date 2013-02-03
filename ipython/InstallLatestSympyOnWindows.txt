@@ -1,0 +1,82 @@
+To setup latest sympy for python 2.7 with GA in Windows with LaTeX printing -
+
+    1. Go to python.org and download Python 2.7.2 Windows installer
+
+    2. Go to http://sourceforge.net/projects/numpy/files/NumPy/1.5.1/ and
+       download numpy-1.5.1-win32-superpack-python2.7.exe
+
+    3. Go to http://pypi.python.org/pypi/setuptools#files and download
+       setuptools-0.6c11.win32-py2.7.exe
+
+    4. Go to http://code.google.com/p/msysgit/ and download mysysGit
+
+    5. Install MiKTeX or texlive (working installation of latex needed
+       with previewer).  GA is setup to use either yap or dviout for
+       displaying latex dvi files.
+
+    6. Install Python2.7, Numpy1.5.1, git, and setuptools
+
+    7. Create shortcut to c:msysgit\msysgit\msys.bat and put on desktop.
+
+    8. Open git console (shortcut in step 7) and enter the command
+       "git clone https://github.com/sympy/sympy.git"
+
+    9. Move sympy from c:msysgit to location you wish it to be in.
+
+   10. If you wish to replace current sympy version of GA with custom version
+       delete directory sympy/sympy/galgebra from github sympy download and
+       replace with custom galgebra directory obtained from brombo.
+
+   11. Open command line console in sympy directory and enter commands -
+           python setup.py install
+           python setupegg.py install
+
+   12. You now have latest development version (main branch) of sympy installed
+       with brombo updates to GA (if desired) and LaTeX printing.
+
+   13. If you work with latex documents a lot I suggest you go to
+       http://www.xm1math.net/texmaker/download.html and download Texmaker.
+
+To install ipython with notebook -
+
+    1. Do following easy_install's from a command line console -
+            easy_install pyzmq
+            easy_install nose
+            easy_install tornado
+
+    2. Open git console and enter command line -
+            git clone https://github.com/ipython/ipython.git
+
+    3. Move ipython directory from c:msysgit to desired location
+
+    4. Open command line console in ipython directory and execute -
+            python setup.py install
+            python setupegg.py install
+       Then add C:\Python27\scripts to Path environment variable (this is
+       path to ipython.exe so that one can execute ipython with options
+       such as "ipython notebook --profile=GA_3D").
+
+    5. Run ipython in command line console with -
+            ipython
+       This creates .ipython directory which you will modify
+
+    6. Delete all files in .ipython, but not the directory
+
+    7. Copy all files in sympy/sympy/galgebra/ipython directory into .ipython
+       directory (this circumlocution is because windows does not
+       allow me to rename ipython_config to .ipython)
+
+    8. You can now start ipython notebook with the following command -
+            ipython notebook --profile=profile_name
+       where profile_name can be -
+            GA    - GA, latex_ex, and sympy imports performed
+            GA_2D - 2D Euclidian Geometric algebra set up with coords x and y
+            GA_3D - 3D Euclidian Geometric algebra set up with coords x, y and z
+            GA_ST - 4D Spacetime Geometric algebra set up with coords t, x, y and z
+        for GA_2D, GA_3D, and GA_ST tex.Format(redir=False) is called so notebook
+        results will be displayed in LaTeX.
+
+Note that in the ipython notebook any line that starts with a '>' will be preprocessed so that
+the correct operator precedence for geometric algebra is enforced.
+
+

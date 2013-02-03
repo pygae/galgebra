@@ -1,0 +1,31 @@
+\BOOKMARK [1][-]{section.1}{What is Geometric Algebra?}{}
+\BOOKMARK [2][-]{subsection.1.1}{Representation of Multivectors in Sympy}{section.1}
+\BOOKMARK [2][-]{subsection.1.2}{Vector Basis and Metric}{section.1}
+\BOOKMARK [2][-]{subsection.1.3}{Representation and Reduction of Multivector Bases}{section.1}
+\BOOKMARK [2][-]{subsection.1.4}{Base Representation of Multivectors}{section.1}
+\BOOKMARK [2][-]{subsection.1.5}{Blade Representation of Multivectors}{section.1}
+\BOOKMARK [2][-]{subsection.1.6}{Outer and Inner Products, Left and Right Contractions}{section.1}
+\BOOKMARK [2][-]{subsection.1.7}{Reverse of Multivector}{section.1}
+\BOOKMARK [2][-]{subsection.1.8}{Reciprocal Frames}{section.1}
+\BOOKMARK [2][-]{subsection.1.9}{Geometric Derivative}{section.1}
+\BOOKMARK [1][-]{section.2}{Installation}{}
+\BOOKMARK [1][-]{section.3}{Module Components}{}
+\BOOKMARK [2][-]{subsection.3.1}{Initializing Multivector Class}{section.3}
+\BOOKMARK [2][-]{subsection.3.2}{Instantiating a Multivector}{section.3}
+\BOOKMARK [2][-]{subsection.3.3}{Basic Multivector Class Functions}{section.3}
+\BOOKMARK [2][-]{subsection.3.4}{Basic Multivector Functions}{section.3}
+\BOOKMARK [2][-]{subsection.3.5}{Multivector Derivatives}{section.3}
+\BOOKMARK [1][-]{section.4}{Vector Manifolds}{}
+\BOOKMARK [1][-]{section.5}{Printing}{}
+\BOOKMARK [2][-]{subsection.5.1}{Standard Printing}{section.5}
+\BOOKMARK [2][-]{subsection.5.2}{Latex Printing}{section.5}
+\BOOKMARK [2][-]{subsection.5.3}{Other Printing Functions}{section.5}
+\BOOKMARK [1][-]{section.6}{Examples}{}
+\BOOKMARK [2][-]{subsection.6.1}{Algebra}{section.6}
+\BOOKMARK [3][-]{subsubsection.6.1.1}{BAC-CAB Formulas}{subsection.6.1}
+\BOOKMARK [3][-]{subsubsection.6.1.2}{Reciprocal Frame}{subsection.6.1}
+\BOOKMARK [3][-]{subsubsection.6.1.3}{Lorentz-Transformation}{subsection.6.1}
+\BOOKMARK [2][-]{subsection.6.2}{Calculus}{section.6}
+\BOOKMARK [3][-]{subsubsection.6.2.1}{Derivatives in Spherical Coordinates}{subsection.6.2}
+\BOOKMARK [3][-]{subsubsection.6.2.2}{Maxwell's Equations}{subsection.6.2}
+\BOOKMARK [3][-]{subsubsection.6.2.3}{Dirac Equation}{subsection.6.2}

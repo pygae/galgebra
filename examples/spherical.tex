@@ -1,0 +1,68 @@
+
+\documentclass[10pt,fleqn]{report}
+\usepackage[vcentering]{geometry}
+\geometry{papersize={14in,11in},total={13in,10in}}
+
+\pagestyle{empty}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{tensor}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{gray}{rgb}{0.95,0.95,0.95}
+\setlength{\parindent}{0pt}
+\newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
+\newcommand{\lp}{\left (}
+\newcommand{\rp}{\right )}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\llt}{\left <}
+\newcommand{\rgt}{\right >}
+\newcommand{\abs}[1]{\left |{#1}\right | }
+\newcommand{\pdiff}[2]{\bfrac{\partial {#1}}{\partial {#2}}}
+\newcommand{\lbrc}{\left \{}
+\newcommand{\rbrc}{\right \}}
+\newcommand{\W}{\wedge}
+\newcommand{\prm}[1]{{#1}'}
+\newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
+\newcommand{\R}{\dagger}
+\newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
+\newcommand{\grade}[1]{\left < {#1} \right >}
+\newcommand{\f}[2]{{#1}\lp{#2}\rp}
+\newcommand{\eval}[2]{\left . {#1} \right |_{#2}}
+\usepackage{float}
+\floatstyle{plain} % optionally change the style of the new float
+\newfloat{Code}{H}{myc}
+\lstloadlanguages{Python}
+
+\begin{document}
+\begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
+def derivatives_in_spherical_coordinates():
+    Print_Function()
+    X = (r,th,phi) = symbols('r theta phi')
+    curv = [[r*cos(phi)*sin(th),r*sin(phi)*sin(th),r*cos(th)],[1,r,r*sin(th)]]
+    (er,eth,ephi,grad) = MV.setup('e_r e_theta e_phi',metric='[1,1,1]',coords=X,curv=curv)
+    f = MV('f','scalar',fct=True)
+    A = MV('A','vector',fct=True)
+    B = MV('B','grade2',fct=True)
+    print 'f =',f
+    print 'A =',A
+    print 'B =',B
+    print 'grad*f =',grad*f
+    print 'grad|A =',grad|A
+    print '-I*(grad^A) =',-MV.I*(grad^A)
+    print 'grad^B =',grad^B
+    return
+\end{lstlisting}
+Code Output:
+\begin{equation*} f = f \end{equation*}
+\begin{equation*} A = A^{r}\bm{e_{r}}+A^{\theta}\bm{e_{\theta}}+A^{\phi}\bm{e_{\phi}} \end{equation*}
+\begin{equation*} B = B^{r\theta}\bm{e_{r}\W e_{\theta}}+B^{r\phi}\bm{e_{r}\W e_{\phi}}+B^{\theta\phi}\bm{e_{\theta}\W e_{\phi}} \end{equation*}
+\begin{equation*} \bm{\nabla}  f = \partial_{r} f\bm{e_{r}}+\frac{\partial_{\theta} f}{r}\bm{e_{\theta}}+\frac{\partial_{\phi} f}{r \sin{\left (\theta \right )}}\bm{e_{\phi}} \end{equation*}
+\begin{equation*} \bm{\nabla} \cdot A = \partial_{r} A^{r} + \frac{A^{\theta}}{r \tan{\left (\theta \right )}} + 2 \frac{A^{r}}{r} + \frac{\partial_{\theta} A^{\theta}}{r} + \frac{\partial_{\phi} A^{\phi}}{r \sin{\left (\theta \right )}} \end{equation*}
+\begin{equation*} -I (\bm{\nabla} \W A) = \left ( \frac{A^{\phi} \cos{\left (\theta \right )} + \sin{\left (\theta \right )} \partial_{\theta} A^{\phi} - \partial_{\phi} A^{\theta}}{r \sin{\left (\theta \right )}}\right ) \bm{e_{r}}+\left ( - \partial_{r} A^{\phi} - \frac{A^{\phi}}{r} + \frac{\partial_{\phi} A^{r}}{r \sin{\left (\theta \right )}}\right ) \bm{e_{\theta}}+\left ( \frac{r \partial_{r} A^{\theta} + A^{\theta} - \partial_{\theta} A^{r}}{r}\right ) \bm{e_{\phi}} \end{equation*}
+\begin{equation*} \bm{\nabla} \W B = \left ( \partial_{r} B^{\theta\phi} + 2 \frac{B^{\theta\phi}}{r} - \frac{B^{r\phi}}{r \tan{\left (\theta \right )}} - \frac{\partial_{\theta} B^{r\phi}}{r} + \frac{\partial_{\phi} B^{r\theta}}{r \sin{\left (\theta \right )}}\right ) \bm{e_{r}\W e_{\theta}\W e_{\phi}} \end{equation*}
+\end{document}

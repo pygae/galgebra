@@ -1,0 +1,51 @@
+
+\documentclass[10pt,fleqn]{report}
+\usepackage[vcentering]{geometry}
+\geometry{papersize={14in,11in},total={13in,10in}}
+\pagestyle{empty}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{tensor}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{gray}{rgb}{0.95,0.95,0.95}
+\setlength{\parindent}{0pt}
+\newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
+\newcommand{\lp}{\left (}
+\newcommand{\rp}{\right )}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\llt}{\left <}
+\newcommand{\rgt}{\right >}
+\newcommand{\abs}[1]{\left |{#1}\right | }
+\newcommand{\pdiff}[2]{\bfrac{\partial {#1}}{\partial {#2}}}
+\newcommand{\lbrc}{\left \{}
+\newcommand{\rbrc}{\right \}}
+\newcommand{\W}{\wedge}
+\newcommand{\prm}[1]{{#1}'}
+\newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
+\newcommand{\R}{\dagger}
+\newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
+\newcommand{\grade}[1]{\left < {#1} \right >}
+\newcommand{\f}[2]{{#1}\lp{#2}\rp}
+\newcommand{\eval}[2]{\left . {#1} \right |_{#2}}
+\usepackage{float}
+\floatstyle{plain} % optionally change the style of the new float
+\newfloat{Code}{H}{myc}
+\lstloadlanguages{Python}
+
+\begin{document}
+\begin{equation*} \bm{A} = A^{x}\bm{e_{x}}+A^{y}\bm{e_{y}}+A^{z}\bm{e_{z}} \end{equation*}
+\begin{equation*} \bm{B} = B^{xy}\bm{e_{x}\W e_{y}}+B^{xz}\bm{e_{x}\W e_{z}}+B^{yz}\bm{e_{y}\W e_{z}} \end{equation*}
+\begin{equation*} \bm{\nabla}  f = \partial_{x} f\bm{e_{x}}+\partial_{y} f\bm{e_{y}}+\partial_{z} f\bm{e_{z}} \end{equation*}
+\begin{equation*} \bm{\nabla} \cdot \bm{A} = \partial_{x} A^{x} + \partial_{y} A^{y} + \partial_{z} A^{z} \end{equation*}
+ \begin{align*} \bm{\nabla}  \bm{A} =  & \partial_{x} A^{x} + \partial_{y} A^{y} + \partial_{z} A^{z} \\  & +\left ( - \partial_{y} A^{x} + \partial_{x} A^{y}\right ) \bm{e_{x}\W e_{y}}+\left ( - \partial_{z} A^{x} + \partial_{x} A^{z}\right ) \bm{e_{x}\W e_{z}}+\left ( - \partial_{z} A^{y} + \partial_{y} A^{z}\right ) \bm{e_{y}\W e_{z}} \\ \end{align*} 
+\begin{equation*} -I (\bm{\nabla} \W \bm{A}) = \left ( - \partial_{z} A^{y} + \partial_{y} A^{z}\right ) \bm{e_{x}}+\left ( \partial_{z} A^{x} - \partial_{x} A^{z}\right ) \bm{e_{y}}+\left ( - \partial_{y} A^{x} + \partial_{x} A^{y}\right ) \bm{e_{z}} \end{equation*}
+ \begin{align*} \bm{\nabla}  \bm{B} =  & \left ( - \partial_{y} B^{xy} - \partial_{z} B^{xz}\right ) \bm{e_{x}}+\left ( \partial_{x} B^{xy} - \partial_{z} B^{yz}\right ) \bm{e_{y}}+\left ( \partial_{x} B^{xz} + \partial_{y} B^{yz}\right ) \bm{e_{z}} \\  & +\left ( \partial_{z} B^{xy} - \partial_{y} B^{xz} + \partial_{x} B^{yz}\right ) \bm{e_{x}\W e_{y}\W e_{z}} \\ \end{align*} 
+\begin{equation*} \bm{\nabla} \W \bm{B} = \left ( \partial_{z} B^{xy} - \partial_{y} B^{xz} + \partial_{x} B^{yz}\right ) \bm{e_{x}\W e_{y}\W e_{z}} \end{equation*}
+\begin{equation*} \bm{\nabla} \cdot \bm{B} = \left ( - \partial_{y} B^{xy} - \partial_{z} B^{xz}\right ) \bm{e_{x}}+\left ( \partial_{x} B^{xy} - \partial_{z} B^{yz}\right ) \bm{e_{y}}+\left ( \partial_{x} B^{xz} + \partial_{y} B^{yz}\right ) \bm{e_{z}} \end{equation*}
+
+\end{document}
