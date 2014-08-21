@@ -1,0 +1,466 @@
+
+
+\chapter{Lagrangian and Hamiltonian Methods}
+\section{Lagrangian Theory for Discrete Systems}
+\subsection{The Euler-Lagrange Equations}
+Let a system be described by multivector variables $X_{i}$, $i=1,\dots,m$.  The Lagrangian $L$ is a scalar valued function of 
+the $X_{i}$, $\dot{X}_{i}$ (here the dot refers to the time derivative), and possibly the time, $t$.  The action for the system, $S$,
+over a time interval is given by the integral
+\be
+	S \equiv \int_{t_{1}}^{t_{2}}dt\f{L}{X_{i},\dot{X}_{i},t}.
+\ee
+The statement of the principal of least action is that the variation of the action $\delta S=0$.  The rigorous definition of $\delta S=0$ is
+let 
+\be
+	\f{X'_{i}}{t} = \f{X_{i}}{t}+\epsilon\f{Y_{i}}{t}
+\ee
+where $\f{Y_{i}}{t}$ is an arbitrary differentiable multivector function of time except that $\f{Y_{i}}{t_{1}} = \f{Y_{i}}{t_{2}}=0$. Then
+\be
+	\delta S \equiv \eval{\deriv{S}{\epsilon}}{\epsilon=0} = 0.
+\ee
+Then
+\begin{align}
+    \f{L}{X'_{i},\dot{X}'_{i},t} &= \f{L}{X_{i}+\epsilon Y_{i},\dot{X}_{i}+\epsilon\dot{Y}_{i},t} \label{eq7_4a} \\
+                                 &= \f{L}{X_{i},\dot{X}_{i},t}+\epsilon\sum_{i=1}^{m}\paren{Y_{i}*\pD{X_{i}}{L}+\dot{Y}_{i}*\pD{\dot{X}_{i}}{L}} \label{eq7_4b}\\
+                               S &= \int_{t_{1}}^{t_{2}} dt\paren{\f{L}{X_{i},\dot{X}_{i},t}+\epsilon\sum_{i=1}^{m}\paren{Y_{i}*\pD{X_{i}}{L}
+                                    +\dot{Y}_{i}*\pD{\dot{X}_{i}}{L}} } \\
+	\eval{\deriv{S}{\epsilon}}{\epsilon=0} &= \int_{t_{1}}^{t_{2}}dt\sum_{i=1}^{m}\paren{Y_{i}*\partial_{X_{i}}L+\dot{Y}_{i}*\partial_{\dot{X}_{i}}L} \label{eq7_4} \\
+	                                       &= \int_{t_{1}}^{t_{2}}dt\sum_{i=1}^{m}Y_{i}*\paren{\partial_{X_{i}}L-\deriv{}{t}\paren{\partial_{\dot{X}_{i}}L}} \label{eq7_5}                               
+\end{align}
+where we use the definition of the multivector derivative to go from equation~\ref{eq7_4a} to equation~\ref{eq7_4b} and then use integration by parts with respect
+to time to go from equation~\ref{eq7_4} to equation~\ref{eq7_5}.  Since in equation~\ref{eq7_5} the $Y_{i}$'s are arbitrary $\delta S=0$ implies that the 
+Lagrangian equations of motion are
+\be
+	\partial_{X_{i}}L-\deriv{}{t}\paren{\partial_{\dot{X}_{i}}L} = 0,\hspace{12pt}\forall i=1,\dots,m. \label{eq7_6}
+\ee
+The multivector derivative insures that there are as many equations as there are grades present in the $X_{i}$, which implies there are the same number of equations
+as there are degrees of freedom in the system.
+
+\subsection{Symmetries and Conservation Laws}\label{SandC}
+Consider a scalar parametrised transformation of the dynamical variables
+\be
+	X'_{i} = \f{X'_{i}}{X_{i},\alpha},
+\ee
+where $\f{X'_{i}}{X_{i},0} = X_{i}$. Now define
+\be
+	\var{X_{i}} \equiv \eval{\deriv{X'_{i}}{\alpha}}{\alpha=0}.
+\ee
+and a transformed Lagrangian 
+\be
+	\f{L'}{X_{i},\dot{X}_{i},t} \equiv \f{L}{X'_{i},\dot{X}'_{i},t}.
+\ee
+Then
+\begin{align}
+	\eval{\deriv{L'}{\alpha}}{\alpha=0} &= \sum_{i=1}^{m}\paren{\var{X_{i}}*\partial_{X'_{i}}L'+\var{\dot{X}_{i}}*\partial_{\dot{X}'_{i}}L'} \nonumber \\
+	                                    &= \sum_{i=1}^{m}\paren{\var{X_{i}}*\partial_{X'_{i}}L'
+	                                       +\deriv{}{t}\paren{\var{X_{i}}*\partial_{\dot{X}'_{i}}L'}
+	                                       -\var{X_{i}}*\deriv{}{t}\paren{\partial_{\dot{X}'_{i}}L'}} \nonumber \\
+	                                    &= \sum_{i=1}^{m}\paren{\var{X_{i}}*\paren{\partial_{X'_{i}}L'
+	                                       -\deriv{}{t}\paren{\partial_{\dot{X}'_{i}}L'}}
+	                                       +\deriv{}{t}\paren{\var{X_{i}*\partial_{\dot{X}'_{i}}L'}}}. \label{eq7_13}
+\end{align}
+If the $X'_{i}$'s satisfy equation~\ref{eq7_6} equation~\ref{eq7_13} can be rewritten as
+\be
+	\eval{\deriv{L'}{\alpha}}{\alpha=0} = \deriv{}{t}\sum_{i=1}^{m}\paren{\var{X_{i}}*\partial_{\dot{X}_{i}}L}.\label{eq7_14}
+\ee
+Noether's theorem is -
+\be\label{eqPPNT}
+    \eval{\deriv{L'}{\alpha}}{\alpha=0}\hspace{-12pt} = 0 \implies \sum_{i=1}^{m}\paren{\var{X_{i}}*\partial_{\dot{X}_{i}}L} = \mbox{conserved quantity}
+\ee
+
+From D\& L -
+
+``If the transformation is a symmetry of the Lagrangian, then $L'$ is independent of $\alpha$.  In this case we immediately establish that a conjugate quantity
+is conserved.  That is, symmetries of the Lagrangian produce conjugate conserved quantities.  This is Noether's theorem, and it is valuable for extracting
+conserved quantities from dynamical systems.  The fact that the derivation of equation~\ref{eq7_14} assumed the equations of motion were satisfied means that
+the quantity is conserved `on-shell'.  Some symmetries can also be extended `off-shell', which becomes an important issue in quantum and super symmetric systems.''
+
+A more general treatment of symmetries and conservation is possible if we do not limit ourselves to a scalar parametrization.  Instead let
+$X'_{i} = \f{X'_{i}}{X_{i},M}$ where $M$ is a multivector parameter. Then let
+\be
+	L' = \f{L}{X'_{i},\dot{X}'_{i},t}
+\ee
+and calculate the multivector derivative of $L'$ with respect to $M$ using the chain rule (summation convention for repeated indices) first noting that
+\be
+	\pdiff{}{t}\paren{\paren{\paren{A*\partial_{M}}X'_{i}}*\partial_{\dot{X}'_{i}}L'} = \paren{\paren{A*\partial_{M}}\dot{X}'_{i}}*\partial_{\dot{X}'_{i}}L'
+		+\paren{\paren{A*\partial_{M}}X'_{i}}*\pdiff{}{t}\paren{\partial_{\dot{X}'_{i}}L'}
+\ee
+and then calculating
+\begin{align}
+	\paren{A*\partial_{M}}L' &= \paren{\paren{A*\partial_{M}}X'_{i}}*\partial_{X'_{i}}L'
+	                            +\paren{\paren{A*\partial_{M}}\dot{X}'_{i}}*\partial_{\dot{X}'_{i}}L' \nonumber \\
+	                       &= \paren{\paren{A*\partial_{M}}X'_{i}}*\paren{\partial_{X'_{i}}L'-\pdiff{}{t}\paren{\partial_{\dot{X}'_{i}}L'}}
+	                          +\pdiff{}{t}\paren{\paren{\paren{A*\partial_{M}}X'_{i}}*\partial_{\dot{X}'_{i}}L'}.
+\end{align}
+If we assume that the $X'_{i}$'s satisfy the equations of motion we have
+\be
+	\paren{A*\partial_{M}}L' = \pdiff{}{t}\paren{\paren{\paren{A*\partial_{M}}X'_{i}}*\partial_{\dot{X}'_{i}}L'}\label{eq7_22}
+\ee
+and differentiating equation~\ref{eq7_22} with respect to $A$ (use equation~\ref{eq6_40a}) gives
+\begin{align}
+	\partial_{M}L' &= \pdiff{}{t}\paren{\partial_{A}\paren{\paren{A*\partial_{M}}X'_{i}}*\partial_{\dot{X}'_{i}}L'} \nonumber \\
+	               &= \pdiff{}{t}\paren{\paren{\partial_{M}X'_{i}}*\partial_{\dot{X}'_{i}}L'}. \label{eq7_25a} 
+\end{align}
+Equation~\ref{eq7_25a} is a generalization of Noether's theorem since if $\partial_{M}L'= 0$ then the parametrization $M$ is a symmetry of the Lagrangian
+and $\paren{\partial_{M}X'_{i}}*\partial_{\dot{X}'_{i}}L'$ is a conserved quantity.
+
+\subsection{Examples of Lagrangian Symmetries}
+
+\subsubsection{Time Translation}
+
+Consider the symmetry of time translation
+\be
+	\f{X'_{i}}{t,\alpha} = \f{X_{i}}{t+\alpha}
+\ee 
+so that 
+\be
+	\var{X_{i}} = \eval{\deriv{X'_{i}}{\alpha}}{\alpha=0} = \dot{X}_{i},
+\ee
+and
+\begin{align}
+	\left .\deriv{L}{\alpha}\right |_{\alpha=0} &= \deriv{}{t}\sum_{i=1}^{m}\paren{\dot{X}_{i}*\partial_{\dot{X}_{i}}L} \\
+	0 &= \deriv{}{t}\paren{\sum_{i=1}^{m}\paren{\dot{X}_{i}*\partial_{\dot{X}_{i}}L}-L}.
+\end{align}
+The conserved quantity is the Hamiltonian
+\be
+	H = \sum_{i=1}^{m}\paren{\dot{X}_{i}*\partial_{\dot{X}_{i}}L}-L.
+\ee
+In terms of the generalized momenta
+\be
+	P_{i} = \partial_{\dot{X}_{i}}L,
+\ee
+so that
+\be
+	H = \sum_{i=1}^{m}\paren{\dot{X}_{i}*P_{i}}-L.
+\ee
+
+
+\subsubsection{Central Forces}
+Let the Lagrangian variables be $x_{i}$ the vector position of the $i^{th}$ particle in an ensemble of $N$ particles with a Lagrangian of the form
+\be
+    L = \sum_{i=1}^{N}\half m_{i}\dot{x}_{i}^{2} - \sum_{i=1}^{N}\sum_{j<i}^{N}\f{V_{ij}}{\abs{x_{i}-x_{j}}}
+\ee
+which represent a classical system with central forces between each pair of particles.
+
+First consider a translational invariance so that
+\be
+    x'_{i} = x_{i}+\alpha c
+\ee
+where $\alpha$ is a scalar parameter and $c$ is a constant vector.  Then
+\be
+    \delta x'_{i} = c
+\ee
+and
+\be
+    L' = L
+\ee
+so that the conserved quantity is (equation~\ref{eqPPNT})
+\begin{align}
+    \sum_{i=1}^{N}\delta x_{i} * \partial_{\dot{x_{i}}} L &= c * \sum_{i=1}^{N} \partial_{\dot{x_{i}}} L \nonumber \\
+    c\cdot p &= c \cdot \sum_{i=1}^{N} m_{i}\dot{x}_{i} \nonumber \\
+    p &= \sum_{i=1}^{N} m_{i}\dot{x}_{i}
+\end{align}
+since $c$ is an arbitrary vector the vector $p$ is also conserved and is the linear momentum of the system.
+
+Now consider a rotational invariance where
+\be
+    x'_{i} = e^{\alpha B/2}x_{i}e^{-\alpha B/2}
+\ee
+where $B$ is an arbitrary normalized ($B^{2}=-1$) bivector in 3-dimensions and $\alpha$ is the scalar 
+angle of rotation.  Then again $L' = L$ since rotations leave $\dot{x}_{i}^{2}$ and $\abs{x_{i}-x_{j}}$
+unchanged and
+\begin{align}
+    \deriv{x'_{i}}{\alpha} &= \half\paren{Be^{\alpha B/2}x_{i}e^{-\alpha B/2}-e^{\alpha B/2}x_{i}e^{-\alpha B/2}B} \nonumber \\
+    \delta x'_{i} &= \half\paren{Bx_{i}-x_{i}B} \nonumber \\
+                  &= B\cdot x_{i}.
+\end{align}
+Remember that since $B\cdot x_{i}$ is a vector and the scalar product ($*$) of two vectors is the dot product we have for a 
+conserved quantity
+\begin{align}
+  \sum_{i=1}^{N}\paren{B\cdot x_{i}}\cdot\paren{\partial_{\dot{x}_{i}}L} 
+           &= \sum_{i=1}^{N}m_{i}\paren{B\cdot x_{i}}\cdot\dot{x}_{i} \label{eq7_35_s1}\\
+           &= B\cdot \sum_{i=1}^{N}m_{i}\paren{x_{i}\W\dot{x}_{i}} \label{eq7_35_s2} \\
+           &= B\cdot J \\
+        J  &= \sum_{i=1}^{N}m_{i}\paren{x_{i}\W\dot{x}_{i}}
+\end{align}
+where we go from equation~\ref{eq7_35_s1} to equation~\ref{eq7_35_s2} by using the identity in equation~\ref{eq465a}. Then since 
+equation~\ref{eq7_35_s1} is conserved for any bivector $B$, the angular momentum bivector, $J$, of the system is conserved.
+\section{Lagrangian Theory for Continuous Systems}
+For ease of notation we define
+\be
+	A\lgrad \equiv \dot{A}\dot{\nabla}.\label{eq7_24}
+\ee
+This is done for the situation that we are left differentiating a group of symbols.  For example consider
+\be
+	\paren{ABC}\lgrad = \dot{\paren{ABC}}\dot{\nabla}.\label{eq7_25}
+\ee
+The r.h.s. of equation~\ref{eq7_25} could be ambiguous in that could the overdot only apply to the $B$ variable.  Thus we will use the convention
+of equation~\ref{eq7_24} to denote differentiation of the group immediately to the left of the derivative.  Another convention we could use to 
+denote the same operation is
+\be
+	\widehat{ABC}\widehat{\nabla} = \paren{ABC}\lgrad
+\ee
+since using the ``hat'' symbol is unambiguous with respect to what symbols we are applying the differentiation operator to since the ``hat'' can extend
+over all the relevant symbols.  
+\subsection{The Euler Lagrange Equations}
+Let $\f{\psi_{i}}{x}$ be a set of multivector fields and assume the Lagrangian density, $\Lf$, is a scalar function $\f{\Lf}{\psi_{i},\nabla\psi_{i},x}$ so
+that the action, $S$, of the continuous system is given by
+\be
+	S = \int_{V}\abs{dx^{n}}\f{\Lf}{\psi_{i},\nabla\psi_{i},x},\label{eq7_27}
+\ee
+where $V$ is a compact $n$-dimensional volume.  The equations of motion are given by minimizing $S$ using the standard method of the calculus of 
+variations where we define
+\be
+	\f{\psi'_{i}}{x} = \f{\psi_{i}}{x}+\epsilon\f{\phi_{i}}{x},
+\ee
+and assume that $\f{\psi_{i}}{x}$ yields an extrema of $S$ and that $\f{\phi_{i}}{x}=0$ for all $x\in\partial V$.  Then to get an extrema we need to define
+\be
+	\f{S}{\epsilon} = \int_{V}\abs{dx^{n}}\f{\Lf}{\psi_{i}+\epsilon\phi_{i},\nabla\psi_{i}+\epsilon\nabla\phi_{i},x},
+\ee
+so that $\f{S}{0}$ is an extrema if $\pdiff{S}{\epsilon} = 0$. Let us evaluate $\pdiff{S}{\epsilon}$ (summation convention)
+\be
+	\eval{\pdiff{S}{\epsilon}}{\epsilon=0} = \int_{V}\abs{dx^{n}}\paren{\paren{\phi_{i}*\partial_{\psi_{i}}}\Lf+\paren{\nabla\phi_{i}*\partial_{\nabla\psi_{i}}}\Lf}.\label{eq7_30}
+\ee
+Start by reducing the second term in the parenthesis on the r.h.s. of equation~\ref{eq7_30} using RR5 (Appendix~\ref{RRrules})
+\begin{align}
+	\paren{\nabla\phi_{i}*\partial_{\nabla\psi_{i}}}\Lf &= \grd{\paren{\nabla\phi_{i}}\partial_{\nabla\psi_{i}}}{}\Lf \nonumber \\
+	                                                    &= \grd{\paren{\nabla\phi_{i}}\partial_{\nabla\psi_{i}}\Lf}{} \nonumber \\
+	                                                    &= \grd{\nabla\paren{\phi_{i}\partial_{\nabla\psi_{i}}\Lf}
+	                                                       -\widehat{\nabla}\phi_{i}\paren{\widehat{\partial_{\nabla\psi_{i}}\Lf}}}{} \nonumber \\
+	                                                    &= \nabla\cdot\grd{\phi_{i}\partial_{\nabla\psi_{i}}\Lf}{1}
+	                                                       -\grd{\widehat{\nabla}\phi_{i}\paren{\widehat{\partial_{\nabla\psi_{i}}\Lf}}}{} \nonumber \\
+	                                                    &= \nabla\cdot\grd{\phi_{i}\partial_{\nabla\psi_{i}}\Lf}{1}
+	                                                       -\grd{\phi_{i}\paren{\partial_{\nabla\psi_{i}}\Lf}\lgrad}{}  \nonumber \\   
+	                                                    &= \nabla\cdot\grd{\phi_{i}\partial_{\nabla\psi_{i}}\Lf}{1}
+	                                                       -\phi_{i}*\paren{\paren{\partial_{\nabla\psi_{i}}\Lf}\lgrad}.
+\end{align}
+So that equation~\ref{eq7_30} becomes
+\begin{align}
+	\eval{\pdiff{S}{\epsilon}}{\epsilon=0} &= 
+	                       \int_{V}\abs{dx^{n}}\phi_{i}*\paren{\partial_{\psi_{i}}\Lf-\paren{\partial_{\grad\psi_{i}}\Lf}\lgrad}
+	                       +\int_{V}\abs{dx^{n}}\nabla\cdot\grd{\phi_{i}\partial_{\nabla\psi_{i}}\Lf}{1} \nonumber \\
+	                    &= \int_{V}\abs{dx^{n}}\phi_{i}*\paren{\partial_{\psi_{i}}\Lf-\paren{\partial_{\grad\psi_{i}}\Lf}\lgrad}
+	                       +\int_{\partial V}\abs{dS^{n-1}}n\cdot\grd{\phi_{i}\partial_{\nabla\psi_{i}}\Lf}{1} \nonumber \\
+	                    &= \int_{V}\abs{dx^{n}}\phi_{i}*\paren{\partial_{\psi_{i}}\Lf-\paren{\partial_{\grad\psi_{i}}\Lf}\lgrad} \label{eq7_32}.
+\end{align}
+The $\int_{V}\abs{dx^{n}}\nabla\cdot\grd{\phi_{i}\partial_{\nabla\psi_{i}}\Lf}{1}$ term is found to be zero by using the generalized divergence theorem (equation~\ref{eq_divth}) and the
+fact that the $\phi_{i}$'s are zero on $\partial V$.  Thus the equations of motion are
+\be
+	\partial_{\psi_{i}}\Lf-\paren{\partial_{\grad\psi_{i}}\Lf}\lgrad = 0.\label{eq7_33}
+\ee
+or
+\be
+	\partial_{\psi_{i}^{\R}}\Lf-\nabla\paren{\partial_{\paren{\grad\psi_{i}}^{\R}}\Lf} = 0.\label{eq7_34}
+\ee
+Note that equation~\ref{eq7_33} is true for $\psi_{i}$ being any kind of multivector field so that we have derived the field equations for vectors, tensors, spinors, or
+any combination thereof.
+\subsection{Symmetries and Conservation Laws}
+We proceed as in section~\ref{SandC} and let $\psi'_{i} = \f{\psi'_{i}}{\psi_{i},M}$ where $M$ is a multivector parameter. Then
+\be
+	\f{\Lf'}{\psi_{i},\nabla\psi_{i}} \equiv \f{\Lf}{\psi'_{i},\nabla\psi'_{i}}
+\ee
+and using equation~\ref{eq_chainrule} and RR5
+\begin{align}
+	\paren{A*\partial_{M}}\Lf' &= \paren{\paren{A*\partial_{M}}\psi'_{i}}*\paren{\partial_{\psi'_{i}}\Lf'}
+	                      +\paren{\paren{A*\partial_{M}}\nabla\psi'_{i}}*\paren{\partial_{\nabla\psi'_{i}}\Lf'} \nonumber \\
+	                   &= \paren{\paren{A*\partial_{M}}\psi'_{i}}*\paren{\partial_{\psi'_{i}}\Lf'}
+	                      +\grd{\paren{\paren{A*\partial_{M}}\nabla\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}{} \nonumber \\
+	                   &= \paren{\paren{A*\partial_{M}}\psi'_{i}}*\paren{\partial_{\psi'_{i}}\Lf'}
+	                      +\grd{\nabla\paren{\paren{\paren{A*\partial_{M}}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}
+	                      -\widehat{\nabla}\paren{\paren{\paren{A*\partial_{M}}\psi'_{i}}\paren{\widehat{\partial_{\nabla\psi'_{i}}\Lf'}}}}{} \nonumber \\
+	                   &= \paren{\paren{A*\partial_{M}}\psi'_{i}}*\paren{\partial_{\psi'_{i}}\Lf'}
+	                      +\nabla\cdot\grd{\paren{\paren{A*\partial_{M}}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}{1}
+	                      -\grd{\paren{\paren{A*\partial_{M}}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}\lgrad}{} \nonumber \\
+	                   &= \paren{\paren{A*\partial_{M}}\psi'_{i}}*\paren{\partial_{\psi'_{i}}\Lf'}
+	                      +\nabla\cdot\grd{\paren{\paren{A*\partial_{M}}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}{1}
+	                      -\paren{\paren{A*\partial_{M}}\psi'_{i}}*\paren{\partial_{\nabla\psi'_{i}}\Lf'}\lgrad \nonumber \\
+	                   &= \paren{\paren{A*\partial_{M}}\psi'_{i}}*\paren{\paren{\partial_{\psi'_{i}}\Lf'}-\paren{\partial_{\nabla\psi'_{i}}\Lf'}\lgrad}
+	                      +\nabla\cdot\grd{\paren{\paren{A*\partial_{M}}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}{1}
+\end{align}
+and if the Euler-Lagrange equations are satisfied we have
+\be
+    \paren{A*\partial_{M}}\Lf' = \nabla\cdot\grd{\paren{\paren{A*\partial_{M}}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}{1}
+\ee
+and by equation~\ref{eq6_40a}
+\be
+	\partial_{M}\Lf' = \partial_{A}\paren{\nabla\cdot\grd{\paren{\paren{A*\partial_{M}}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}{1}}. \label{eq7_37}
+\ee
+If $\partial_{M}\Lf'=0$, equation~\ref{eq7_37} is the most general form of Noether's theorem for the scalar valued multivector Lagrangian density.
+
+If in equation~\ref{eq7_37} $M$ is a scalar $\alpha$ and $B$ is a scalar $\beta$ we have
+\begin{align}
+	\partial_{\alpha}\Lf' &= \partial_{\beta}\paren{\nabla\cdot\grd{\paren{\paren{\beta\partial_{\alpha}}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}{1}} \nonumber \\
+	                      &= \nabla\cdot\grd{\paren{\partial_{\alpha}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}{1}.\label{eq7_38}
+\end{align}
+Thus if $\alpha=0$ in equation~\ref{eq7_38} we have
+\be
+	\eval{\partial_{\alpha}\Lf'}{\alpha=0} = \nabla\cdot\eval{\grd{\paren{\partial_{\alpha}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}{1}}{\alpha=0}
+\ee
+which corresponds to an differential transformation ($\partial_{\alpha}\Lf'=0$ is a global transformation). If $\eval{\partial_{\alpha}\Lf'}{\alpha=0}=0$ 
+the conserved current is
+\be
+	j = \eval{\grd{\paren{\partial_{\alpha}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf'}}{1}}{\alpha=0}
+\ee
+with conservation law
+\be
+	\nabla\cdot j = 0.
+\ee
+If $\eval{\partial_{\alpha}\Lf'}{\alpha=0}\ne 0$ we have by the chain rule that $\paren{\f{g}{x}=\eval{\partial_{\alpha}x'}{\alpha=0}}$
+\be
+	\eval{\partial_{\alpha}\Lf'}{\alpha=0} = \eval{\partial_{\alpha}x'}{\alpha=0}\cdot\eval{\nabla\Lf'}{\alpha=0} = \f{g}{x}\cdot\nabla\Lf
+\ee
+and consider
+\be
+	\nabla\cdot\paren{g\Lf} = \paren{\nabla\cdot g}\Lf+g\cdot\nabla\Lf.
+\ee
+If $\nabla\cdot g=0$ we can write $\eval{\partial_{\alpha}\Lf'}{\alpha=0}$ as a divergence so that
+\be
+	\nabla\cdot\paren{\grd{\paren{\eval{\partial_{\alpha}\psi'_{i}}{\alpha=0}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}-\paren{\eval{\partial_{\alpha}x'}{\alpha=0}}\Lf} = 0
+\ee
+and
+\be
+	j = \grd{\paren{\eval{\partial_{\alpha}\psi'_{i}}{\alpha=0}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}-\paren{\eval{\partial_{\alpha}x'}{\alpha=0}}\Lf
+\ee
+is a conserved current if $\nabla\cdot\eval{\partial_{\alpha}x'}{\alpha=0}=0$.
+
+\subsection{Space-Time Transformations and their Conjugate Tensors}
+The canonical stress-energy tensor is the current associated with the symmetries of space-time translations. As a function of the parameter $\alpha$
+we have
+\begin{align}
+	x' &= x+\alpha n \\
+	\f{\psi'_{i}}{x} &= \f{\psi_{i}}{x+\alpha n}
+\end{align}
+Then
+\begin{align}
+	\eval{\partial_{\alpha}\Lf'}{\alpha=0} &= \eval{\partial_{\alpha}\f{\Lf}{x+\alpha n}}{\alpha=0} = n\cdot\nabla\Lf = \nabla\cdot\paren{n\Lf}\\
+	\eval{\partial_{\alpha}\psi'_{i}}{\alpha=0} &= n\cdot\nabla\psi_{i}
+\end{align}
+and equation~\ref{eq7_38} becomes
+\be
+ 	\nabla\cdot\paren{n\Lf} = \nabla\cdot\grd{\paren{n\cdot\nabla\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}
+\ee
+so that
+\be
+	\nabla\cdot\f{\overline{T}}{n} \equiv \nabla\cdot\grd{\paren{n\cdot\nabla\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}-n\Lf}{1} = 0 \label{eq7_47}
+\ee
+and the adjoint of the stress-energy tensor is
+\begin{align}
+	\f{\overline{T}}{n} &= \grd{\paren{n\cdot\nabla\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}-n\Lf \\
+	                    &= \paren{n\cdot\dot{\nabla}}\grd{\dot{\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}-n\Lf.
+\end{align}
+Using equation~\ref{eq6_34a} we get
+\begin{align}
+	\f{T}{n} &= \partial_{m}\grd{\paren{m\cdot\dot{\nabla}}\grd{\dot{\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}n}{}-n\Lf \nonumber \\
+	         &= \partial_{m}\paren{m\cdot\dot{\nabla}}\grd{\grd{\dot{\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}n}{}-n\Lf \nonumber \\
+	         &= \dot{\nabla}\grd{\grd{\dot{\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}n}{}-n\Lf \nonumber \\
+	         &= \dot{\nabla}\grd{\dot{\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}n}{}-n\Lf.
+\end{align}
+From equation~\ref{eq7_47} it follows that
+\begin{align}
+	0 = \nabla\cdot\f{\overline{T}}{n} &= n\cdot \f{\dot{T}}{\dot{\nabla}}, \\
+	\f{\dot{T}}{\dot{\nabla}} &= 0,
+\end{align}
+or in rectangular coordinate components
+\be
+	\pdiff{T^{ij}}{x^{j}} = 0,
+\ee
+so that $\f{T}{n}$ is a conserved tensor.
+
+Now consider rotational transformations and for now assume the $\psi_{i}$ transform as vectors so that
+\begin{align}
+	x' &= e^{-\frac{\alpha B}{2}}xe^{\frac{\alpha B}{2}} \\
+	\f{\psi'_{i}}{x} &= e^{\frac{\alpha B}{2}}\f{\psi_{i}}{x'}e^{-\frac{\alpha B}{2}}, 
+\end{align}
+then
+\begin{align}
+	\partial_{\alpha}x' &= \half e^{-\frac{\alpha B}{2}}\paren{xB-Bx}e^{\frac{\alpha B}{2}} \nonumber \\
+	\eval{\partial_{\alpha}x'}{\alpha=0} &= x\cdot B \\	
+	\partial_{\alpha}\psi'_{i} &= \half e^{\frac{\alpha B}{2}}\paren{B\f{\psi_{i}}{x'}-\f{\psi'_{i}}{x'}B}e^{-\frac{\alpha B}{2}}
+	                              +e^{\frac{\alpha B}{2}}\paren{\partial_{\alpha}\f{\psi_{i}}{x'}}e^{-\frac{\alpha B}{2}}  \nonumber \\
+	                           &= e^{\frac{\alpha B}{2}}\paren{B\times\f{\psi_{i}}{x'}}e^{-\frac{\alpha B}{2}}
+	                              +e^{\frac{\alpha B}{2}}\paren{\partial_{\alpha}x'\cdot\nabla\f{\psi_{i}}{x'}}e^{-\frac{\alpha B}{2}} \\
+	\eval{\partial_{\alpha}\psi'_{i}}{\alpha=0} &= B\times \f{\psi_{i}}{x} +\eval{\partial_{\alpha}x'}{\alpha=0}\cdot\nabla\f{\psi_{i}}{x}  \nonumber \\
+	                                            &= B\times \psi_{i} +\paren{x\cdot B}\cdot\nabla\psi_{i} =  \psi_{i}\cdot B +\paren{x\cdot B}\cdot\nabla\psi_{i}.          
+\end{align}
+Thus
+\be
+	\nabla\cdot\paren{\eval{\partial_{\alpha}x'}{\alpha=0}} = \nabla\cdot\paren{x\cdot B} = -\paren{B\cdot \dot{x}}\cdot\dot{\nabla} = -B\cdot\paren{\dot{x}\W\dot{\nabla}}
+	                                           = B\cdot\paren{\nabla\W x} = 0
+\ee
+since $\nabla\W x = 0$ and 
+\be
+	\eval{\partial_{\alpha}\Lf'}{\alpha=0} = \nabla\cdot\paren{\paren{x\cdot B}\Lf}.
+\ee
+
+\begin{align}
+	\eval{\nabla\cdot\grd{\paren{\partial_{\alpha}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf}}{1}}{\alpha=0} &= 
+		\nabla\cdot\grd{\paren{B\times\psi_{i}-\paren{B\cdot x}\cdot\nabla\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}
+\end{align}
+\begin{align}
+	\nabla\cdot\f{\overline{J}}{B} &= \eval{\nabla\cdot\grd{\paren{\partial_{\alpha}\psi'_{i}}\paren{\partial_{\nabla\psi'_{i}}\Lf}}{1}}{\alpha=0}
+	                                  -\eval{\partial_{\alpha}\Lf'}{\alpha=0} \nonumber \\
+	                               &= \nabla\cdot\paren{\grd{\paren{B\times\psi_{i}-\paren{B\cdot x}\cdot\nabla\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}-
+	                                  \paren{x\cdot B}\Lf}
+\end{align}
+\be\label{eq7_67}
+	\f{\overline{J}}{B} = \grd{\paren{B\times\psi_{i}-\paren{B\cdot x}\cdot\nabla\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}-\paren{x\cdot B}\Lf
+\ee
+using equation~\ref{eq6_34a} to calculate the adjoint of the adjoint
+\begin{align}
+	A*\f{\underline{J}}{n} &= \paren{A*\partial_{B}}\grd{\f{\overline{J}}{B}n}{} \nonumber \\
+	                       &= \paren{A*\partial_{B}}\grd{\grd{\paren{B\times\psi_{i}-\paren{B\cdot x}\cdot\nabla\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}n
+	                          -\paren{x\cdot B}\Lf n}{} \nonumber \\
+	                       &= \grd{\paren{A\times\psi_{i}-\paren{A\cdot x}\cdot\nabla\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf n}
+	                          -\paren{x\cdot A}\Lf n}{} \nonumber \\
+	                       &= \grd{\paren{A\times\psi_{i}-\paren{A\cdot\paren{x\W\nabla}}\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf n}
+	                          -\paren{x\cdot A}\Lf n}{}. \label{eq7_68}  
+\end{align}
+Using RR5 the first term on the r.h.s. of equation~\ref{eq7_68} reduces to
+\begin{align}
+	\grd{\paren{\psi_{i}\times A}\paren{\partial_{\nabla\psi_{i}}\Lf n}}{} &= \half\grd{\paren{A\psi_{i}-\psi_{i}A}\paren{\partial_{\nabla\psi_{i}}\Lf n}}{} \nonumber \\
+		&= \half\grd{A\paren{\psi_{i}\paren{\partial_{\nabla\psi_{i}}\Lf n}-\paren{\partial_{\nabla\psi_{i}}\Lf n}\psi_{i}}}{}\nonumber \\
+		&= \grd{A\paren{\psi_{i}\times\paren{\partial_{\nabla\psi_{i}}\Lf n}}}{} \nonumber \\
+		&= A*\grd{\psi_{i}\times\paren{\partial_{\nabla\psi_{i}}\Lf n}}{2}, \label{eq7_69} 
+\end{align}
+using RR7 the second term reduces to 
+\begin{align}
+	\grd{\paren{A\cdot\paren{x\W\nabla}}\psi_{i}\paren{\partial_{\nabla\psi_{i}}\Lf n}}{} 
+		&= \paren{A\cdot\paren{x\W\dot{\nabla}}}\grd{\dot{\psi}_{i}\partial_{\nabla\psi_{i}}\Lf n}{} \nonumber \\
+		&= A*\paren{\paren{x\W\dot{\nabla}}\grd{\dot{\psi}_{i}\partial_{\nabla\psi_{i}}\Lf n}{}}, \label{eq7_70}
+\end{align}
+using RR5 again the third term reduces to 
+\begin{align}
+	\grd{\paren{x\cdot A}\Lf n}{} &= \half\grd{\paren{xA-Ax}\Lf n}{} \nonumber \\
+	                              &= \half\grd{A\paren{nx-xn}\Lf}{} \nonumber \\
+	                              &= \grd{A\paren{n\W x}\Lf}{} \nonumber \\
+	                              &= A*\paren{n\W x}\Lf. \label{eq7_71}
+\end{align}
+Combining equations~\ref{eq7_69}, \ref{eq7_70}, and \ref{eq7_71} reduces equation~\ref{eq7_68} to
+\be
+	\f{\underline{J}}{n} = \grd{\psi_{i}\times\paren{\partial_{\nabla\psi_{i}}\Lf n}}{2}
+	                      -\paren{x\W\dot{\nabla}}\grd{\dot{\psi}_{i}\partial_{\nabla\psi_{i}}\Lf n}{}
+	                      -\paren{n\W x}\Lf. \label{eq7_72}
+\ee
+
+If $\psi_{i}$ is a spinor instead of a vector the transformation law is
+\be
+	\f{\psi'_{i}}{x} = e^{\frac{\alpha B}{2}}\f{\psi_{i}}{x'}
+\ee
+so that
+\be
+	\partial_{\alpha}\psi'_{i} = e^{\frac{\alpha B}{2}}\bfrac{B}{2}\f{\psi_{i}}{x'}+e^{\frac{\alpha B}{2}}\partial_{\alpha}x'\f{\psi_{i}}{x'}
+\ee
+and
+\be
+	\eval{\partial_{\alpha}\psi'_{i}}{\alpha=0} = \bfrac{B}{2}\psi_{i}+\paren{x\cdot B}\cdot\nabla\psi_{i}.
+\ee
+Equations~\ref{eq7_67} and \ref{eq7_72} become
+\be
+	\f{\overline{J}}{B} = \grd{\paren{\bfrac{B}{2}\psi_{i}-\paren{B\cdot x}\cdot\nabla\psi_{i}}\paren{\partial_{\nabla\psi_{i}}\Lf}}{1}-\paren{x\cdot B}\Lf
+\ee
+and
+\be
+	\f{\underline{J}}{n} = \grd{\bfrac{\psi_{i}}{2}\paren{\partial_{\nabla\psi_{i}}\Lf n}}{2}
+	                      -\paren{x\W\dot{\nabla}}\grd{\dot{\psi}_{i}\partial_{\nabla\psi_{i}}\Lf n}{}
+	                      -\paren{n\W x}\Lf.
+\ee

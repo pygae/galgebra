@@ -1,0 +1,5 @@
+This is a rewrite of the current geometric algebra modules for sympy. For
+details see GA.pdf in "LaTeX docs" directory.  Especially look in GA.pdf
+for how to install modules to work well with sympy.
+
+GA.pdf also documents the changes from the current sympy/galgebra modulues.

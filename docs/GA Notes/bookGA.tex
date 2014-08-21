@@ -1,0 +1,92 @@
+\documentclass[12pt]{book}
+% setup the page geometry for landscape and use maximum screen real estate
+%\usepackage[dvips]{geometry,graphicx,color}
+\usepackage[pdftex]{geometry,graphicx,color}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{tensor}
+\usepackage{amsfonts}
+\usepackage{comment}
+\usepackage{srcltx}
+\usepackage{amssymb}
+\usepackage{rotating}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{eufrak}
+\usepackage{mathtools}
+\usepackage{tensor}
+\usepackage{bbding}
+\usepackage{tensor}
+\usepackage{pdfpages}
+\usepackage{sectsty}
+\usepackage{makecell}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{listings}
+\lstloadlanguages{Python}
+%\usepackage[hyphens]{url}
+\DeclareGraphicsExtensions{.pdf}
+\geometry{headsep=2.0em,hscale=0.80}
+\newcommand{\ubh}{\bm{\hat{u}}}
+\newcommand{\ebh}{\bm{\hat{e}}}
+\newcommand{\ebf}{\bm{e}}
+%\definecolor{red}{rgb}{1,0,0}
+\setlength{\parindent}{0in}
+\usepackage{sectsty}
+\sectionfont{\large}
+%\titlespacing*{\section}{0pt}{6pt}{3pt}
+\include{bookmacros}
+\title{\bf\Large An Introduction to Geometric Algebra and Calculus}
+\author{\bf Alan Bromborsky\\
+\bf Army Research Lab (Retired)\\
+\bf abrombo@verizon.net}
+
+\begin{document}
+\parskip 10pt
+
+\maketitle
+{\bf Introduction}\newline
+Geometric algebra is the Clifford algebra of a finite dimensional
+vector space over real scalars cast in a form most appropriate for
+physics and engineering. This was done by David Hestenes (Arizona
+State University) in the 1960's. From this start he developed the
+geometric calculus whose fundamental theorem includes the generalized
+Stokes theorem, the residue theorem, and new integral theorems
+not realized before. Hestenes likes to say he was motivated by the
+fact that physicists and engineers did not know how to multiply
+vectors.
+
+Researchers at Arizona State and Cambridge have applied these developments 
+to classical mechanics,quantum mechanics, general relativity (gauge theory 
+of gravity), projective geometry, conformal geometry, etc. 
+
+\tableofcontents
+
+\include{BasicGA}
+\include{ExamplesGA}
+\include{GeometricCalculusDerivative}
+\include{GeometricCalculusIntegration}
+\include{GeometricCalculusManifolds}
+\include{DifferentialForms}
+\include{MultivectorCalculus}
+\include{Tensors}
+\include{Lagrangian}
+\include{LieGroupsAsSpinGroups}
+\include{ElectromagneticTheory}
+\include{Appendix}
+
+\begin{thebibliography}{99}
+\bibitem {Cambridge} Cambridge site: \url{http://www.mrao.cam.ac.uk/~clifford}
+\bibitem {AzSt} Arizona State site: \url{http://modelingnts.la.asu.edu}
+\bibitem {D&L} Chris Doran and Anthony Lasenby, ``Geometric Algebra for Physicists,'' Cambridge University
+Press, 2003.
+\bibitem {H&S} David Hestenes and Garret Sobczyk, ``Clifford Algebra to Geometric Calculus,'' Kluwer Academic
+Publishers, 1984.
+\bibitem {DHS&VA} C. Doran,D. Hestenes, F. Sommen and N. Van Acker, ``Lie Groups as Spin Groups,'' 
+	\emph{J. Math. Phys.},\textbf{ 34}(8) August 1993, pp. 3642-3669.
+\bibitem {NFCM} David Hestenes, ``New Foundations for Classical Mechanics ($2^{nd}$ edition),'' Kluwer Academic
+Publishers, 1999.
+\bibitem {Wyss} Walter Wyss,``The Energy-Momentum Tensor in Classical Field Theory,'' \url{http://merlin.fic.uni.lodz.pl/concepts/2005_3_4/2005_3_4_295.pdf}
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,45 @@
+\contentsline {chapter}{\numberline {1}What is Geometric Algebra?}{4}{chapter.1}
+\contentsline {section}{\numberline {1.1}Representation of Multivectors in \emph {sympy}}{8}{section.1.1}
+\contentsline {section}{\numberline {1.2}Vector Basis and Metric}{10}{section.1.2}
+\contentsline {section}{\numberline {1.3}Representation and Reduction of Multivector Bases}{12}{section.1.3}
+\contentsline {section}{\numberline {1.4}Base Representation of Multivectors}{14}{section.1.4}
+\contentsline {section}{\numberline {1.5}Blade Representation of Multivectors}{14}{section.1.5}
+\contentsline {section}{\numberline {1.6}Outer and Inner Products, Left and Right Contractions}{15}{section.1.6}
+\contentsline {section}{\numberline {1.7}Reverse of Multivector}{17}{section.1.7}
+\contentsline {section}{\numberline {1.8}Reciprocal Frames}{18}{section.1.8}
+\contentsline {section}{\numberline {1.9}Manifolds and Submanifolds}{19}{section.1.9}
+\contentsline {section}{\numberline {1.10}Geometric Derivative}{20}{section.1.10}
+\contentsline {subsection}{\numberline {1.10.1}Geometric Derivative on a Manifold}{21}{subsection.1.10.1}
+\contentsline {subsection}{\numberline {1.10.2}Normalizing Basis for Derivatives}{22}{subsection.1.10.2}
+\contentsline {subsection}{\numberline {1.10.3}Linear Differential Operators}{23}{subsection.1.10.3}
+\contentsline {section}{\numberline {1.11}Linear Transformations/Outermorphisms}{26}{section.1.11}
+\contentsline {section}{\numberline {1.12}Multilinear Functions (Tensors)}{27}{section.1.12}
+\contentsline {subsection}{\numberline {1.12.1}Multiliner Functions}{27}{subsection.1.12.1}
+\contentsline {subsection}{\numberline {1.12.2}Algebraic Operations}{27}{subsection.1.12.2}
+\contentsline {subsection}{\numberline {1.12.3}Covariant, Contravariant, and Mixed Representations}{28}{subsection.1.12.3}
+\contentsline {subsection}{\numberline {1.12.4}Contraction and Differentiation}{29}{subsection.1.12.4}
+\contentsline {subsection}{\numberline {1.12.5}From Vector to Tensor}{30}{subsection.1.12.5}
+\contentsline {subsection}{\numberline {1.12.6}Parallel Transport and Covariant Deriviatives}{30}{subsection.1.12.6}
+\contentsline {chapter}{\numberline {2}Installation}{34}{chapter.2}
+\contentsline {chapter}{\numberline {3}Module Components}{37}{chapter.3}
+\contentsline {section}{\numberline {3.1}Instantiating a Geometric Algebra}{38}{section.3.1}
+\contentsline {section}{\numberline {3.2}Instantiating a Multivector}{40}{section.3.2}
+\contentsline {section}{\numberline {3.3}Basic Multivector Class Functions}{42}{section.3.3}
+\contentsline {section}{\numberline {3.4}Basic Multivector Functions}{45}{section.3.4}
+\contentsline {section}{\numberline {3.5}Multivector Derivatives}{47}{section.3.5}
+\contentsline {section}{\numberline {3.6}Submanifolds}{48}{section.3.6}
+\contentsline {section}{\numberline {3.7}Linear Transformations}{51}{section.3.7}
+\contentsline {section}{\numberline {3.8}Differential Operators}{59}{section.3.8}
+\contentsline {section}{\numberline {3.9}Instantiating a Multi-linear Functions (Tensors)}{61}{section.3.9}
+\contentsline {section}{\numberline {3.10}Basic Multilinear Function Class Functions}{62}{section.3.10}
+\contentsline {section}{\numberline {3.11}Standard Printing}{63}{section.3.11}
+\contentsline {section}{\numberline {3.12}Latex Printing}{64}{section.3.12}
+\contentsline {chapter}{\numberline {4}Examples}{68}{chapter.4}
+\contentsline {section}{\numberline {4.1}Algebra}{68}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}BAC-CAB Formulas}{68}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}Reciprocal Frame}{68}{subsection.4.1.2}
+\contentsline {section}{\numberline {4.2}Calculus}{69}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Derivatives in Spherical Coordinates}{69}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}Electromagnetic Waves}{69}{subsection.4.2.2}
+\contentsline {subsection}{\numberline {4.2.3}Dirac Equation}{69}{subsection.4.2.3}
+\contentsline {subsection}{\numberline {4.2.4}IPython Notebook Example}{71}{subsection.4.2.4}

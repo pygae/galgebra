@@ -1,0 +1,19 @@
+\begin{picture}(0,0)%
+\includegraphics{reflect.pstex}%
+\end{picture}%
+\setlength{\unitlength}{3947sp}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+\begin{picture}(3988,4438)(2132,-5580)
+\put(3601,-4786){\rotatebox{330.0}{\makebox(0,0)[b]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$v = v_{\parallel}+v_{\perp}$}%
+}}}}}
+\put(3976,-2011){\rotatebox{30.0}{\makebox(0,0)[b]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$ava = a^{2}\lp v_{\parallel}-v_{\perp}\rp$}%
+}}}}}
+\put(3676,-3211){\makebox(0,0)[b]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$a$}%
+}}}}
+\end{picture}%

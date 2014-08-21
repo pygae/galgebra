@@ -1,0 +1,349 @@
+\chapter{Geometric Calculus - The Derivative}
+\section{Definitions}
+If $F\paren{a}$ if a multivector valued function of the vector $a$, and $a$ and $b$ are any vectors
+in the space then the derivative of $F$ is defined by 
+\be
+b\cdot\nabla F \equiv \lim_{\epsilon\rightarrow 0} \bfrac{F\paren{a+\epsilon b}-F\paren{a}}{\epsilon}
+\ee
+then letting $b = \eb_{k}$ be the components of a coordinate frame with $x = x^{k}\eb_{k}$ (we are using the
+summation convention that the same upper and lower indices are summed over 1 to $N$) we have
+\be
+\eb_{k}\cdot\nabla F = \lim_{\epsilon\rightarrow 0} \bfrac{F\paren{x^{j}\eb_{j}+\epsilon\eb_{k}}-F\paren{x^{j}\eb_{j}}}{\epsilon}
+\ee
+Using what we know about coordinates gives
+\be
+\nabla F = \eb^{j}\pdiff{F}{x^{j}} = \eb^{j}\partial_{j}F
+\ee
+or looking at $\nabla$ as a symbolic operator we may write
+\be
+\nabla = \eb^{j}\partial_{j}
+\ee
+Due to the properties of coordinate frame expansions $\nabla F$ is independent of the choice of 
+the $\eb_{k}$ frame.  If we consider $x$ to be a position vector then $F\paren{x}$ is in general a
+multivector field.
+\section{Derivatives of Scalar Functions}
+If $f\paren{x}$ is scalar valued function of the vector $x$ then the derivative is
+\be\label{eq141}
+\nabla f = \eb^{k}\partial_{k}f
+\ee
+which is the standard definition of the gradient of a scalar function (remember that in an orthonormal
+coordinate system $\eb_{k}=\eb^{k}$).  Using equation~\ref{eq141} we can show the following results
+for the gradient of some specific scalar functions
+\be
+\begin{array}{ccccc}
+ f & = & x\cdot a, &  x^{k}, &  xx \\
+\nabla f & = &    a, &   \eb^{k},  &    2x 
+\end{array}
+\ee
+\section{Product Rule} 
+Let $\circ$ represent a bilinear product operator such as the geometric, inner, or outer product and
+note that for the multivector fields $F$ and $G$ we have
+\be
+\partial_{k}\paren{F\circ G} = \paren{\partial_{k}F}\circ G+F\circ\paren{\partial_{k}G}
+\ee
+so that
+\begin{align}
+\nabla\paren{F\circ G} &= \eb^{k}\paren{\paren{\partial_{k}F}\circ G+F\circ\paren{\partial_{k}G}} \nonumber \\
+					   &= \eb^{k}\paren{\partial_{k}F}\circ G+\eb^{k}F\circ\paren{\partial_{k}G}
+\end{align}
+However since the geometric product is not communicative, in general
+\be
+\nabla\paren{F\circ G} \neq \paren{\nabla F}\circ G+F\circ\paren{\nabla G}
+\ee
+The notation adopted by Hestenes is
+\be
+\nabla\paren{F\circ G} = \nabla F\circ G+\dot{\nabla}F\circ \dot{G}
+\ee
+The convention of the overdot notation is
+\begin{enumerate}
+\item[{\it i.}] In the absence of brackets, $\nabla$ acts on the object to its immediate right
+\item[{\it ii.}] When the $\nabla$ is followed by brackets, the derivative acts on all the the 
+terms in the brackets.
+\item[{\it iii.}] When the $\nabla$ acts on a multivector to which it is not adjacent, we use
+overdots to describe the scope.
+
+Note that with the overdot notation the expression $\dot{A}\dot{\nabla}$ makes sense!
+\end{enumerate}
+\section{Interior and Exterior Derivative}
+The interior and exterior derivatives of an $r$-grade multivector field are simply defined as
+(don't forget the summation convention)
+\be
+\nabla\cdot A_{r} \equiv \left\langle\nabla A_{r}\right\rangle_{r-1} = \eb^{k}\cdot\partial_{k}A_{r}
+\ee
+and
+\be
+\nabla\w A_{r} \equiv \left\langle\nabla A_{r}\right\rangle_{r+1} = \eb^{k}\w\partial_{k}A_{r}
+\ee
+Note that
+\begin{align}\label{eq3_13}
+\nabla\w\paren{\nabla\w A_{r}} &= \eb^{i}\partial_{i}\paren{\eb^{j}\w\partial_{j}A_{r}} \nonumber \\
+						   &= \eb^{i}\w\eb^{j}\w\paren{\partial_{i}\partial_{j}A_{r}} \nonumber \\
+						   &= 0
+\end{align}
+since $\eb^{i}\w\eb^{j} = -\eb^{j}\w\eb^{i}$, but $\partial_{i}\partial_{j}A_{r} = \partial_{j}\partial_{i}A_{r}$.
+\begin{align}
+\nabla\cdot\paren{\nabla\cdot A_{r}} & =  \eb^{i}\cdot\partial_{i}\paren{\eb^{j}\cdot\partial_{j}A_{r}} \nonumber \\
+    & =  \eb^{i}\cdot\paren{\eb^{j}\cdot\paren{\partial_{i}\partial_{j}A_{r}}} \nonumber \\
+    & =  \pm\eb^{i}\cdot\paren{\eb^{j}\cdot\paren{\partial_{i}\partial_{j}A_{r}^{*}I}} \nonumber \\
+	& =  \pm\eb^{i}\cdot\paren{\paren{\eb^{j}\w\paren{\partial_{i}\partial_{j}A_{r}^{*}}}I} \nonumber \\
+	& =  \pm\paren{\eb^{i}\w\paren{\eb^{j}\w\paren{\partial_{i}\partial_{j}A_{r}^{*}}}}I \nonumber \\
+	& =  0
+\end{align}
+Where $^{*}$ indicates the dual of a multivector, $A^{*}=AI$ ($I$ is the pseudoscalar and  $A = \pm A^{*}I$ since
+$I^{2} = \pm 1$), and we use equation~\ref{25a} to exchange the inner and outer products.
+
+Thus for the general multivector field $A$ (built from sums of $A_{r}$'s) we have $\nabla\w\paren{\nabla\w A}=0$ 
+and $\nabla\cdot\paren{\nabla\cdot A}=0$. If $\phi$ is a scalar function we also have
+\begin{align}
+\nabla\w\paren{\nabla\phi} & =  \eb^{i}\w\partial_{i}\paren{\eb^{j}\partial_{j}\phi} \nonumber \\
+						   & =  \eb^{i}\w\eb^{j}\partial_{i}\partial_{j}\phi \nonumber \\
+						   & =  0
+\end{align}
+
+Another use for the overdot notation would in the case where $\fof{f}{x,a}$ is a linear function of its 
+second argument $\lp \fct{f}{x,\alpha a+\beta b} = \alpha\fct{f}{x,a}+\beta\fct{f}{x,b}\rp$ and $a$ is a
+general function of position $\lp \fct{a}{x} = \fct{a^{i}}{x}\eb_{i}\rp$. Now calculate 
+\begin{align}
+\nabla \fct{f}{x,a} & =  \eb^{k}\pdiff{}{x^{k}}\fct{f}{x,a} = \eb^{k}\pdiff{}{x^{k}}\fct{f}{x,\fct{a^{i}}{x}\eb_{i}} \\
+                    & =  \eb^{k}\pdiff{}{x^{k}}\lp \fct{a^{i}}{x}\fct{f}{x,\eb_{i}} \rp \\
+                    & =  \eb^{k}\pdiff{a^{i}}{x^{k}}\fct{f}{x,\eb_{i}}+
+                          a^{i}\eb^{k}\pdiff{}{x^{k}}\fct{f}{x,\eb_{i}} \\
+                    & =  \eb^{k}\fct{f}{x,\pdiff{a}{x^{k}}}+a^{i}\eb^{k}\pdiff{}{x^{k}}\fct{f}{x,\eb_{i}}
+\end{align}  
+Defining
+\be
+\dot{\nabla}\fof{\dot{f}}{a} \equiv a^{i}\eb^{k}\pdiff{}{x^{k}}\fct{f}{x,\eb_{i}}
+                               = \eb^{k}\left . \pdiff{}{x^{k}}\fct{f}{x,a} \right |_{a=\mbox{constant}}
+\ee
+Then suppressing the explicit $x$ dependence of $f$ we get
+\be
+	\dot{\nabla}\fof{\dot{f}}{a} = \nabla\fof{f}{a}-\eb^{k}\fof{f}{\pdiff{a}{x^{k}}}
+\ee
+Other basic results (examples) are
+\be
+\nabla x\cdot A_{r} = rA_{r}
+\ee
+\be
+\nabla x\w A_{r} = \paren{n-r}A_{r}
+\ee
+\be
+\dot{\nabla} A_{r}\dot{x} = \paren{-1}^{r}\paren{n-2r}A_{r}
+\ee
+The basic identities for the case of a scalar field $\alpha$ and multivector field $F$ are
+\be
+\nabla\paren{\alpha F} = \paren{\nabla \alpha}F+\alpha\nabla F
+\ee
+\be
+\nabla\cdot\paren{\alpha F} = \paren{\nabla \alpha}\cdot F+\alpha\nabla\cdot F
+\ee
+\be
+\nabla\w\paren{\alpha F} = \paren{\nabla \alpha}\w F+\alpha\nabla\w F
+\ee
+if $f_{1}$ and $f_{2}$ are vector fields
+\be
+\nabla\w\paren{f_{1}\w f_{2}} = \paren{\nabla\w f_{1}}\w f_{2}-\paren{\nabla\w f_{2}}\w f_{1}
+\ee
+and finally if $F_{r}$ is a grade $r$ multivector field
+\be
+\nabla\cdot\paren{F_{r}I} = \paren{\nabla\w F_{r}}I
+\ee
+where $I$ is the psuedoscalar for the geometric algebra.
+\section{Derivative of a Multivector Function}
+For a vector space of dimension $N$ spanned by the vectors $\bm{u}_{i}$ the coordinates of a vector $x$ 
+are the $x^{i} = x\cdot\bm{u}^{i}$ so that $x = x^{i}\bm{u}_{i}$ (summation convention is from 1 to $N$).
+Curvilinear coordinates for that space are generated by a one to one invertible differentiable mapping from
+$\lp x^{1},\dots,x^{N}\rp \leftrightarrow  \lp\theta^{1},\dots,\theta^{N}\rp$ where the $\theta^{i}$ are 
+called the curvilinear coordinates.
+If the mapping is given by $\fct{x}{\theta^1,\dots,\theta^{N}} = \fct{x^{i}}{\theta^1,\dots,\theta^{N}}\bm{u}_{i}$ 
+then the basis vectors associated with the transformation are given by
+\be
+	\eb_{k} = \pdiff{x}{\theta^{k}} = \pdiff{x^{i}}{\theta^{k}}\ub_{i}
+\ee 
+The one critical relationship that is required to express the geometric derivative in curvilinear coordinated is
+\be
+ 	\eb^{k} = \pdiff{\theta^{k}}{x^{i}}\ub^{i}
+\ee
+The proof is
+\begin{align}
+	\eb_{j}\cdot\eb^{k} & = \pdiff{x^{m}}{\theta^{j}}\pdiff{\theta^{k}}{x^{n}}\ub_{m}\cdot\ub^{n} \\
+	                    & = \pdiff{x^{m}}{\theta^{j}}\pdiff{\theta^{k}}{x^{n}}\delta_{m}^{n} \\
+                        & = \pdiff{x^{m}}{\theta^{j}}\pdiff{\theta^{k}}{x^{m}} \\
+                        & = \pdiff{\theta^{k}}{\theta^{j}} = \delta_{j}^{k}
+\end{align}
+We wish to express the geometric derivative of an $R$-grade multivector
+field $F_{R}$ in terms of the curvilinear coordinates. Thus
+\be
+\nabla F_{R} = \bm{u}^{i}\pdiff{F_{R}}{x^{i}} = \lp\bm{u}^{i}\pdiff{\theta^{k}}{x^{i}}\rp\pdiff{F_{R}}{\theta^{k}} 
+             = \bm{e}^{k}\pdiff{F_{R}}{\theta^{k}}
+\ee
+Note that if we start by defining the $\bm{e}_{k}$'s the reciprocal frame vectors $\bm{e}^{k}$ can be calculated
+geometrically (we do not need the inverse partial derivatives).
+Now define a new blade symbol by
+\be
+	\ebl{i_{1},\dots,i_{R}}= \eb_{i_{1}}\W\dots\W\eb_{i_{R}}
+\ee
+and represent an $R$-grade multivector function $F$ by
+\be
+F = F^{i_{1}\dots i_{R}}\ebl{i_{1},\dots,i_{R}}
+\ee
+Then
+\be
+\hspace{-0.5in}\nabla F = \pdiff{F^{i_{1}\dots i_{R}}}{\theta^{k}}\ebf^{k}\ebl{i_{1},\dots,i_{R}}+
+     F^{i_{1}\dots i_{R}}\ebf^{k}\pdiff{}{\theta^{k}}\ebl{i_{1},\dots,i_{R}}
+\ee
+Define
+\be
+C\lb \ebl{i_{1},\dots,i_{R}}\rb \equiv \ebf^{k}\pdiff{}{\theta^{k}}\ebl{i_{1},\dots,i_{R}}
+\ee
+Where $C\lb \ebl{i_{1},\dots,i_{R}}\rb$ are the connection multivectors for each base of the geometric
+algebra and we can write 
+\be\label{eq210}
+\hspace{-0.5in}\nabla F = \pdiff{F^{i_{1}\dots i_{R}}}{\theta^{k}}\ebf^{k}\ebl{i_{1},\dots,i_{R}}+
+     F^{i_{1}\dots i_{R}}C\lb \ebl{i_{1},\dots,i_{R}}\rb
+\ee
+Note that all the quantities in the equation not dependent
+upon the $F^{i_{1}\dots i_{R}}$ can be directly calculated if the $\fct{\bm{e}_{k}}{\theta^{1},\dots,\theta^{N}}$ is known so further simplification is not needed.
+
+In general the $\eb_{k}$'s we have defined are not normalized so define
+\begin{align}
+	\abs{\eb_{k}} &= \sqrt{\abs{\eb_{k}^{2}}} \\
+	\ebh_{k} &= \bfrac{\eb_{k}}{\abs{\eb_{k}}}
+\end{align}
+and note that $\ebh_{k}^{2} = \pm 1$ depending upon the metric.  Note also that
+\be
+	\ebh^{k} = \abs{\eb_{k}}\eb^{k}
+\ee
+since
+\be
+	\ebh^{j}\cdot\ebh_{k} = \lp\abs{\eb_{j}}\eb^{j}\rp\cdot\lp\bfrac{\eb_{k}}{\abs{\eb_{k}}}\rp =
+	                        \delta_{k}^{j}\bfrac{\abs{\eb_{j}}}{\abs{\eb_{k}}} = \delta_{k}^{j}
+\ee
+so that if $F_{R}$ is represented in terms of the normalized basis vectors we have 
+\be
+	F_{R} = F_{R}^{i_{1}\dots i_{R}}\eblh{i_{1},\dots,i_{R}}
+\ee
+%X
+and the geometric derivative is now
+\be
+\hspace{-0.5in}\nabla F = \pdiff{F^{i_{1}\dots i_{R}}}{\theta^{k}}
+\bfrac{\ebh^{k}}{\abs{\eb_{k}}}\eblh{i_{1},\dots,i_{R}}+
+     F^{i_{1}\dots i_{R}}\hat{C}\lb \eblh{i_{1},\dots,i_{R}}\rb
+\ee
+and 
+\be
+\hat{C}\lb \eblh{i_{1},\dots,i_{R}}\rb = \bfrac{\ebh^{k}}{\abs{\eb_{k}}}\pdiff{}{\theta^{k}}\eblh{i_{1},\dots,i_{R}}
+\ee
+
+\subsection{Spherical Coordinates}
+
+For spherical coordinates the coordinate generating function is:
+\be
+x = r\lp\cosf{\theta}\ub_{z}+\sinf{\theta}\lp\cosf{\phi}\ub_{x}+\sinf{\phi}\ub_{y}\rp\rp
+\ee
+so that
+\begin{align}
+\eb_{r} & =   \cosf{\theta}\lp\cosf{\phi}\ub_{x}+ \sinf{\phi}{\ub}_{y}\rp+\sinf{\theta}\ub_{z} \\
+\eb_{\theta} & =  r\lp -\sinf{\theta}\lp\cosf{\phi}\ub_{x}+ \sinf{\phi}{\ub}_{y}\rp+\cosf{\theta}\ub_{z}\rp \\
+\eb_{\phi}   & =  r\cosf{\theta}\lp -\sinf{\phi}\ub_{x}+ \cosf{\phi}{\ub}_{y}\rp
+\end{align}
+where
+\be
+\begin{array}{ccc}
+\abs{\eb_{r}} = 1 & \abs{\eb_{\theta}} =  r & \abs{\eb_{\phi} } = r\sinf{\theta}
+\end{array}
+\ee
+and
+\begin{align}
+\ebh_{r} & =   \cosf{\theta}\lp\cosf{\phi}\ub_{x}+ \sinf{\phi}{\ub}_{y}\rp+\sinf{\theta}\ub_{z} \\
+\ebh_{\theta} & =  -\sinf{\theta}\lp\cosf{\phi}\ub_{x}+ \sinf{\phi}{\ub}_{y}\rp+\cosf{\theta}\ub_{z}\\
+\ebh_{\phi}   & =  -\sinf{\phi}\ub_{x}+ \cosf{\phi}{\ub}_{y}
+\end{align}
+the connection mulitvectors for the normalize basis vectors are 
+\begin{align}
+\hat{C}\lb\ebh_{r}\rb & =  \frac{2}{r} \\
+\hat{C}\lb\ebh_{\theta}\rb & =  \frac{\cosf{\theta}}{r \sinf{\theta}}
+                              +\frac{1}{r}\ebh_{r}\W\ebh_{\theta} \\
+\hat{C}\lb\ebh_{\phi}\rb & =  \frac{1}{r}\ebh_{r}\W\ebh_{\phi}+\frac{\cosf{\theta}}{r\sinf{\theta}}\ebh_{\theta}\W\ebh_{\phi} \\
+\hat{C}\lb \ebh_{r}\W \ebh_{\theta}\rb & =  - \frac{\cosf{\theta}}{r\sinf{\theta}}\ebh_{r}+\frac{1}{r}\ebh_{\theta} \\
+\hat{C}\lb\ebh_{r}\W\ebh_{\phi}\rb & =  \frac{1}{r}\ebh_{\phi} 
+                    - \frac{\cosf{\theta}}{r\sinf{\theta}}\ebh_{r}\W\ebh_{\theta}\W\ebh_{\phi} \\
+\hat{C}\lb\ebh_{\theta}\W\ebh_{\phi}\rb & =  \frac{2}{r}\ebh_{r}\W
+                                              \ebh_{\theta}\W\ebh_{\phi} \\
+\hat{C}\lb\ebh_r\W\ebh_{\theta}\W\ebh_{\phi}\rb & = 0
+\end{align}
+
+For a vector function $A$ using equation~\ref{eq210} and that $\nabla A = \nabla\cdot A+\nabla\W A$ 
+\begin{align}
+\nabla \cdot A & = \frac{1}{r\sinf{\theta}}\lp A^{\theta}\cosf{\theta}+\partial_{\phi}A^{\phi}\rp +\bfrac{1}{r}\lp 2A^{r}+                         				   \partial_{\theta}A^{\theta}\rp+\partial_{r}A^{r}\\
+               & = \bfrac{1}{r^{2}}\partial_{r}\lp r^{2}A^{r}\rp+
+                    \bfrac{1}{r\sinf{\theta}}\lp\partial_{\theta}\lp\sinf{\theta}A^{\theta}\rp+\partial_{\phi}A^{\phi}\rp
+\end{align}
+\begin{align}
+\nabla \bm{\times} A =& -I\lp\nabla \W A\rp \\
+   =& \lp \bfrac{\partial_{\theta} A^{\phi}}{r} + \bfrac{1}{r \sinf{\theta}}\lp A^{\phi}\cosf{\theta}-
+      \partial_{\phi}A^{\theta}\rp\rp\ebh_{r} \\ 
+	& +\lp \bfrac{\partial_{\phi} A^{r}}{r\sinf{\theta}}-\bfrac{A^{\phi}}{r}-\partial_{r}A^{\phi}\rp \ebh_{\theta} \\
+	& +\lp \bfrac{A^{\theta}}{r} + \partial_{r} A^{\theta} - \bfrac{\partial_{\theta} A^{r}}{r}\rp\ebh_{\phi}
+\end{align}
+\begin{align}
+\nabla \bm{\times} A =& \bfrac{1}{r\sinf{\theta}}\lp\partial_{\theta}\lp\sinf{\theta}A^{\phi}\rp-
+                       \partial_{\phi}A^{\theta} \rp\ebh_{r} \\ 
+	&  +\bfrac{1}{r}\lp\bfrac{1}{\sinf{\theta}}\partial_{\phi}A^{r}-\partial_{r}\lp rA^{\phi} \rp\rp\ebh_{\theta} \\
+	& +\bfrac{1}{r}\lp\partial_{r}\lp rA^{\theta}\rp-\partial_{\theta}A^{r}\rp\ebh_{\phi}
+\end{align}
+These are the standard formulas for div and curl in spherical coordinates.
+\section{Analytic Functions}
+Starting with $\GA{2,0}$ and orthonormal basis vectors $\eb_{x}$ and $\eb_{y}$ so that $I=\eb_{x}\eb_{y}$ and
+$I^{2}=-1$. Then we have
+\be
+\rv = x\eb_{x}+y\eb_{y}
+\ee
+\be
+\nabla = \eb_{x}\pdiff{}{x}+\eb_{y}\pdiff{}{y}
+\ee
+Map $\rv$ onto the complex number $z$ via
+\be
+z = x+Iy = \eb_{x}\rv
+\ee
+Define the multivector field $\psi = u+Iv$ where $u$ and $v$ are scalar fields. Then
+\be
+\nabla\psi = \paren{\pdiff{u}{x}-\pdiff{v}{y}}\eb_{x}+\paren{\pdiff{v}{x}+\pdiff{u}{y}}\eb_{y}
+\ee
+Thus the statement that $\psi$ is an analytic function is equivalent to 
+\be
+\nabla\psi=0
+\ee
+This is the fundamental equation that can be generalized to higher dimensions remembering that in general
+that $\psi$ is a multivector rather than a scalar function! To complete the connection with complex analysis we define ($z^{\dagger}=x-Iy$)
+\be
+\begin{array}{cc}
+\pdiff{}{z} = \half\paren{\pdiff{}{x}-I\pdiff{}{y}}, & \pdiff{}{z^{\dagger}} = \half\paren{\pdiff{}{x}+I\pdiff{}{y}}
+\end{array}
+\ee
+so that
+\be
+\begin{array}{cc}
+\pdiff{z}{z} = 1, & \pdiff{z^{\dagger}}{z} = 0 \\
+\pdiff{z}{z^{\dagger}} = 0, & \pdiff{z^{\dagger}}{z^{\dagger}} = 1
+\end{array}
+\ee
+An analytic function is one that depends on $z$ alone so that we can write $\fof{\psi}{x+Iy} = \fof{\psi}{z}$ and 
+\be
+\pdiff{\fof{\psi}{z}}{z^{\dagger}} = 0
+\ee
+equivalently
+\be
+\half\paren{\pdiff{}{x}+I\pdiff{}{y}}\psi = \half\eb_{x}\nabla\psi = 0
+\ee
+Now it is simple to show why solutions to $\nabla\psi = 0$ can be written as a power series in $z$. First
+\begin{align}
+\nabla z &= \nabla\paren{\eb_{x}\rv} \nonumber \\
+         &= \eb_{x}\eb_{x}\pdiff{\rv}{x}+\eb_{y}\eb_{x}\pdiff{\rv}{y} \nonumber \\
+         &= \eb_{x}\eb_{x}\eb_{x}+\eb_{y}\eb_{x}\eb_{y} \nonumber \\
+         &= \eb_{x}-\eb_{x} \nonumber \\
+         &= 0
+\end{align}
+so that
+\be
+\nabla\paren{z-z_{0}}^{k} = k\nabla\paren{\eb_{x}\rv-z_{0}}\paren{z-z_{0}}^{k-1} = 0
+\ee

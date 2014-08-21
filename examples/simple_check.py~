@@ -1,0 +1,49 @@
+import sys
+
+from sympy import symbols
+from ga import Ga
+from printer import Eprint,xpdf,Format
+
+def main():
+    #Eprint()
+    Format()
+
+    coords = symbols('x,y,z')
+
+    o3d = Ga('e*x|y|z',g=[1,1,1],coords=coords)
+
+    (ex,ey,ez) = o3d.mv()
+    (lgrad,rgrad) = o3d.grads()
+
+    u = o3d.mv('u', 'vector')
+    v = o3d.mv('v', 'vector')
+    w = o3d.mv('w', 'vector')
+
+    print 'u =',u
+    print 'v =',v
+    print 'w =',w
+
+    uv = u^v
+    print 'u^v =',uv
+    uvw = u^v^w
+    print 'u^v^w =',uvw
+
+    print '(e_x+e_y)(e_y+e_z) =',(ex+ey)*(ey+ez)
+
+    print r'\nabla =',lgrad
+    print r'\bar{\nabla} =',lgrad
+
+    f = o3d.mv('F', 'vector',f=True)
+    print 'F =',f
+    print r'\nabla F =',lgrad*f
+    print r'F \bar{\nabla} =',f*rgrad
+    print r'F \nabla =',f*lgrad
+    print r'\bar{\nabla} F =',rgrad*f
+    print r'F | \nabla =',f | lgrad
+
+    xpdf()
+
+    return
+
+if __name__ == "__main__":
+    main()

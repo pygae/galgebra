@@ -1,0 +1,127 @@
+\contentsline {chapter}{\numberline {1}Basic Geometric Algebra}{7}{chapter.1}
+\contentsline {section}{\numberline {1.1}Axioms of Geometric Algebra}{7}{section.1.1}
+\contentsline {section}{\numberline {1.2}Why Learn This Stuff?}{7}{section.1.2}
+\contentsline {section}{\numberline {1.3}Inner, $\cdot $, and outer, $\wedge $, product of two vectors and their basic properties}{8}{section.1.3}
+\contentsline {section}{\numberline {1.4}Outer, $\wedge $, product for $r$ Vectors in terms of the geometric product}{9}{section.1.4}
+\contentsline {section}{\numberline {1.5}Alternate Definition of Outer, $\wedge $, product for $r$ Vectors}{9}{section.1.5}
+\contentsline {section}{\numberline {1.6}Useful Relation's}{11}{section.1.6}
+\contentsline {section}{\numberline {1.7}Projection Operator}{11}{section.1.7}
+\contentsline {section}{\numberline {1.8}Basis Blades}{11}{section.1.8}
+\contentsline {subsection}{\numberline {1.8.1}$\mathcal {G}\left ({3,0} \right )$ Geometric Algebra (Euclidian Space)}{12}{subsection.1.8.1}
+\contentsline {subsection}{\numberline {1.8.2}$\mathcal {G}\left ({1,3} \right )$ Geometric Algebra (Spacetime)}{13}{subsection.1.8.2}
+\contentsline {section}{\numberline {1.9}Reflections}{14}{section.1.9}
+\contentsline {section}{\numberline {1.10}Rotations}{15}{section.1.10}
+\contentsline {subsection}{\numberline {1.10.1}Definitions}{15}{subsection.1.10.1}
+\contentsline {subsection}{\numberline {1.10.2}General Rotation}{16}{subsection.1.10.2}
+\contentsline {subsection}{\numberline {1.10.3}Euclidean Case}{16}{subsection.1.10.3}
+\contentsline {subsection}{\numberline {1.10.4}Minkowski Case}{17}{subsection.1.10.4}
+\contentsline {section}{\numberline {1.11}Expansion of geometric product and generalization of $\cdot $ and $\wedge $}{17}{section.1.11}
+\contentsline {section}{\numberline {1.12}Duality and the Pseudoscalar}{18}{section.1.12}
+\contentsline {section}{\numberline {1.13}Reciprocal Frames}{19}{section.1.13}
+\contentsline {section}{\numberline {1.14}Coordinates}{20}{section.1.14}
+\contentsline {section}{\numberline {1.15}Linear Transformations}{21}{section.1.15}
+\contentsline {subsection}{\numberline {1.15.1}Definitions}{21}{subsection.1.15.1}
+\contentsline {subsection}{\numberline {1.15.2}Adjoint}{23}{subsection.1.15.2}
+\contentsline {subsection}{\numberline {1.15.3}Inverse}{24}{subsection.1.15.3}
+\contentsline {section}{\numberline {1.16}Commutator Product}{24}{section.1.16}
+\contentsline {chapter}{\numberline {2}Examples of Geometric Algebra}{27}{chapter.2}
+\contentsline {section}{\numberline {2.1}Quaternions}{27}{section.2.1}
+\contentsline {section}{\numberline {2.2}Spinors}{28}{section.2.2}
+\contentsline {section}{\numberline {2.3}Geometric Algebra of the Minkowski Plane}{28}{section.2.3}
+\contentsline {section}{\numberline {2.4}Lorentz Transformation}{30}{section.2.4}
+\contentsline {chapter}{\numberline {3}Geometric Calculus - The Derivative}{33}{chapter.3}
+\contentsline {section}{\numberline {3.1}Definitions}{33}{section.3.1}
+\contentsline {section}{\numberline {3.2}Derivatives of Scalar Functions}{34}{section.3.2}
+\contentsline {section}{\numberline {3.3}Product Rule}{34}{section.3.3}
+\contentsline {section}{\numberline {3.4}Interior and Exterior Derivative}{35}{section.3.4}
+\contentsline {section}{\numberline {3.5}Derivative of a Multivector Function}{37}{section.3.5}
+\contentsline {subsection}{\numberline {3.5.1}Spherical Coordinates}{39}{subsection.3.5.1}
+\contentsline {section}{\numberline {3.6}Analytic Functions}{40}{section.3.6}
+\contentsline {chapter}{\numberline {4}Geometric Calculus - Integration}{43}{chapter.4}
+\contentsline {section}{\numberline {4.1}Line Integrals}{43}{section.4.1}
+\contentsline {section}{\numberline {4.2}Surface Integrals}{44}{section.4.2}
+\contentsline {section}{\numberline {4.3}Directed Integration - $n$-dimensional Surfaces}{45}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}$k$-Simplex Definition}{45}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}$k$-Chain Definition (Algebraic Topology)}{45}{subsection.4.3.2}
+\contentsline {subsection}{\numberline {4.3.3}Simplex Notation}{46}{subsection.4.3.3}
+\contentsline {section}{\numberline {4.4}Fundamental Theorem of Geometric Calculus}{50}{section.4.4}
+\contentsline {subsection}{\numberline {4.4.1}The Fundamental Theorem At Last!}{55}{subsection.4.4.1}
+\contentsline {section}{\numberline {4.5}Examples of the Fundamental Theorem}{57}{section.4.5}
+\contentsline {subsection}{\numberline {4.5.1}Divergence and Green's Theorems}{57}{subsection.4.5.1}
+\contentsline {subsection}{\numberline {4.5.2}Cauchy's Integral Formula In Two Dimensions (Complex Plane)}{58}{subsection.4.5.2}
+\contentsline {subsection}{\numberline {4.5.3}Green's Functions in $N$-dimensional Euclidean Spaces}{60}{subsection.4.5.3}
+\contentsline {chapter}{\numberline {5}Geometric Calculus on Manifolds}{65}{chapter.5}
+\contentsline {section}{\numberline {5.1}Definition of a Vector Manifold}{65}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}The Pseudoscalar of the Manifold}{65}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}The Projection Operator}{66}{subsection.5.1.2}
+\contentsline {subsection}{\numberline {5.1.3}The Exclusion Operator}{67}{subsection.5.1.3}
+\contentsline {subsection}{\numberline {5.1.4}The Intrinsic Derivative}{67}{subsection.5.1.4}
+\contentsline {subsection}{\numberline {5.1.5}The Covariant Derivative}{68}{subsection.5.1.5}
+\contentsline {section}{\numberline {5.2}Coordinates and Derivatives}{72}{section.5.2}
+\contentsline {section}{\numberline {5.3}Riemannian Geometry}{74}{section.5.3}
+\contentsline {section}{\numberline {5.4}Manifold Mappings}{78}{section.5.4}
+\contentsline {section}{\numberline {5.5}The Fundmental Theorem of Geometric Calculus on Manifolds}{84}{section.5.5}
+\contentsline {subsection}{\numberline {5.5.1}Divergence Theorem on Manifolds}{85}{subsection.5.5.1}
+\contentsline {subsection}{\numberline {5.5.2}Stokes Theorem on Manifolds}{86}{subsection.5.5.2}
+\contentsline {section}{\numberline {5.6}Differential Forms in Geometric Calculus}{88}{section.5.6}
+\contentsline {subsection}{\numberline {5.6.1}Inner Products of Subspaces}{88}{subsection.5.6.1}
+\contentsline {subsection}{\numberline {5.6.2}Alternating Forms}{90}{subsection.5.6.2}
+\contentsline {subsection}{\numberline {5.6.3}Dual of a Vector Space}{91}{subsection.5.6.3}
+\contentsline {subsection}{\numberline {5.6.4}Standard Definition of a Manifold}{93}{subsection.5.6.4}
+\contentsline {subsection}{\numberline {5.6.5}Tangent Space}{95}{subsection.5.6.5}
+\contentsline {subsection}{\numberline {5.6.6}Differential Forms and the Dual Space}{97}{subsection.5.6.6}
+\contentsline {subsection}{\numberline {5.6.7}Connecting Differential Forms to Geometric Calculus}{98}{subsection.5.6.7}
+\contentsline {chapter}{\numberline {6}Multivector Calculus}{101}{chapter.6}
+\contentsline {section}{\numberline {6.1}New Multivector Operations}{101}{section.6.1}
+\contentsline {section}{\numberline {6.2}Derivatives With Respect to Multivectors}{104}{section.6.2}
+\contentsline {section}{\numberline {6.3}Calculus for Linear Functions}{108}{section.6.3}
+\contentsline {chapter}{\numberline {7}Multilinear Functions (Tensors)}{115}{chapter.7}
+\contentsline {section}{\numberline {7.1}Algebraic Operations}{116}{section.7.1}
+\contentsline {section}{\numberline {7.2}Covariant, Contravariant, and Mixed Representations}{116}{section.7.2}
+\contentsline {section}{\numberline {7.3}Contraction}{118}{section.7.3}
+\contentsline {section}{\numberline {7.4}Differentiation}{119}{section.7.4}
+\contentsline {section}{\numberline {7.5}From Vector/Multivector to Tensor}{119}{section.7.5}
+\contentsline {section}{\numberline {7.6}Parallel Transport Definition and Example}{120}{section.7.6}
+\contentsline {section}{\numberline {7.7}Covariant Derivative of Tensors}{124}{section.7.7}
+\contentsline {section}{\numberline {7.8}Coefficient Transformation Under Change of Variable}{126}{section.7.8}
+\contentsline {chapter}{\numberline {8}Lagrangian and Hamiltonian Methods}{129}{chapter.8}
+\contentsline {section}{\numberline {8.1}Lagrangian Theory for Discrete Systems}{129}{section.8.1}
+\contentsline {subsection}{\numberline {8.1.1}The Euler-Lagrange Equations}{129}{subsection.8.1.1}
+\contentsline {subsection}{\numberline {8.1.2}Symmetries and Conservation Laws}{130}{subsection.8.1.2}
+\contentsline {subsection}{\numberline {8.1.3}Examples of Lagrangian Symmetries}{132}{subsection.8.1.3}
+\contentsline {subsubsection}{Time Translation}{132}{section*.2}
+\contentsline {subsubsection}{Central Forces}{133}{section*.3}
+\contentsline {section}{\numberline {8.2}Lagrangian Theory for Continuous Systems}{134}{section.8.2}
+\contentsline {subsection}{\numberline {8.2.1}The Euler Lagrange Equations}{135}{subsection.8.2.1}
+\contentsline {subsection}{\numberline {8.2.2}Symmetries and Conservation Laws}{137}{subsection.8.2.2}
+\contentsline {subsection}{\numberline {8.2.3}Space-Time Transformations and their Conjugate Tensors}{138}{subsection.8.2.3}
+\contentsline {subsection}{\numberline {8.2.4}Case 1 - The Electromagnetic Field}{143}{subsection.8.2.4}
+\contentsline {subsection}{\numberline {8.2.5}Case 2 - The Dirac Field}{144}{subsection.8.2.5}
+\contentsline {subsection}{\numberline {8.2.6}Case 3 - The Coupled Electromagnetic and Dirac Fields}{145}{subsection.8.2.6}
+\contentsline {chapter}{\numberline {9}Lie Groups as Spin Groups}{147}{chapter.9}
+\contentsline {section}{\numberline {9.1}Introduction}{147}{section.9.1}
+\contentsline {section}{\numberline {9.2}Simple Examples}{148}{section.9.2}
+\contentsline {subsection}{\numberline {9.2.1}${SO}\left ({2} \right )$ - Special Orthogonal Group of Order 2}{148}{subsection.9.2.1}
+\contentsline {subsection}{\numberline {9.2.2}${GL}\left ({2,\Re } \right )$ - General Real Linear Group of Order 2}{149}{subsection.9.2.2}
+\contentsline {section}{\numberline {9.3}The Grassmann Algebra}{149}{section.9.3}
+\contentsline {section}{\numberline {9.4}The Dual Space to $\mathcal {V}_{n}$}{150}{section.9.4}
+\contentsline {section}{\numberline {9.5}The Mother Algebra}{150}{section.9.5}
+\contentsline {section}{\numberline {9.6}The General Linear Group as a Spin Group}{156}{section.9.6}
+\contentsline {section}{\numberline {9.7}Endomorphisms of $\Re ^{n}$}{165}{section.9.7}
+\contentsline {chapter}{\numberline {10}Classical Electromagnetic Theory}{169}{chapter.10}
+\contentsline {section}{\numberline {10.1}Maxwell Equations}{170}{section.10.1}
+\contentsline {section}{\numberline {10.2}Relativity and Particles}{171}{section.10.2}
+\contentsline {section}{\numberline {10.3}Lorentz Force Law}{173}{section.10.3}
+\contentsline {section}{\numberline {10.4}Relativistic Field Transformations}{173}{section.10.4}
+\contentsline {section}{\numberline {10.5}The Vector Potential}{175}{section.10.5}
+\contentsline {section}{\numberline {10.6}Radiation from a Charged Particle}{176}{section.10.6}
+\contentsline {chapter}{\numberline {A}Further Properties of the Geometric Product}{181}{appendix.A}
+\contentsline {chapter}{\numberline {B}{\em BAC-CAB} Formulas}{187}{appendix.B}
+\contentsline {chapter}{\numberline {C}Reduction Rules for Scalar Projections of Multivectors}{189}{appendix.C}
+\contentsline {chapter}{\numberline {D}Curvilinear Coordinates via Matrices}{193}{appendix.D}
+\contentsline {chapter}{\numberline {E}Practical Geometric Calculus on Manifolds}{197}{appendix.E}
+\contentsline {chapter}{\numberline {F}Direct Sum of Vector Spaces}{201}{appendix.F}
+\contentsline {chapter}{\numberline {G}\emph {sympy/galgebra} evaluation of ${GL}\left ({n,\Re } \right )$ structure constants}{203}{appendix.G}
+\contentsline {chapter}{\numberline {H}Blade Orientation Theorem}{207}{appendix.H}
+\contentsline {chapter}{\numberline {I}Case Study of a Manifold for a Model Universe}{209}{appendix.I}
+\contentsline {section}{\numberline {I.1}The Edge of Known Space}{216}{section.I.1}
