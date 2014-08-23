@@ -926,18 +926,20 @@ def Format(Fmode=True, Dmode=True, ipy=False, dop=1):
 
     and redirects printer output so that latex compiler can capture it.
     """
-
     GaLatexPrinter.Dmode = Dmode
     GaLatexPrinter.Fmode = Fmode
     GaLatexPrinter.ipy = ipy
     GaLatexPrinter.dop = dop
+    """
     if ipy:
         from IPython.core.display import display, Math, Latex
-
+    """
     GaLatexPrinter.latex_flg = True
     GaLatexPrinter.redirect()
+    """
     if ipy:
         return Latex(ip_cmds)
+    """
     return
 
 

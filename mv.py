@@ -244,6 +244,7 @@ class Mv(object):
         self.versor_flg = None  # if is_versor is called flag is set
         self.coords = self.Ga.coords
         self.fmt = 1
+        self.title = None
 
         if len(kargs) == 0:  # default constructor 0
             self.obj = S(0)
@@ -267,6 +268,8 @@ class Mv(object):
             mode = kargs[1]
             kargs = [kargs[0]] + list(kargs[2:])
             Mv.init_dict[mode](self, *kargs, **kwargs)
+            if isinstance(kargs[0],str):
+                self.title = kargs[0]
             self.characterise_Mv()
 
     ################# Multivector member functions #####################
@@ -921,27 +924,19 @@ class Mv(object):
         for latex.
         """
         self.fmt = fmt
+        if title is not None:
+            self.title = title
+
+        if metric.in_ipynb():
+            return self
+
         if Mv.latex_flg:
             printer.GaLatexPrinter.fmt = self.fmt
             latex_str = printer.GaLatexPrinter.latex(self)
-
-            if printer.GaLatexPrinter.ipy:
-                if title is None:
-                    if r'\begin{align*}' not in latex_str:
-                        latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-                else:
-                    if r'\begin{align*}' not in latex_str:
-                        latex_str = r'\begin{equation*} ' + title + ' = ' + latex_str + r' \end{equation*}'
-                    else:
-                        latex_str = latex_str.replace(r'\begin{align*}', r'\begin{align*} ' + title)
-                        latex_str = latex_str.replace('&', '=&', 1)
-                from IPython.core.display import display, Math
-                display(Math(latex_str))
+            if title is not None:
+                print title + ' = ' + latex_str
             else:
-                if title is not None:
-                    print title + ' = ' + latex_str
-                else:
-                    print latex_str
+                print latex_str
         else:
             printer.GaPrinter.fmt = self.fmt
             if title is not None:
@@ -953,7 +948,13 @@ class Mv(object):
     def _repr_latex_(self):
         latex_str = printer.GaLatexPrinter.latex(self)
         if r'\begin{align*}' not in latex_str:
-            latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
+            if self.title is None:
+                latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
+            else:
+                latex_str = r'\begin{equation*} ' + self.title + ' = ' + latex_str + r' \end{equation*}'
+        else:
+            if self.title is not None:
+                latex_str = latex_str.replace('&',' ' + self.title + ' =&',1)
         return latex_str
 
     def norm2(self):
