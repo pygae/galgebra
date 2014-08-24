@@ -1881,9 +1881,15 @@ class Dop(object):
 
     def _repr_latex_(self):
         latex_str = printer.GaLatexPrinter.latex(self)
-        #if r'\begin{align*}' not in latex_str:
-        #    latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-        return '$$ ' + latex_str + ' $$'
+        if r'\begin{align*}' not in latex_str:
+            if self.title is None:
+                latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
+            else:
+                latex_str = r'\begin{equation*} ' + self.title + ' = ' + latex_str + r' \end{equation*}'
+        else:
+            if self.title is not None:
+                latex_str = latex_str.replace('&',' ' + self.title + ' =&',1)
+        return latex_str
 
     def is_scalar(self):
         for x in self.terms:

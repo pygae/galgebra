@@ -1,8 +1,6 @@
 from sympy import symbols, sin
-#from printer import Format, xpdf
-#from ga import Ga
-from sympy.galgebra.printer import Format, xpdf
-from sympy.galgebra.ga import Ga
+from printer import Format, xpdf
+from ga import Ga
 
 Format()
 xyz_coords = (x, y, z) = symbols('x y z', real=True)

@@ -15,6 +15,8 @@ import mv
 import lt
 import metric
 
+Format_flg = True
+
 ip_cmds = \
 """
 $\\DeclareMathOperator{\Tr}{Tr}
@@ -898,7 +900,6 @@ class GaLatexPrinter(LatexPrinter):
             s += '\n\\end{align*}'
             return s
 
-
 def latex(expr, **settings):
 
     if not isinstance(expr, list):
@@ -916,7 +917,7 @@ def print_latex(expr, **settings):
     print latex(expr, **settings)
 
 
-def Format(Fmode=True, Dmode=True, ipy=False, dop=1):
+def Format(Fmode=True, Dmode=True, dop=1):
     """
     Set modes for latex printer -
 
@@ -926,20 +927,18 @@ def Format(Fmode=True, Dmode=True, ipy=False, dop=1):
 
     and redirects printer output so that latex compiler can capture it.
     """
-    GaLatexPrinter.Dmode = Dmode
-    GaLatexPrinter.Fmode = Fmode
-    GaLatexPrinter.ipy = ipy
-    GaLatexPrinter.dop = dop
-    """
-    if ipy:
-        from IPython.core.display import display, Math, Latex
-    """
-    GaLatexPrinter.latex_flg = True
-    GaLatexPrinter.redirect()
-    """
-    if ipy:
-        return Latex(ip_cmds)
-    """
+
+    if Format_flg:
+        GaLatexPrinter.Dmode = Dmode
+        GaLatexPrinter.Fmode = Fmode
+        if metric.in_ipynb():
+            GaLatexPrinter.ipy = True
+        else:
+            GaLatexPrinter.ipy = False
+        GaLatexPrinter.dop = dop
+        GaLatexPrinter.latex_flg = True
+        GaLatexPrinter.redirect()
+        Format_flg = False
     return
 
 
@@ -1334,6 +1333,7 @@ def GAeval(s, pstr=False):
         print s
         print seval
     return eval(seval, global_dict)
+
 
 if __name__ == "__main__":
     pass
