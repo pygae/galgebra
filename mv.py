@@ -904,7 +904,7 @@ class Mv(object):
             self.obj += value * base
         return
 
-    def Fmt(self, fmt=1, title=None):
+    def Fmt(self, fmt=None, title=None):
         """
         Set format for printing of multivectors -
 
@@ -923,7 +923,8 @@ class Mv(object):
         with one grade per line.  Works for both standard printing and
         for latex.
         """
-        self.fmt = fmt
+        if fmt is not None:
+            self.fmt = fmt
         if title is not None:
             self.title = title
 
@@ -1591,7 +1592,8 @@ class Dop(object):
     init_slots = {'ga': (None, 'Associated geometric algebra'),
                   'cmpflg': (False, 'Complement flag for Dop'),
                   'debug': (False, 'True to print out debugging information'),
-                  'fmt': (1, '1 for normal formating')}
+                  'fmt': (1, '1 for normal dop multivector formating'),
+                  'fmt_dop': (1, '1 for normal dop partial derivative formating')}
 
     ga = None
 
@@ -1627,7 +1629,8 @@ class Dop(object):
             else:
                 self.Ga = Dop.ga
 
-        self.fmt = kwargs['fmt']  # Output format
+        self.fmt = kwargs['fmt']  # Multvector output format (default 1)
+        self.dop_fmt = kwargs['fmt_dop']  # Partial derivative output format (default 1)
 
         if len(kargs[0]) == 0:  # identity Dop
             self.terms = [(S(1),self.Ga.pdop_identity)]
@@ -2018,31 +2021,30 @@ class Dop(object):
         Sdop.str_mode = False
         return s[:-3]
 
-    def Fmt(self, fmt=1, title=None):
+    def Fmt(self, fmt=None, title=None, dop_fmt=None):
+        if fmt is not None:
+            self.fmt = fmt
+        if dop_fmt is not None:
+            self.dop_fmt = dop_fmt
+        if title is not None:
+            self.title = title
 
-        self.fmt = fmt
-        print 'Mv.latex_flg =', Mv.latex_flg
+        if metric.in_ipynb():
+            return self
+
         if Mv.latex_flg:
+            printer.GaLatexPrinter.fmt = self.fmt
             latex_str = printer.GaLatexPrinter.latex(self)
-
-            if printer.GaLatexPrinter.ipy:
-                if title is None:
-                    if r'\begin{align*}' not in latex_str:
-                        latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-                else:
-                    if r'\begin{align*}' not in latex_str:
-                        latex_str = r'\begin{equation*} ' + title + ' = ' + latex_str + r' \end{equation*}'
-                    else:
-                        latex_str = latex_str.replace(r'\begin{align*}', r'\begin{align*} ' + title)
-                        latex_str = latex_str.replace('&', '=&', 1)
-                latex_str = latex_str.replace(r'\frac', r'\frac')
-                from IPython.core.display import display, Math
-                display(Math(latex_str))
+            if title is not None:
+                print title + ' = ' + latex_str
             else:
-                if title is not None:
-                    print title + ' = ' + latex_str
-                else:
-                        print latex_str
+                print latex_str
+        else:
+            printer.GaPrinter.fmt = self.fmt
+            if title is not None:
+                print title + ' = ' + str(self)
+            else:
+                print self
         return
 
     @staticmethod

@@ -27,5 +27,3 @@ print 'Ga.pth:'
 print os.system('more ' + pth_name)
 
 
-
-

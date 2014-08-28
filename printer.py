@@ -14,8 +14,7 @@ import ga
 import mv
 import lt
 import metric
-
-Format_flg = True
+from IPython.display import Latex
 
 ip_cmds = \
 """
@@ -155,8 +154,6 @@ def find_functions(expr):
             f_lst.append(f)
     f_lst += list(expr.atoms(Derivative))
     return f_lst
-
-    #return list(expr.atoms(Function)) + list(expr.atoms(Derivative))
 
 
 def coef_simplify(expr):
@@ -900,6 +897,10 @@ class GaLatexPrinter(LatexPrinter):
             s += '\n\\end{align*}'
             return s
 
+#tuple.latex = lambda self: GaLatexPrinter().doprint(self)
+#Tuple.latex = lambda self: GaLatexPrinter().doprint(self)
+#list.latex = lambda self: GaLatePrinter().doprint(self)
+
 def latex(expr, **settings):
 
     if not isinstance(expr, list):
@@ -928,17 +929,20 @@ def Format(Fmode=True, Dmode=True, dop=1):
     and redirects printer output so that latex compiler can capture it.
     """
 
-    if Format_flg:
-        GaLatexPrinter.Dmode = Dmode
-        GaLatexPrinter.Fmode = Fmode
-        if metric.in_ipynb():
-            GaLatexPrinter.ipy = True
-        else:
-            GaLatexPrinter.ipy = False
-        GaLatexPrinter.dop = dop
-        GaLatexPrinter.latex_flg = True
-        GaLatexPrinter.redirect()
-        Format_flg = False
+    GaLatexPrinter.Dmode = Dmode
+    GaLatexPrinter.Fmode = Fmode
+    if metric.in_ipynb():
+        GaLatexPrinter.ipy = True
+    else:
+        GaLatexPrinter.ipy = False
+    GaLatexPrinter.dop = dop
+    GaLatexPrinter.latex_flg = True
+    GaLatexPrinter.redirect()
+
+    Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
+    Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
+    Basic.__repr_ = lambda self: GaLatexPrinter().doprint(self)
+
     return
 
 
@@ -1333,6 +1337,23 @@ def GAeval(s, pstr=False):
         print s
         print seval
     return eval(seval, global_dict)
+
+def R(obj):
+    if metric.in_ipynb():
+        if isinstance(obj, list):
+            return Latex(r"\begin{equation*}\left [ %s \right ] \end{equation*}" % \
+                r", ".join([ latex(i) for i in obj ]))
+        if isinstance(obj, tuple):
+            return Latex(r"\begin{equation*}\left ( %s \right )\end{equation*}" % \
+                r", ".join([ latex(i) for i in obj ]))
+    else:
+        if isinstance(obj, list):
+            return r"\left [ %s \right ] " % \
+                r", ".join([ latex(i) for i in obj ])
+        if isinstance(obj, tuple):
+            return r"\left ( %s \right )" % \
+                r", ".join([ latex(i) for i in obj ])
+    return obj
 
 
 if __name__ == "__main__":
