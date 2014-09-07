@@ -1631,6 +1631,7 @@ class Dop(object):
 
         self.fmt = kwargs['fmt']  # Multvector output format (default 1)
         self.dop_fmt = kwargs['fmt_dop']  # Partial derivative output format (default 1)
+        self.title = None
 
         if len(kargs[0]) == 0:  # identity Dop
             self.terms = [(S(1),self.Ga.pdop_identity)]
