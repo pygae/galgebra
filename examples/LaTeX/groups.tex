@@ -1,0 +1,138 @@
+
+\documentclass[10pt,fleqn]{report}
+\usepackage[vcentering]{geometry}
+\geometry{papersize={8.5in,11in},total={7.5in,10in}}
+
+\pagestyle{empty}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{tensor}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{bm}
+\definecolor{gray}{rgb}{0.95,0.95,0.95}
+\setlength{\parindent}{0pt}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Adj}{Adj}
+\newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
+\newcommand{\lp}{\left (}
+\newcommand{\rp}{\right )}
+\newcommand{\paren}[1]{\lp {#1} \rp}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\llt}{\left <}
+\newcommand{\rgt}{\right >}
+\newcommand{\abs}[1]{\left |{#1}\right | }
+\newcommand{\pdiff}[2]{\bfrac{\partial {#1}}{\partial {#2}}}
+\newcommand{\lbrc}{\left \{}
+\newcommand{\rbrc}{\right \}}
+\newcommand{\W}{\wedge}
+\newcommand{\prm}[1]{{#1}'}
+\newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
+\newcommand{\R}{\dagger}
+\newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
+\newcommand{\grade}[1]{\left < {#1} \right >}
+\newcommand{\f}[2]{{#1}\lp{#2}\rp}
+\newcommand{\eval}[2]{\left . {#1} \right |_{#2}}
+\usepackage{float}
+\floatstyle{plain} % optionally change the style of the new float
+\newfloat{Code}{H}{myc}
+\lstloadlanguages{Python}
+
+\begin{document}
+\begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
+def Product_of_Rotors():
+    Print_Function()
+    (na,nb,nm,alpha,th,th_a,th_b) = symbols('n_a n_b n_m alpha theta theta_a theta_b',\
+                                    real = True)
+    g = [[na, 0, alpha],[0, nm, 0],[alpha, 0, nb]] #metric tensor
+    """
+    Values of metric tensor components
+    [na,nm,nb] = [+1/-1,+1/-1,+1/-1]  alpha = ea|eb
+    """
+    (g3d, ea, em, eb) = Ga.build('e_a e_m e_b', g=g)
+    print 'g =',g3d.g
+    print r'%n_{a} = \bm{e}_{a}^{2}\;\;n_{b} = \bm{e}_{b}^{2}\;\;n_{m} = \bm{e}_{m}^{2}'+\
+        r'\;\;\alpha = \bm{e}_{a}\cdot\bm{e}_{b}'
+    (ca,cb,sa,sb) = symbols('c_a c_b s_a s_b',real=True)
+    Ra = ca + sa*ea*em  # Rotor for ea^em plane
+    Rb = cb + sb*em*eb  # Rotor for em^eb plane
+    print r'%\mbox{Rotor in }\bm{e}_{a}\bm{e}_{m}\mbox{ plane } R_{a} =',Ra
+    print r'%\mbox{Rotor in }\bm{e}_{m}\bm{e}_{b}\mbox{ plane } R_{b} =',Rb
+    Rab = Ra*Rb  # Compound Rotor
+    """
+    Show that compound rotor is scalar plus bivector
+    """
+    print r'%R_{a}R_{b} = S+\bm{B} =', Rab
+    Rab2 = Rab.get_grade(2)
+    print r'%\bm{B} =',Rab2
+    Rab2sq = Rab2*Rab2  # Square of compound rotor bivector part
+    Ssq = (Rab.scalar())**2  # Square of compound rotor scalar part
+    Bsq =  Rab2sq.scalar()
+    print r'%S^{2} =',Ssq
+    print r'%\bm{B}^{2} =',Bsq
+    Dsq = (Ssq-Bsq).expand().simplify()
+    print '%S^{2}-B^{2} =', Dsq
+    Dsq = Dsq.subs(nm**2,S(1))  # (e_m)**4 = 1
+    print '%S^{2}-B^{2} =', Dsq
+    Cases = [S(-1),S(1)]  # -1/+1 squares for each basis vector
+    print r'#Consider all combinations of $\bm{e}_{a}^{2}$, $\bm{e}_{b}^{2}$'+\
+          r' and $\bm{e}_{m}^2$:'
+    for Na in Cases:
+        for Nb in Cases:
+            for Nm in Cases:
+                Ba_sq = -Na*Nm
+                Bb_sq = -Nb*Nm
+                if Ba_sq < 0:
+                    Ca_th = cos(th_a)
+                    Sa_th = sin(th_a)
+                else:
+                    Ca_th = cosh(th_a)
+                    Sa_th = sinh(th_a)
+                if Bb_sq < 0:
+                    Cb_th = cos(th_b)
+                    Sb_th = sin(th_b)
+                else:
+                    Cb_th = cosh(th_b)
+                    Sb_th = sinh(th_b)
+                print r'%\left [ \bm{e}_{a}^{2},\bm{e}_{b}^{2},\bm{e}_{m}^2\right ] =',\
+                      [Na,Nb,Nm]
+                Dsq_tmp = Dsq.subs({ca:Ca_th,sa:Sa_th,cb:Cb_th,sb:Sb_th,na:Na,nb:Nb,nm:Nm})
+                print r'%S^{2}-\bm{B}^{2} =',Dsq_tmp,' =',trigsimp(Dsq_tmp)
+    print r'#Thus we have shown that $R_{a}R_{b} = S+\bm{D} = e^{\bm{C}}$ where $\bm{C}$'+\
+          r' is a bivector blade.'
+    return
+\end{lstlisting}
+Code Output:
+\begin{equation*} g = \left[\begin{matrix}n_{a} & 0 & \alpha \\0 & n_{m} & 0\\\alpha  & 0 & n_{b}\end{matrix}\right] \end{equation*}
+\begin{equation*} n_{a} = \bm{e}_{a}^{2}\;\;n_{b} = \bm{e}_{b}^{2}\;\;n_{m} = \bm{e}_{m}^{2}\;\;\alpha = \bm{e}_{a}\cdot\bm{e}_{b} \end{equation*}
+\begin{equation*} \mbox{Rotor in }\bm{e}_{a}\bm{e}_{m}\mbox{ plane } R_{a} = c_{a}  + s_{a} e_{a}\wedge e_{m} \end{equation*}
+\begin{equation*} \mbox{Rotor in }\bm{e}_{m}\bm{e}_{b}\mbox{ plane } R_{b} = c_{b}  + s_{b} e_{m}\wedge e_{b} \end{equation*}
+\begin{equation*} R_{a}R_{b} = S+\bm{B} = \left ( \alpha  n_{m} s_{a} s_{b} + c_{a} c_{b}\right )  + c_{b} s_{a} e_{a}\wedge e_{m} + n_{m} s_{a} s_{b} e_{a}\wedge e_{b} + c_{a} s_{b} e_{m}\wedge e_{b} \end{equation*}
+\begin{equation*} \bm{B} = c_{b} s_{a} e_{a}\wedge e_{m} + n_{m} s_{a} s_{b} e_{a}\wedge e_{b} + c_{a} s_{b} e_{m}\wedge e_{b} \end{equation*}
+\begin{equation*} S^{2} = \left(\alpha  n_{m} s_{a} s_{b} + c_{a} c_{b}\right)^{2} \end{equation*}
+\begin{equation*} \bm{B}^{2} = \alpha ^{2} {\left ( n_{m} \right )}^{2} {\left ( s_{a} \right )}^{2} {\left ( s_{b} \right )}^{2} + 2 \alpha  c_{a} c_{b} n_{m} s_{a} s_{b} - {\left ( c_{a} \right )}^{2} n_{b} n_{m} {\left ( s_{b} \right )}^{2} - {\left ( c_{b} \right )}^{2} n_{a} n_{m} {\left ( s_{a} \right )}^{2} - n_{a} n_{b} {\left ( n_{m} \right )}^{2} {\left ( s_{a} \right )}^{2} {\left ( s_{b} \right )}^{2} \end{equation*}
+\begin{equation*} S^{2}-B^{2} = {\left ( c_{a} \right )}^{2} {\left ( c_{b} \right )}^{2} + {\left ( c_{a} \right )}^{2} n_{b} n_{m} {\left ( s_{b} \right )}^{2} + {\left ( c_{b} \right )}^{2} n_{a} n_{m} {\left ( s_{a} \right )}^{2} + n_{a} n_{b} {\left ( n_{m} \right )}^{2} {\left ( s_{a} \right )}^{2} {\left ( s_{b} \right )}^{2} \end{equation*}
+\begin{equation*} S^{2}-B^{2} = {\left ( c_{a} \right )}^{2} {\left ( c_{b} \right )}^{2} + {\left ( c_{a} \right )}^{2} n_{b} n_{m} {\left ( s_{b} \right )}^{2} + {\left ( c_{b} \right )}^{2} n_{a} n_{m} {\left ( s_{a} \right )}^{2} + n_{a} n_{b} {\left ( s_{a} \right )}^{2} {\left ( s_{b} \right )}^{2} \end{equation*}
+Consider all combinations of $\bm{e}_{a}^{2}$, $\bm{e}_{b}^{2}$ and $\bm{e}_{m}^2$:
+\begin{equation*} \left [ \bm{e}_{a}^{2},\bm{e}_{b}^{2},\bm{e}_{m}^2\right ] = [-1, -1, -1] \end{equation*}
+\begin{equation*} S^{2}-\bm{B}^{2} = \sin^{2}{\left (\theta _{a} \right )} \sin^{2}{\left (\theta _{b} \right )} + \sin^{2}{\left (\theta _{a} \right )} \cos^{2}{\left (\theta _{b} \right )} + \sin^{2}{\left (\theta _{b} \right )} \cos^{2}{\left (\theta _{a} \right )} + \cos^{2}{\left (\theta _{a} \right )} \cos^{2}{\left (\theta _{b} \right )}  = 1 \end{equation*}
+\begin{equation*} \left [ \bm{e}_{a}^{2},\bm{e}_{b}^{2},\bm{e}_{m}^2\right ] = [-1, -1, 1] \end{equation*}
+\begin{equation*} S^{2}-\bm{B}^{2} = \sinh^{2}{\left (\theta _{a} \right )} \sinh^{2}{\left (\theta _{b} \right )} - \sinh^{2}{\left (\theta _{a} \right )} \cosh^{2}{\left (\theta _{b} \right )} - \sinh^{2}{\left (\theta _{b} \right )} \cosh^{2}{\left (\theta _{a} \right )} + \cosh^{2}{\left (\theta _{a} \right )} \cosh^{2}{\left (\theta _{b} \right )}  = 1 \end{equation*}
+\begin{equation*} \left [ \bm{e}_{a}^{2},\bm{e}_{b}^{2},\bm{e}_{m}^2\right ] = [-1, 1, -1] \end{equation*}
+\begin{equation*} S^{2}-\bm{B}^{2} = - \sin^{2}{\left (\theta _{a} \right )} \sinh^{2}{\left (\theta _{b} \right )} + \sin^{2}{\left (\theta _{a} \right )} \cosh^{2}{\left (\theta _{b} \right )} - \cos^{2}{\left (\theta _{a} \right )} \sinh^{2}{\left (\theta _{b} \right )} + \cos^{2}{\left (\theta _{a} \right )} \cosh^{2}{\left (\theta _{b} \right )}  = 1 \end{equation*}
+\begin{equation*} \left [ \bm{e}_{a}^{2},\bm{e}_{b}^{2},\bm{e}_{m}^2\right ] = [-1, 1, 1] \end{equation*}
+\begin{equation*} S^{2}-\bm{B}^{2} = - \sin^{2}{\left (\theta _{b} \right )} \sinh^{2}{\left (\theta _{a} \right )} + \sin^{2}{\left (\theta _{b} \right )} \cosh^{2}{\left (\theta _{a} \right )} - \cos^{2}{\left (\theta _{b} \right )} \sinh^{2}{\left (\theta _{a} \right )} + \cos^{2}{\left (\theta _{b} \right )} \cosh^{2}{\left (\theta _{a} \right )}  = 1 \end{equation*}
+\begin{equation*} \left [ \bm{e}_{a}^{2},\bm{e}_{b}^{2},\bm{e}_{m}^2\right ] = [1, -1, -1] \end{equation*}
+\begin{equation*} S^{2}-\bm{B}^{2} = - \sin^{2}{\left (\theta _{b} \right )} \sinh^{2}{\left (\theta _{a} \right )} + \sin^{2}{\left (\theta _{b} \right )} \cosh^{2}{\left (\theta _{a} \right )} - \cos^{2}{\left (\theta _{b} \right )} \sinh^{2}{\left (\theta _{a} \right )} + \cos^{2}{\left (\theta _{b} \right )} \cosh^{2}{\left (\theta _{a} \right )}  = 1 \end{equation*}
+\begin{equation*} \left [ \bm{e}_{a}^{2},\bm{e}_{b}^{2},\bm{e}_{m}^2\right ] = [1, -1, 1] \end{equation*}
+\begin{equation*} S^{2}-\bm{B}^{2} = - \sin^{2}{\left (\theta _{a} \right )} \sinh^{2}{\left (\theta _{b} \right )} + \sin^{2}{\left (\theta _{a} \right )} \cosh^{2}{\left (\theta _{b} \right )} - \cos^{2}{\left (\theta _{a} \right )} \sinh^{2}{\left (\theta _{b} \right )} + \cos^{2}{\left (\theta _{a} \right )} \cosh^{2}{\left (\theta _{b} \right )}  = 1 \end{equation*}
+\begin{equation*} \left [ \bm{e}_{a}^{2},\bm{e}_{b}^{2},\bm{e}_{m}^2\right ] = [1, 1, -1] \end{equation*}
+\begin{equation*} S^{2}-\bm{B}^{2} = \sinh^{2}{\left (\theta _{a} \right )} \sinh^{2}{\left (\theta _{b} \right )} - \sinh^{2}{\left (\theta _{a} \right )} \cosh^{2}{\left (\theta _{b} \right )} - \sinh^{2}{\left (\theta _{b} \right )} \cosh^{2}{\left (\theta _{a} \right )} + \cosh^{2}{\left (\theta _{a} \right )} \cosh^{2}{\left (\theta _{b} \right )}  = 1 \end{equation*}
+\begin{equation*} \left [ \bm{e}_{a}^{2},\bm{e}_{b}^{2},\bm{e}_{m}^2\right ] = [1, 1, 1] \end{equation*}
+\begin{equation*} S^{2}-\bm{B}^{2} = \sin^{2}{\left (\theta _{a} \right )} \sin^{2}{\left (\theta _{b} \right )} + \sin^{2}{\left (\theta _{a} \right )} \cos^{2}{\left (\theta _{b} \right )} + \sin^{2}{\left (\theta _{b} \right )} \cos^{2}{\left (\theta _{a} \right )} + \cos^{2}{\left (\theta _{a} \right )} \cos^{2}{\left (\theta _{b} \right )}  = 1 \end{equation*}
+Thus we have shown that $R_{a}R_{b} = S+\bm{D} = e^{\bm{C}}$ where $\bm{C}$ is a bivector blade.
+\end{document}
