@@ -65,17 +65,7 @@ def basic_multivector_operations_3D():
     return
 \end{lstlisting}
 Code Output:
-\begin{equation*} A = A  + A^{x} \boldsymbol{e_{x}} + A^{y} \boldsymbol{e_{y}} + A^{z} \boldsymbol{e_{z}} + A^{xy} \boldsymbol{e_{x}\wedge e_{y}} + A^{xz} \boldsymbol{e_{x}\wedge e_{z}} + A^{yz} \boldsymbol{e_{y}\wedge e_{z}} + A^{xyz} \boldsymbol{e_{x}\wedge e_{y}\wedge e_{z}} \end{equation*}
-  \begin{align*} A =  & A  \\  &  + A^{x} \boldsymbol{e_{x}} + A^{y} \boldsymbol{e_{y}} + A^{z} \boldsymbol{e_{z}} \\  &  + A^{xy} \boldsymbol{e_{x}\wedge e_{y}} + A^{xz} \boldsymbol{e_{x}\wedge e_{z}} + A^{yz} \boldsymbol{e_{y}\wedge e_{z}} \\  &  + A^{xyz} \boldsymbol{e_{x}\wedge e_{y}\wedge e_{z}}  \end{align*} 
-  \begin{align*} A =  & A  \\  &  + A^{x} \boldsymbol{e_{x}} \\  &  + A^{y} \boldsymbol{e_{y}} \\  &  + A^{z} \boldsymbol{e_{z}} \\  &  + A^{xy} \boldsymbol{e_{x}\wedge e_{y}} \\  &  + A^{xz} \boldsymbol{e_{x}\wedge e_{z}} \\  &  + A^{yz} \boldsymbol{e_{y}\wedge e_{z}} \\  &  + A^{xyz} \boldsymbol{e_{x}\wedge e_{y}\wedge e_{z}}  \end{align*} 
-\begin{equation*} A_{+} = A  + A^{xy} \boldsymbol{e_{x}\wedge e_{y}} + A^{xz} \boldsymbol{e_{x}\wedge e_{z}} + A^{yz} \boldsymbol{e_{y}\wedge e_{z}} \end{equation*}
-\begin{equation*} A_{-} = A^{x} \boldsymbol{e_{x}} + A^{y} \boldsymbol{e_{y}} + A^{z} \boldsymbol{e_{z}} + A^{xyz} \boldsymbol{e_{x}\wedge e_{y}\wedge e_{z}} \end{equation*}
 \begin{equation*} g_{ij} =  \left[\begin{matrix}\left ( e_{x}\cdot e_{x}\right )  & \left ( e_{x}\cdot e_{y}\right )  & \left ( e_{x}\cdot e_{z}\right ) \\\left ( e_{x}\cdot e_{y}\right )  & \left ( e_{y}\cdot e_{y}\right )  & \left ( e_{y}\cdot e_{z}\right ) \\\left ( e_{x}\cdot e_{z}\right )  & \left ( e_{y}\cdot e_{z}\right )  & \left ( e_{z}\cdot e_{z}\right ) \end{matrix}\right] \end{equation*}
-\begin{equation*} X = X^{x} \boldsymbol{e_{x}} + X^{y} \boldsymbol{e_{y}} + X^{z} \boldsymbol{e_{z}} \end{equation*}
-\begin{equation*} Y = Y^{x} \boldsymbol{e_{x}} + Y^{y} \boldsymbol{e_{y}} + Y^{z} \boldsymbol{e_{z}} \end{equation*}
-  \begin{align*} X Y =  & \left ( X^{x} Y^{x} \left ( e_{x}\cdot e_{x}\right )  + X^{x} Y^{y} \left ( e_{x}\cdot e_{y}\right )  + X^{x} Y^{z} \left ( e_{x}\cdot e_{z}\right )  + X^{y} Y^{x} \left ( e_{x}\cdot e_{y}\right )  + X^{y} Y^{y} \left ( e_{y}\cdot e_{y}\right )  + X^{y} Y^{z} \left ( e_{y}\cdot e_{z}\right )  + X^{z} Y^{x} \left ( e_{x}\cdot e_{z}\right )  + X^{z} Y^{y} \left ( e_{y}\cdot e_{z}\right )  + X^{z} Y^{z} \left ( e_{z}\cdot e_{z}\right ) \right )  \\  &  + \left ( X^{x} Y^{y} - X^{y} Y^{x}\right ) \boldsymbol{e_{x}\wedge e_{y}} + \left ( X^{x} Y^{z} - X^{z} Y^{x}\right ) \boldsymbol{e_{x}\wedge e_{z}} + \left ( X^{y} Y^{z} - X^{z} Y^{y}\right ) \boldsymbol{e_{y}\wedge e_{z}}  \end{align*} 
-\begin{equation*} X\W Y = \left ( X^{x} Y^{y} - X^{y} Y^{x}\right ) \boldsymbol{e_{x}\wedge e_{y}} + \left ( X^{x} Y^{z} - X^{z} Y^{x}\right ) \boldsymbol{e_{x}\wedge e_{z}} + \left ( X^{y} Y^{z} - X^{z} Y^{y}\right ) \boldsymbol{e_{y}\wedge e_{z}} \end{equation*}
-\begin{equation*} X\cdot Y = X^{x} Y^{x} \left ( e_{x}\cdot e_{x}\right )  + X^{x} Y^{y} \left ( e_{x}\cdot e_{y}\right )  + X^{x} Y^{z} \left ( e_{x}\cdot e_{z}\right )  + X^{y} Y^{x} \left ( e_{x}\cdot e_{y}\right )  + X^{y} Y^{y} \left ( e_{y}\cdot e_{y}\right )  + X^{y} Y^{z} \left ( e_{y}\cdot e_{z}\right )  + X^{z} Y^{x} \left ( e_{x}\cdot e_{z}\right )  + X^{z} Y^{y} \left ( e_{y}\cdot e_{z}\right )  + X^{z} Y^{z} \left ( e_{z}\cdot e_{z}\right ) \end{equation*}
 \begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
 def basic_multivector_operations_2D():
     Print_Function()
@@ -93,11 +83,6 @@ def basic_multivector_operations_2D():
 \end{lstlisting}
 Code Output:
 \begin{equation*} g_{ij} = \left[\begin{matrix}\left ( e_{x}\cdot e_{x}\right )  & \left ( e_{x}\cdot e_{y}\right ) \\\left ( e_{x}\cdot e_{y}\right )  & \left ( e_{y}\cdot e_{y}\right ) \end{matrix}\right] \end{equation*}
-\begin{equation*} X = X^{x} \boldsymbol{e_{x}} + X^{y} \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} A = A  + A^{xy} \boldsymbol{e_{x}\wedge e_{y}} \end{equation*}
-\begin{equation*} X\cdot A = - A^{xy} \left(X^{x} \left ( e_{x}\cdot e_{y}\right )  + X^{y} \left ( e_{y}\cdot e_{y}\right ) \right) \boldsymbol{e_{x}} + A^{xy} \left(X^{x} \left ( e_{x}\cdot e_{x}\right )  + X^{y} \left ( e_{x}\cdot e_{y}\right ) \right) \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} X\rfloor A = \left ( A X^{x} - A^{xy} X^{x} \left ( e_{x}\cdot e_{y}\right )  - A^{xy} X^{y} \left ( e_{y}\cdot e_{y}\right ) \right ) \boldsymbol{e_{x}} + \left ( A X^{y} + A^{xy} X^{x} \left ( e_{x}\cdot e_{x}\right )  + A^{xy} X^{y} \left ( e_{x}\cdot e_{y}\right ) \right ) \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} A\lfloor X = \left ( A X^{x} + A^{xy} X^{x} \left ( e_{x}\cdot e_{y}\right )  + A^{xy} X^{y} \left ( e_{y}\cdot e_{y}\right ) \right ) \boldsymbol{e_{x}} + \left ( A X^{y} - A^{xy} X^{x} \left ( e_{x}\cdot e_{x}\right )  - A^{xy} X^{y} \left ( e_{x}\cdot e_{y}\right ) \right ) \boldsymbol{e_{y}} \end{equation*}
 \begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
 def basic_multivector_operations_2D_orthogonal():
     Print_Function()
@@ -120,16 +105,6 @@ def basic_multivector_operations_2D_orthogonal():
 \end{lstlisting}
 Code Output:
 \begin{equation*} g_{ii} = \left[\begin{matrix}1 & 0\\0 & 1\end{matrix}\right] \end{equation*}
-\begin{equation*} X = X^{x} \boldsymbol{e_{x}} + X^{y} \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} A = A  + A^{xy} \boldsymbol{e_{x}\wedge e_{y}} \end{equation*}
-\begin{equation*} X A = \left ( A X^{x} - A^{xy} X^{y}\right ) \boldsymbol{e_{x}} + \left ( A X^{y} + A^{xy} X^{x}\right ) \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} X\cdot A = - A^{xy} X^{y} \boldsymbol{e_{x}} + A^{xy} X^{x} \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} X\rfloor A = \left ( A X^{x} - A^{xy} X^{y}\right ) \boldsymbol{e_{x}} + \left ( A X^{y} + A^{xy} X^{x}\right ) \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} X\lfloor A = A X^{x} \boldsymbol{e_{x}} + A X^{y} \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} A X = \left ( A X^{x} + A^{xy} X^{y}\right ) \boldsymbol{e_{x}} + \left ( A X^{y} - A^{xy} X^{x}\right ) \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} A\cdot X = A^{xy} X^{y} \boldsymbol{e_{x}} - A^{xy} X^{x} \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} A\rfloor X = A X^{x} \boldsymbol{e_{x}} + A X^{y} \boldsymbol{e_{y}} \end{equation*}
-\begin{equation*} A\lfloor X = \left ( A X^{x} + A^{xy} X^{y}\right ) \boldsymbol{e_{x}} + \left ( A X^{y} - A^{xy} X^{x}\right ) \boldsymbol{e_{y}} \end{equation*}
 \begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
 def check_generalized_BAC_CAB_formulas():
     Print_Function()
@@ -149,15 +124,15 @@ def check_generalized_BAC_CAB_formulas():
 \end{lstlisting}
 Code Output:
 \begin{equation*} g_{ij} = \left[\begin{matrix}\left ( a\cdot a\right )  & \left ( a\cdot b\right )  & \left ( a\cdot c\right )  & \left ( a\cdot d\right ) \\\left ( a\cdot b\right )  & \left ( b\cdot b\right )  & \left ( b\cdot c\right )  & \left ( b\cdot d\right ) \\\left ( a\cdot c\right )  & \left ( b\cdot c\right )  & \left ( c\cdot c\right )  & \left ( c\cdot d\right ) \\\left ( a\cdot d\right )  & \left ( b\cdot d\right )  & \left ( c\cdot d\right )  & \left ( d\cdot d\right ) \end{matrix}\right] \end{equation*}
-\begin{equation*} \bm{a\cdot (b c)} = - \left ( a\cdot c\right )  \boldsymbol{b} + \left ( a\cdot b\right )  \boldsymbol{c} \end{equation*}
-\begin{equation*} \bm{a\cdot (b\W c)} = - \left ( a\cdot c\right )  \boldsymbol{b} + \left ( a\cdot b\right )  \boldsymbol{c} \end{equation*}
-\begin{equation*} \bm{a\cdot (b\W c\W d)} = \left ( a\cdot d\right )  \boldsymbol{b\wedge c} - \left ( a\cdot c\right )  \boldsymbol{b\wedge d} + \left ( a\cdot b\right )  \boldsymbol{c\wedge d} \end{equation*}
+\begin{equation*} \bm{a\cdot (b c)} = - \left ( a\cdot c\right )  b + \left ( a\cdot b\right )  c \end{equation*}
+\begin{equation*} \bm{a\cdot (b\W c)} = - \left ( a\cdot c\right )  b + \left ( a\cdot b\right )  c \end{equation*}
+\begin{equation*} \bm{a\cdot (b\W c\W d)} = \left ( a\cdot d\right )  b\wedge c - \left ( a\cdot c\right )  b\wedge d + \left ( a\cdot b\right )  c\wedge d \end{equation*}
 \begin{equation*} \bm{a\cdot (b\W c)+c\cdot (a\W b)+b\cdot (c\W a)} = 0 \end{equation*}
-\begin{equation*} \bm{a (b\W c)-b (a\W c)+c (a\W b)} = 3 \boldsymbol{a\wedge b\wedge c} \end{equation*}
-\begin{equation*} \bm{a (b\W c\W d)-b (a\W c\W d)+c (a\W b\W d)-d (a\W b\W c)} = 4 \boldsymbol{a\wedge b\wedge c\wedge d} \end{equation*}
+\begin{equation*} \bm{a (b\W c)-b (a\W c)+c (a\W b)} = 3 a\wedge b\wedge c \end{equation*}
+\begin{equation*} \bm{a (b\W c\W d)-b (a\W c\W d)+c (a\W b\W d)-d (a\W b\W c)} = 4 a\wedge b\wedge c\wedge d \end{equation*}
 \begin{equation*} \bm{(a\W b)\cdot (c\W d)} = - \left ( a\cdot c\right )  \left ( b\cdot d\right )  + \left ( a\cdot d\right )  \left ( b\cdot c\right ) \end{equation*}
 \begin{equation*} \bm{((a\W b)\cdot c)\cdot d} = - \left ( a\cdot c\right )  \left ( b\cdot d\right )  + \left ( a\cdot d\right )  \left ( b\cdot c\right ) \end{equation*}
-\begin{equation*} \bm{(a\W b)\times (c\W d)} = - \left ( b\cdot d\right )  \boldsymbol{a\wedge c} + \left ( b\cdot c\right )  \boldsymbol{a\wedge d} + \left ( a\cdot d\right )  \boldsymbol{b\wedge c} - \left ( a\cdot c\right )  \boldsymbol{b\wedge d} \end{equation*}
+\begin{equation*} \bm{(a\W b)\times (c\W d)} = - \left ( b\cdot d\right )  a\wedge c + \left ( b\cdot c\right )  a\wedge d + \left ( a\cdot d\right )  b\wedge c - \left ( a\cdot c\right )  b\wedge d \end{equation*}
 \begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
 def rounding_numerical_components():
     Print_Function()
@@ -172,10 +147,10 @@ def rounding_numerical_components():
     return
 \end{lstlisting}
 Code Output:
-\begin{equation*} X = 1 \cdot 2 \boldsymbol{e_{x}} + 2 \cdot 34 \boldsymbol{e_{y}} + 0 \cdot 555 \boldsymbol{e_{z}} \end{equation*}
-\begin{equation*} Nga(X,2) = 1 \cdot 2 \boldsymbol{e_{x}} + 2 \cdot 3 \boldsymbol{e_{y}} + 0 \cdot 55 \boldsymbol{e_{z}} \end{equation*}
-\begin{equation*} X Y = 12 \cdot 7011  + 4 \cdot 02078 \boldsymbol{e_{x}\wedge e_{y}} + 6 \cdot 175185 \boldsymbol{e_{x}\wedge e_{z}} + 10 \cdot 182 \boldsymbol{e_{y}\wedge e_{z}} \end{equation*}
-\begin{equation*} Nga(X Y,2) = 13 \cdot 0  + 4 \cdot 0 \boldsymbol{e_{x}\wedge e_{y}} + 6 \cdot 2 \boldsymbol{e_{x}\wedge e_{z}} + 10 \cdot 0 \boldsymbol{e_{y}\wedge e_{z}} \end{equation*}
+\begin{equation*} X = 1 \cdot 2 e_{x} + 2 \cdot 34 e_{y} + 0 \cdot 555 e_{z} \end{equation*}
+\begin{equation*} Nga(X,2) = 1 \cdot 2 e_{x} + 2 \cdot 3 e_{y} + 0 \cdot 55 e_{z} \end{equation*}
+\begin{equation*} X Y = 12 \cdot 7011  + 4 \cdot 02078 e_{x}\wedge e_{y} + 6 \cdot 175185 e_{x}\wedge e_{z} + 10 \cdot 182 e_{y}\wedge e_{z} \end{equation*}
+\begin{equation*} Nga(X Y,2) = 13 \cdot 0  + 4 \cdot 0 e_{x}\wedge e_{y} + 6 \cdot 2 e_{x}\wedge e_{z} + 10 \cdot 0 e_{y}\wedge e_{z} \end{equation*}
 \begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
 def derivatives_in_rectangular_coordinates():
     Print_Function()
@@ -202,16 +177,16 @@ def derivatives_in_rectangular_coordinates():
 \end{lstlisting}
 Code Output:
 \begin{equation*} f = f \end{equation*}
-\begin{equation*} A = A^{x}  \boldsymbol{e_{x}} + A^{y}  \boldsymbol{e_{y}} + A^{z}  \boldsymbol{e_{z}} \end{equation*}
-\begin{equation*} B = B^{xy}  \boldsymbol{e_{x}\wedge e_{y}} + B^{xz}  \boldsymbol{e_{x}\wedge e_{z}} + B^{yz}  \boldsymbol{e_{y}\wedge e_{z}} \end{equation*}
-\begin{equation*} C = C  + C^{x} \boldsymbol{e_{x}} + C^{y} \boldsymbol{e_{y}} + C^{z} \boldsymbol{e_{z}} + C^{xy} \boldsymbol{e_{x}\wedge e_{y}} + C^{xz} \boldsymbol{e_{x}\wedge e_{z}} + C^{yz} \boldsymbol{e_{y}\wedge e_{z}} + C^{xyz} \boldsymbol{e_{x}\wedge e_{y}\wedge e_{z}} \end{equation*}
-\begin{equation*} \boldsymbol{\nabla}  f = \partial_{x} f  \boldsymbol{e_{x}} + \partial_{y} f  \boldsymbol{e_{y}} + \partial_{z} f  \boldsymbol{e_{z}} \end{equation*}
+\begin{equation*} A = A^{x}  e_{x} + A^{y}  e_{y} + A^{z}  e_{z} \end{equation*}
+\begin{equation*} B = B^{xy}  e_{x}\wedge e_{y} + B^{xz}  e_{x}\wedge e_{z} + B^{yz}  e_{y}\wedge e_{z} \end{equation*}
+\begin{equation*} C = C  + C^{x} e_{x} + C^{y} e_{y} + C^{z} e_{z} + C^{xy} e_{x}\wedge e_{y} + C^{xz} e_{x}\wedge e_{z} + C^{yz} e_{y}\wedge e_{z} + C^{xyz} e_{x}\wedge e_{y}\wedge e_{z} \end{equation*}
+\begin{equation*} \boldsymbol{\nabla}  f = \partial_{x} f  e_{x} + \partial_{y} f  e_{y} + \partial_{z} f  e_{z} \end{equation*}
 \begin{equation*} \boldsymbol{\nabla} \cdot A = \partial_{x} A^{x}  + \partial_{y} A^{y}  + \partial_{z} A^{z} \end{equation*}
-\begin{equation*} \boldsymbol{\nabla}  A = \left ( \partial_{x} A^{x}  + \partial_{y} A^{y}  + \partial_{z} A^{z} \right )  + \left ( - \partial_{y} A^{x}  + \partial_{x} A^{y} \right ) \boldsymbol{e_{x}\wedge e_{y}} + \left ( - \partial_{z} A^{x}  + \partial_{x} A^{z} \right ) \boldsymbol{e_{x}\wedge e_{z}} + \left ( - \partial_{z} A^{y}  + \partial_{y} A^{z} \right ) \boldsymbol{e_{y}\wedge e_{z}} \end{equation*}
-\begin{equation*} -I (\boldsymbol{\nabla} \W A) = \left ( - \partial_{z} A^{y}  + \partial_{y} A^{z} \right ) \boldsymbol{e_{x}} + \left ( \partial_{z} A^{x}  - \partial_{x} A^{z} \right ) \boldsymbol{e_{y}} + \left ( - \partial_{y} A^{x}  + \partial_{x} A^{y} \right ) \boldsymbol{e_{z}} \end{equation*}
-\begin{equation*} \boldsymbol{\nabla}  B = \left ( - \partial_{y} B^{xy}  - \partial_{z} B^{xz} \right ) \boldsymbol{e_{x}} + \left ( \partial_{x} B^{xy}  - \partial_{z} B^{yz} \right ) \boldsymbol{e_{y}} + \left ( \partial_{x} B^{xz}  + \partial_{y} B^{yz} \right ) \boldsymbol{e_{z}} + \left ( \partial_{z} B^{xy}  - \partial_{y} B^{xz}  + \partial_{x} B^{yz} \right ) \boldsymbol{e_{x}\wedge e_{y}\wedge e_{z}} \end{equation*}
-\begin{equation*} \boldsymbol{\nabla} \W B = \left ( \partial_{z} B^{xy}  - \partial_{y} B^{xz}  + \partial_{x} B^{yz} \right ) \boldsymbol{e_{x}\wedge e_{y}\wedge e_{z}} \end{equation*}
-\begin{equation*} \boldsymbol{\nabla} \cdot B = \left ( - \partial_{y} B^{xy}  - \partial_{z} B^{xz} \right ) \boldsymbol{e_{x}} + \left ( \partial_{x} B^{xy}  - \partial_{z} B^{yz} \right ) \boldsymbol{e_{y}} + \left ( \partial_{x} B^{xz}  + \partial_{y} B^{yz} \right ) \boldsymbol{e_{z}} \end{equation*}
+\begin{equation*} \boldsymbol{\nabla}  A = \left ( \partial_{x} A^{x}  + \partial_{y} A^{y}  + \partial_{z} A^{z} \right )  + \left ( - \partial_{y} A^{x}  + \partial_{x} A^{y} \right ) e_{x}\wedge e_{y} + \left ( - \partial_{z} A^{x}  + \partial_{x} A^{z} \right ) e_{x}\wedge e_{z} + \left ( - \partial_{z} A^{y}  + \partial_{y} A^{z} \right ) e_{y}\wedge e_{z} \end{equation*}
+\begin{equation*} -I (\boldsymbol{\nabla} \W A) = \left ( - \partial_{z} A^{y}  + \partial_{y} A^{z} \right ) e_{x} + \left ( \partial_{z} A^{x}  - \partial_{x} A^{z} \right ) e_{y} + \left ( - \partial_{y} A^{x}  + \partial_{x} A^{y} \right ) e_{z} \end{equation*}
+\begin{equation*} \boldsymbol{\nabla}  B = \left ( - \partial_{y} B^{xy}  - \partial_{z} B^{xz} \right ) e_{x} + \left ( \partial_{x} B^{xy}  - \partial_{z} B^{yz} \right ) e_{y} + \left ( \partial_{x} B^{xz}  + \partial_{y} B^{yz} \right ) e_{z} + \left ( \partial_{z} B^{xy}  - \partial_{y} B^{xz}  + \partial_{x} B^{yz} \right ) e_{x}\wedge e_{y}\wedge e_{z} \end{equation*}
+\begin{equation*} \boldsymbol{\nabla} \W B = \left ( \partial_{z} B^{xy}  - \partial_{y} B^{xz}  + \partial_{x} B^{yz} \right ) e_{x}\wedge e_{y}\wedge e_{z} \end{equation*}
+\begin{equation*} \boldsymbol{\nabla} \cdot B = \left ( - \partial_{y} B^{xy}  - \partial_{z} B^{xz} \right ) e_{x} + \left ( \partial_{x} B^{xy}  - \partial_{z} B^{yz} \right ) e_{y} + \left ( \partial_{x} B^{xz}  + \partial_{y} B^{yz} \right ) e_{z} \end{equation*}
 \begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
 def derivatives_in_spherical_coordinates():
     Print_Function()
@@ -232,12 +207,12 @@ def derivatives_in_spherical_coordinates():
 \end{lstlisting}
 Code Output:
 \begin{equation*} f = f \end{equation*}
-\begin{equation*} A = A^{r}  \boldsymbol{e_{r}} + A^{\theta }  \boldsymbol{e_{\theta }} + A^{\phi }  \boldsymbol{e_{\phi }} \end{equation*}
-\begin{equation*} B = B^{r\theta }  \boldsymbol{e_{r}\wedge e_{\theta }} + B^{r\phi }  \boldsymbol{e_{r}\wedge e_{\phi }} + B^{\phi \phi }  \boldsymbol{e_{\theta }\wedge e_{\phi }} \end{equation*}
-\begin{equation*} \boldsymbol{\nabla}  f = \partial_{r} f  \boldsymbol{e_{r}} + \frac{1}{r} \partial_{\theta } f  \boldsymbol{e_{\theta }} + \frac{\partial_{\phi } f }{r \sin{\left (\theta  \right )}} \boldsymbol{e_{\phi }} \end{equation*}
+\begin{equation*} A = A^{r}  e_{r} + A^{\theta }  e_{\theta } + A^{\phi }  e_{\phi } \end{equation*}
+\begin{equation*} B = B^{r\theta }  e_{r}\wedge e_{\theta } + B^{r\phi }  e_{r}\wedge e_{\phi } + B^{\phi \phi }  e_{\theta }\wedge e_{\phi } \end{equation*}
+\begin{equation*} \boldsymbol{\nabla}  f = \partial_{r} f  e_{r} + \frac{1}{r} \partial_{\theta } f  e_{\theta } + \frac{\partial_{\phi } f }{r \sin{\left (\theta  \right )}} e_{\phi } \end{equation*}
 \begin{equation*} \boldsymbol{\nabla} \cdot A = \frac{1}{r} \left(r \partial_{r} A^{r}  + 2 A^{r}  + \frac{A^{\theta } }{\tan{\left (\theta  \right )}} + \partial_{\theta } A^{\theta }  + \frac{\partial_{\phi } A^{\phi } }{\sin{\left (\theta  \right )}}\right) \end{equation*}
-\begin{equation*} -I (\boldsymbol{\nabla} \W A) = \frac{1}{r} \left(\frac{A^{\phi } }{\tan{\left (\theta  \right )}} + \partial_{\theta } A^{\phi }  - \frac{\partial_{\phi } A^{\theta } }{\sin{\left (\theta  \right )}}\right) \boldsymbol{e_{r}} + \frac{1}{r} \left(- r \partial_{r} A^{\phi }  - A^{\phi }  + \frac{\partial_{\phi } A^{r} }{\sin{\left (\theta  \right )}}\right) \boldsymbol{e_{\theta }} + \frac{1}{r} \left(r \partial_{r} A^{\theta }  + A^{\theta }  - \partial_{\theta } A^{r} \right) \boldsymbol{e_{\phi }} \end{equation*}
-\begin{equation*} \boldsymbol{\nabla} \W B = \frac{1}{r} \left(r \partial_{r} B^{\phi \phi }  - \frac{B^{r\phi } }{\tan{\left (\theta  \right )}} + 2 B^{\phi \phi }  - \partial_{\theta } B^{r\phi }  + \frac{\partial_{\phi } B^{r\theta } }{\sin{\left (\theta  \right )}}\right) \boldsymbol{e_{r}\wedge e_{\theta }\wedge e_{\phi }} \end{equation*}
+\begin{equation*} -I (\boldsymbol{\nabla} \W A) = \frac{1}{r} \left(\frac{A^{\phi } }{\tan{\left (\theta  \right )}} + \partial_{\theta } A^{\phi }  - \frac{\partial_{\phi } A^{\theta } }{\sin{\left (\theta  \right )}}\right) e_{r} + \frac{1}{r} \left(- r \partial_{r} A^{\phi }  - A^{\phi }  + \frac{\partial_{\phi } A^{r} }{\sin{\left (\theta  \right )}}\right) e_{\theta } + \frac{1}{r} \left(r \partial_{r} A^{\theta }  + A^{\theta }  - \partial_{\theta } A^{r} \right) e_{\phi } \end{equation*}
+\begin{equation*} \boldsymbol{\nabla} \W B = \frac{1}{r} \left(r \partial_{r} B^{\phi \phi }  - \frac{B^{r\phi } }{\tan{\left (\theta  \right )}} + 2 B^{\phi \phi }  - \partial_{\theta } B^{r\phi }  + \frac{\partial_{\phi } B^{r\theta } }{\sin{\left (\theta  \right )}}\right) e_{r}\wedge e_{\theta }\wedge e_{\phi } \end{equation*}
 \begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
 def noneuclidian_distance_calculation():
     Print_Function()
@@ -327,13 +302,12 @@ Code Output:
 \begin{equation*} g_{ij} = \left[\begin{matrix}0 & \left ( X\cdot Y\right )  & \left ( X\cdot e\right ) \\\left ( X\cdot Y\right )  & 0 & \left ( Y\cdot e\right ) \\\left ( X\cdot e\right )  & \left ( Y\cdot e\right )  & 1\end{matrix}\right] \end{equation*}
 \begin{equation*} (X\W Y)^{2} = \left ( X\cdot Y\right ) ^{2} \end{equation*}
 \begin{equation*} L = X\W Y\W e \text{ is a non-euclidian line} \end{equation*}
-\begin{equation*} B = L e =  \boldsymbol{X\wedge Y} - \left ( Y\cdot e\right )  \boldsymbol{X\wedge e} + \left ( X\cdot e\right )  \boldsymbol{Y\wedge e} \end{equation*}
-\begin{equation*} BeB^{\dagger} = \left ( X\cdot Y\right )  \left(- \left ( X\cdot Y\right )  + 2 \left ( X\cdot e\right )  \left ( Y\cdot e\right ) \right) \boldsymbol{e} \end{equation*}
+\begin{equation*} B = L e =  X\wedge Y - \left ( Y\cdot e\right )  X\wedge e + \left ( X\cdot e\right )  Y\wedge e \end{equation*}
+\begin{equation*} BeB^{\dagger} = \left ( X\cdot Y\right )  \left(- \left ( X\cdot Y\right )  + 2 \left ( X\cdot e\right )  \left ( Y\cdot e\right ) \right) e \end{equation*}
 \begin{equation*} B^{2} = \left ( X\cdot Y\right )  \left(\left ( X\cdot Y\right )  - 2 \left ( X\cdot e\right )  \left ( Y\cdot e\right ) \right) \end{equation*}
 \begin{equation*} L^{2} = \left ( X\cdot Y\right )  \left(\left ( X\cdot Y\right )  - 2 \left ( X\cdot e\right )  \left ( Y\cdot e\right ) \right) \end{equation*}
 \begin{equation*} s = \f{\sinh}{\alpha/2} \text{ and } c = \f{\cosh}{\alpha/2} \end{equation*}
-\begin{equation*} e^{\alpha B/{2\abs{B}}} = c  + (1/B) s \boldsymbol{X\wedge Y} - (1/B) \left ( Y\cdot e\right )  s \boldsymbol{X\wedge e} + (1/B) \left ( X\cdot e\right )  s \boldsymbol{Y\wedge e} \end{equation*}
-  \begin{align*} RXR^{\dagger} =  & \left ( (1/B)^{2} \left ( X\cdot Y\right ) ^{2} s^{2} - 2 (1/B)^{2} \left ( X\cdot Y\right )  \left ( X\cdot e\right )  \left ( Y\cdot e\right )  s^{2} + 2 (1/B) \left ( X\cdot Y\right )  c s - 2 (1/B) \left ( X\cdot e\right )  \left ( Y\cdot e\right )  c s + c^{2}\right ) \boldsymbol{X} \\  &  + 2 (1/B) \left ( X\cdot e\right ) ^{2} c s \boldsymbol{Y} \\  &  + 2 (1/B) \left ( X\cdot Y\right )  \left ( X\cdot e\right )  s \left(- (1/B) \left ( X\cdot Y\right )  s + 2 (1/B) \left ( X\cdot e\right )  \left ( Y\cdot e\right )  s - c\right) \boldsymbol{e}  \end{align*} 
+\begin{equation*} e^{\alpha B/{2\abs{B}}} = c  + (1/B) s X\wedge Y - (1/B) \left ( Y\cdot e\right )  s X\wedge e + (1/B) \left ( X\cdot e\right )  s Y\wedge e \end{equation*}
 \begin{equation*} W = Z\cdot Y = (1/B)^{2} \left ( X\cdot Y\right ) ^{3} s^{2} - 4 (1/B)^{2} \left ( X\cdot Y\right ) ^{2} \left ( X\cdot e\right )  \left ( Y\cdot e\right )  s^{2} + 4 (1/B)^{2} \left ( X\cdot Y\right )  \left ( X\cdot e\right ) ^{2} \left ( Y\cdot e\right ) ^{2} s^{2} + 2 (1/B) \left ( X\cdot Y\right ) ^{2} c s - 4 (1/B) \left ( X\cdot Y\right )  \left ( X\cdot e\right )  \left ( Y\cdot e\right )  c s + \left ( X\cdot Y\right )  c^{2} \end{equation*}
 \begin{equation*} S = \f{\sinh}{\alpha} \text{ and } C = \f{\cosh}{\alpha} \end{equation*}
 \begin{equation*} W = (1/B) C \left ( X\cdot Y\right )  \sqrt{\left ( X\cdot Y\right ) ^{2} - 2 \left ( X\cdot Y\right )  \left ( X\cdot e\right )  \left ( Y\cdot e\right ) } - (1/B) C \left ( X\cdot e\right )  \left ( Y\cdot e\right )  \sqrt{\left ( X\cdot Y\right ) ^{2} - 2 \left ( X\cdot Y\right )  \left ( X\cdot e\right )  \left ( Y\cdot e\right ) } + (1/B) \left ( X\cdot e\right )  \left ( Y\cdot e\right )  \sqrt{\left ( X\cdot Y\right ) ^{2} - 2 \left ( X\cdot Y\right )  \left ( X\cdot e\right )  \left ( Y\cdot e\right ) } + S \sqrt{\left ( X\cdot Y\right ) ^{2} - 2 \left ( X\cdot Y\right )  \left ( X\cdot e\right )  \left ( Y\cdot e\right ) } \end{equation*}
@@ -383,22 +357,21 @@ def conformal_representations_of_circles_lines_spheres_and_planes():
 \end{lstlisting}
 Code Output:
 \begin{equation*} g_{ij} = \left[\begin{matrix}1 & 0 & 0 & 0 & 0\\0 & 1 & 0 & 0 & 0\\0 & 0 & 1 & 0 & 0\\0 & 0 & 0 & 0 & 2\\0 & 0 & 0 & 2 & 0\end{matrix}\right] \end{equation*}
-\begin{equation*} F(a) =  \boldsymbol{e_{1}} + \frac{1}{2} \boldsymbol{n} - \frac{1}{2} \boldsymbol{\bar{n}} \end{equation*}
-\begin{equation*} F(b) =  \boldsymbol{e_{2}} + \frac{1}{2} \boldsymbol{n} - \frac{1}{2} \boldsymbol{\bar{n}} \end{equation*}
-\begin{equation*} F(c) = -1 \boldsymbol{e_{1}} + \frac{1}{2} \boldsymbol{n} - \frac{1}{2} \boldsymbol{\bar{n}} \end{equation*}
-\begin{equation*} F(d) =  \boldsymbol{e_{3}} + \frac{1}{2} \boldsymbol{n} - \frac{1}{2} \boldsymbol{\bar{n}} \end{equation*}
-\begin{equation*} F(x) = x_{1} \boldsymbol{e_{1}} + x_{2} \boldsymbol{e_{2}} + x_{3} \boldsymbol{e_{3}} + \left ( \frac{1}{2} {\left ( x_{1} \right )}^{2} + \frac{1}{2} {\left ( x_{2} \right )}^{2} + \frac{1}{2} {\left ( x_{3} \right )}^{2}\right ) \boldsymbol{n} - \frac{1}{2} \boldsymbol{\bar{n}} \end{equation*}
+\begin{equation*} F(a) =  e_{1} + \frac{1}{2} n - \frac{1}{2} \bar{n} \end{equation*}
+\begin{equation*} F(b) =  e_{2} + \frac{1}{2} n - \frac{1}{2} \bar{n} \end{equation*}
+\begin{equation*} F(c) = - e_{1} + \frac{1}{2} n - \frac{1}{2} \bar{n} \end{equation*}
+\begin{equation*} F(d) =  e_{3} + \frac{1}{2} n - \frac{1}{2} \bar{n} \end{equation*}
+\begin{equation*} F(x) = x_{1} e_{1} + x_{2} e_{2} + x_{3} e_{3} + \left ( \frac{1}{2} {\left ( x_{1} \right )}^{2} + \frac{1}{2} {\left ( x_{2} \right )}^{2} + \frac{1}{2} {\left ( x_{3} \right )}^{2}\right ) n - \frac{1}{2} \bar{n} \end{equation*}
 a = e1, b = e2, c = -e1, and d = e3
 A = F(a) = 1/2*(a*a*n+2*a-nbar), etc.
 Circle through a, b, and c
-\begin{equation*} Circle: A\W B\W C\W X = 0 = - x_{3} \boldsymbol{e_{1}\wedge e_{2}\wedge e_{3}\wedge n} + x_{3} \boldsymbol{e_{1}\wedge e_{2}\wedge e_{3}\wedge \bar{n}} + \left ( \frac{1}{2} {\left ( x_{1} \right )}^{2} + \frac{1}{2} {\left ( x_{2} \right )}^{2} + \frac{1}{2} {\left ( x_{3} \right )}^{2} - \frac{1}{2}\right ) \boldsymbol{e_{1}\wedge e_{2}\wedge n\wedge \bar{n}} \end{equation*}
+\begin{equation*} Circle: A\W B\W C\W X = 0 = - x_{3} e_{1}\wedge e_{2}\wedge e_{3}\wedge n + x_{3} e_{1}\wedge e_{2}\wedge e_{3}\wedge \bar{n} + \left ( \frac{1}{2} {\left ( x_{1} \right )}^{2} + \frac{1}{2} {\left ( x_{2} \right )}^{2} + \frac{1}{2} {\left ( x_{3} \right )}^{2} - \frac{1}{2}\right ) e_{1}\wedge e_{2}\wedge n\wedge \bar{n} \end{equation*}
 Line through a and b
-\begin{equation*} Line  : A\W B\W n\W X = 0 = - x_{3} \boldsymbol{e_{1}\wedge e_{2}\wedge e_{3}\wedge n} + \left ( \frac{x_{1}}{2} + \frac{x_{2}}{2} - \frac{1}{2}\right ) \boldsymbol{e_{1}\wedge e_{2}\wedge n\wedge \bar{n}} + \frac{x_{3}}{2} \boldsymbol{e_{1}\wedge e_{3}\wedge n\wedge \bar{n}} - \frac{x_{3}}{2} \boldsymbol{e_{2}\wedge e_{3}\wedge n\wedge \bar{n}} \end{equation*}
+\begin{equation*} Line  : A\W B\W n\W X = 0 = - x_{3} e_{1}\wedge e_{2}\wedge e_{3}\wedge n + \left ( \frac{x_{1}}{2} + \frac{x_{2}}{2} - \frac{1}{2}\right ) e_{1}\wedge e_{2}\wedge n\wedge \bar{n} + \frac{x_{3}}{2} e_{1}\wedge e_{3}\wedge n\wedge \bar{n} - \frac{x_{3}}{2} e_{2}\wedge e_{3}\wedge n\wedge \bar{n} \end{equation*}
 Sphere through a, b, c, and d
-\begin{equation*} Sphere: A\W B\W C\W D\W X = 0 = \left ( - \frac{1}{2} {\left ( x_{1} \right )}^{2} - \frac{1}{2} {\left ( x_{2} \right )}^{2} - \frac{1}{2} {\left ( x_{3} \right )}^{2} + \frac{1}{2}\right ) \boldsymbol{e_{1}\wedge e_{2}\wedge e_{3}\wedge n\wedge \bar{n}} \end{equation*}
+\begin{equation*} Sphere: A\W B\W C\W D\W X = 0 = \left ( - \frac{1}{2} {\left ( x_{1} \right )}^{2} - \frac{1}{2} {\left ( x_{2} \right )}^{2} - \frac{1}{2} {\left ( x_{3} \right )}^{2} + \frac{1}{2}\right ) e_{1}\wedge e_{2}\wedge e_{3}\wedge n\wedge \bar{n} \end{equation*}
 Plane through a, b, and d
-\begin{equation*} Plane : A\W B\W n\W D\W X = 0 = \left ( - \frac{x_{1}}{2} - \frac{x_{2}}{2} - \frac{x_{3}}{2} + \frac{1}{2}\right ) \boldsymbol{e_{1}\wedge e_{2}\wedge e_{3}\wedge n\wedge \bar{n}} \end{equation*}
-  \begin{align*} Hyperbolic\;\; Circle: (A\W B\W e)\W X = 0 =  & - x_{3} \boldsymbol{e_{1}\wedge e_{2}\wedge e_{3}\wedge n} \\  &  - x_{3} \boldsymbol{e_{1}\wedge e_{2}\wedge e_{3}\wedge \bar{n}} \\  &  + \left ( - \frac{1}{2} {\left ( x_{1} \right )}^{2} + x_{1} - \frac{1}{2} {\left ( x_{2} \right )}^{2} + x_{2} - \frac{1}{2} {\left ( x_{3} \right )}^{2} - \frac{1}{2}\right ) \boldsymbol{e_{1}\wedge e_{2}\wedge n\wedge \bar{n}} \\  &  + x_{3} \boldsymbol{e_{1}\wedge e_{3}\wedge n\wedge \bar{n}} \\  &  - x_{3} \boldsymbol{e_{2}\wedge e_{3}\wedge n\wedge \bar{n}}  \end{align*} 
+\begin{equation*} Plane : A\W B\W n\W D\W X = 0 = \left ( - \frac{x_{1}}{2} - \frac{x_{2}}{2} - \frac{x_{3}}{2} + \frac{1}{2}\right ) e_{1}\wedge e_{2}\wedge e_{3}\wedge n\wedge \bar{n} \end{equation*}
 \begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
 def properties_of_geometric_objects():
     Print_Function()
@@ -428,10 +401,10 @@ def properties_of_geometric_objects():
 Code Output:
 \begin{equation*} g_{ij} = \left[\begin{matrix}\left ( p_{1}\cdot p_{1}\right )  & \left ( p_{1}\cdot p_{2}\right )  & \left ( p_{1}\cdot p_{3}\right )  & 0 & 0\\\left ( p_{1}\cdot p_{2}\right )  & \left ( p_{2}\cdot p_{2}\right )  & \left ( p_{2}\cdot p_{3}\right )  & 0 & 0\\\left ( p_{1}\cdot p_{3}\right )  & \left ( p_{2}\cdot p_{3}\right )  & \left ( p_{3}\cdot p_{3}\right )  & 0 & 0\\0 & 0 & 0 & 0 & 2\\0 & 0 & 0 & 2 & 0\end{matrix}\right] \end{equation*}
 \begin{equation*} \text{Extracting direction of line from }L = P1\W P2\W n \end{equation*}
-\begin{equation*} (L\cdot n)\cdot \bar{n} = 2 \boldsymbol{p_{1}} -2 \boldsymbol{p_{2}} \end{equation*}
+\begin{equation*} (L\cdot n)\cdot \bar{n} = 2 p_{1} -2 p_{2} \end{equation*}
 \begin{equation*} \text{Extracting plane of circle from }C = P1\W P2\W P3 \end{equation*}
-\begin{equation*} ((C\W n)\cdot n)\cdot \bar{n}= 2 \boldsymbol{p_{1}\wedge p_{2}} -2 \boldsymbol{p_{1}\wedge p_{3}} + 2 \boldsymbol{p_{2}\wedge p_{3}} \end{equation*}
-\begin{equation*} (p2-p1)\W (p3-p1)=  \boldsymbol{p_{1}\wedge p_{2}} -1 \boldsymbol{p_{1}\wedge p_{3}} + \boldsymbol{p_{2}\wedge p_{3}} \end{equation*}
+\begin{equation*} ((C\W n)\cdot n)\cdot \bar{n}= 2 p_{1}\wedge p_{2} -2 p_{1}\wedge p_{3} + 2 p_{2}\wedge p_{3} \end{equation*}
+\begin{equation*} (p2-p1)\W (p3-p1)=  p_{1}\wedge p_{2} - p_{1}\wedge p_{3} + p_{2}\wedge p_{3} \end{equation*}
 \begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
 def extracting_vectors_from_conformal_2_blade():
     Print_Function()
@@ -461,12 +434,12 @@ Code Output:
 \begin{equation*} B = P1\W P2 \end{equation*}
 \begin{equation*} g_{ij} = \left[\begin{matrix}0 & -1 & \left ( P_{1}\cdot a\right ) \\-1 & 0 & \left ( P_{2}\cdot a\right ) \\\left ( P_{1}\cdot a\right )  & \left ( P_{2}\cdot a\right )  & \left ( a\cdot a\right ) \end{matrix}\right] \end{equation*}
 \begin{equation*} B^{2} = 1 \end{equation*}
-\begin{equation*} a' = a-(a\W B) B = - \left ( P_{2}\cdot a\right )  \boldsymbol{P_{1}} - \left ( P_{1}\cdot a\right )  \boldsymbol{P_{2}} \end{equation*}
-\begin{equation*} A+ = a'+a' B = - 2 \left ( P_{2}\cdot a\right )  \boldsymbol{P_{1}} \end{equation*}
-\begin{equation*} A- = a'-a' B = - 2 \left ( P_{1}\cdot a\right )  \boldsymbol{P_{2}} \end{equation*}
+\begin{equation*} a' = a-(a\W B) B = - \left ( P_{2}\cdot a\right )  P_{1} - \left ( P_{1}\cdot a\right )  P_{2} \end{equation*}
+\begin{equation*} A+ = a'+a' B = - 2 \left ( P_{2}\cdot a\right )  P_{1} \end{equation*}
+\begin{equation*} A- = a'-a' B = - 2 \left ( P_{1}\cdot a\right )  P_{2} \end{equation*}
 \begin{equation*} (A+)^{2} = 0 \end{equation*}
 \begin{equation*} (A-)^{2} = 0 \end{equation*}
-\begin{equation*} a\cdot B = - \left ( P_{2}\cdot a\right )  \boldsymbol{P_{1}} + \left ( P_{1}\cdot a\right )  \boldsymbol{P_{2}} \end{equation*}
+\begin{equation*} a\cdot B = - \left ( P_{2}\cdot a\right )  P_{1} + \left ( P_{1}\cdot a\right )  P_{2} \end{equation*}
 \begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]
 def reciprocal_frame_test():
     Print_Function()
@@ -519,11 +492,11 @@ def reciprocal_frame_test():
 \end{lstlisting}
 Code Output:
 \begin{equation*} g_{ij} = \left[\begin{matrix}1 & \left ( e_{1}\cdot e_{2}\right )  & \left ( e_{1}\cdot e_{3}\right ) \\\left ( e_{1}\cdot e_{2}\right )  & 1 & \left ( e_{2}\cdot e_{3}\right ) \\\left ( e_{1}\cdot e_{3}\right )  & \left ( e_{2}\cdot e_{3}\right )  & 1\end{matrix}\right] \end{equation*}
-\begin{equation*} E =  \boldsymbol{e_{1}\wedge e_{2}\wedge e_{3}} \end{equation*}
+\begin{equation*} E =  e_{1}\wedge e_{2}\wedge e_{3} \end{equation*}
 \begin{equation*} E^{2} = \left ( e_{1}\cdot e_{2}\right ) ^{2} - 2 \left ( e_{1}\cdot e_{2}\right )  \left ( e_{1}\cdot e_{3}\right )  \left ( e_{2}\cdot e_{3}\right )  + \left ( e_{1}\cdot e_{3}\right ) ^{2} + \left ( e_{2}\cdot e_{3}\right ) ^{2} - 1 \end{equation*}
-\begin{equation*} E1 = (e2\W e3) E = \left ( \left ( e_{2}\cdot e_{3}\right ) ^{2} - 1\right ) \boldsymbol{e_{1}} + \left ( \left ( e_{1}\cdot e_{2}\right )  - \left ( e_{1}\cdot e_{3}\right )  \left ( e_{2}\cdot e_{3}\right ) \right ) \boldsymbol{e_{2}} + \left ( - \left ( e_{1}\cdot e_{2}\right )  \left ( e_{2}\cdot e_{3}\right )  + \left ( e_{1}\cdot e_{3}\right ) \right ) \boldsymbol{e_{3}} \end{equation*}
-\begin{equation*} E2 =-(e1\W e3) E = \left ( \left ( e_{1}\cdot e_{2}\right )  - \left ( e_{1}\cdot e_{3}\right )  \left ( e_{2}\cdot e_{3}\right ) \right ) \boldsymbol{e_{1}} + \left ( \left ( e_{1}\cdot e_{3}\right ) ^{2} - 1\right ) \boldsymbol{e_{2}} + \left ( - \left ( e_{1}\cdot e_{2}\right )  \left ( e_{1}\cdot e_{3}\right )  + \left ( e_{2}\cdot e_{3}\right ) \right ) \boldsymbol{e_{3}} \end{equation*}
-\begin{equation*} E3 = (e1\W e2) E = \left ( - \left ( e_{1}\cdot e_{2}\right )  \left ( e_{2}\cdot e_{3}\right )  + \left ( e_{1}\cdot e_{3}\right ) \right ) \boldsymbol{e_{1}} + \left ( - \left ( e_{1}\cdot e_{2}\right )  \left ( e_{1}\cdot e_{3}\right )  + \left ( e_{2}\cdot e_{3}\right ) \right ) \boldsymbol{e_{2}} + \left ( \left ( e_{1}\cdot e_{2}\right ) ^{2} - 1\right ) \boldsymbol{e_{3}} \end{equation*}
+\begin{equation*} E1 = (e2\W e3) E = \left ( \left ( e_{2}\cdot e_{3}\right ) ^{2} - 1\right ) e_{1} + \left ( \left ( e_{1}\cdot e_{2}\right )  - \left ( e_{1}\cdot e_{3}\right )  \left ( e_{2}\cdot e_{3}\right ) \right ) e_{2} + \left ( - \left ( e_{1}\cdot e_{2}\right )  \left ( e_{2}\cdot e_{3}\right )  + \left ( e_{1}\cdot e_{3}\right ) \right ) e_{3} \end{equation*}
+\begin{equation*} E2 =-(e1\W e3) E = \left ( \left ( e_{1}\cdot e_{2}\right )  - \left ( e_{1}\cdot e_{3}\right )  \left ( e_{2}\cdot e_{3}\right ) \right ) e_{1} + \left ( \left ( e_{1}\cdot e_{3}\right ) ^{2} - 1\right ) e_{2} + \left ( - \left ( e_{1}\cdot e_{2}\right )  \left ( e_{1}\cdot e_{3}\right )  + \left ( e_{2}\cdot e_{3}\right ) \right ) e_{3} \end{equation*}
+\begin{equation*} E3 = (e1\W e2) E = \left ( - \left ( e_{1}\cdot e_{2}\right )  \left ( e_{2}\cdot e_{3}\right )  + \left ( e_{1}\cdot e_{3}\right ) \right ) e_{1} + \left ( - \left ( e_{1}\cdot e_{2}\right )  \left ( e_{1}\cdot e_{3}\right )  + \left ( e_{2}\cdot e_{3}\right ) \right ) e_{2} + \left ( \left ( e_{1}\cdot e_{2}\right ) ^{2} - 1\right ) e_{3} \end{equation*}
 \begin{equation*} E1\cdot e2 = 0 \end{equation*}
 \begin{equation*} E1\cdot e3 = 0 \end{equation*}
 \begin{equation*} E2\cdot e1 = 0 \end{equation*}

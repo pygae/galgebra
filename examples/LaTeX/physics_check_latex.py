@@ -37,7 +37,7 @@ def Maxwells_Equations_in_Geom_Calculus():
     (gradF.get_grade(3)).Fmt(3,'%\\grade{\\nabla F}_{3} = 0')
     return
 
-def Dirac_Equation_in_Geog_Calculus():
+def Dirac_Equation_in_Geom_Calculus():
     Print_Function()
     coords = symbols('t x y z',real=True)
     (st4d,g0,g1,g2,g3) = Ga.build('gamma*t|x|y|z',g=[1,-1,-1,-1],coords=coords)
@@ -86,6 +86,22 @@ def Lorentz_Tranformation_in_Geog_Algebra():
     print r"%t\bm{\gamma_{t}}+x\bm{\gamma_{x}} =",Xpp.collect()
     return
 
+def Lie_Group():
+    Print_Function()
+    coords = symbols('t x y z',real=True)
+    (st4d,g0,g1,g2,g3) = Ga.build('gamma*t|x|y|z',g=[1,-1,-1,-1],coords=coords)
+    I = st4d.i
+
+    a = st4d.mv('a','vector')
+    B = st4d.mv('B','bivector')
+    print 'a =',a
+    print 'B =',B
+    print 'a|B =', a|B
+    print ((a|B)|B).simplify().Fmt(3,'(a|B)|B')
+    print (((a|B)|B)|B).simplify().Fmt(3,'((a|B)|B)|B')
+
+    return
+
 def dummy():
     return
 
@@ -93,9 +109,10 @@ def main():
     Get_Program()
     Format()
 
-    Maxwells_Equations_in_Geom_Calculus()
-    Dirac_Equation_in_Geog_Calculus()
-    Lorentz_Tranformation_in_Geog_Algebra()
+    #Maxwells_Equations_in_Geom_Calculus()
+    #Dirac_Equation_in_Geom_Calculus()
+    #Lorentz_Tranformation_in_Geog_Algebra()
+    Lie_Group()
 
     xpdf()
     return
