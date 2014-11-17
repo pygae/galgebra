@@ -933,11 +933,11 @@ class Mv(object):
 
         Usage for multivector A example is -
 
-            A.fmt('2','A')
+            A.Fmt('2','A')
 
         output is
 
-            print 'A = '+str(A)
+            'A = '+str(A)
 
         with one grade per line.  Works for both standard printing and
         for latex.

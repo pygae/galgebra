@@ -1051,7 +1051,7 @@ class Ga(metric.Metric):
                 return zero
 
     def grades(self, A):  # Return list of grades present in A
-        A = self.blade_to_base_rep(A)
+        A = self.base_to_blade_rep(A)
         A = expand(A)
         blades = []
         if isinstance(A, Add):
