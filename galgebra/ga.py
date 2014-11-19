@@ -233,7 +233,6 @@ class Ga(metric.Metric):
                 self.Pdiffs[x] = mv.Pdop({x:1}, ga=self)
                 self.sPds[x] = mv.Sdop([(S(1), self.Pdiffs[x])], ga=self)
             self.grad, self.rgrad = self.grads()
-            self.TSgrads =[]
 
         if self.connect_flg:
             self.build_connection()
@@ -251,11 +250,19 @@ class Ga(metric.Metric):
             print 'Exit Ga.__init__()'
 
         self.a = []  # List of dummy vectors for Mlt calculations
-        self.acoefs = []  # List of dummy vectors coefficients
-        self.pdiffs = []  # List of lists dummy vector coefficients
+        self.agrads = {}  # Gradient operator with respect to vector a
         self.dslot = -1  # kargs slot for dervative, -1 for coordinates
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
+
+        if isinstance(a,(list,tuple)):
+            for ai in a:
+                self.make_grad(ai)
+            return
+
+        if a in self.agrads.keys():
+            return self.agrads[a]
+
         if isinstance(a, mv.Mv):
             ai = a.get_coefs(1)
         else:
@@ -265,7 +272,9 @@ class Ga(metric.Metric):
         for (base, coord) in zip(self.r_basis_mv, ai):
             coefs.append(base)
             pdiffs.append(mv.Pdop({coord: 1}, ga=self))
-        return mv.Dop(coefs, pdiffs, ga=self, cmpflg=cmpflg)
+        self.agrads[a] = mv.Dop(coefs, pdiffs, ga=self, cmpflg=cmpflg)
+        self.a.append(a)
+        return self.agrads[a]
 
     def __str__(self):
         return self.name
@@ -1003,20 +1012,37 @@ class Ga(metric.Metric):
         """
         Returns dictionary with grades as keys of grades of A.  For example
         if A is a rotor the dictionary keys would be 0 and 2. For a vector
-        the single key would be 1
+        the single key would be 1.  Note A can be input as a multivector or
+        an multivector object (sympy expression).  If A is a multivector the
+        dictionary entries are multivectors.  If A is a sympy expression
+        (in this case a linear combination of non-commutative symbols) the
+        dictionary entries are sympy expressions.
         """
-        coefs = collect(expand(A), self.blades_lst, evaluate=False)
-        grade_dict = {0: zero}
-        for blade in coefs:
-            if blade.is_commutative:
-                grade_dict[0] += coefs[one]
+        if isinstance(A,mv.Mv):
+            A.blade_rep()
+            A.characterise_Mv()
+            Aobj = expand(A.obj)
+        else:
+            Aobj = A
+        coefs,blades = metric.linear_expand(Aobj)
+        grade_dict = {}
+        for (coef,blade) in zip(coefs,blades):
+            if blade == one:
+                if 0 in grade_dict.keys():
+                    grade_dict[0] += coef
+                else:
+                    grade_dict[0] = coef
             else:
                 grade = self.blades_to_grades_dict[blade]
                 if grade in grade_dict:
-                    grade_dict[grade] += coefs[blade] * blade
+                    grade_dict[grade] += coef * blade
                 else:
-                    grade_dict[grade] = coefs[blade] * blade
+                    grade_dict[grade] = coef * blade
+        if isinstance(A, mv.Mv):
+            for grade in grade_dict.keys():
+                grade_dict[grade] = self.mv(grade_dict[grade])
         return grade_dict
+
 
     def remove_scalar_part(self, A):
         """

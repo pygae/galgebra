@@ -287,6 +287,20 @@ class Mv(object):
 
     ################# Multivector member functions #####################
 
+    def reflect_in_blade(self, blade):  # Reflect mv in blade
+        self.characterise_Mv()
+        blade.characterise_Mv()
+        blade_inv = blade.rev() / blade.norm2()
+        grade_dict = self.Ga.grade_decomposition(self)
+        blade_grade = blade.i_grade
+        reflect = Mv(0,'scalar',ga=self.Ga)
+        for grade in grade_dict.keys():
+            if (grade * (blade_grade + 1)) % 2 == 0:
+                reflect += blade * grade_dict[grade] * blade_inv
+            else:
+                reflect -= blade * grade_dict[grade] * blade_inv
+        return reflect
+
     def base_rep(self):
         if self.is_blade_rep:
             self.obj = self.Ga.blade_to_base_rep(self.obj)
@@ -2164,6 +2178,8 @@ def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors 
         ulocal[i] -= uave
         vlocal[i] -= vave
     return ulocal.dot(vlocal) / (ulocal.norm() * vlocal.norm()). evalf(dec)
+
+################################# MV class for backward compatibility ###################
 
 class MV(Mv):
 
