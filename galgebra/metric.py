@@ -12,6 +12,15 @@ import printer
 
 half = Rational(1, 2)
 
+def apply_function_list(f,x):
+    if isinstance(f,(tuple,list)):
+        fx = x
+        for fi in f:
+            fx = fi(fx)
+        return fx
+    else:
+        return f(x)
+
 def in_ipynb():
     try:
         cfg = get_ipython().config

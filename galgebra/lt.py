@@ -264,8 +264,13 @@ class Lt(object):
     def Fmt(self, fmt=1, title=None):
 
         self.fmt = fmt
+
+        if metric.in_ipynb():
+            return self
+
         latex_str = printer.GaLatexPrinter.latex(self)
 
+        """
         if printer.GaLatexPrinter.ipy:
             if title is None:
                 if r'\begin{align*}' not in latex_str:
@@ -276,15 +281,19 @@ class Lt(object):
                 else:
                     latex_str = latex_str.replace(r'\begin{align*}', r'\begin{align*} ' + title)
                     latex_str = latex_str.replace('&', '=&', 1)
-            #latex_str = latex_str.replace(r'\frac', r'\frac')
+
             from IPython.core.display import display, Math
             display(Math(latex_str))
         else:
             if title is not None:
-                print title + ' = ' + latex_str
+                return title + ' = ' + latex_str
             else:
-                    print latex_str
-        return
+                    return latex_str
+        """
+        if title is not None:
+            return title + ' = ' + latex_str
+        else:
+                return latex_str
 
     def __str__(self):
         if printer.GaLatexPrinter.latex_flg:

@@ -78,6 +78,7 @@
 \newcommand{\tr}{\mbox{tr}}
 \newcommand{\T}[1]{\texttt{#1}}
 \newcommand{\grd}{\bm{\nabla}}
+
 \lstset{
   language=Python,
   showstringspaces=false,
@@ -118,6 +119,88 @@
    algebra calculations.  For latex output a latex distribution must be installed.
 
 \tableofcontents
+
+\chapter{Installation on Linux, Windows, and Mac}
+
+\section{Install python}
+The \T{galgebra} python module, which is an implementation of geometric algebra in python has two
+perquisites for a minimal installation, python and \T{sympy}. For the python language we have the
+following situation\footnote{Currently \T{galgebra} supports python versions 2.7+, but not versions 3.0+ of python.}.
+\begin{center}
+\begin{tabular}{cl} 
+os & \multicolumn{1}{c}{python installation} \vspace{5pt} \\ \hline 
+linux & \parbox{4in}{\vspace{5pt} Comes with all versions of linux\vspace{5pt}} \\ \hline 
+windows & \parbox{4in}{\vspace{5pt}To install python on windows go to \url{https://www.python.org/downloads/windows/} and install version
+                       appropriate for you version of windows. If you wish a more complete/advanced installation go to 
+                       \url{https://code.google.com/p/pythonxy/}\vspace{5pt}.}\\  \hline 
+mac & \parbox{4in}{\vspace{5pt}Basic version comes with OSX. For better installation go to 
+                   \url{http://docs.python-guide.org/en/latest/starting/install/osx/}\vspace{5pt}.} \\ \hline
+\end{tabular}
+\end{center}
+\section{Install sympy}
+For \T{sympy} there are two alternatives for installation.
+\begin{center}
+\begin{tabular}{cl} 
+ mode & \multicolumn{1}{c}{method} \vspace{5pt} \\ \hline
+ latest release & \parbox{4in}{\vspace{5pt}Go to \url{https://github.com/sympy/sympy/releases} and select 
+                               option appropriate for your system.\vspace{5pt}} \\ \hline 
+ development version & \parbox{4in}{\vspace{5pt}Go to \url{https://github.com/sympy/sympy} and download zipped archive.  
+                                    Unzip archive.  Open terminal/command line in top directory of unzipped 
+                                    archive. For linux or osx run \T{sudo python setup.py install}. For windows run 
+                                    \T{python setup.py install} from the command line.\vspace{5pt}} \\ \hline 	
+\end{tabular}
+\end{center}
+The method for the development version is preferred since that method always builds \T{sympy} with the python system you have 
+installed on your system (32-bits verses 64-bits and particular python version you are running).
+\section{Install galgebra}
+Since you are reading this document you have already obtained a copy of \T{galgebra}.  If you wish to obtain the very latest 
+version (assuming you have not already done this) go to \url{https://github.com/brombo/galgebra} and download and extract the 
+zipped archive.
+
+Then with whatever version you are using open a terminal/command line in the \T{galebra} directory that is in the top directory
+of the archive.  If you are in the correct the directory it should contain the python program \T{setgapth.py}.  If you are in 
+linux or osx run the program with the command \T{sudo python setgapth.py}, if in windows use \T{python setgapth.py}.
+
+This program creates the file \T{Ga.pth} in the correct directory to simplify importing the \T{galgebra} modules into your python
+programs.  The modules you will use for programming with geometric algebra/calculus are \T{ga}, \T{mv}, \T{lt}, and 
+\T{printer}\footnote{All these modules are in the same directory as \T{setgapth.py}.}.  To import any of these modules into your
+program, say \T{mv}, you only have to enter in the program \T{import mv}.  It does not matter where the program file is located.
+
+\section{{\LaTeX} Options}
+In order to use the latex output of the \T{galgebra} modules (excluding latex output from \emph{Ipython notebook}) you must install
+a latex distribution.  Directions follow if you do not already have {\LaTeX} installed.\footnote{Inorder for \T{galgebra} to output
+ latex formatted pdf files your distribution of latex must have \T{pdflatex} installed.}
+\begin{center}
+\begin{tabular}{cl} 
+os & \multicolumn{1}{c}{latex installation} \vspace{5pt} \\ \hline 
+linux & \parbox{4in}{\vspace{5pt} Open a terminal and run ``\T{sudo apt-get texlive-full install}''.  It takes about half an hour
+                     to install.\vspace{5pt}} \\ \hline 
+windows & \parbox{4in}{\vspace{5pt}Go to \url{http://miktex.org/download} (other downloads). Download a net installer. 
+                       Install a full version of \emph{MikTex}.\vspace{5pt}}\\  \hline 
+mac & \parbox{4in}{\vspace{5pt}Go to \url{http://www.tug.org/mactex/} and follow instructions to install 
+                   \emph{MacTeX}.\vspace{5pt}} \\ \hline
+\end{tabular}
+\end{center}
+\section{``Ipython notebook'' Options}
+To use ``ipython notebook'' with \T{galgebra} it must be installed.  To install ``ipython notebook'' do the following.
+
+Go to \url{http://pip.readthedocs.org/en/latest/installing.html} and install \T{pip}.  Then run in a terminal/command line
+``\T{pip install "ipython[notebook]"}''.
+
+\section{The ANSI Console}
+
+The \T{printer} module of \T{galgebra} contains the class \T{Eprint} which is described in section~(\ref{stdprint}). This function uses
+the capabilities of the ansi console (terminal) for enhanced multivector printing where multivector bases, sympy functions and derivatives
+are printed in different colors.  The ansi console is native to Linux and OSX, but not windows.  The best available free substitute for 
+the ansi console on windows is \emph{ansicon}.  The webpage for ansicon is \url{github.com/adoxa/ansicon}.  Since the authors of 
+\emph{ansicon} allows it to be freely redistributed a copy of \T{ansicon.exe} has been included in the \emph{ansicon} directory of
+this distribution.  In order to install \emph{ansicon} for console/terminal use run \T{echo \%PATH\%} from a terminal to display the
+windows path an copy the appropriate version of \T{ansicon.exe} to the first directory listed in the path. The appropriate version of
+\T{ansicon.exe} is in the directory \emph{ansicon\textbackslash x64} or \emph{ansicon\textbackslash x86}.  
+If you are running 32-bit windows use the version
+in subdirectory \emph{x86} otherwise use the one in subdirectory \emph{x64}.  Instructions for using \emph{ansicon} are given
+in section~(\ref{stdprint}).\footnote{If you have nvidia graphics you may have to set the windows environment variable 
+\T{ANSICON\_EXC=nvd3d9wrap.dll;nvd3d9wrapx.dll}.}
 
 \chapter{What is Geometric Algebra?}
 
@@ -358,7 +441,7 @@ $B$ is a \emph{sympy} symbol or a \emph{sympy} real number).
 
 Since \T{<} and \T{>} have no r-forms (in python for the \T{<} and \T{>} operators there are no \lstinline$__rlt__()$ and
  \lstinline$__rgt__()$ member functions to overload)
-we can only have mixed modes (scalars and multivectors) if the first operand is a multivector.
+we can only have mixed modes (sympy scalars and multivectors) if the first operand is a multivector.
 
 
     Except for \T{<} and \T{>} all the multivector operators have r-forms so that as long as one of the
@@ -1586,7 +1669,7 @@ a 3-dimensional multivector field that is a function of \T{x}, \T{y}, and \T{z} 
 being instantiated.  If latex output were used (to be discussed later) the multivector
 \T{V} would be displayed as
 \be
-	A^{x}\eb_{x} + A^{y}\eb_{y} + A^{z}\eb_{z} 
+	V^{x}\eb_{x} + V^{y}\eb_{y} + V^{z}\eb_{z} 
 \ee
 Where the coefficients of the basis vectors are generalized \emph{sympy} functions of the
 coordinates.  The superscripts\footnote{Denoted in text output by \T{A\_\_x}, etc. so
@@ -1606,7 +1689,7 @@ the basis vectors.  The types of name and modes available for multivector instan
          scalar c & None  &  zero grade multivector with coefficient value c 
 	\end{longtable}
 \end{center}
-Line 5 of the previous listing illustrates the case of using the \T{mv} member function with
+\vspace{-24pt}Line 5 of the previous listing illustrates the case of using the \T{mv} member function with
 no arguments. The code does not return a multivector, but rather a tuple or the basis vectors of the geometric algebra \T{o3d}.  
 The elements of the tuple then can
 be used to construct multivectors, or multivector fields through the operations
@@ -1660,8 +1743,8 @@ then class Mv. To instantiate a geometric algebra using MV use the static functi
 
 \begin{quote}
 	For the instantiation of multivector using \T{MV} the \T{base} and \T{mvtype} arguments are the same as for new methods of 
-	multivector instantiation.  The \T{fct} input is the same and the \T{g} input in the new methods.  \T{blade_rep} is not used
-	in the new methods so setting \T{blade_rep=False} will do nothing.  Effectively \T{blade_rep=False} was not used in the old
+	multivector instantiation.  The \T{fct} input is the same and the \T{g} input in the new methods.  \T{blade\_rep} is not used
+	in the new methods so setting \T{blade\_rep=False} will do nothing.  Effectively \T{blade\_rep=False} was not used in the old
 	examples.
 \end{quote}
 
@@ -1744,10 +1827,8 @@ If we can instantiate multivectors we can use all the multivector class function
 	3 & Print each base of multivector on one line.
 	\end{longtable}	
 	\end{center}
-	\T{title} appends a title string to the beginning of the output.  An equal sign in
+	\vspace{-36pt}\T{title} appends a title string to the beginning of the output.  An equal sign in
 	the title string is not required, but is added as a default.
-	\emph{\T{Fmt()} is currently the only way to obtain \LaTeX output for multivectors in 
-	an IPython notebook.} 
 \end{quote}
 
 \T{func(self,fct)}
@@ -1784,6 +1865,12 @@ If we can instantiate multivectors we can use all the multivector class function
 \begin{quote}
    Return the projection of the multivector $M$ (\T{M.proj(bases\_lst)}) onto the subspace defined by the list of bases
    (\T{bases\_lst}).
+\end{quote}
+
+\T{reflect\_in\_blade(self,blade)}
+\begin{quote}
+	Return the reflection of the mutivector $M$ in the subspace defined by the blade, \T{blade}, using \emph{Theorem 7.10} in 
+	\cite{Macdonald 1}, page 129. 
 \end{quote}
 
 \T{scalar(self)}
@@ -2144,7 +2231,7 @@ See section~\ref{MLtrans} for the mathematical description of each operation.
 	The operation performed is defined in section~\ref{MLtrans}.
 \end{quote}
 
-\section{Standard Printing}
+\section{Standard Printing}\label{stdprint}
 
 Printing of multivectors is handled by the module \T{printer} which contains
 a string printer class derived from the \emph{sympy} string printer class and a latex
@@ -2186,6 +2273,18 @@ command is used one tensor component is printed on one line. If \T{cnt} is
 greater or equal to the number of tensor components then the entire tensor
 is printer on one line.
 \end{quote}
+
+For \T{Mv}, \T{Lt}, \T{Mlt}, and \T{Dop,} \T{Fmt()} returns a formatted string when executing from a script (\T{.py} file).  When executing in 
+\emph{Ipython notebook} (\T{.ipynb} file) the function returns the \emph{object} itself.  For example if you wish to print a 
+formatted multivector, \T{A},  from a script use
+
+\T{    print A.Fmt(2,'A')}
+
+for an \emph{Ipython notebook} session use
+
+\T{    A.Fmt(2,'A')}
+
+these methods work in the same way for {\LaTeX} printing.
 
 \section{Latex Printing}\label{LatexPrinting}
 
@@ -2249,8 +2348,8 @@ executed
     g3d = Ga('e*x|y|z')
     A = g3d.mv('A','mv')
     print r'\bm{A} =',A
-    A.Fmt(2,r'\bm{A}')
-    A.Fmt(3,r'\bm{A}')
+    print A.Fmt(2,r'\bm{A}')
+    print A.Fmt(3,r'\bm{A}')
     xpdf()
 \end{lstlisting}
 
@@ -2283,7 +2382,7 @@ For the cases of derivatives the code is
     (o3d.grad*A).Fmt(2,r'grad*\bm{A}')
 
     print r'-I*(grad^\bm{A}) =',-o3g.mv_I*(o3d.grad^A)
-    (o3d.grad*B).Fmt(2,r'grad*\bm{B}')
+    print (o3d.grad*B).Fmt(2,r'grad*\bm{B}')
     print r'grad^\bm{B} =',o3d.grad^B
     print r'grad|\bm{B} =',o3d.grad|B
 
@@ -2337,8 +2436,6 @@ string post processing commands \T{\%} and \T{\#} are not used in this case.}
   displaystyle).
 }
 
-\url{file://../html/dop.html}
-
 \subsection{Printing Lists/Tuples of Multivectors/Differential Operators}
 
 Since the expressions for multivectors or differential operators can be very long printing lists or tuples of such items can easily exceed the
@@ -2376,13 +2473,13 @@ or
 \end{lstlisting}	
 \end{quote}
 
-
-
 \begin{thebibliography}{99}
 \bibitem {Doran} Chris Doran and Anthony Lasenby, ``Geometric Algebra for Physicists,'' Cambridge University
 Press, 2003. \url{http://www.mrao.cam.ac.uk/~clifford}
 \bibitem {Hestenes} David Hestenes and Garret Sobczyk, ``Clifford Algebra to Geometric Calculus,'' Kluwer Academic
 Publishers, 1984. \url{http://modelingnts.la.asu.edu}
+\bibitem {Macdonald 1} Alan Macdonald, ``Linear and Geometric Algebra,'' 2010. \url{http://faculty.luther.edu/~macdonal}
+\bibitem {Macdonald 2} Alan Macdonald, ``Vector and Geometric Calculus,'' 2012. \url{http://faculty.luther.edu/~macdonal}
 \end{thebibliography}
 \end{document}
 

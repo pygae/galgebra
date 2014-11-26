@@ -14,7 +14,8 @@ import ga
 import mv
 import lt
 import metric
-from IPython.display import Latex
+if metric.in_ipynb():
+    from IPython.display import Latex
 
 ip_cmds = \
 """
@@ -452,6 +453,8 @@ class GaLatexPrinter(LatexPrinter):
 \\newcommand{\\grade}[1]{\\left < {#1} \\right >}
 \\newcommand{\\f}[2]{{#1}\\lp{#2}\\rp}
 \\newcommand{\\eval}[2]{\\left . {#1} \\right |_{#2}}
+\\newcommand{\\Nabla}{\\boldsymbol{\\nabla}}
+\\newcommand{\\eb}{\\boldsymbol{e}}
 \\usepackage{float}
 \\floatstyle{plain} % optionally change the style of the new float
 \\newfloat{Code}{H}{myc}
@@ -649,13 +652,14 @@ class GaLatexPrinter(LatexPrinter):
 
     def _print_Symbol(self, expr):
 
+        nc_flg = False
+
         mode_dict = {'*': '', '^': '\\wedge '}
 
         def str_symbol(name_str):
             (mode, name_lst, supers_lst, subs_lst) = GaLatexPrinter.split_super_sub(name_str)
 
             def translate(s):
-                #tmp = s.lower()
                 tmp = s
 
                 parse_dict = {}
@@ -676,20 +680,14 @@ class GaLatexPrinter(LatexPrinter):
 
                 return tmp
 
-                """
-                if tmp in GaLatexPrinter.greek or tmp in other:
-                    return "\\" + s
-                if s in GaLatexPrinter.greek_translated:
-                    return "\\" + GaLatexPrinter.greek_translated[s]
-                else:
-                    return s
-                """
-
             s = ''
 
             for (name, supers, subs) in zip(name_lst, supers_lst, subs_lst):
 
                 name = translate(name)
+
+                if nc_flg:
+                    name = '\\boldsymbol{' + name +'}'
 
                 if supers != []:
                     supers = map(translate, supers)
@@ -708,15 +706,17 @@ class GaLatexPrinter(LatexPrinter):
             if mode == '^':
                 s = s[:-7]
 
-            if not expr.is_commutative and mv.Mv.latex_flg:
-                s = '\\boldsymbol{' + s + '}'
-
             return s
 
         if expr in self._settings['symbol_names']:
             return self._settings['symbol_names'][expr]
 
         name_str = expr.name
+
+        if isinstance(expr,Symbol) and not expr.is_commutative:
+            nc_flg = True
+
+        # Translate entry in general metric tensor a.b -> a \cdot b
 
         if '.' in name_str and name_str[0] == '(' and name_str[-1] == ')':
             name_str = name_str[1:-1]
@@ -1355,20 +1355,27 @@ def GAeval(s, pstr=False):
 """
 
 def Fmt(obj,fmt=0):
-    if isinstance(obj,(list,tuple)):
+    if isinstance(obj,(list,tuple,dict)):
         n = len(obj)
         if isinstance(obj,list):
             ldelim = '['
             rdelim = ']'
+        elif isinstance(obj,dict):
+            ldelim = r'\{'
+            rdelim = r'\}'
         else:
             ldelim = '('
             rdelim = ')'
         if fmt == 1:
             latex_str = r' \left ' + ldelim + r' \begin{array}{' + n*'c' + '} '
             for cell in obj:
-                title = cell.title
-                cell.title = None
-                latex_cell = latex(cell)
+                if isinstance(ojb,dict):
+                    cell.title = None
+                    latex_cell = latex(cell) + ' : '+ latex(obj[cell])
+                else:
+                    title = cell.title
+                    cell.title = None
+                    latex_cell = latex(cell)
                 latex_cell = latex_cell.replace('\n', ' ')
                 latex_cell= latex_cell.replace(r'\begin{equation*}', ' ')
                 latex_cell= latex_cell.replace(r'\end{equation*}', ' ')
@@ -1402,7 +1409,7 @@ def Fmt(obj,fmt=0):
                 else:
                     latex_str += r' ' + latex_cell + r', \\'
                 i += 1
-        if metric.in_ipynb():
+        if metric.in_ipynb():  # For Ipython notebook
             if r'\begin{align*}' not in latex_str:
                 latex_str = r'\begin{equation*} ' + latex_str + r'\end{equation*}'
             return Latex(latex_str)

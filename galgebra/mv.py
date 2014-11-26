@@ -7,10 +7,10 @@ import operator
 from compiler.ast import flatten
 from operator import itemgetter, mul, add
 from itertools import combinations
-from numpy.linalg import matrix_rank
+#from numpy.linalg import matrix_rank
 from sympy import Symbol, Function, S, expand, Add, Mul, Pow, Basic, \
     sin, cos, sinh, cosh, sqrt, trigsimp, \
-    simplify, diff, Rational, Expr, Abs
+    simplify, diff, Rational, Expr, Abs, collect, combsimp
 from sympy import N as Nsympy
 import printer
 import metric
@@ -727,7 +727,8 @@ class Mv(object):
         self_rc_A = Mv(self.Ga.dot(self.obj, A.obj), ga=self.Ga)
         return self_rc_A
 
-    def collect(self):
+    def collect(self,deep=False):
+        """
         # group coeffients of blades of multivector
         # so there is only one coefficient per grade
         self.obj = expand(self.obj)
@@ -737,6 +738,23 @@ class Mv(object):
             c = self.Ga.bases_lst
         self.obj = self.obj.collect(c)
         return self
+        """
+        coefs, bases = metric.linear_expand(self.obj)
+        obj_dict = {}
+        for (coef, base) in zip(coefs, bases):
+            if base in obj_dict.keys():
+                obj_dict[base] += coef
+            else:
+                obj_dict[base] = coef
+        obj = 0
+        for base in obj_dict.keys():
+            if deep:
+                obj += collect(obj_dict[base])*base
+            else:
+                obj += obj_dict[base]*base
+        self.obj = obj
+        return(self)
+
 
     def is_scalar(self):
         grades = self.Ga.grades(self.obj)
@@ -1029,6 +1047,7 @@ class Mv(object):
     def simplify(self, modes=simplify):
         (coefs, bases) = metric.linear_expand(self.obj)
         obj = S(0)
+        #XXXXXXX
         if isinstance(modes, list) or isinstance(modes, tuple):
             for (coef, base) in zip(coefs, bases):
                 for mode in modes:
@@ -1123,6 +1142,14 @@ class Sdop(object):
             return Sdop(new_terms, ga=sdop.Ga)
         else:
             return new_terms
+
+    def simplify(self, modes=simplify):
+        coefs, pdiffs = zip(*self.terms)
+        new_coefs = []
+        for coef in coefs:
+            new_coefs.append(metric.apply_function_list(modes,coef))
+        self.terms = zip(new_coefs,pdiffs)
+        return self
 
     def sort_terms(self):
         self.terms.sort(key=operator.itemgetter(1), cmp=Pdop.compare)
@@ -1641,15 +1668,7 @@ class Dop(object):
     @staticmethod
     def flatten_one_level(lst):
         return [inner for outer in lst for inner in outer]
-        """
-        new_lst = []
-        for x in lst:
-            if isinstance(x[0], list):
-                new_lst += x
-            else:
-                new_lst.append(x)
-        return new_lst
-        """
+
 
     def __init__(self, *kargs, **kwargs):
 
@@ -1695,19 +1714,19 @@ class Dop(object):
             else:
                 raise ValueError('In Dop.__init__ length of kargs must be 1 or 2.')
 
-    """
-    def remove_zero_coefs(self):
 
+    def simplify(self, modes=simplify):
+        """
+        Simplify each multivector coefficient of a partial derivative
+        """
         new_coefs = []
-        new_pdiffs = []
-        for (coef, pd) in zip(self.coefs, self.pdiffs):
-            if coef != S(0):
-                new_coefs.append(coef)
-                new_pdiffs.append(pd)
-        self.coefs = new_coefs
-        self.pdiffs = new_pdiffs
-        return
-    """
+        new_pd = []
+        for (coef, pd) in self.terms:
+            tmp = coef.simplify(modes=modes)
+            new_coefs.append(tmp)
+            new_pd.append(pd)
+        self.terms = zip(new_coefs, new_pd)
+        return Dop(new_coefs, new_pd, ga=self.Ga, cmpflg=self.cmpflg)
 
     def consolidate_coefs(self):
         """
@@ -1727,8 +1746,8 @@ class Dop(object):
                     new_pdiffs.append(pd)
 
         self.terms = zip(new_coefs, new_pdiffs)
-        #self.TSimplify()
-        return
+        return Dop(new_coefs, new_pdiffs, ga=self.Ga, cmpflg=self.cmpflg)
+
 
     def blade_rep(self):
         N = len(self.blades)
@@ -1953,10 +1972,11 @@ class Dop(object):
             dop_lst.append(Dop(terms, ga=self.Ga))
         return tuple(dop_lst)
 
-    def Dop_mv_expand(self):
+    def Dop_mv_expand(self, modes=None):
         coefs = []
         bases = []
         self.consolidate_coefs()
+
         for (coef, pdiff) in self.terms:
             if isinstance(coef, Mv) and not coef.is_scalar():
                 mv_terms = metric.linear_expand(coef.obj, mode=False)
@@ -1978,6 +1998,9 @@ class Dop(object):
                 else:
                     bases.append(S(1))
                     coefs.append(Sdop([(mv_coef, pdiff)], ga=self.Ga))
+        if modes is not None:
+            for i in range(len(coefs)):
+                coefs[i] = coefs[i].simplify(modes)
         terms = zip(coefs, bases)
         return sorted(terms, key=lambda x: self.Ga.blades_lst0.index(x[1]))
 
@@ -1985,7 +2008,7 @@ class Dop(object):
         if len(self.terms) == 0:
             return ' 0 '
 
-        mv_terms = self.Dop_mv_expand()
+        mv_terms = self.Dop_mv_expand(modes=simplify)
         s = ''
 
         for (sdop, base) in mv_terms:
@@ -2020,7 +2043,7 @@ class Dop(object):
 
         self.consolidate_coefs()
 
-        mv_terms = self.Dop_mv_expand()
+        mv_terms = self.Dop_mv_expand(modes=simplify)
         s = ''
 
         for (sdop, base) in mv_terms:
@@ -2110,10 +2133,10 @@ def Nga(x, prec=5):
 def Com(A, B):  # Commutator
     return((A * B - B * A) / S(2))
 
-
+"""
 def rank(M):  # Return rank of matrix M.
     return matrix_rank(M)
-
+"""
 
 def printeigen(M):    # Print eigenvalues, multiplicities, eigenvectors of M.
     evects = M.eigenvects()
