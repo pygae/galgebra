@@ -1640,6 +1640,7 @@ class Sm(Ga):
 
         if isinstance(u,Mv):  #Construct additional functions for vector manifold
             #self.r_basis_mv under construction
+
             pass
 
         self.ga = ga
