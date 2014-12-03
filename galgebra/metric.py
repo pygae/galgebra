@@ -24,7 +24,8 @@ def apply_function_list(f,x):
 def in_ipynb():
     try:
         cfg = get_ipython().config
-        if cfg['IPKernelApp']['parent_appname'] == 'ipython-notebook':
+        if cfg['IPKernelApp']['parent_appname'] == 'ipython-notebook' or \
+           cfg['IPKernelApp']['parent_appname'] == 'ipython-qtconsole':
             return True
         else:
             return False
