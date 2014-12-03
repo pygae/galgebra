@@ -1538,6 +1538,14 @@ class Sm(Ga):
                for example if the manifold is a unit sphere then -
                'u = [sin(u)*cos(v),sin(u)*sin(v),cos(u)]'.
 
+               Alternatively {kargs[0]} is a parametric vector function
+               of the basis vectors of the base manifold.  The
+               coefficients of the bases are functions of the coordinates
+               {kargs[1]}.  In this case we would call the submanifold
+               a "vector" manifold and additional characteristics of the
+               manifold can be calculated since we have given an explicit
+               embedding of the manifold in the base manifold.
+
         coords {kargs[1]} The coordinate list for the submanifold, for
                example '[u,v]'.
 
@@ -1564,7 +1572,7 @@ class Sm(Ga):
             Ga.restore = True
 
         kwargs = metric.test_init_slots(Sm.init_slots, **kwargs)
-        u = kargs[0]  # Coordinate map to define submanifold
+        u = kargs[0]  # Coordinate map or vector embedding to define submanifold
         coords = kargs[1]  # List of cordinates
         ga = kwargs['ga']  # base geometric algebra
         if ga is None:
@@ -1574,36 +1582,53 @@ class Sm(Ga):
         n_base = ga.n
         n_sub = len(coords)
 
-        if len(u) != n_base:
-            raise ValueError('In submanifold dimension of base manifold' +
-                              ' not equal to dimension of mapping.')
-
-        dxdu = []
-        for x_i in u:
-            tmp = []
-            for u_j in coords:
-                tmp.append(diff(x_i, u_j))
-            dxdu.append(tmp)
-
-        sub_pairs = zip(ga.coords, u)
-
-        g = eye(n_sub)
-        n_range = range(n_sub)
-        for i in n_range:
-            for j in n_range:
-                s = zero
-                for k in ga.n_range:
-                    for l in ga.n_range:
-                        s += dxdu[k][i] * dxdu[l][j] * g_base[k, l].subs(sub_pairs)
-                #g[i, j] = trigsimp(s, method='combined')
-                g[i, j] = trigsimp(s)
-
+        # Construct names of basis vectors
         root = kwargs['root']
-
+        """
         basis_str = ''
         for x in coords:
             basis_str += root + '_' + str(x) + ' '
         basis_str = basis_str[:-1]
+        """
+
+        if isinstance(u,Mv):  #Define vector manifold
+            self.ebasis = []
+            for coord in coords:
+                #Partial derivation of vector function to get basis vectors
+                self.ebasis.append(u.diff(coord))
+
+            self.g = []
+            for b1 in self.ebasis:
+                #Metric tensor from dot products of basis vectors
+                tmp = []
+                for b2 in self.ebasis:
+                    tmp.append(b1 | b2)
+                self.g.append(tmp)
+
+        else:
+
+            if len(u) != n_base:
+                raise ValueError('In submanifold dimension of base manifold' +
+                                  ' not equal to dimension of mapping.')
+            dxdu = []
+            for x_i in u:
+                tmp = []
+                for u_j in coords:
+                    tmp.append(diff(x_i, u_j))
+                dxdu.append(tmp)
+
+            sub_pairs = zip(ga.coords, u)
+
+            #Construct metric tensor form coordinate maps
+            g = eye(n_sub)  #Zero n_sub x n_sub sympy matrix
+            n_range = range(n_sub)
+            for i in n_range:
+                for j in n_range:
+                    s = zero
+                    for k in ga.n_range:
+                        for l in ga.n_range:
+                            s += dxdu[k][i] * dxdu[l][j] * g_base[k, l].subs(sub_pairs)
+                    g[i, j] = trigsimp(s)
 
         norm = kwargs['norm']
         debug = kwargs['debug']
@@ -1613,11 +1638,30 @@ class Sm(Ga):
 
         Ga.__init__(self, root, g=g, coords=coords, norm=norm, debug=debug)
 
+        if isinstance(u,Mv):  #Construct additional functions for vector manifold
+            #self.r_basis_mv under construction
+            pass
+
         self.ga = ga
         self.u = u
 
         if debug:
             print 'Exit Sm.__init__()'
+
+    def vpds(self):
+        if not self.is_ortho:
+            r_basis = [x / self.inorm for x in self.r_basis_mv]
+        else:
+            r_basis = self.r_basis_mv
+        if self.norm:
+            r_basis = [x / e_norm for (x, e_norm) in zip(self.r_basis_mv, self.e_norm)]
+
+        pdx = [self.Pdiffs[x] for x in self.coords]
+
+        self.vpd = mv.Dop(r_basis, pdx, ga=self)
+        self.rvpd = mv.Dop(r_basis, pdx, ga=self, cmpflg=True)
+        return self.vpd, self.rvpd
+
 
 if __name__ == "__main__":
     pass
