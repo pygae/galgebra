@@ -773,6 +773,7 @@ class Ga(metric.Metric):
             if grade < 0:
                 return 0
         elif self.dot_mode == '>':
+            print 'g,g1,g2 =', grade, grade1, grade2
             grade = grade1 - grade2
             if grade < 0:
                 return 0

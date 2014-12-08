@@ -4,9 +4,9 @@ import sys
 import copy
 import itertools
 from sympy import diff, trigsimp, Matrix, Rational, \
-    sqf_list, Symbol, sqrt, eye, S, expand, Mul, \
+    sqf_list, Symbol, sqrt, eye, zeros, S, expand, Mul, \
     Add, simplify, together, ratsimp, Expr, latex, \
-    numbers
+    numbers, Function
 
 import printer
 
@@ -21,7 +21,7 @@ def apply_function_list(f,x):
     else:
         return f(x)
 
-def in_ipynb():
+def in_ipynb():  # Is Ipython notebook or qtconsole running program
     try:
         cfg = get_ipython().config
         if cfg['IPKernelApp']['parent_appname'] == 'ipython-notebook' or \
@@ -88,6 +88,13 @@ def linear_expand(expr, mode=True):
 
 
 def square_root_of_expr(expr):
+    """
+    If expression is product of even powers then every power is divided
+    by two and the product is returned.  If some terms in product are
+    not even powers the sqrt of the absolute value of the expression is
+    returned.  If the expression is a number the sqrt of the absolute
+    value of the number is returned.
+    """
     if expr.is_number:
         if expr > 0:
             return(sqrt(expr))
@@ -100,13 +107,13 @@ def square_root_of_expr(expr):
             if coef.is_number:
                 coef = square_root_of_expr(coef)
             else:
-                coef = sqrt(abs(coef))
+                coef = sqrt(abs(coef))  # Product coefficient not a number
         for p in pow_lst:
             (f, n) = p
             if n % 2 != 0:
-                return(sqrt(abs(expr)))
+                return(sqrt(abs(expr)))  # Product not all even powers
             else:
-                coef *= f ** (n / 2)
+                coef *= f ** (n / 2)  # Positive sqrt of the square of an expression
         return coef
 
 
@@ -328,6 +335,7 @@ class Metric(object):
                 m = Matrix(m)
                 return m
 
+
     def derivatives_of_basis(self):  # Derivatives of basis vectors from Christ-Awful symbols
 
         dg = []  # dg[i][j][k] = \partial_{x_{k}}g_{ij}
@@ -373,6 +381,91 @@ class Metric(object):
         self.de = de
         return
 
+    def inverse_metric(self):
+
+        if self.g_inv is not None:
+            return
+
+        if self.coords is None:
+            return
+
+        if self.is_ortho:  # Orthogonal metric
+            self.g_inv = eye(self.n)
+            for i in range(self.n):
+                self.g_inv[i,i] = S(1)/self.g(i,i)
+        else:
+            if self.gsym is None:
+                self.g_inv = simplify(self.g.inv())
+            else:
+                self.detg = Function('|' +self.gsym +'|',real=True)(*self.coords)
+                self.g_inv = simplify(self.g.adjoint())/self.detg
+        return
+
+    def Christoffel_symbols(self,mode=1):
+        """
+        mode = 1  Christoffel symbols of the first kind
+        mode = 2  Christoffel symbols of the second kind
+        """
+
+        if mode == 1:
+            dg = []  # dg[i][j][k] = \partial_{x_{k}}g_{ij}
+
+            for i in self.n_range:
+                dg_row = []
+                for j in self.n_range:
+                    dg_row.append([diff(self.g[i, j], coord) for coord in self.coords])
+                dg.append(dg_row)
+
+            # See if connection is zero
+
+            self.connect_flg = False
+
+            for i in self.n_range:
+                for j in self.n_range:
+                    for k in self.n_range:
+                        if dg[i][j][k] != 0:
+                            self.connect_flg = True
+                            break
+
+            if not self.connect_flg:
+                self.de = None
+                return
+
+            n_range = range(len(self.basis))
+
+            dG = []  # dG[i][j][k] = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
+
+            # Christoffel symbols of the first kind, \Gamma_{ijk}
+            # \partial_{x^{i}}e_{j} = \Gamma_{ijk}e^{k}
+
+            for i in n_range:
+                dG_j = []
+                for j in n_range:
+                    dG_k = []
+                    for k in n_range:
+                        gamma = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
+                        dG_k.append(Simp.apply(gamma))
+                    dG_j.append(dG_k)
+                dG.append(dG_j)
+            if self.debug:
+                printer.oprint('Gamma_{ijk}', dG)
+            return dG
+
+        elif mode == 2:
+            Gamma1 = self.Christoffel_symbols(mode=1)
+            if self.connect_flg:  # Connection is not zero
+                self.inverse_metric()
+
+                # Christoffel symbols of the second kind, \Gamma_{ij}^{k} = g^{kl}\Gamma_{ijl}
+                # \partial_{x^{i}}e_{j} = \Gamma_{ij}^{k}e_{k}
+
+            else:
+                return
+
+        else:
+            raise ValueError('In Christoffle_symobols mode = ' +str(mode) +' is not allowed\n')
+
+
     def normalize_metric(self):
 
         if self.de is None:
@@ -417,17 +510,18 @@ class Metric(object):
         if not isinstance(basis, basestring):
             raise TypeError('"' + str(basis) + '" must be string')
 
-        X = kwargs['X']
-        g = kwargs['g']
+        X = kwargs['X']  # Vector manifold
+        g = kwargs['g']  # Explicit metric or base metric for vector manifold
         debug = kwargs['debug']
-        coords = kwargs['coords']
-        norm = kwargs['norm']
+        coords = kwargs['coords']  # Manifold coordinates (sympy symbols)
+        norm = kwargs['norm']  # Normalize basis vectors
+        """
+        String for symbolic metric determinant.  If self.gsym = 'g'
+        then det(g) is sympy scalar function of coordinates with
+        name 'det(g)'.  Useful for complex non-orthogonal coordinate
+        systems or for calculations with general metric.
+        """
         self.gsym = kwargs['gsym']
-
-        """
-        Normalization for reciprocal vectors if you do not wish to
-        explicitly calculate the determinate of the metric tensor.
-        """
 
         self.debug = debug
         self.is_ortho = False  # Is basis othogonal
@@ -437,11 +531,12 @@ class Metric(object):
         else:
             self.connect_flg = True  # Connection needed for postion dependent metric
         self.norm = norm  # True to normalize basis vectors
-
+        self.detg = None
+        self.g_inv = None
         # Generate list of basis vectors and reciprocal basis vectors
         # as non-commutative symbols
 
-        if ' ' in basis or '*' in basis:  # bases defined by substrings separated by spaces
+        if ' ' in basis or ',' in basis or '*' in basis:  # bases defined by substrings separated by spaces or commas
             self.basis = symbols_list(basis)
             self.r_symbols = symbols_list(basis, sub=False)
         else:
@@ -519,6 +614,17 @@ class Metric(object):
         if self.debug:
             printer.oprint('g', self.g)
 
+        # Determine if metric is orthogonal
+
+        self.is_ortho = True
+
+        for i in self.n_range:
+            for j in self.n_range:
+                if i < j:
+                    if self.g[i, j] != 0:
+                        self.is_ortho = False
+                        break
+
         if self.coords is not None:
             self.derivatives_of_basis()  # calculate derivatives of basis
             if self.norm:  # normalize basis, metric, and derivatives of normalized basis
@@ -529,17 +635,6 @@ class Metric(object):
                     printer.oprint('|e_{i}|', self.e_norm)
             else:
                 self.e_norm = None
-
-        self.is_ortho = True
-
-        # Determine if metric is orthogonal
-
-        for i in self.n_range:
-            for j in self.n_range:
-                if i < j:
-                    if self.g[i, j] != 0:
-                        self.is_ortho = False
-                        break
 
         if self.norm:
             self.normalize_metric()

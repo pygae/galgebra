@@ -102,6 +102,7 @@ class Mv(object):
         elif op == '<':
             return A < B
         elif op == '>':
+            print 'A > B =', A, B
             return A > B
         else:
             raise ValeError('Operation ' + op + 'not allowed in Mv.Mul!')
@@ -681,6 +682,8 @@ class Mv(object):
             return A.Mul(self, A, op='|')
 
         self = self.blade_rep()
+        if self.is_scalar() or A.is_scalar():
+            return S(0)
         A = A.blade_rep()
         self_dot_A = Mv(self.Ga.dot(self.obj, A.obj), ga=self.Ga)
         return self_dot_A
@@ -706,6 +709,12 @@ class Mv(object):
 
         self = self.blade_rep()
         A = A.blade_rep()
+        if A.is_scalar():
+            if self.is_scalar():
+                return self.obj * A.obj
+            else:
+                return S(0)
+
         self_lc_A = Mv(self.Ga.dot(self.obj, A.obj), ga=self.Ga)
         return self_lc_A
 
@@ -724,6 +733,12 @@ class Mv(object):
 
         self = self.blade_rep()
         A = A.blade_rep()
+        if self.is_scalar():
+            if A.is_scalar():
+                return self.obj * A.obj
+            else:
+                return S(0)
+
         self_rc_A = Mv(self.Ga.dot(self.obj, A.obj), ga=self.Ga)
         return self_rc_A
 
