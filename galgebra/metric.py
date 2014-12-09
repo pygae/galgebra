@@ -456,8 +456,18 @@ class Metric(object):
             if self.connect_flg:  # Connection is not zero
                 self.inverse_metric()
 
-                # Christoffel symbols of the second kind, \Gamma_{ij}^{k} = g^{kl}\Gamma_{ijl}
+                # Christoffel symbols of the second kind, \Gamma_{ij}^{k} = \Gamma_{ijl}g^{lk}
                 # \partial_{x^{i}}e_{j} = \Gamma_{ij}^{k}e_{k}
+
+                Gamma = []
+                for Gi in Gamma1:
+                    Gamma_i = []
+                    for Gij in Gi:
+                        Gamma_ij = []
+                        Gamma_ijk = S(0)
+                        l = 0
+                        for Gijl in Gij:
+                            Gamma_ijk += Gijl * g(l,)
 
             else:
                 return

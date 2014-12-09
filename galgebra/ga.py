@@ -1592,7 +1592,7 @@ class Sm(Ga):
         basis_str = basis_str[:-1]
         """
 
-        if isinstance(u,Mv):  #Define vector manifold
+        if isinstance(u,mv.Mv):  #Define vector manifold
             self.ebasis = []
             for coord in coords:
                 #Partial derivation of vector function to get basis vectors
@@ -1639,7 +1639,7 @@ class Sm(Ga):
 
         Ga.__init__(self, root, g=g, coords=coords, norm=norm, debug=debug)
 
-        if isinstance(u,Mv):  #Construct additional functions for vector manifold
+        if isinstance(u,mv.Mv):  #Construct additional functions for vector manifold
             #self.r_basis_mv under construction
 
             pass

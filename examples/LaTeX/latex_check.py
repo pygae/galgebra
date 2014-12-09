@@ -463,7 +463,7 @@ def main():
     extracting_vectors_from_conformal_2_blade()
     reciprocal_frame_test()
 
-    xpdf(debug=True)
+    xpdf()
     return
 
 if __name__ == "__main__":

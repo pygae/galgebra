@@ -10,7 +10,7 @@ Format()
 
 coords = (r, th, phi) = symbols('r,theta,phi', real=True)
 
-sp3d = Ga('e_r e_th e_ph', g=[1, r**2, r**2*sin(th)**2], coords=coords)
+sp3d = Ga('e_r,e_th,e_ph', g=[1, r**2, r**2*sin(th)**2], coords=coords)
 (er, eth, ephi) = sp3d.mv()
 
 #Define coordinates for 2-d (u,v) and 1-d (s) manifolds
@@ -52,9 +52,14 @@ print r'%a\cdot\nabla =', dd
 print r'%\paren{a\cdot\nabla}\bm{e}_u =', dd * eu
 print r'%\paren{a\cdot\nabla}\bm{e}_v =', dd * ev
 print r'%\paren{a\cdot\nabla}f =',dd * f
+print r'%\nabla f =', sph2d.grad * f
 
-V = Mlt('V',sph2d,nargs=1,fct=True)
-T = Mlt('T',sph2d,nargs=2,fct=True)
+a1 = sph2d.mv('a_1','vector')
+a2 = sph2d.mv('a_2','vector')
+
+"""
+V = Mlt('V',sph2d,(a1,),fct=True)
+T = Mlt('T',sph2d,(a1,a2),fct=True)
 
 print '#Tensors on the Unit Sphere'
 
@@ -76,7 +81,7 @@ DT = T.cderiv()
 #print r'\mathcal{D}T =', DT
 DT.Fmt(3,r'\mathcal{D}T')
 print r'\mathcal{D}T[1,3](a) =', (DT.contract(1,3))(a)
-
+"""
 #Define curve on unit sphere manifold
 
 us = Function('u__s')(s)
@@ -100,4 +105,4 @@ h = crv1d.mv('h','vector',f=True)
 print r'%\nabla g =', crv1d.grad * g
 print r'%\nabla \cdot \bm{h} =', crv1d.grad | h
 
-xpdf(crop=True)
+xpdf()
