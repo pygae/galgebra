@@ -1791,15 +1791,17 @@ dBrop = rgrad*B.
 In order to be backward compatible with older versions of \emph{galgebra} we introduce the class MV which is inherits it's functions from
 then class Mv. To instantiate a geometric algebra using MV use the static function
 \begin{lstlisting}
-\T{MV.setup(basis, metric=None, coords=None, rframe=False,\
+MV.setup(basis, metric=None, coords=None, rframe=False,\
 debug=False,curv=(None,None))}
 \end{lstlisting}
-\vspace{-12pt}
+\vspace{-6pt}
 \begin{quote}
    This function allows a single geometric algebra to be created.  If the function is called more than once the old geometric algebra
    is overwritten by the new geometric algebra.  The named input \T{metric} is the same as the named input \T{g} in the current
    version of \emph{galgebra}.  Likewise, \T{basis}, \T{coords}, and \T{debug} are the same in the old and current versions of
-   \emph{galgebra}.  Due to improvements in \emph{sympy} the inputs \T{rframe} and \T{curv[1]} are no longer required.  \T{curv[0]} is
+   \emph{galgebra}\footnote{If the metric is input as a list or list or lists the object is no longer quoted (input as a string).
+   For example the old \T{metric='[1,1,1]'} becomes \T{metric=[1,1,1]}.}.  Due to improvements in \emph{sympy} the inputs 
+   \T{rframe} and \T{curv[1]} are no longer required.  \T{curv[0]} is
    the vector function (list or tuple of scalar functions) of the coordinates required to define a vector manifold.  For
    compatibility with the old version of \emph{galgebra} if \T{curv} is used \T{metric} should be a orthonormal Euclidean
    metric of the same dimension as \T{curv[0]}.  It is strongly suggested that one use the new methods of defining a geometric algebra
