@@ -1078,7 +1078,26 @@ class Mv(object):
         else:
             raise TypeError('"(' + str(product) + ')**2" is not a scalar in norm2.')
 
-    def norm(self, hint='-'):
+    def norm(self, hint='+'):
+        """
+        If A is a multivector and A*A.rev() is a scalar then
+
+            A.norm() = sqrt(Abs(A*A.rev()))
+
+        The problem in simplifing the norm is that if A is symbolic
+        you don't know if A*A.rev() is positive or negative. The use
+        of the hint argument is as follows:
+
+            hint    A.norm()
+             '+'    sqrt(A*A.rev())
+             '-'    sqrt(-A*A.rev())
+             '0'    sqrt(Abs(A*A.rev()))
+
+        The default hint='+' is correct for vectors in a Euclidean vector
+        space.  For bivectors in a Euclidean vector space use hint='-'. In
+        a mixed signature space all bets are off for the norms of symbolic
+        expressions.
+        """
         reverse = self.rev()
         product = self * reverse
 
@@ -1092,8 +1111,10 @@ class Mv(object):
             else:
                 if hint == '+':
                     return metric.square_root_of_expr(product)
-                else:
+                elif hint == '-':
                     return metric.square_root_of_expr(-product)
+                else:
+                    return sqrt(Abs(product))
         else:
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
@@ -2309,9 +2330,9 @@ def inv(A):
     return A.inv()
 
 
-def norm(A):
+def norm(A, hint='+'):
     if isinstance(A, Mv):
-        return A.norm()
+        return A.norm(hint=hint)
     else:
         raise ValueError('A not a multivector in norm(A)')
 

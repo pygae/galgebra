@@ -1937,13 +1937,15 @@ If we can instantiate multivectors we can use all the multivector class function
    is not a scalar the program exits with an error message.
 \end{quote}
 
-\T{norm(self,hint='-')}
+\T{norm(self,hint='+')}
 \begin{quote}
    Return the norm of the multivector $M$ (\T{M.norm()}) defined by $\sqrt{\abs{MM^{\R}}}$.  If $MM^{\R}$ is a scalar (a \emph{sympy} scalar
    is returned).  If $MM^{\R}$ is not a scalar the program exits with an error message. If $MM^{\R}$ is a number \emph{sympy} can determine
    if it is positive or negative and calculate the absolute value.  If $MM^{\R}$ is a \emph{sympy} expression (function) \emph{sympy} cannot
-   determine the sign of the expression so that a \T{hint} is needed to determine if the program should calculate $\sqrt{MM^{\R}}$ or
-   $\sqrt{-MM^{\R}}$.
+   determine the sign of the expression so that \T{hint='+'} or \T{hint='-'} is needed to determine if the program should calculate
+   $\sqrt{MM^{\R}}$ or $\sqrt{-MM^{\R}}$. For example if we are in a Euclidean space and \T{M} is a vector then \T{hint='+'}, if
+   \T{M} is a bivector then let \T{hint='-'}. If \T{hint='0'} and $MM^{\R}$ is a symbolic scalar \T{sqrt(Abs(M*M.rev()))} is returned 
+   where \T{Abs()} is the \emph{sympy} symbolic absolute value function.
 \end{quote}
 
 \T{norm2(self)}
