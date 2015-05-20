@@ -261,7 +261,7 @@ class Lt(object):
             Lt_inv = Lt(self.Rrev,ga=self.Ga)
             Lt_inv.rho_sq = S(1)/(self.rho_sq**2)
         else:
-            raise ValueError('Lt inverse currently implemented only for spinor!\n'))
+            raise ValueError('Lt inverse currently implemented only for spinor!\n')
         return Lt_inv
 
     def Lt_str(self):
