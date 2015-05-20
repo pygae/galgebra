@@ -32,9 +32,9 @@ def Maxwells_Equations_in_Geom_Calculus():
     print '#Maxwell Equations'
     print 'grad*F = J'
     print '#Div $E$ and Curl $H$ Equations'
-    (gradF.get_grade(1)-J).Fmt(3,'%\\grade{\\nabla F}_{1} -J = 0')
+    print (gradF.get_grade(1)-J).Fmt(3,'%\\grade{\\nabla F}_{1} -J = 0')
     print '#Curl $E$ and Div $B$ equations'
-    (gradF.get_grade(3)).Fmt(3,'%\\grade{\\nabla F}_{3} = 0')
+    print (gradF.get_grade(3)).Fmt(3,'%\\grade{\\nabla F}_{3} = 0')
     return
 
 def Dirac_Equation_in_Geom_Calculus():
@@ -55,7 +55,7 @@ def Dirac_Equation_in_Geom_Calculus():
     dirac_eq = (st4d.grad*psi)*I*sig_z-e*A*psi-m*psi*g0
     dirac_eq = dirac_eq.simplify()
 
-    dirac_eq.Fmt(3,r'%\text{Dirac Equation\;\;}\nabla \bm{\psi} I \sigma_{z}-e\bm{A}\bm{\psi}-m\bm{\psi}\gamma_{t} = 0')
+    print dirac_eq.Fmt(3,r'%\text{Dirac Equation\;\;}\nabla \bm{\psi} I \sigma_{z}-e\bm{A}\bm{\psi}-m\bm{\psi}\gamma_{t} = 0')
 
     return
 
@@ -109,10 +109,10 @@ def main():
     Get_Program()
     Format()
 
-    #Maxwells_Equations_in_Geom_Calculus()
-    #Dirac_Equation_in_Geom_Calculus()
-    #Lorentz_Tranformation_in_Geog_Algebra()
-    Lie_Group()
+    Maxwells_Equations_in_Geom_Calculus()
+    Dirac_Equation_in_Geom_Calculus()
+    Lorentz_Tranformation_in_Geog_Algebra()
+    #Lie_Group()
 
     xpdf()
     return
