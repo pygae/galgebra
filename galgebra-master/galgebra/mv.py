@@ -1089,12 +1089,11 @@ class Mv(object):
                     return sqrt(product)
                 else:
                     return sqrt(-product)
-
             else:
                 if hint == '+':
-                    return metric.square_root_of_expr(product.obj)
+                    return metric.square_root_of_expr(product)
                 else:
-                    return metric.square_root_of_expr(-product.obj)
+                    return metric.square_root_of_expr(-product)
         else:
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
