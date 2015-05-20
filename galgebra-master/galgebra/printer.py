@@ -9,6 +9,7 @@ from itertools import islice
 from sympy.printing.str import StrPrinter
 from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
+from sympy.core.operations import AssocOp
 from inspect import getouterframes, currentframe
 import ga
 import mv
@@ -846,7 +847,7 @@ class GaLatexPrinter(LatexPrinter):
                         tex += r"\partial^{%s} %s" % (i, self._print(x))
                 tex = r"\frac{\partial^{%s}}{%s} " % (dim, tex)
 
-        if isinstance(expr.expr, C.AssocOp):
+        if isinstance(expr.expr, AssocOp):
             s = r"%s\left(%s\right)" % (tex, self._print(expr.expr))
         else:
             s = r"%s %s" % (tex, self._print(expr.expr))
