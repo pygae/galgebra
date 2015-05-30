@@ -113,7 +113,7 @@ def derivatives_in_rectangular_coordinates():
     print 'grad|A =', grad | A
     print 'grad*A =', grad * A
 
-    print '-I*(grad^A) =', -o3d.I() * (grad ^ A)
+    print '-I*(grad^A) =', -o3d.E() * (grad ^ A)
     print 'grad*B =', grad * B
     print 'grad^B =', grad ^ B
     print 'grad|B =', grad | B
@@ -146,7 +146,7 @@ def derivatives_in_spherical_coordinates():
 
     print 'grad*f =', grad * f
     print 'grad|A =', grad | A
-    print '-I*(grad^A) =', -s3d.I() * (grad ^ A)
+    print '-I*(grad^A) =', -s3d.E() * (grad ^ A)
     print 'grad^B =', grad ^ B
     return
 
@@ -468,8 +468,41 @@ def reciprocal_frame_test():
     w = (E3|e3)
     w = (w.expand()).scalar()
     print '(E3|e3)/E**2 =',simplify(w/Esq)
+
     return
 
+def signature_test():
+    Print_Function()
+
+    e3d = Ga('e1 e2 e3',g=[1,1,1])
+    print 'e3d.g =', e3d.g
+    print 'Signature = (3,0) I =', e3d.I(),' I**2 =', e3d.I()*e3d.I()
+
+    e3d = Ga('e1 e2 e3',g=[2,2,2])
+    print 'e3d.g =', e3d.g
+    print 'Signature = (3,0) I =', e3d.I(),' I**2 =', e3d.I()*e3d.I()
+
+    sp4d = Ga('e1 e2 e3 e4',g=[1,-1,-1,-1])
+    print 'e3d.g =', sp4d.g
+    print 'Signature = (1,3) I =', sp4d.I(),' I**2 =', sp4d.I()*sp4d.I()
+
+    sp4d = Ga('e1 e2 e3 e4',g=[2,-2,-2,-2])
+    print 'e3d.g =', sp4d.g
+    print 'Signature = (1,3) I =', sp4d.I(),' I**2 =', sp4d.I()*sp4d.I()
+
+    e4d = Ga('e1 e2 e3 e4',g=[1,1,1,1])
+    print 'e4d.g =', e4d.g
+    print 'Signature = (4,0) I =', e4d.I(),' I**2 =', e4d.I()*e4d.I()
+
+    cf3d = Ga('e1 e2 e3 e4 e5',g=[1,1,1,1,-1])
+    print 'cf4d.g =', cf3d.g
+    print 'Signature = (4,1) I =', cf3d.I(),' I**2 =', cf3d.I()*cf3d.I()
+
+    cf3d = Ga('e1 e2 e3 e4 e5',g=[2,2,2,2,-2])
+    print 'cf4d.g =', cf3d.g
+    print 'Signature = (4,1) I =', cf3d.I(),' I**2 =', cf3d.I()*cf3d.I()
+
+    return
 
 def dummy():
     return
@@ -479,6 +512,7 @@ def main():
     Get_Program(True)
     #ga_print_on()
     Eprint()
+    """
     basic_multivector_operations()
     check_generalized_BAC_CAB_formulas()
     derivatives_in_rectangular_coordinates()
@@ -489,6 +523,8 @@ def main():
     properties_of_geometric_objects()
     extracting_vectors_from_conformal_2_blade()
     reciprocal_frame_test()
+    """
+    signature_test()
 
     #ga_print_off()
     return

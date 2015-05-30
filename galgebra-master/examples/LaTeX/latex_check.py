@@ -1,5 +1,5 @@
 from sympy import Symbol, symbols, sin, cos, Rational, expand, simplify, collect
-from printer import Format, Eprint, Get_Program, Print_Function, xpdf
+from printer import Format, Eprint, Get_Program, Print_Function, xpdf, Fmt
 from ga import Ga, one, zero
 from mv import Nga, com
 
@@ -129,7 +129,7 @@ def derivatives_in_rectangular_coordinates():
     print 'grad|A =',grad|A
     print 'grad*A =',grad*A
 
-    print '-I*(grad^A) =',-o3d.i*(grad^A)
+    print '-I*(grad^A) =',-o3d.E()*(grad^A)
     print 'grad*B =',grad*B
     print 'grad^B =',grad^B
     print 'grad|B =',grad|B
@@ -152,7 +152,7 @@ def derivatives_in_spherical_coordinates():
 
     print 'grad*f =',grad*f
     print 'grad|A =',grad|A
-    print '-I*(grad^A) =',(-s3d.i*(grad^A)).simplify()
+    print '-I*(grad^A) =',(-s3d.E()*(grad^A)).simplify()
     print 'grad^B =',grad^B
 
 def rounding_numerical_components():
@@ -443,6 +443,73 @@ def reciprocal_frame_test():
     print '%(E3\\cdot e3)/E^{2} =',simplify(w/Esq)
     return
 
+def signature_test():
+    Print_Function()
+
+    e3d = Ga('e1 e2 e3',g=[1,1,1])
+    print 'g =', e3d.g
+    print r'%Signature = (3,0)\: I =', e3d.I(),'\: I^{2} =', e3d.I()*e3d.I()
+
+    e3d = Ga('e1 e2 e3',g=[2,2,2])
+    print 'g =', e3d.g
+    print r'%Signature = (3,0)\: I =', e3d.I(),'|; I^{2} =', e3d.I()*e3d.I()
+
+    sp4d = Ga('e1 e2 e3 e4',g=[1,-1,-1,-1])
+    print 'g =', sp4d.g
+    print r'%Signature = (1,3)\: I =', sp4d.I(),'\: I^{2} =', sp4d.I()*sp4d.I()
+
+    sp4d = Ga('e1 e2 e3 e4',g=[2,-2,-2,-2])
+    print 'g =', sp4d.g
+    print r'%Signature = (1,3)\: I =', sp4d.I(),'\: I^{2} =', sp4d.I()*sp4d.I()
+
+    e4d = Ga('e1 e2 e3 e4',g=[1,1,1,1])
+    print 'g =', e4d.g
+    print r'%Signature = (4,0)\: I =', e4d.I(),'\: I^{2} =', e4d.I()*e4d.I()
+
+    cf3d = Ga('e1 e2 e3 e4 e5',g=[1,1,1,1,-1])
+    print 'g =', cf3d.g
+    print r'%Signature = (4,1)\: I =', cf3d.I(),'\: I^{2} =', cf3d.I()*cf3d.I()
+
+    cf3d = Ga('e1 e2 e3 e4 e5',g=[2,2,2,2,-2])
+    print 'g =', cf3d.g
+    print r'%Signature = (4,1)\: I =', cf3d.I(),'\: I^{2} =', cf3d.I()*cf3d.I()
+
+    return
+
+def Fmt_test():
+    Print_Function()
+
+    e3d = Ga('e1 e2 e3',g=[1,1,1])
+
+    v = e3d.mv('v','vector')
+    B = e3d.mv('B','bivector')
+    M = e3d.mv('M','mv')
+
+    Fmt(2)
+
+    print '#Global $Fmt = 2$'
+
+    print 'v =',v
+    print 'B =',B
+    print 'M =',M
+
+    print '#Using $.Fmt()$ Function'
+
+    print 'v.Fmt(3) =',v.Fmt(3)
+    print 'B.Fmt(3) =',B.Fmt(3)
+    print 'M.Fmt(2) =',M.Fmt(2)
+    print 'M.Fmt(1) =',M.Fmt(1)
+
+    print '#Global $Fmt = 1$'
+
+    Fmt(1)
+
+    print 'v =',v
+    print 'B =',B
+    print 'M =',M
+
+    return
+
 def dummy():
     return
 
@@ -450,6 +517,7 @@ def main():
     Get_Program()
 
     Format()
+
     basic_multivector_operations_3D()
     basic_multivector_operations_2D()
     basic_multivector_operations_2D_orthogonal()
@@ -462,7 +530,8 @@ def main():
     properties_of_geometric_objects()
     extracting_vectors_from_conformal_2_blade()
     reciprocal_frame_test()
-
+    signature_test()
+    Fmt_test()
     xpdf()
     return
 

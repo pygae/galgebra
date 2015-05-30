@@ -237,7 +237,16 @@ class Metric(object):
                 entry is differentiating coordiate. Second entry is basis
                 vector.  Quantities are linear combinations of basis vector
                 symbols.
-	"""
+        sig: Signature of metric (p,q) where n = p+q.  If metric tensor
+             is numerical and orthogonal it is calculated.  Otherwise the
+             following inputs are used -
+
+             input   signature                Type
+              "e"      (n,0)    Euclidean
+              "m+"     (n-1,1)  Minkowski (One negative square)
+              "m-"     (1,n-1)  Minkowski (One positive square)
+               p       (p,n-p)  General (integer not string input)
+    """
 
     count = 1
 
@@ -246,7 +255,8 @@ class Metric(object):
                   'X': (None, 'vector manifold function'),
                   'norm': (False, 'True to normalize basis vectors'),
                   'debug': (False, 'True to print out debugging information'),
-                  'gsym': (None, 'String s to use "det("+s+")" function in reciprocal basis')}
+                  'gsym': (None, 'String s to use "det("+s+")" function in reciprocal basis'),
+                  'sig': ('e', 'Signature of metric, default is (n,0) a Euclidean metric')}
 
     @staticmethod
     def dot_orthogonal(V1, V2, g=None):
@@ -529,6 +539,41 @@ class Metric(object):
 
         return
 
+    def signature(self):
+        if self.is_ortho:
+            p = 0
+            q = 0
+            for i in self.n_range:
+                g_ii = self.g[i,i]
+                if g_ii.is_number:
+                    if g_ii > 0:
+                        p += 1
+                    else:
+                        q += 1
+                else:
+                    break
+            if p + q == self.n:
+                self.sig = (p,q)
+                return
+        if isinstance(self.sig,int):  # General signature
+            if self.sig <= self.n:
+                self.sig = (self.sig,self.n - self.sig)
+                return
+            else:
+                raise ValueError('self.sig = ' + str(self.sig) + ' > self.n, not an allowed hint')
+        if isinstance(self.sig,str):
+            if self.sig == 'e':  # Euclidean metric signature
+                self.sig = (self.n, 0)
+            elif self.sig == 'm+':  # Minkowski metric signature (n-1,1)
+                self.sig = (self.n - 1, 1)
+            elif self.sig == 'm-':  # Minkowski metric signature (1,n-1)
+                self.sig = (1, self.n - 1)
+            else:
+                raise ValueError('self.sig = ' + str(self.sig) + ' is not an allowed hint')
+            return
+        raise ValueError(str(self.sig) + ' is not allowed value for self.sig')
+
+
     def __init__(self, basis, **kwargs):
 
         kwargs = test_init_slots(Metric.init_slots, **kwargs)
@@ -544,6 +589,7 @@ class Metric(object):
         debug = kwargs['debug']
         coords = kwargs['coords']  # Manifold coordinates (sympy symbols)
         norm = kwargs['norm']  # Normalize basis vectors
+        self.sig = kwargs['sig']  # Hint for metric signature
         """
         String for symbolic metric determinant.  If self.gsym = 'g'
         then det(g) is sympy scalar function of coordinates with
@@ -670,6 +716,15 @@ class Metric(object):
                 self.normalize_metric()
             else:
                 raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
+
+        self.signature()
+        # Sign of square of pseudo scalar
+        self.e_sq_sgn = '+'
+        if ((self.n*(self.n-1))/2+self.sig[1])%2 == 1:
+            self.e_sq_sgn = '-'
+
+        if self.debug:
+            print 'signature =', self.sig
 
 if __name__ == "__main__":
     pass

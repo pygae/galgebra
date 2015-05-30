@@ -291,6 +291,12 @@ class GaPrinter(StrPrinter):
                       'root', 'sin', 'sinh', 'sqrt', 'sign', 'tan', 'tanh', 'Abs')
 
     str_flg = True
+    prev_fmt = 1
+    fmt = 1
+    dop_fmt =1
+    prev_dop_fmt = 1
+    lt_fmt = 1
+    prev_lt_fmt = 1
 
     def _print_Function(self, expr):
         name = expr.func.__name__
@@ -413,7 +419,14 @@ class GaLatexPrinter(LatexPrinter):
     title is printed in equation mode. '%' has the same effect in title as
     in the Fmt() member function.
     """
+
     fmt = 1
+    prev_fmt = 1
+    dop_fmt =1
+    prev_dop_fmt = 1
+    lt_fmt = 1
+    prev_lt_fmt = 1
+
     latex_flg = False
     latex_str = ''
     ipy = False
@@ -1396,7 +1409,7 @@ def Fmt(obj,fmt=0):
                 latex_cell = latex_cell.replace('\n', ' ')
                 latex_cell= latex_cell.replace(r'\begin{equation*}', ' ')
                 latex_cell= latex_cell.replace(r'\end{equation*}', ' ')
-                if cell.fmt != 1:
+                if GaLatexPrinter.fmt != 1:
                     latex_cell= latex_cell.replace(r'\begin{align*}', r'\begin{array}{c} ')
                     latex_cell= latex_cell.replace('&','')
                     latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
@@ -1414,8 +1427,14 @@ def Fmt(obj,fmt=0):
             return Latex(latex_str)
         else:
             return latex_str
-    return obj
+    elif isinstance(obj,int):
+        GaLatexPrinter.prev_fmt = GaLatexPrinter.fmt
+        GaLatexPrinter.fmt = obj
+        return
+    else:
+        raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
 
 
 if __name__ == "__main__":
+
     pass

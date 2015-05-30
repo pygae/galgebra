@@ -86,6 +86,17 @@ def Lorentz_Tranformation_in_Geog_Algebra():
     print r"%t\bm{\gamma_{t}}+x\bm{\gamma_{x}} =",Xpp.collect()
     return
 
+def General_Lorentz_Tranformation():
+    Print_Function()
+    (alpha,beta,gamma) = symbols('alpha beta gamma')
+    (x,y,z,t) = symbols("x y z t",real=True)
+    (st4d,g0,g1,g2,g3) = Ga.build('gamma*t|x|y|z',g=[1,-1,-1,-1])
+
+    B = (x*g1+y*g2+z*g3)^(t*g0)
+    print B
+    print B.exp(hint='+')
+    print B.exp(hint='-')
+
 def Lie_Group():
     Print_Function()
     coords = symbols('t x y z',real=True)
@@ -109,9 +120,10 @@ def main():
     Get_Program()
     Format()
 
-    Maxwells_Equations_in_Geom_Calculus()
-    Dirac_Equation_in_Geom_Calculus()
-    Lorentz_Tranformation_in_Geog_Algebra()
+    #Maxwells_Equations_in_Geom_Calculus()
+    #Dirac_Equation_in_Geom_Calculus()
+    #Lorentz_Tranformation_in_Geog_Algebra()
+    General_Lorentz_Tranformation()
     #Lie_Group()
 
     xpdf()

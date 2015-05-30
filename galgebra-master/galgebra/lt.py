@@ -63,13 +63,14 @@ class Lt(object):
         self.spinor = False
         self.rho_sq = None
 
+        self.lt_dict = {}
+        self.mv_dict = None
+
         if isinstance(mat_rep, dict):  # Dictionary input
-            self.lt_dict = {}
             for key in mat_rep:
                 self.lt_dict[key] = mat_rep[key]
 
         elif isinstance(mat_rep, list):  # List of lists input
-            self.lt_dict = {}
             if not isinstance(mat_rep[0], list):
                 for (lt_i, base) in zip(mat_rep, self.Ga.basis):
                     self.lt_dict[base] = lt_i
@@ -150,7 +151,7 @@ class Lt(object):
         else:
             mv_obj = mv.Mv(v, ga=self.Ga).obj
 
-        if len(self.mv_dict) == 0:  # Build dict for linear transformation of multivector
+        if self.mv_dict is None:  # Build dict for linear transformation of multivector
             self.mv_dict = copy(self.lt_dict)
             for key in self.Ga.blades[2:]:
                 for blade in key:
@@ -253,7 +254,7 @@ class Lt(object):
             if self.Ga.is_ortho:
                 self_adj.append(expand(s))
             else:
-                self_adj.append(expand(s) / self.Ga.inorm)
+                self_adj.append(expand(s) / self.Ga.e_sq)
         return Lt(self_adj, ga=self.Ga)
 
     def inv(self):
@@ -298,8 +299,6 @@ class Lt(object):
 
     def Fmt(self, fmt=1, title=None):
 
-        self.fmt = fmt
-
         if metric.in_ipynb():
             return self
 
@@ -328,7 +327,7 @@ class Lt(object):
         if title is not None:
             return title + ' = ' + latex_str
         else:
-                return latex_str
+            return latex_str
 
     def __str__(self):
         if printer.GaLatexPrinter.latex_flg:

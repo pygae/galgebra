@@ -283,7 +283,6 @@ class Mv(object):
         self.blade_flg = None  # if is_blade is called flag is set
         self.versor_flg = None  # if is_versor is called flag is set
         self.coords = self.Ga.coords
-        self.fmt = 1
         self.title = None
 
         if len(kargs) == 0:  # default constructor 0
@@ -568,21 +567,21 @@ class Mv(object):
             sorted_terms = sorted(terms, key=itemgetter(0))  # sort via base indexes
 
             s = str(sorted_terms[0][1][0] * sorted_terms[0][1][1])
-            if self.fmt == 3:
+            if printer.GaPrinter.fmt == 3:
                 s = ' ' + s + '\n'
-            if self.fmt == 2:
+            if printer.GaPrinter.fmt == 2:
                 s = ' ' + s
             old_grade = sorted_terms[0][1][2]
             for (key, (c, base, grade)) in sorted_terms[1:]:
                 term = str(c * base)
-                if self.fmt == 2 and old_grade != grade:  # one grade per line
+                if printer.GaPrinter.fmt == 2 and old_grade != grade:  # one grade per line
                     old_grade = grade
                     s += '\n'
                 if term[0] == '-':
                     term = ' - ' + term[1:]
                 else:
                     term = ' + ' + term
-                if self.fmt == 3:  # one base per line
+                if printer.GaPrinter.fmt == 3:  # one base per line
                     s += term + '\n'
                 else:  # one multivector per line
                     s += term
@@ -668,9 +667,9 @@ class Mv(object):
                 cb_str = '\\left ( ' + l_coef + '\\right ) ' + l_base
             else:
                 cb_str = l_coef + ' ' + l_base
-            if self.fmt == 3:  # One base per line
+            if printer.GaLatexPrinter.fmt == 3:  # One base per line
                 lines.append(append_plus(cb_str))
-            elif self.fmt == 2:  # One grade per line
+            elif printer.GaLatexPrinter.fmt == 2:  # One grade per line
                 if grade != old_grade:
                     old_grade = grade
                     if not self.first_line:
@@ -680,9 +679,9 @@ class Mv(object):
                     s += append_plus(cb_str)
             else:  # One multivector per line
                 s += append_plus(cb_str)
-        if self.fmt == 2:
+        if printer.GaLatexPrinter.fmt == 2:
             lines.append(s)
-        if self.fmt >= 2:
+        if printer.GaLatexPrinter.fmt >= 2:
             if len(lines) == 1:
                 return lines[0]
             s = ' \\begin{align*} '
@@ -1036,7 +1035,13 @@ class Mv(object):
         with one grade per line.  Works for both standard printing and
         for latex.
         """
-        self.fmt = fmt
+        if printer.GaLatexPrinter.latex_flg:
+            printer.GaLatexPrinter.prev_fmt = printer.GaLatexPrinter.fmt
+            printer.GaLatexPrinter.fmt = fmt
+        else:
+            printer.GaPrinter.prev_fmt = printer.GaPrinter.fmt
+            printer.GaPrinter.fmt = fmt
+
         if title is not None:
             self.title = title
 
@@ -1044,18 +1049,20 @@ class Mv(object):
             return self
 
         if Mv.latex_flg:
-            printer.GaLatexPrinter.fmt = self.fmt
             latex_str = printer.GaLatexPrinter.latex(self)
+            printer.GaLatexPrinter.fmt = printer.GaLatexPrinter.prev_fmt
+
             if title is not None:
                 return title + ' = ' + latex_str
             else:
                 return latex_str
         else:
-            printer.GaPrinter.fmt = self.fmt
+            s = str(self)
+            printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
             if title is not None:
-                return title + ' = ' + str(self)
+                return title + ' = ' + s
             else:
-                return self
+                return s
         return
 
     def _repr_latex_(self):
@@ -1190,8 +1197,7 @@ class Mv(object):
 
 class Sdop(object):
 
-    init_slots = {'ga': (None, 'Associated geometric algebra'),
-                  'fmt': (1, '1 for normal formating')}
+    init_slots = {'ga': (None, 'Associated geometric algebra')}
 
     ga = None
     str_mode = False
@@ -1324,7 +1330,6 @@ class Sdop(object):
         kwargs = metric.test_init_slots(Sdop.init_slots, **kwargs)
 
         self.Ga = kwargs['ga']  # Associated geometric algebra (coords)
-        self.fmt = kwargs['fmt']  # Output format
 
         if self.Ga is None:
             if Sdop.ga is None:
@@ -1551,7 +1556,6 @@ class Pdop(object):
         kwargs = metric.test_init_slots(Pdop.init_slots, **kwargs)
 
         self.Ga = kwargs['ga']  # Associated geometric algebra
-        self.fmt = 1
         self.order = 0
 
         if self.Ga is None:
@@ -1747,10 +1751,10 @@ class Dop(object):
     init_slots = {'ga': (None, 'Associated geometric algebra'),
                   'cmpflg': (False, 'Complement flag for Dop'),
                   'debug': (False, 'True to print out debugging information'),
-                  'fmt': (1, '1 for normal dop multivector formating'),
                   'fmt_dop': (1, '1 for normal dop partial derivative formating')}
 
     ga = None
+
 
     @staticmethod
     def setGa(ga):  # set geometric algebra globally for all Dop's
@@ -1761,7 +1765,6 @@ class Dop(object):
     @staticmethod
     def flatten_one_level(lst):
         return [inner for outer in lst for inner in outer]
-
 
     def __init__(self, *kargs, **kwargs):
 
@@ -1776,7 +1779,6 @@ class Dop(object):
             else:
                 self.Ga = Dop.ga
 
-        self.fmt = kwargs['fmt']  # Multvector output format (default 1)
         self.dop_fmt = kwargs['fmt_dop']  # Partial derivative output format (default 1)
         self.title = None
 
@@ -2174,9 +2176,13 @@ class Dop(object):
         return s[:-3]
 
     def Fmt(self, fmt=1, title=None, dop_fmt=None):
-        self.fmt = fmt
-        if dop_fmt is not None:
-            self.dop_fmt = dop_fmt
+        if printer.GaLatexPrinter.latex_flg:
+            printer.GaLatexPrinter.prev_fmt = printer.GaLatexPrinter.fmt
+            printer.GaLatexPrinter.prev_dop_fmt = printer.GaLatexPrinter.dop_fmt
+        else:
+            printer.GaPrinter.prev_fmt = printer.GaPrinter.fmt
+            printer.GaPrinter.prev_dop_fmt = printer.GaPrinter.dop_fmt
+
         if title is not None:
             self.title = title
 
@@ -2184,18 +2190,23 @@ class Dop(object):
             return self
 
         if Mv.latex_flg:
-            printer.GaLatexPrinter.fmt = self.fmt
             latex_str = printer.GaLatexPrinter.latex(self)
+            printer.GaLatexPrinter.fmt = printer.GaLatexPrinter.prev_fmt
+            printer.GaLatexPrinter.dop_fmt = printer.GaLatexPrinter.prev_dop_fmt
+
             if title is not None:
                 return title + ' = ' + latex_str
             else:
                 return latex_str
         else:
-            printer.GaPrinter.fmt = self.fmt
+            s = str(self)
+            printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
+            printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
+
             if title is not None:
-                return title + ' = ' + str(self)
+                return title + ' = ' + s
             else:
-                return self
+                return s
         return
 
     @staticmethod
@@ -2203,7 +2214,7 @@ class Dop(object):
         r_basis = list(ga.r_basis)
 
         if not ga.is_ortho:
-            r_basis = [x / ga.inorm for x in r_basis]
+            r_basis = [x / ga.e_sq for x in r_basis]
         if ga.norm:
             r_basis = [x / e_norm for (x, e_norm) in zip(r_basis, ga.e_norm)]
 

@@ -3,7 +3,7 @@
 import operator
 import copy
 from sympy import diff, Rational, Symbol, S, Mul, Pow, Add, \
-    collect, expand, eye, trigsimp, sin, cos, sinh, cosh, \
+    collect, expand, simplify, eye, trigsimp, sin, cos, sinh, cosh, \
     symbols, sqrt, Abs, numbers
 from collections import OrderedDict
 #from sympy.core.compatibility import combinations
@@ -320,9 +320,6 @@ class Ga(metric.Metric):
         self.dot_mode = '|'
         self.basis_product_tables()
 
-        self.inorm = None
-        self.Inorm = None
-
         if self.coords is not None:
             self.coords = list(self.coords)
 
@@ -343,8 +340,14 @@ class Ga(metric.Metric):
             self.build_connection()
 
         self.lt_flg = False
-        self.i = mv.Mv(self.iobj, ga=self)  # Pseudo-scalar for geometric algebra
-        self.i_inv = self.i/(self.i*self.i).scalar()  # Invers of pseudo-scalar for geometric algebra
+        self.e = mv.Mv(self.iobj, ga=self)  # Pseudo-scalar for geometric algebra
+        self.e_sq = simplify(expand((self.e*self.e).scalar()))
+
+        # Calculate normalized pseudo scalar (I**2 = +/-1)
+        if self.e_sq_sgn == '+':
+            self.i = self.e/sqrt(self.e_sq)
+        else:
+            self.i = self.e/sqrt(-self.e_sq)
 
         if Ga.restore:  # restore printer to appropriate enhanced mode after ga is instantiated
             printer.GaLatexPrinter.redirect()
@@ -386,12 +389,11 @@ class Ga(metric.Metric):
     def __str__(self):
         return self.name
 
+    def E(self):
+        return self.e
+
     def I(self):
-        if self.Inorm is None:
-            if self.inorm is None:
-                self.inorm = (self.i * self.i).scalar()
-            self.Inorm = self.i / sqrt(Abs(self.inorm))
-        return self.Inorm
+        return self.i
 
     def X(self):
         return self.mv(sum([coord*base for (coord, base) in zip(self.coords, self.basis)]))
@@ -453,14 +455,14 @@ class Ga(metric.Metric):
         if self.r_basis_mv is None:
             self.build_reciprocal_basis(self.gsym)
         if norm and not self.is_ortho:
-            return tuple([self.r_basis_mv[i] / self.inorm_sq for i in self.n_range])
+            return tuple([self.r_basis_mv[i] / self.e_sq for i in self.n_range])
         else:
             return tuple(self.r_basis_mv)
 
 
     def grads(self):
         if not self.is_ortho:
-            r_basis = [x / self.inorm for x in self.r_basis_mv]
+            r_basis = [x / self.e_sq for x in self.r_basis_mv]
         else:
             r_basis = self.r_basis_mv
         if self.norm:
@@ -1307,7 +1309,7 @@ class Ga(metric.Metric):
         where E_{n} = e_{1}^...^e_{n}.
 
         For non-orthogonal basis e^{j} is not normalized and must be
-        divided by E_{n}**2 (self.inorm) in any relevant calculations.
+        divided by E_{n}**2 (self.e_sq) in any relevant calculations.
 
         If gsym = True then (E_{n})**2 is not evaluated, but is represented
         as (E_{n})**2 = (-1)**(n*(n-1)/2)*det(g) where det(g) the determinant
@@ -1320,22 +1322,22 @@ class Ga(metric.Metric):
         if self.is_ortho:
             self.r_basis = [self.basis[i] / self.g[i, i] for i in self.n_range]
         else:
-            self.iobj = self.blade_to_base_rep(self.blades_lst[-1])
+            self.e_obj = self.blade_to_base_rep(self.blades_lst[-1])
             if gsym is not None:
                 if printer.GaLatexPrinter.latex_flg:
                     det_str = r'\det\left ( ' + gsym + r'\right ) '
                 else:
                     det_str = 'det(' + gsym + ')'
                 if self.coords is None:
-                    self.inorm_sq = (-1) ** (n*(n - 1)/2) * Symbol(det_str,real=True)
+                    self.e_sq = (-1) ** (n*(n - 1)/2) * Symbol(det_str,real=True)
                 else:
                     n = len(self.coords)
-                    self.inorm_sq = (-1) ** (n*(n - 1)/2) * Function(det_str,real=True)(*self.coords)
+                    self.e_sq = (-1) ** (n*(n - 1)/2) * Function(det_str,real=True)(*self.coords)
             else:
-                self.inorm = expand(self.basic_mul(self.iobj, self.iobj))
-                self.inorm_sq = metric.Simp.apply(self.inorm * self.inorm)
+                self.e = expand(self.basic_mul(self.e_obj, self.e_obj))
+                self.e_sq = metric.Simp.apply(self.e * self.e)
             if self.debug:
-                print 'I**2 =', self.inorm_sq
+                print 'E**2 =', self.e_sq
             duals = list(self.blades_lst[-(self.n + 1):-1])
             duals.reverse()
 
@@ -1343,12 +1345,12 @@ class Ga(metric.Metric):
             self.r_basis = []
             for dual in duals:
                 dual_base_rep = self.blade_to_base_rep(dual)
-                tmp = collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.iobj))), self.blades_lst)
+                tmp = collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))), self.blades_lst)
                 self.r_basis.append(tmp)
                 sgn = -sgn
 
             if self.debug:
-                printer.oprint('I', self.iobj, 'Inorm', self.inorm, 'unnormalized reciprocal basis =\n', self.r_basis)
+                printer.oprint('E', self.iobj, 'E**2', self.e_sq, 'unnormalized reciprocal basis =\n', self.r_basis)
                 self.dot_mode = '|'
                 print 'reciprocal basis test ='
                 for ei in self.basis:
@@ -1357,9 +1359,9 @@ class Ga(metric.Metric):
                         if ei_dot_ej == zero:
                             print 'e_{i}|e_{j} = ' + str(ei_dot_ej)
                         else:
-                            print 'e_{i}|e_{j} = ' + str(expand(ei_dot_ej / self.inorm))
+                            print 'e_{i}|e_{j} = ' + str(expand(ei_dot_ej / self.e_sq))
 
-        self.iobj = self.blades_lst[-1]
+        self.e_obj = self.blades_lst[-1]
 
         # Dictionary to represent reciprocal basis vectors as expansions
         # in terms of basis vectors.
@@ -1377,7 +1379,7 @@ class Ga(metric.Metric):
             for x_i in self.n_range:
                 for jb in self.n_range:
                     if not self.is_ortho:
-                        self.de[x_i][jb] = metric.Simp.apply(self.de[x_i][jb].subs(self.r_basis_dict) / self.inorm)
+                        self.de[x_i][jb] = metric.Simp.apply(self.de[x_i][jb].subs(self.r_basis_dict) / self.e_sq)
                     else:
                         self.de[x_i][jb] = metric.Simp.apply(self.de[x_i][jb].subs(self.r_basis_dict))
 
@@ -1393,7 +1395,7 @@ class Ga(metric.Metric):
                 if j >= i:
                     g_inv[i, j] = self.dot(self.r_basis_dict[rx_i], self.r_basis_dict[rx_j])
                     if not self.is_ortho:
-                        g_inv[i, j] /= self.inorm
+                        g_inv[i, j] /= self.e_sq
                 else:
                     g_inv[i, j] = g_inv[j, i]
 
@@ -1777,7 +1779,7 @@ class Sm(Ga):
 
     def vpds(self):
         if not self.is_ortho:
-            r_basis = [x / self.inorm for x in self.r_basis_mv]
+            r_basis = [x / self.e_sq for x in self.r_basis_mv]
         else:
             r_basis = self.r_basis_mv
         if self.norm:

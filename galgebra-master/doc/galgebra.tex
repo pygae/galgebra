@@ -105,6 +105,13 @@
 \maketitle
 {\bf Introduction}\newline
 
+\begin{center}
+\includegraphics[scale=0.25]{dhestenes.jpg} \begin{tabular}{c}
+\includegraphics[scale=0.25]{wkclifford.jpg} \\
+\emph{William Kindom Clifford}
+\end{tabular} 
+\end{center}
+
    This document describes the implementation, installation and use of a
    geometric algebra module written in
    python that utilizes the \emph{sympy} symbolic algebra library.  The python
@@ -1588,7 +1595,7 @@ The geometric algebra module consists of the following files and classes
 
 The geometric algebra class is instantiated with
 
-\T{Ga(basis, g=None, coords=None, X=None, norm=False, debug=False)}
+\T{Ga(basis, g=None, coords=None, X=None, norm=False, sig='e', debug=False)}
 \begin{quote}
    The \T{basis} and \T{g} parameters were described in section~\ref{BasisMetric}.
    If the metric is a function of position, if we have multivector fields, or we
@@ -1620,6 +1627,28 @@ The geometric algebra class is instantiated with
    with caution, due to the possible
    problems with taking the square root of a general \emph{sympy} expression (one that has an
    unknown sign).}
+
+   \T{sig} indicates the signature of the vector space in the following ways.\footnote{The 
+   signature of the vector space, $(p,q)$, is required to determine whether the square of
+   the normalized pseudoscalar, $I$, is $+1$ or $-1$. In the future the metric tensor would
+   be required to create a generalized spinor \cite[p.~106]{Hestenes}.}
+   \begin{enumerate}
+       \item If the metric tensor is purely numerical (the components are not symbolic or 
+             functions of the coordinates) and is diagonal (orthogonal basis vectors) the 
+             signature is computed from the metric tensor.
+       \item If the metric tensor is not purely numerical and orthogonal the following hints
+             are used (dimension of vector space is $n$)
+       \begin{enumerate}
+       		\item \T{sig='e'} the default hint assumes the signature is for a Euclidean space
+       		      with signature $(n,0)$.
+       		\item \T{sig='m+'} assumes the signature if for the Minkowski space $(n-1,1)$.
+       		\item \T{sig='m-'} assumes the signature if for the Minkowski space $(1,n-1)$.
+       		\item \T{sig=p} where \T{p} is an integer $p\le n$ and the signature it $(p,n-p)$. 
+       \end{enumerate}
+   \end{enumerate}
+   If the metric tensor contains no symbolic constants, but is a function of the coordinates, it is
+   possible to determine the signature of the metric numerically by specifying a allowed numerical
+   coordinate tuple due to the invariance of the signature.  This will be implemented in the future. 
 
    If \T{debug=True} the data structures required to initialize the Ga class
    are printed out.
@@ -1688,7 +1717,14 @@ To access the pseudo scalar of the geometric algebra us the member function \T{I
 \begin{quote}
     \T{Ga.I()} returns the normalized pseudo scalar $\paren{\abs{I^{2}}=1}$ for the
     geometric algebra. For example $I = \mbox{\T{o3d.I()}}$ for the \T{o3d} geometric
-    algebra.
+    algebra.  This function requires the signature of the vector space (see instantiating
+    a geometric algebra).
+\end{quote}
+
+\T{Ga.E()}
+\begin{quote}
+    \T{Ga.E()} returns the unnormalized pseudo scalar $E_{n} = \bm{e}_{1}\W\dots\W\bm{e}_{n}$
+    for the geometric algebra.
 \end{quote}
 
 In general we have defined member functions of the \T{Ga} class that will instantiate objects
@@ -1829,7 +1865,8 @@ debug=False,curv=(None,None))}
 
 \begin{quote}
     \T{Fmt} in \T{MV} has inputs identical to \T{Fmt} in \T{Mv} except that if \T{A} is a multivector then \T{A.Fmt(2,'A')}
-    executes a print statement from \T{MV} and returns \T{None}, while from \T{Mv}, \T{A.Fmt(2,'A')} returns a string.
+    executes a print statement from \T{MV} and returns \T{None}, while from \T{Mv}, \T{A.Fmt(2,'A')} returns a string so that
+    the function is compatible with use in \emph{Ipython notebook}.
 \end{quote}
 
 
@@ -1925,6 +1962,9 @@ If we can instantiate multivectors we can use all the multivector class function
     \end{center}
     \T{title} appends a title string to the beginning of the output.  An equal sign in
     the title string is not required, but is added as a default.
+    Note that \T{Fmt} only overrides the the global multivector printing format for the
+    particular instance being printed.  To reset the global multivector printing format
+    use the function \T{Fmt()} in the printer module.
 \end{quote}
 
 \T{func(self,fct)}
@@ -2425,42 +2465,9 @@ If \T{Eprint} is called in a program (linux) when multivectors are printed
 the basis blades or bases are printed in bold text, functions are printed in red,
 and derivative operators in green.
 
-For formatting the multivector output there is the member function
-
-\T{Fmt(self,fmt=1,title=None)}
-\begin{quote}
-\T{Fmt} is used to control how the multivector (\T{Mv}) is printed with the argument
-\T{fmt}.  If \T{fmt=1} the entire multivector is printed on one line.  If
-\T{fmt=2} each grade of the multivector is printed on one line.  If \T{fmt=3}
-each component (base) of the multivector is printed on one line.  If a
-\T{title} is given then \T{title=multivector} is printed.  If the usual print
-command is used the entire multivector is printed on one line.
-\end{quote}
-
-For formatting the tensor (\T{Mlt}) output there is the member function
-
-\T{Fmt(self,cnt=1,title=None)}
-\begin{quote}
-\T{Fmt} is used to control how the tensor is printed with the argument
-\T{cnt}.  If \T{cnt=1} the each tensor component is printed on one line.  If
-\T{fmt=n} $n$ tensor components are printed on one line.  If a
-\T{title} is given then \T{title=tensor} is printed.  If the usual print
-command is used one tensor component is printed on one line. If \T{cnt} is
-greater or equal to the number of tensor components then the entire tensor
-is printer on one line.
-\end{quote}
-
-For \T{Mv}, \T{Lt}, \T{Mlt}, and \T{Dop,} \T{Fmt()} returns a formatted string when executing from a script (\T{.py} file).  When executing in
-\emph{Ipython notebook} (\T{.ipynb} file) the function returns the \emph{object} itself.  For example if you wish to print a
-formatted multivector, \T{A},  from a script use
-
-\T{    print A.Fmt(2,'A')}
-
-for an \emph{Ipython notebook} session use
-
-\T{    A.Fmt(2,'A')}
-
-these methods work in the same way for {\LaTeX} printing.
+For formatting the multivector output there is the member function \T{Fmt(self,fmt=1,title=None)}
+which is documented in the multivector member functions.  This member function works in the same 
+way for {\LaTeX} printing.
 
 \section{Latex Printing}\label{LatexPrinting}
 
@@ -2481,6 +2488,31 @@ functions are
                &  \T{False} &  Print partial derivatives with standard \emph{sympy} latex formatting $\frac{\partial f}{\partial x}$ \\
 \end{tabular}
 \end{quote}
+
+\T{Fmt(obj,fmt=1)}
+\begin{quote}
+	\T{Fmt()} can be used to set the global multivector printing format or to print a tuple, list, of dictionary.\footnote{In 
+	\emph{Ipython notebook} tuples, or lists, or dictionarys of multivectors do print correctly. One mode of \T{Fmt()} corrects
+	this deficiency.}  The modes and operation of \T{Fmt()} are as follows:
+	\begin{center}
+	\begin{tabular}{cl}
+	\T{obj} & Effect \\ \rule{0pt}{5ex}
+	\T{obj=1,2,3} & \parbox[c]{4in}{Global multivector format is set to 1, 2, or 3 depending on \T{obj}.  
+	                                See multivector member function \T{Fmt()}	for effect of \T{obj} value.} \\ \rule{0pt}{7ex}
+	\begin{tabular}{rl}
+	\T{obj=} & \vspace{-2pt}\hspace{-11pt}\parbox[l]{1in}{\T{tuple}\\ \T{list}\\ \T{dict}}
+	\end{tabular} 
+	& \parbox[c]{4in}{The printing format of an object that is a tuple, list, or dict is controlled by the \T{fmt} argument in \T{Fmt}:
+	\begin{center}
+	\begin{tabular}{cl}
+		\T{fmt=1} & Print complete \T{obj} on one line. \\
+		\T{fmt=2} & Print one element of \T{obj} on each line.	
+	\end{tabular}\end{center}}
+	\end{tabular}	
+	\end{center}
+
+\end{quote}
+
 
 \T{xpdf(filename=None,debug=False,paper=(14,11),crop=False)}
 \begin{quote}
