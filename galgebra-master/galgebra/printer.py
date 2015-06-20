@@ -23,6 +23,8 @@ import metric
 if metric.in_ipynb():
     from IPython.display import Latex
 
+Format_cnt = 0
+
 ip_cmds = \
 """
 $\\DeclareMathOperator{\Tr}{Tr}
@@ -937,22 +939,29 @@ def Format(Fmode=True, Dmode=True, dop=1):
 
     and redirects printer output so that latex compiler can capture it.
     """
+    global Format_cnt
 
     GaLatexPrinter.Dmode = Dmode
     GaLatexPrinter.Fmode = Fmode
-    if metric.in_ipynb():
-        GaLatexPrinter.ipy = True
 
-    else:
-        GaLatexPrinter.ipy = False
-    GaLatexPrinter.dop = dop
-    GaLatexPrinter.latex_flg = True
-    GaLatexPrinter.redirect()
+    if Format_cnt == 0:
+        Format_cnt += 1
 
-    Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
-    #Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
-    Basic.__repr_ = lambda self: GaLatexPrinter().doprint(self)
-    #Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
+        if metric.in_ipynb():
+            GaLatexPrinter.ipy = True
+        else:
+            GaLatexPrinter.ipy = False
+
+        GaLatexPrinter.dop = dop
+        GaLatexPrinter.latex_flg = True
+
+        if not GaLatexPrinter.ipy:
+            GaLatexPrinter.redirect()
+
+        Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
+        Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
+        Basic.__repr_ = lambda self: GaLatexPrinter().doprint(self)
+        #Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
 
     return
 

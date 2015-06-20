@@ -48,6 +48,14 @@ def main():
     print 'AB =', A * B
     print 'A - B =', A - B
 
+    print 'General Symmetric Linear Transformation'
+    Asym = o3d.lt('A',mode='s')
+    print 'A =', Asym
+    print 'General Antisymmetric Linear Transformation'
+    Aasym = o3d.lt('A',mode='a')
+    print 'A =', Aasym
+
+
     print '#2d general ($A,\\;B$ are linear transformations)'
 
     A2d = g2d.lt('A')

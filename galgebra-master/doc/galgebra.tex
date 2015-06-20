@@ -2253,7 +2253,8 @@ coordinates, $\set{\bm{e}_{i}}$, must be defined when the geometric algebra asso
 This is due to the naming conventions of the general linear transformation (coordinate names are used) and for the calculation
 of the trace of the linear transformation which requires taking a divergence.} To instantiate a specific linear transformation
 the usage of \T{lt()} is
-\T{Ga.lt(M,f=False)}
+\T{Ga.lt(M,f=False,mode='g')}
+\newpage
 \begin{quote}
     \T{M} is an expression that can define the coefficients of the linear transformation in various ways defined as follows.
     \begin{center}
@@ -2262,6 +2263,9 @@ the usage of \T{lt()} is
     string \T{M} & \parbox[t]{4in}{Coefficients are symbolic constants with names $\T{M}^{x_{i}x_{j}}$ where $x_{i}$
                        and $x_{j}$ are the names
     of the $i^{th}$ and $j^{th}$ coordinates (see output of \T{Ltrans.py}). } \\ \hline
+    char \T{mode} &  \parbox[t]{4in}{If \T{M} is a string then \T{mode} determines whether the linear transformation is 
+                    general, \T{mode='g'}, symmetric, \T{mode='s'}, or antisymmetric, \T{mode='a'}.  The default is 
+                    \T{mode='g'}.}\\ \hline
     list \T{M} & \parbox[t]{4in}{If \T{M} is a list of vectors equal in length to the dimension of the vector space then
                  the linear transformation is $\f{L}{\ebf_{i}} = \T{M}\mat{i}$. If \T{M} is a list of lists of scalars where all
                  lists are equal in length to the dimension of the vector space then the linear transformation is

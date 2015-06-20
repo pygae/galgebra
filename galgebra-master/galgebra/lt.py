@@ -23,7 +23,8 @@ class Lt(object):
 
     mat_fmt = False
     init_slots = {'ga': (None, 'Name of metric (geometric algebra)'),
-                  'f': (False, 'True if Lt if function of coordinates.')}
+                  'f': (False, 'True if Lt if function of coordinates.'),
+                  'mode': ('g', 'g:general, s:symmetric, a:antisymmetric transformation.')}
 
     @staticmethod
     def setup(ga):
@@ -57,6 +58,7 @@ class Lt(object):
         mat_rep = kargs[0]
         ga = kwargs['ga']
         self.fct_flg = kwargs['f']
+        self.mode = kwargs['mode']  # General g, s, or a transformation
         self.Ga = ga
         self.coords = ga.lt_coords
         self.X = ga.lt_x
@@ -101,7 +103,7 @@ class Lt(object):
         elif isinstance(mat_rep, str):  # String input
             root = mat_rep
             mat_rep = []
-            for row in self.Ga.coords:
+            for row in self.Ga.coords:  # First set up general transformation
                 row_str = ''
                 for col in self.Ga.coords:
                     row_str += root + '_' + str(row) + str(col) + ','
@@ -110,6 +112,25 @@ class Lt(object):
                     mat_rep.append([Function(fct_name)(*self.Ga.coords) for fct_name in fct_names])
                 else:
                     mat_rep.append(list(symbols(row_str[:-1])))
+            if self.mode == 'g':
+                pass
+            elif self.mode == 's':  # Symmetric linear transformation
+                n_range = range(len(mat_rep))
+                for i in n_range:
+                    for j in n_range:
+                        if i > j:
+                            mat_rep[i][j] = mat_rep[j][i]
+            elif self.mode == 'a':  # Antisymmetric linear transformation
+                n_range = range(len(mat_rep))
+                for i in n_range:
+                    mat_rep[i][i] = S(0)
+                for i in n_range:
+                    for j in n_range:
+                        if i > j:
+                            mat_rep[j][i] = -mat_rep[i][j]
+            else:
+                raise ValueError(str(self.mode) + ' not allowed in constructing lt.\n')
+
             self.__init__(mat_rep, ga=self.Ga)
 
         else:  # Linear multivector function input
