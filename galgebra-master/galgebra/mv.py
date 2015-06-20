@@ -113,7 +113,6 @@ class Mv(object):
         elif op == '<':
             return A < B
         elif op == '>':
-            print 'A > B =', A, B
             return A > B
         else:
             raise ValeError('Operation ' + op + 'not allowed in Mv.Mul!')
@@ -311,7 +310,10 @@ class Mv(object):
                 kargs = [kargs[0]] + list(kargs[2:])
                 Mv.init_dict[mode](self, *kargs, **kwargs)
             else:  # kargs[1] = r (integer) Construct grade r multivector
-                Mv.init_dict['grade'](self, *kargs, **kwargs)
+                if kargs[1] == 0:
+                    Mv.init_dict['scalar'](self, *kargs, **kwargs)
+                else:
+                    Mv.init_dict['grade'](self, *kargs, **kwargs)
 
             if isinstance(kargs[0],str):
                 self.title = kargs[0]
@@ -320,6 +322,7 @@ class Mv(object):
     ################# Multivector member functions #####################
 
     def reflect_in_blade(self, blade):  # Reflect mv in blade
+        # See Mv class functions documentation
         if blade.is_blade():
             self.characterise_Mv()
             blade.characterise_Mv()
@@ -337,6 +340,7 @@ class Mv(object):
             raise ValueError(str(blade) + 'is not a blade in reflect_in_blade(self, blade)')
 
     def project_in_blade(self,blade):
+        # See Mv class functions documentation
         if blade.is_blade():
             blade.characterise_Mv()
             blade_inv = blade.rev() / blade.norm2()
@@ -365,6 +369,34 @@ class Mv(object):
             self.is_blade_rep = True
             return self
 
+    def __ne__(self, A):
+        if isinstance(A, Mv):
+            diff = (self - A).expand()
+            if diff.obj == S(0):
+                return False
+            else:
+                return True
+        else:
+            if self.is_scalar() and self.obj == A:
+                return False
+            else:
+                return True
+
+    def __eq__(self, A):
+        if isinstance(A, Mv):
+            diff = (self - A).expand()
+            if diff.obj == S(0):
+                return True
+            else:
+                return False
+        else:
+            if self.is_scalar() and self.obj == A:
+                return True
+            else:
+                return False
+
+
+    """
     def __eq__(self, A):
         if not isinstance(A, Mv):
             if not self.is_scalar():
@@ -388,6 +420,7 @@ class Mv(object):
             if expand(coefs[index]) != expand(Acoefs[index]):
                 return False
         return True
+    """
 
     def __neg__(self):
         return Mv(-self.obj, ga=self.Ga)
@@ -504,15 +537,24 @@ class Mv(object):
         self.characterise_Mv()
         return(self)
 
+    def __div_ab__(self,A):  # self /= A
+        if isinstance(A,Mv):
+            self *= A.inv()
+        else:
+            self *= S(1)/A
+        return
+
     def __div__(self, A):
-        self_div = Mv(self.obj, ga=self.Ga)
-        self_div.obj /= A
-        return(self_div)
+        if isinstance(A,Mv):
+            return self * A.inv()
+        else:
+            return self * (S(1)/A)
 
     def __truediv__(self, A):
-        self_div = Mv(self.obj, ga=self.Ga)
-        self_div.obj /= A
-        return(self_div)
+        if isinstance(A,Mv):
+            return self * A.inv()
+        else:
+            return self * (S(1)/A)
 
     def __str__(self):
         if printer.GaLatexPrinter.latex_flg:
@@ -592,6 +634,9 @@ class Mv(object):
             return str(self.obj)
 
     def Mv_latex_str(self):
+        if self.obj == 0:
+            return ' 0 '
+
         self.first_line = True
 
         def append_plus(c_str):
@@ -756,11 +801,13 @@ class Mv(object):
 
         self = self.blade_rep()
         A = A.blade_rep()
+        """
         if A.is_scalar():
             if self.is_scalar():
                 return self.obj * A.obj
             else:
                 return S(0)
+        """
 
         self_lc_A = Mv(self.Ga.dot(self.obj, A.obj), ga=self.Ga)
         return self_lc_A
@@ -780,11 +827,13 @@ class Mv(object):
 
         self = self.blade_rep()
         A = A.blade_rep()
+        """
         if self.is_scalar():
             if A.is_scalar():
                 return self.obj * A.obj
             else:
                 return S(0)
+        """
 
         self_rc_A = Mv(self.Ga.dot(self.obj, A.obj), ga=self.Ga)
         return self_rc_A
@@ -846,6 +895,13 @@ class Mv(object):
                 self.blade_flg = False
             return self.blade_flg
 
+    def is_base(self):
+        (coefs,bases) = linear_expand(self.obj)
+        if len(coefs) > 1:
+            return False
+        else:
+            return True
+
     def is_versor(self):  # Test for versor (geometric product of vectors)
         """
         This follows Leo Dorst's test for a versor.
@@ -900,6 +956,10 @@ class Mv(object):
         return coefs
 
     def proj(self, bases_lst):
+        """
+        Project multivector onto a given list of bases.  That is find the
+        part of multivector with the same bases as in the bases_lst.
+        """
         bases_lst = [x.obj for x in bases_lst]
         (coefs, bases) = metric.linear_expand(self.obj)
         obj = 0
@@ -921,7 +981,6 @@ class Mv(object):
             return sign * I * self
         else:
             return sign * self * I
-
 
     def even(self):
         # return even parts of multivector
@@ -981,24 +1040,37 @@ class Mv(object):
         """
         self_sq = self * self
         if self_sq.is_scalar():
-            sq = self_sq.obj
-            if sq.is_number:
+            sq = simplify(self_sq.obj)  # sympy expression for self**2
+            if sq == S(0):  # sympy expression for self**2 = 0
+                return self + S(1)
+            (coefs,bases) = metric.linear_expand(self.obj)
+            if len(coefs) == 1:  # Exponential of scalar * base
+                base = bases[0]
+                base_Mv = self.Ga.mv(base)
+                base_sq = (base_Mv*base_Mv).scalar()
+                if hint == '-': # base^2 < 0
+                    base_n = sqrt(-base_sq)
+                    return self.Ga.mv(cos(base_n*coefs[0]) + sin(base_n*coefs[0])*(bases[0]/base_n))
+                else:  # base^2 > 0
+                    base_n = sqrt(base_sq)
+                    return self.Ga.mv(cosh(base_n*coefs[0]) + sinh(base_n*coefs[0])*(bases[0]/base_n))
+            if sq.is_number:  # Square is number, can test for sign
                 if sq > S(0):
                     norm = sqrt(sq)
                     value = self.obj / norm
                     return Mv(cosh(norm) + sinh(norm) * value, ga=self.Ga)
-                elif sq < S(0):
+                else:
                     norm = sqrt(-sq)
                     value = self.obj / norm
                     return Mv(cos(norm) + sin(norm) * value, ga=self.Ga)
-                else:
-                    return Mv(S(1), 'scalar', ga=self.Ga)
             else:
-                norm = metric.square_root_of_expr(sq)
-                value = self.obj / norm
                 if hint == '+':
+                    norm = simplify(sqrt(sq))
+                    value = self.obj / norm
                     return Mv(cosh(norm) + sinh(norm) * value, ga=self.Ga)
                 else:
+                    norm = simplify(sqrt(-sq))
+                    value = self.obj / norm
                     return Mv(cos(norm) + sin(norm) * value, ga=self.Ga)
         else:
             raise ValueError('"' + str(self) + '**2" is not a scalar in exp.')
@@ -1126,12 +1198,16 @@ class Mv(object):
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
     def inv(self):
-        reverse = self.rev()
-        product = self * reverse
-        if(product.is_scalar()):
-            return reverse.func(lambda coefficient: coefficient / product.obj)
-        else:
-            raise TypeError('"(' + str(product) + ')" is not a scalar.')
+        if self.is_scalar():  # self is a scalar
+            return self.ga.mv(S(1)/self.obj)
+        self_sq = self * self
+        if self_sq.is_scalar():  # self*self is a scalar
+            return (S(1)/self_sq.obj)*self
+        self_rev = self.rev()
+        self_self_rev = self * self_rev
+        if(self_self_rev.is_scalar()): # self*self.rev() is a scalar
+            return (S(1)/self_self_rev.obj) * self_rev
+        raise TypeError('In inv() for self =' + str(self) + 'self, or self*self or self*self.rev() is not a scalar')
 
     def func(self, fct):  # Apply function, fct, to each coefficient of multivector
         (coefs, bases) = metric.linear_expand(self.obj)
@@ -1783,7 +1859,7 @@ class Dop(object):
         self.title = None
 
         if len(kargs[0]) == 0:  # identity Dop
-            self.terms = [(S(1),self.Ga.pdop_identity)]
+            self.terms = [(S(1),self.Ga.Pdop_identity)]
         else:
             if len(kargs) == 2:
                 if len(kargs[0]) != len(kargs[1]):
@@ -1805,7 +1881,7 @@ class Dop(object):
                                 coefs.append(coef * mv)
                     self.terms = zip(coefs, pdiffs)
                 else:
-                    raise ValueError('In Dop.__init__ kargs[0] form not allowed.')
+                    raise ValueError('In Dop.__init__ kargs[0] form not allowed. kargs = ' + str(kargs))
             else:
                 raise ValueError('In Dop.__init__ length of kargs must be 1 or 2.')
 
@@ -2303,7 +2379,7 @@ def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors 
 
 def cross(v1, v2):
     if v1.is_vector() and v2.is_vector() and v1.Ga.name == v2.Ga.name and v1.Ga.n == 3:
-        return v1.Ga.I() * (v1 ^ v2)
+        return -v1.Ga.I() * (v1 ^ v2)
     else:
         raise ValueError(str(v1) + ' and ' + str(v2) + ' not compatible for cross product.')
 
@@ -2319,6 +2395,12 @@ def even(A):
     if not isinstance(A,Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in even(A).')
     return A.even()
+
+
+def odd(A):
+    if not isinstance(A,Mv):
+        raise ValueError('A = ' + str(A) + ' not a multivector in even(A).')
+    return A.odd()
 
 
 def exp(A,hint='-'):

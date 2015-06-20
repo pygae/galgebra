@@ -71,7 +71,7 @@ def main():
     Get_Program()
     Format()
     Product_of_Rotors()
-    xpdf(paper=(8.5,11),debug=True)
+    xpdf(paper=(8.5,11))
     return
 
 if __name__ == "__main__":

@@ -13,21 +13,21 @@ def basic_multivector_operations():
 
     A = g3d.mv('A', 'mv')
 
-    A.Fmt(1, 'A')
-    A.Fmt(2, 'A')
-    A.Fmt(3, 'A')
+    print A.Fmt(1, 'A')
+    print A.Fmt(2, 'A')
+    print A.Fmt(3, 'A')
 
     X = g3d.mv('X', 'vector')
     Y = g3d.mv('Y', 'vector')
 
     print 'g_{ij} =\n', g3d.g
 
-    X.Fmt(1, 'X')
-    Y.Fmt(1, 'Y')
+    print X.Fmt(1, 'X')
+    print Y.Fmt(1, 'Y')
 
-    (X * Y).Fmt(2, 'X*Y')
-    (X ^ Y).Fmt(2, 'X^Y')
-    (X | Y).Fmt(2, 'X|Y')
+    print (X * Y).Fmt(2, 'X*Y')
+    print (X ^ Y).Fmt(2, 'X^Y')
+    print (X | Y).Fmt(2, 'X|Y')
 
     g2d = Ga('e*x|y')
 
@@ -38,12 +38,12 @@ def basic_multivector_operations():
     X = g2d.mv('X', 'vector')
     A = g2d.mv('A', 'spinor')
 
-    X.Fmt(1, 'X')
-    A.Fmt(1, 'A')
+    print X.Fmt(1, 'X')
+    print A.Fmt(1, 'A')
 
-    (X | A).Fmt(2, 'X|A')
-    (X < A).Fmt(2, 'X<A')
-    (A > X).Fmt(2, 'A>X')
+    print (X | A).Fmt(2, 'X|A')
+    print (X < A).Fmt(2, 'X<A')
+    print (A > X).Fmt(2, 'A>X')
 
     o2d = Ga('e*x|y', g=[1, 1])
 
@@ -54,18 +54,18 @@ def basic_multivector_operations():
     X = o2d.mv('X', 'vector')
     A = o2d.mv('A', 'spinor')
 
-    X.Fmt(1, 'X')
-    A.Fmt(1, 'A')
+    print X.Fmt(1, 'X')
+    print A.Fmt(1, 'A')
 
-    (X * A).Fmt(2, 'X*A')
-    (X | A).Fmt(2, 'X|A')
-    (X < A).Fmt(2, 'X<A')
-    (X > A).Fmt(2, 'X>A')
+    print (X * A).Fmt(2, 'X*A')
+    print (X | A).Fmt(2, 'X|A')
+    print (X < A).Fmt(2, 'X<A')
+    print (X > A).Fmt(2, 'X>A')
 
-    (A * X).Fmt(2, 'A*X')
-    (A | X).Fmt(2, 'A|X')
-    (A < X).Fmt(2, 'A<X')
-    (A > X).Fmt(2, 'A>X')
+    print (A * X).Fmt(2, 'A*X')
+    print (A | X).Fmt(2, 'A|X')
+    print (A < X).Fmt(2, 'A<X')
+    print (A > X).Fmt(2, 'A>X')
     return
 
 
@@ -206,7 +206,7 @@ def noneuclidian_distance_calculation():
     Z = R*X*R.rev() # D&L 10.155
     Z.obj = expand(Z.obj)
     Z.obj = Z.obj.collect([Binv,s,c,XdotY])
-    Z.Fmt(3,'R*X*R.rev()')
+    print Z.Fmt(3,'R*X*R.rev()')
     W = Z|Y # Extract scalar part of multivector
     # From this point forward all calculations are with sympy scalars
     print 'Objective is to determine value of C = cosh(alpha) such that W = 0'
@@ -334,7 +334,7 @@ def conformal_representations_of_circles_lines_spheres_and_planes():
 
     L = (A^B^e)^X
 
-    L.Fmt(3,'Hyperbolic Circle: (A^B^e)^X = 0 =')
+    print L.Fmt(3,'Hyperbolic Circle: (A^B^e)^X = 0 =')
     return
 
 
@@ -512,8 +512,9 @@ def main():
     Get_Program(True)
     #ga_print_on()
     Eprint()
-    """
+
     basic_multivector_operations()
+    """
     check_generalized_BAC_CAB_formulas()
     derivatives_in_rectangular_coordinates()
     derivatives_in_spherical_coordinates()
@@ -523,8 +524,8 @@ def main():
     properties_of_geometric_objects()
     extracting_vectors_from_conformal_2_blade()
     reciprocal_frame_test()
-    """
     signature_test()
+    """
 
     #ga_print_off()
     return

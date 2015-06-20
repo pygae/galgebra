@@ -344,10 +344,12 @@ class Ga(metric.Metric):
         self.e_sq = simplify(expand((self.e*self.e).scalar()))
 
         # Calculate normalized pseudo scalar (I**2 = +/-1)
-        if self.e_sq_sgn == '+':
+        if self.e_sq_sgn == '+': # I**2 = 1
             self.i = self.e/sqrt(self.e_sq)
-        else:
+            self.i_inv = self.i
+        else:  # I**2 = -1
             self.i = self.e/sqrt(-self.e_sq)
+            self.i_inv = -self.i
 
         if Ga.restore:  # restore printer to appropriate enhanced mode after ga is instantiated
             printer.GaLatexPrinter.redirect()
@@ -899,7 +901,6 @@ class Ga(metric.Metric):
             if grade < 0:
                 return 0
         elif self.dot_mode == '>':
-            #print 'g,g1,g2 =', grade, grade1, grade2
             grade = grade1 - grade2
             if grade < 0:
                 return 0
@@ -1114,6 +1115,14 @@ class Ga(metric.Metric):
         return update_and_substitute(A, B, self.wedge_product_basis_blades, self.wedge_table_dict)
 
     def dot(self, A, B):  # inner products |, <, and >
+        """
+        Let A = a + A' and B = b + B' where a and b are the scalar parts of
+        A and B and A' and B' are the remaining parts of A and B.  Then
+        we have:
+            (a+A')<(b+B') = a(b+B') + A'<B'
+            (a+A')>(b+B') = b(a+A') + A'>B'
+        We use these relations to reduce A<B and A>B.
+        """
         if A == 0 or B == 0:
             return 0
         if self.is_ortho:
@@ -1125,13 +1134,24 @@ class Ga(metric.Metric):
             A = self.remove_scalar_part(A)
             B = self.remove_scalar_part(B)
             return update_and_substitute(A, B, dot_product_basis_blades, self.dot_table_dict)
-        else:
+        elif self.dot_mode == '<' or self.dot_mode == '>':
+            (a, Ap) = self.split_multivector(A)  # Ap = A'
+            (b, Bp) = self.split_multivector(B)  # Bp = B'
             if self.dot_mode == '<':  # Left contraction
-                return update_and_substitute(A, B, dot_product_basis_blades, self.left_contract_table_dict)
+                if Ap != 0 and Bp != 0:  # Neither nc part of A or B is zero
+                    prod = update_and_substitute(Ap, Bp, dot_product_basis_blades, self.left_contract_table_dict)
+                    return prod + a * B
+                else:  # Ap or Bp is zero
+                    return a * B
             elif self.dot_mode == '>':  # Right contraction
-                return update_and_substitute(A, B, dot_product_basis_blades, self.right_contract_table_dict)
-            else:
-                raise ValueError('"' + str(self.dot_mode) + '" not a legal mode in dot')
+                if Ap != 0 and Bp != 0: # Neither nc part of A or B is zero
+                    prod = update_and_substitute(Ap, Bp, dot_product_basis_blades, self.right_contract_table_dict)
+                    return prod + b * A
+                else:  # Ap or Bp is zero
+                    return b * A
+        else:
+            raise ValueError('"' + str(self.dot_mode) + '" not a legal mode in dot')
+
 
     ######################## Helper Functions ##########################
 
@@ -1170,12 +1190,35 @@ class Ga(metric.Metric):
                 grade_dict[grade] = self.mv(grade_dict[grade])
         return grade_dict
 
+    def split_multivector(self, A):
+        """
+        Split multivector A into commutative part a and non-commutative
+        part A' so that A = a+A'
+        """
+        if isinstance(A, mv.Mv):
+            return self.split_multivector(A.obj)
+        else:
+            A = expand(A)
+            if isinstance(A, Add):
+                a = sum([x for x in A.args if x.is_commutative])
+                Ap = sum([x for x in A.args if not x.is_commutative])
+                return (a, Ap)
+            elif isinstance(A, Symbol):
+                if A.is_commutative:
+                    return (A, 0)
+                else:
+                    return (0, A)
+            else:
+                if A.is_commutative:
+                    return (A, 0)
+                else:
+                    return (0, A)
+
 
     def remove_scalar_part(self, A):
         """
         Return non-commutative part (sympy object) of A.obj.
         """
-
         if isinstance(A, mv.Mv):
             return self.remove_scalar_part(A.obj)
         else:
@@ -1193,16 +1236,34 @@ class Ga(metric.Metric):
                 else:
                     return A
 
+
     def scalar_part(self, A):
-        A = expand(A)
-        if isinstance(A, Add):
-            return(sum([x for x in A.args if x.is_commutative]))
+
+        if isinstance(A, mv.Mv):
+            return self.scalar_part(A.obj)
+        else:
+            A = expand(A)
+            if isinstance(A, Add):
+                return(sum([x for x in A.args if x.is_commutative]))
+            elif isinstance(A, Symbol):
+                if A.is_commutative:
+                    return A
+                else:
+                    return 0
+            else:
+                if A.is_commutative:
+                    return A
+                else:
+                    return 0
+
+
+    """
         else:
             if A.is_commutative:
                 return A
             else:
                 return zero
-
+    """
 
     def grades(self, A):  # Return list of grades present in A
         A = self.base_to_blade_rep(A)

@@ -14,8 +14,6 @@ print Fmt(l)
 print Fmt(l,1)
 print F.Fmt(3)
 print B.Fmt(3)
-print Fmt(l)
-print Fmt(l,1)
 
 lap = o3d.grad*o3d.grad
 print r'%\nabla^{2} = \nabla\cdot\nabla =', lap

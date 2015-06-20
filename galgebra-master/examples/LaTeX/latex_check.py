@@ -1,7 +1,7 @@
 from sympy import Symbol, symbols, sin, cos, Rational, expand, simplify, collect
 from printer import Format, Eprint, Get_Program, Print_Function, xpdf, Fmt
 from ga import Ga, one, zero
-from mv import Nga, com
+from mv import Nga, com, cross
 
 HALF = Rational(1,2)
 
@@ -30,24 +30,25 @@ def basic_multivector_operations_3D():
 
     A = g3d.mv('A','mv')
 
-    A.Fmt(1,'A')
-    A.Fmt(2,'A')
-    A.Fmt(3,'A')
+    print A.Fmt(1,'A')
+    print A.Fmt(2,'A')
+    print A.Fmt(3,'A')
 
-    A.even().Fmt(1,'%A_{+}')
-    A.odd().Fmt(1,'%A_{-}')
+    print A.even().Fmt(1,'%A_{+}')
+    print A.odd().Fmt(1,'%A_{-}')
 
     X = g3d.mv('X','vector')
     Y = g3d.mv('Y','vector')
 
     print 'g_{ij} = ',g3d.g
 
-    X.Fmt(1,'X')
-    Y.Fmt(1,'Y')
+    print X.Fmt(1,'X')
+    print Y.Fmt(1,'Y')
 
-    (X*Y).Fmt(2,'X*Y')
-    (X^Y).Fmt(2,'X^Y')
-    (X|Y).Fmt(2,'X|Y')
+    print (X*Y).Fmt(2,'X*Y')
+    print (X^Y).Fmt(2,'X^Y')
+    print (X|Y).Fmt(2,'X|Y')
+    print cross(X,Y).Fmt(1,r'X\times Y')
     return
 
 def basic_multivector_operations_2D():
@@ -172,6 +173,7 @@ def rounding_numerical_components():
 def noneuclidian_distance_calculation():
     Print_Function()
     from sympy import solve,sqrt
+    Fmt(1)
 
     g = '0 # #,# 0 #,# # 1'
     nel = Ga('X Y e',g=g)
@@ -278,6 +280,7 @@ def noneuclidian_distance_calculation():
 def conformal_representations_of_circles_lines_spheres_and_planes():
     Print_Function()
     global n,nbar
+    Fmt(1)
     g = '1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 0 2,0 0 0 2 0'
 
     c3d = Ga('e_1 e_2 e_3 n \\bar{n}',g=g)
@@ -319,6 +322,7 @@ def conformal_representations_of_circles_lines_spheres_and_planes():
 def properties_of_geometric_objects():
     Print_Function()
     global n, nbar
+    Fmt(1)
     g = '# # # 0 0,'+ \
         '# # # 0 0,'+ \
         '# # # 0 0,'+ \
@@ -350,6 +354,7 @@ def properties_of_geometric_objects():
 
 def extracting_vectors_from_conformal_2_blade():
     Print_Function()
+    Fmt(1)
     print r'B = P1\W P2'
 
     g = '0 -1 #,'+ \
@@ -382,6 +387,7 @@ def extracting_vectors_from_conformal_2_blade():
 
 def reciprocal_frame_test():
     Print_Function()
+    Fmt(1)
     g = '1 # #,'+ \
         '# 1 #,'+ \
         '# # 1'

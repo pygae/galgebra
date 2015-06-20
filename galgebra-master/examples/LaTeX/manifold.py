@@ -57,31 +57,6 @@ print r'%\nabla f =', sph2d.grad * f
 a1 = sph2d.mv('a_1','vector')
 a2 = sph2d.mv('a_2','vector')
 
-"""
-V = Mlt('V',sph2d,(a1,),fct=True)
-T = Mlt('T',sph2d,(a1,a2),fct=True)
-
-print '#Tensors on the Unit Sphere'
-
-print 'V =', V
-#print 'T =', T
-T.Fmt(5,'T')
-print '#Tensor Contraction'
-print r'T[1,2] =', T.contract(1,2)
-print '#Tensor Evaluation'
-print r'T(a,b) =', T(a,b)
-print r'T(a,b+c) =', T(a,b+c).expand()
-print r'T(a,\alpha b) =', T(a,alpha*b)
-print '#Geometric Derivative With Respect To Slot'
-print r'\nabla_{a_{1}}T =',T.pdiff(1)
-print r'\nabla_{a_{2}}T =',T.pdiff(2)
-print '#Covariant Derivatives'
-print r'\mathcal{D}V =', V.cderiv()
-DT = T.cderiv()
-#print r'\mathcal{D}T =', DT
-DT.Fmt(3,r'\mathcal{D}T')
-print r'\mathcal{D}T[1,3](a) =', (DT.contract(1,3))(a)
-"""
 #Define curve on unit sphere manifold
 
 us = Function('u__s')(s)

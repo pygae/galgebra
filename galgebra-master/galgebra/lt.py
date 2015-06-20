@@ -66,7 +66,11 @@ class Lt(object):
         self.lt_dict = {}
         self.mv_dict = None
 
-        if isinstance(mat_rep, dict):  # Dictionary input
+        if isinstance(mat_rep, tuple):  # tuple input
+            for key in mat_rep:
+                self.lt_dict[key] = mat_rep[key]
+
+        elif isinstance(mat_rep, dict):  # Dictionary input
             for key in mat_rep:
                 self.lt_dict[key] = mat_rep[key]
 

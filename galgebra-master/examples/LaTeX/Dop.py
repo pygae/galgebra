@@ -8,6 +8,7 @@ xyz_coords = (x, y, z) = symbols('x y z', real=True)
 (o3d, ex, ey, ez) = Ga.build('e', g=[1, 1, 1], coords=xyz_coords, norm=True)
 f = o3d.mv('f', 'scalar', f=True)
 lap = o3d.grad*o3d.grad
+print r'\nabla =', o3d.grad
 print r'%\nabla^{2} = \nabla . \nabla =', lap
 print r'%\lp\nabla^{2}\rp f =', lap*f
 print r'%\nabla\cdot\lp\nabla f\rp =', o3d.grad | (o3d.grad * f)

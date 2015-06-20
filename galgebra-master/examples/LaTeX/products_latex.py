@@ -3,7 +3,7 @@ from ga import Ga
 from printer import Format,xpdf
 
 def main():
-    #Format()
+    Format()
 
     coords = (x,y,z) = symbols('x y z',real=True)
 
@@ -27,12 +27,12 @@ def main():
     for xi in X:
         print ''
         for yi in X:
-            print xi[1]+'*'+yi[1]+' =',xi[0]*yi[0]
-            print xi[1]+'^'+yi[1]+' =',xi[0]^yi[0]
+            print xi[1]+' * '+yi[1]+' =',xi[0]*yi[0]
+            print xi[1]+' ^ '+yi[1]+' =',xi[0]^yi[0]
             if xi[1] != 's' and yi[1] != 's':
-                print xi[1]+'|'+yi[1]+' =',xi[0]|yi[0]
-            print xi[1]+'<'+yi[1]+' =',xi[0]<yi[0]
-            print xi[1]+'>'+yi[1]+' =',xi[0]>yi[0]
+                print xi[1]+' | '+yi[1]+' =',xi[0]|yi[0]
+            print xi[1]+' < '+yi[1]+' =',xi[0]<yi[0]
+            print xi[1]+' > '+yi[1]+' =',xi[0]>yi[0]
 
     fs = o3d.mv('s','scalar',f=True)
     fv = o3d.mv('v','vector',f=True)
@@ -54,12 +54,12 @@ def main():
             if xi[1] == 'grad' and yi[1] == 'grad':
                 pass
             else:
-                print xi[1]+'*'+yi[1]+' =',xi[0]*yi[0]
-                print xi[1]+'^'+yi[1]+' =',xi[0]^yi[0]
+                print xi[1]+' * '+yi[1]+' =',xi[0]*yi[0]
+                print xi[1]+' ^ '+yi[1]+' =',xi[0]^yi[0]
                 if xi[1] != 's' and yi[1] != 's':
-                    print xi[1]+'|'+yi[1]+' =',xi[0]|yi[0]
-                print xi[1]+'<'+yi[1]+' =',xi[0]<yi[0]
-                print xi[1]+'>'+yi[1]+' =',xi[0]>yi[0]
+                    print xi[1]+' | '+yi[1]+' =',xi[0]|yi[0]
+                print xi[1]+' < '+yi[1]+' =' ,xi[0]<yi[0]
+                print xi[1]+' > '+yi[1]+' =' ,xi[0]>yi[0]
 
 
     (g2d,ex,ey) = Ga.build('e',coords=(x,y))
@@ -85,14 +85,16 @@ def main():
             if xi[1] == 'grad' and yi[1] == 'grad':
                 pass
             else:
-                print xi[1]+'*'+yi[1]+' =',xi[0]*yi[0]
-                print xi[1]+'^'+yi[1]+' =',xi[0]^yi[0]
+                print xi[1]+' * '+yi[1]+' =',xi[0]*yi[0]
+                print xi[1]+' ^ '+yi[1]+' =',xi[0]^yi[0]
                 if xi[1] != 's' and yi[1] != 's':
-                    print xi[1]+'|'+yi[1]+' =',xi[0]|yi[0]
-                print xi[1]+'<'+yi[1]+' =',xi[0]<yi[0]
-                print xi[1]+'>'+yi[1]+' =',xi[0]>yi[0]
+                    print xi[1]+' | '+yi[1]+' =',xi[0]|yi[0]
+                else:
+                    print xi[1]+' | '+yi[1]+' = Not Allowed'
+                print xi[1]+' < '+yi[1]+' =',xi[0]<yi[0]
+                print xi[1]+' > '+yi[1]+' ='  ,xi[0]>yi[0]
 
-    #xpdf(paper='letter')
+    xpdf(paper='letter')
     return
 
 if __name__ == "__main__":

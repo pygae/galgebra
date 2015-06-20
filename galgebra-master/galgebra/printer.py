@@ -4,12 +4,17 @@ import os
 import sys
 import StringIO
 import re
-from sympy import Matrix, Basic, S, C, Symbol, Function, Derivative
+from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
 from itertools import islice
 from sympy.printing.str import StrPrinter
 from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
+from sympy import init_printing
+
+from IPython.display import display, Latex, Math
+from sympy.interactive import printing
+
 from inspect import getouterframes, currentframe
 import ga
 import mv
@@ -335,7 +340,6 @@ class GaPrinter(StrPrinter):
         if expr.obj == S(0):
             return '0'
         else:
-            #print 'expr.obj =',expr.obj
             return expr.Mv_str()
 
     def _print_Pdop(self, expr):
@@ -638,7 +642,7 @@ class GaLatexPrinter(LatexPrinter):
         elif expr.exp.is_Rational and expr.exp.is_negative and expr.base.is_Function:
             # Things like 1/x
             return r"\frac{%s}{%s}" % \
-                (1, self._print(C.Pow(expr.base, -expr.exp)))
+                (1, self._print(Pow(expr.base, -expr.exp)))
         else:
             if expr.base.is_Function:
                 return self._print(expr.base, self._print(expr.exp))
@@ -938,6 +942,7 @@ def Format(Fmode=True, Dmode=True, dop=1):
     GaLatexPrinter.Fmode = Fmode
     if metric.in_ipynb():
         GaLatexPrinter.ipy = True
+
     else:
         GaLatexPrinter.ipy = False
     GaLatexPrinter.dop = dop
@@ -945,8 +950,9 @@ def Format(Fmode=True, Dmode=True, dop=1):
     GaLatexPrinter.redirect()
 
     Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
-    Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
+    #Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
     Basic.__repr_ = lambda self: GaLatexPrinter().doprint(self)
+    #Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
 
     return
 
@@ -1382,11 +1388,11 @@ def Fmt(obj,fmt=0):
             latex_str = r' \left ' + ldelim + r' \begin{array}{' + n*'c' + '} '
             for cell in obj:
                 if isinstance(obj,dict):
-                    cell.title = None
+                    #cell.title = None
                     latex_cell = latex(cell) + ' : '+ latex(obj[cell])
                 else:
-                    title = cell.title
-                    cell.title = None
+                    #title = cell.title
+                    #cell.title = None
                     latex_cell = latex(cell)
                 latex_cell = latex_cell.replace('\n', ' ')
                 latex_cell= latex_cell.replace(r'\begin{equation*}', ' ')
@@ -1396,15 +1402,15 @@ def Fmt(obj,fmt=0):
                     latex_cell= latex_cell.replace('&','')
                     latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
                 latex_str += latex_cell + ', & '
-                cell.title = title
+                #cell.title = title
             latex_str = latex_str[:-4]
             latex_str += r'\\ \end{array} \right ' + rdelim + ' \n'
         else:
             latex_str = ''
             i = 1
             for cell in obj:
-                title = cell.title
-                cell.title = None
+                #title = cell.title
+                #cell.title = None
                 latex_cell = latex(cell)
                 latex_cell = latex_cell.replace('\n', ' ')
                 latex_cell= latex_cell.replace(r'\begin{equation*}', ' ')
@@ -1413,7 +1419,7 @@ def Fmt(obj,fmt=0):
                     latex_cell= latex_cell.replace(r'\begin{align*}', r'\begin{array}{c} ')
                     latex_cell= latex_cell.replace('&','')
                     latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
-                cell.title = title
+                #cell.title = title
                 if i == 1:
                     latex_str += r'\begin{array}{c} \left ' + ldelim + r' ' + latex_cell + r', \right. \\ '
                 elif i == n:
@@ -1424,7 +1430,7 @@ def Fmt(obj,fmt=0):
         if metric.in_ipynb():  # For Ipython notebook
             if r'\begin{align*}' not in latex_str:
                 latex_str = r'\begin{equation*} ' + latex_str + r'\end{equation*}'
-            return Latex(latex_str)
+            return Latex('$$ '+latex_str+' $$')
         else:
             return latex_str
     elif isinstance(obj,int):

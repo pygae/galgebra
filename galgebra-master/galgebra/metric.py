@@ -684,7 +684,7 @@ class Metric(object):
                             m[i, i] = g[i]
                         self.g = m
 
-        self.g_raw = copy.copy(self.g)  # save original metric tensor for use with submanifolds
+        self.g_raw = copy.deepcopy(self.g)  # save original metric tensor for use with submanifolds
 
         if self.debug:
             printer.oprint('g', self.g)
