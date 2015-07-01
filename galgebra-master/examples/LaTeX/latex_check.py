@@ -61,12 +61,12 @@ def basic_multivector_operations_2D():
     X = g2d.mv('X','vector')
     A = g2d.mv('A','spinor')
 
-    X.Fmt(1,'X')
-    A.Fmt(1,'A')
+    print X.Fmt(1,'X')
+    print A.Fmt(1,'A')
 
-    (X|A).Fmt(2,'X|A')
-    (X<A).Fmt(2,'X<A')
-    (A>X).Fmt(2,'A>X')
+    print (X|A).Fmt(2,'X|A')
+    print (X<A).Fmt(2,'X<A')
+    print (A>X).Fmt(2,'A>X')
     return
 
 def basic_multivector_operations_2D_orthogonal():
@@ -78,18 +78,18 @@ def basic_multivector_operations_2D_orthogonal():
     X = o2d.mv('X','vector')
     A = o2d.mv('A','spinor')
 
-    X.Fmt(1,'X')
-    A.Fmt(1,'A')
+    print X.Fmt(1,'X')
+    print A.Fmt(1,'A')
 
-    (X*A).Fmt(2,'X*A')
-    (X|A).Fmt(2,'X|A')
-    (X<A).Fmt(2,'X<A')
-    (X>A).Fmt(2,'X>A')
+    print (X*A).Fmt(2,'X*A')
+    print (X|A).Fmt(2,'X|A')
+    print (X<A).Fmt(2,'X<A')
+    print (X>A).Fmt(2,'X>A')
 
-    (A*X).Fmt(2,'A*X')
-    (A|X).Fmt(2,'A|X')
-    (A<X).Fmt(2,'A<X')
-    (A>X).Fmt(2,'A>X')
+    print (A*X).Fmt(2,'A*X')
+    print (A|X).Fmt(2,'A|X')
+    print (A<X).Fmt(2,'A<X')
+    print (A>X).Fmt(2,'A>X')
     return
 
 def check_generalized_BAC_CAB_formulas():

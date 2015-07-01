@@ -514,7 +514,6 @@ def main():
     Eprint()
 
     basic_multivector_operations()
-    """
     check_generalized_BAC_CAB_formulas()
     derivatives_in_rectangular_coordinates()
     derivatives_in_spherical_coordinates()
@@ -525,7 +524,6 @@ def main():
     extracting_vectors_from_conformal_2_blade()
     reciprocal_frame_test()
     signature_test()
-    """
 
     #ga_print_off()
     return

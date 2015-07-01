@@ -54,6 +54,16 @@ SYS_CMD = {'linux2': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&
            'win32': {'rm': 'del', 'evince': '', 'null': ' > NUL', '&': ''},
            'darwin': {'rm': 'rm', 'evince': 'open', 'null': ' > /dev/null', '&': '&'}}
 
+def isinteractive():  #Is ipython running
+    """
+    We will assume that if ipython is running then jupyter notebook is
+    running.
+    """
+    try:
+        __IPYTHON__
+        return True
+    except NameError:
+        return False
 
 def find_executable(executable, path=None):
     """Try to find 'executable' in the directories listed in 'path' (a
@@ -894,20 +904,21 @@ class GaLatexPrinter(LatexPrinter):
     def _print_Mlt(self, expr):
         return expr.Mlt_latex_str()
 
-    def _print_Matrix(self, expr):
-        lines = []
-        for line in range(expr.rows):  # horrible, should be 'rows'
-            lines.append(" & ".join([self._print(i) for i in expr[line:]]))
+    def _print_MatrixBase(self, expr):
+        rows = expr.rows
+        cols = expr.cols
 
-        ncols = 0
-        for i in expr[line:]:
-            ncols += 1
+        out_str = ' \\left [ \\begin{array}{' + (cols * 'c') + '} '
+        for row in range(rows):
+            for col in range(cols):
+                out_str += latex(expr[row,col]) + ' & '
+            out_str = out_str[:-2] + ' \\\\ '
+        out_str = out_str[:-4] + ' \\end{array}\\right ] '
 
-        out_str = ' \\left [ \\begin{array}{' + ncols * 'c' + '} '
-        for line in lines[:-1]:
-            out_str += line + ' \\\\ '
-        out_str += lines[-1] + ' \\end{array}\\right ] '
-        return out_str
+        if isinteractive():
+            return display(Math(out_str))
+        else:
+            return out_str
 
     @staticmethod
     def latex(expr, **settings):
@@ -947,6 +958,7 @@ def Format(Fmode=True, Dmode=True, dop=1):
     if Format_cnt == 0:
         Format_cnt += 1
 
+        """
         if metric.in_ipynb():
             GaLatexPrinter.ipy = True
         else:
@@ -957,11 +969,15 @@ def Format(Fmode=True, Dmode=True, dop=1):
 
         if not GaLatexPrinter.ipy:
             GaLatexPrinter.redirect()
+        """
+        GaLatexPrinter.dop = dop
+        GaLatexPrinter.latex_flg = True
+        GaLatexPrinter.redirect()
 
         Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
         Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
         Basic.__repr_ = lambda self: GaLatexPrinter().doprint(self)
-        #Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
+        Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
 
     return
 
@@ -976,10 +992,9 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
     Arg    Value    Result
     crop   True     Use "pdfcrop" to crop output file (pdfcrop must be installed, linux only)
     png    True     Use "convert" to produce png output (imagemagick must be installed, linux only)
+
+    We assume that if xpdf() is called then Format() has been called at the beginning of the program.
     """
-    if GaLatexPrinter.ipy:
-        GaLatexPrinter.restore()
-        return
 
     sys_cmd = SYS_CMD[sys.platform]
 
