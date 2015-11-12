@@ -1,0 +1,26 @@
+To install for standard use 
+
+    python setup.py install
+
+to install for development 
+
+    python setup.py develop
+
+
+Notes:
+
+To use the LaTeX printing options in galgebra a LaTeX distibution is required 
+containing pdflatex (texlive for linux, miktex for windows).
+
+To use the enhances printing options in windows ansicon must be installed -
+
+github.com/adoxa/ansicon
+
+It is strongly reccomended that the geany editor/development environment be installed -
+
+www.geany.org
+
+for developing code using galgebra.
+
+
+
