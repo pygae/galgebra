@@ -1,0 +1,47 @@
+\contentsline {chapter}{\numberline {1}Installation on Linux, Windows, and Mac}{4}{chapter.1}
+\contentsline {section}{\numberline {1.1}Install python}{4}{section.1.1}
+\contentsline {section}{\numberline {1.2}Install sympy}{5}{section.1.2}
+\contentsline {section}{\numberline {1.3}Install galgebra}{5}{section.1.3}
+\contentsline {section}{\numberline {1.4}{\LaTeX } Options}{6}{section.1.4}
+\contentsline {section}{\numberline {1.5}``Ipython notebook'' Options}{6}{section.1.5}
+\contentsline {section}{\numberline {1.6}The ANSI Console}{7}{section.1.6}
+\contentsline {section}{\numberline {1.7}Geany Programmers Editor}{7}{section.1.7}
+\contentsline {chapter}{\numberline {2}What is Geometric Algebra?}{8}{chapter.2}
+\contentsline {section}{\numberline {2.1}Basics of Geometric Algebra}{8}{section.2.1}
+\contentsline {subsection}{\numberline {2.1.1}Grade Projection}{11}{subsection.2.1.1}
+\contentsline {subsection}{\numberline {2.1.2}Multivector Products}{11}{subsection.2.1.2}
+\contentsline {subsection}{\numberline {2.1.3}Reverse of Multivector}{12}{subsection.2.1.3}
+\contentsline {subsection}{\numberline {2.1.4}Reciprocal Frames}{13}{subsection.2.1.4}
+\contentsline {section}{\numberline {2.2}Manifolds and Submanifolds}{13}{section.2.2}
+\contentsline {section}{\numberline {2.3}Geometric Derivative}{15}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Geometric Derivative on a Manifold}{16}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Normalizing Basis for Derivatives}{17}{subsection.2.3.2}
+\contentsline {subsection}{\numberline {2.3.3}Linear Differential Operators}{18}{subsection.2.3.3}
+\contentsline {section}{\numberline {2.4}Linear Transformations/Outermorphisms}{20}{section.2.4}
+\contentsline {section}{\numberline {2.5}Multilinear Functions}{22}{section.2.5}
+\contentsline {subsection}{\numberline {2.5.1}Algebraic Operations}{23}{subsection.2.5.1}
+\contentsline {subsection}{\numberline {2.5.2}Covariant, Contravariant, and Mixed Representations}{23}{subsection.2.5.2}
+\contentsline {subsection}{\numberline {2.5.3}Contraction and Differentiation}{24}{subsection.2.5.3}
+\contentsline {subsection}{\numberline {2.5.4}From Vector to Tensor}{26}{subsection.2.5.4}
+\contentsline {subsection}{\numberline {2.5.5}Parallel Transport and Covariant Derivatives}{26}{subsection.2.5.5}
+\contentsline {section}{\numberline {2.6}Representation of Multivectors in \emph {sympy}}{29}{section.2.6}
+\contentsline {subsection}{\numberline {2.6.1}Operator Precedence}{30}{subsection.2.6.1}
+\contentsline {section}{\numberline {2.7}Vector Basis and Metric}{32}{section.2.7}
+\contentsline {section}{\numberline {2.8}Representation and Reduction of Multivector Bases}{34}{section.2.8}
+\contentsline {section}{\numberline {2.9}Base Representation of Multivectors}{35}{section.2.9}
+\contentsline {section}{\numberline {2.10}Blade Representation of Multivectors}{35}{section.2.10}
+\contentsline {chapter}{\numberline {3}Module Components}{38}{chapter.3}
+\contentsline {section}{\numberline {3.1}Instantiating a Geometric Algebra}{39}{section.3.1}
+\contentsline {section}{\numberline {3.2}Instantiating a Multivector}{42}{section.3.2}
+\contentsline {section}{\numberline {3.3}Backward Compatibility Class MV}{44}{section.3.3}
+\contentsline {section}{\numberline {3.4}Basic Multivector Class Functions}{45}{section.3.4}
+\contentsline {section}{\numberline {3.5}Basic Multivector Functions}{50}{section.3.5}
+\contentsline {section}{\numberline {3.6}Multivector Derivatives}{52}{section.3.6}
+\contentsline {section}{\numberline {3.7}Submanifolds}{53}{section.3.7}
+\contentsline {section}{\numberline {3.8}Linear Transformations}{56}{section.3.8}
+\contentsline {section}{\numberline {3.9}Differential Operators}{64}{section.3.9}
+\contentsline {section}{\numberline {3.10}Instantiating a Multi-linear Functions (Tensors)}{66}{section.3.10}
+\contentsline {section}{\numberline {3.11}Basic Multilinear Function Class Functions}{67}{section.3.11}
+\contentsline {section}{\numberline {3.12}Standard Printing}{68}{section.3.12}
+\contentsline {section}{\numberline {3.13}Latex Printing}{69}{section.3.13}
+\contentsline {subsection}{\numberline {3.13.1}Printing Lists/Tuples of Multivectors/Differential Operators}{73}{subsection.3.13.1}
