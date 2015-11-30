@@ -170,15 +170,15 @@ class Mv(object):
         self.i_grade = grade
         if isinstance(kargs[0],str):
             root = kargs[0] + '__'
-            if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Not a mulitvector function
+            if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
                 self.obj = sum([Symbol(root + super_script, real=True) * base
                                 for (super_script, base) in zip(self.Ga.blade_super_scripts[grade], self.Ga.blades[grade])])
             else:
-                if isinstance(kwargs['f'], bool):  #Is a multivector function
+                if isinstance(kwargs['f'], bool):  #Is a multivector function of all coordinates
                     self.obj = sum([Function(root + super_script, real=True)(*self.Ga.coords) * base
                         for (super_script, base) in zip(self.Ga.blade_super_scripts[grade], self.Ga.blades[grade])])
-                else:
-                    self.obj = sum([Function(root + super_script, real=True)(kwargs['f']) * base
+                else: #Is a multivector function of tuple kwargs['f'] variables
+                    self.obj = sum([Function(root + super_script, real=True)(*kwargs['f']) * base
                         for (super_script, base) in zip(self.Ga.blade_super_scripts[grade], self.Ga.blades[grade])])
         else:
             if isinstance(kargs[0],(list,tuple)):
@@ -195,10 +195,14 @@ class Mv(object):
     # Called by __init__ to make a scalar multivector
 
         if isinstance(kargs[0],str):
-            if 'f' in kwargs and kwargs['f']:
-                self.obj = Function(kargs[0])(*self.Ga.coords)
+            if 'f' in kwargs and isinstance(kwargs['f'],bool):
+                if kwargs['f']:
+                    self.obj = Function(kargs[0])(*self.Ga.coords)
+                else:
+                    self.obj = Symbol(kargs[0], real=True)
             else:
-                self.obj = Symbol(kargs[0], real=True)
+                if 'f' in kwargs and isinstance(kwargs['f'],tuple):
+                    self.obj = Function(kargs[0])(*kwargs['f'])
         else:
             self.obj = kargs[0]
         return
@@ -1740,7 +1744,10 @@ class Pdop(object):
             return self, self.Ga.Pdiffs[x]
 
     def __call__(self, arg):
-
+        """
+        Calculate nth order partial derivative (order defined by
+        self) of Mv, Dop, Sdopm or sympy expression
+        """
         if self.pdiffs == {}:
             return arg  # result is Pdop identity (1)
 
@@ -1748,7 +1755,8 @@ class Pdop(object):
             if self.Ga.name != arg.Ga.name:
                 raise ValueError('In Pdop.__call__ arguments do not belong to same geometric algebra.')
             elif arg.pdiffs == {}:  # arg is one
-                return S(0)  # derivative is zero
+                return self
+                #return S(0)  # derivative is zero
             else:  # arg is partial derivative
                 pdiffs = copy.copy(arg.pdiffs)
                 for key in self.pdiffs:
@@ -1769,16 +1777,16 @@ class Pdop(object):
                 arg = diff(arg,x,self.pdiffs[x])
             return arg  # derivative is sympy expression
 
-        elif isinstance(arg,list):  # arg is list of tuples (coef, partial derivative)
+        elif isinstance(arg, list):  # arg is list of tuples (coef, partial derivative)
             D = copy.deepcopy(self)
             terms = copy.deepcopy(arg)
-
             while True:
                 D, D0 = D.factor()
                 k = 0
                 for term in terms:
                     dc = D0(term[0])
                     pd = D0(term[1])
+                    #print 'D0, term, dc, pd =', D0, term, dc, pd
                     tmp = []
                     if dc != 0:
                         tmp.append((dc,term[1]))
@@ -2070,7 +2078,7 @@ class Dop(object):
                 raise ValueError('In Dop.Mul Dop arguments do not have same cmplfg')
             if not dopl.cmpflg:  # dopl and dopr operate on right argument
                 terms = []
-                for (coef, pdiff) in dopl.terms:
+                for (coef, pdiff) in dopl.terms:  #Apply each dopl term to dopr
                     Ddopl = pdiff(dopr.terms)  # list of terms
                     Ddopl = [(Mv.Mul(coef, x[0], op=op), x[1]) for x in Ddopl]
                     terms += Ddopl

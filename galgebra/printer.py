@@ -459,6 +459,7 @@ class GaLatexPrinter(LatexPrinter):
 \\usepackage{color}
 \\usepackage{xcolor}
 \\usepackage{bm}
+\\usepackage{breqn}
 \\definecolor{gray}{rgb}{0.95,0.95,0.95}
 \\setlength{\\parindent}{0pt}
 \\DeclareMathOperator{\Tr}{Tr}

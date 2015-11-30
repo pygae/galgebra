@@ -1716,7 +1716,9 @@ being instantiated.  If latex output were used (to be discussed later) the multi
     V^{x}\eb_{x} + V^{y}\eb_{y} + V^{z}\eb_{z}
 \ee
 Where the coefficients of the basis vectors are generalized \emph{sympy} functions of the
-coordinates.  The superscripts\footnote{Denoted in text output by \T{A\_\_x}, etc. so
+coordinates.  If \T{f=(x,y)} then the coefficients would be functions of \T{x} and \T{y}. 
+In general is \T{f} is a tuple of symbols then the coefficients of the basis would be functions of those
+symbols.  The superscripts\footnote{Denoted in text output by \T{A\_\_x}, etc. so
 that for text output \T{A} would be printed as \T{A\_\_x*e\_x+A\_\_y*e\_y+A\_\_z*e\_z}.} are formed
 from the coordinate symbols or if there are no coordinates from the subscripts of
 the basis vectors.  The types of name and modes available for multivector instantiation are
