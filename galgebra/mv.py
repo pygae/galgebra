@@ -1152,10 +1152,8 @@ class Mv(object):
         if title is not None:
             self.title = title
 
-        """
         if printer.isinteractive():
             return self
-        """
 
         if Mv.latex_flg:
             latex_str = printer.GaLatexPrinter.latex(self)

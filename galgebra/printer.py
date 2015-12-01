@@ -886,8 +886,7 @@ class GaLatexPrinter(LatexPrinter):
         if expr.obj == S(0):
             return('0 \n')
         else:
-            ostr = expr.Mv_latex_str()
-            return(ostr)
+            return expr.Mv_latex_str()
 
     def _print_Pdop(self, expr):
         return expr.Pdop_latex_str()
