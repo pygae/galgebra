@@ -1234,7 +1234,7 @@ class Mv(object):
 
     def inv(self):
         if self.is_scalar():  # self is a scalar
-            return self.ga.mv(S(1)/self.obj)
+            return self.Ga.mv(S(1)/self.obj)
         self_sq = self * self
         if self_sq.is_scalar():  # self*self is a scalar
             return (S(1)/self_sq.obj)*self
