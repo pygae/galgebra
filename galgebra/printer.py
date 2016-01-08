@@ -12,8 +12,14 @@ from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
 
-from IPython.display import display, Latex, Math, display_latex
-from sympy.interactive import printing
+try:
+    from IPython.display import display, Latex, Math, display_latex
+except ImportError:
+    pass
+try:
+    from sympy.interactive import printing
+except ImportError:
+    pass
 
 from inspect import getouterframes, currentframe
 import ga
