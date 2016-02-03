@@ -1305,6 +1305,17 @@ class Mv(object):
     def grade(self, r=0):
         return self.get_grade(r)
 
+    def pure_grade(self):
+        """
+        For pure grade return grade.  If not pure grade return negative
+        of maximum grade
+        """
+        self.characterise_Mv()
+        if self.i_grade is not None:
+            return self.i_grade
+        return -self.grades[-1]
+
+
 ################ Scalar Partial Differential Operator Class ############
 
 class Sdop(object):

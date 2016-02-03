@@ -1976,6 +1976,13 @@ If we can instantiate multivectors we can use all the multivector class function
     $\paren{A\rfloor B}B^{-1} $ in \cite{Macdonald 1}, page 121.
 \end{quote}
 
+\T{pure\_grade(self)}
+\begin{quote}
+	If the multivector $A$ is pure (only contains one grade) return, $A.pure\_grade()$, the index ('0' for a scalar,
+    '1' for vector,	'2' for a bi-vector, etc.) of the non-zero grade.  If $A$ is not pure return the negative of the
+    highest non-zero grade index.   
+\end{quote}
+
 \T{odd(self)}
 \begin{quote}
 	Return odd part of multivector.
