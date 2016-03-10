@@ -980,6 +980,25 @@ class Mv(object):
         (coefs, bases) = zip(*cb)
         return coefs
 
+    def blade_coefs(self, blade_lst):
+        """
+        For a multivector, A, and a list of basis blades, blade_lst return
+        a list (sympy expressions) of the coefficients of each basis blade
+        in blade_lst
+        """
+        blade_lst = [x.obj for x in blade_lst]
+        (coefs, bases) = metric.linear_expand(self.obj)
+        coef_lst = []
+        for blade in blade_lst:
+            if blade in bases:
+                coef_lst.append(coefs[bases.index(blade)])
+            else:
+                coef_lst.append(ZERO)
+        for (coef, base) in zip(coefs, bases):
+            if base in bases_lst:
+                coef_lst.append(coef)
+        return coef_lst
+
     def proj(self, bases_lst):
         """
         Project multivector onto a given list of bases.  That is find the

@@ -1970,6 +1970,16 @@ If we can instantiate multivectors we can use all the multivector class function
 \end{quote}
 \end{comment}
 
+\T{proj(self,lst)}
+\begin{quote}
+    Return the projection of the mutivector $A$ onto the list, $lst$, of basis blades.  For example if 
+    $A = A^{x}\eb_{x}+A^{y}\eb_{y}+A^{z}\eb_{z}$ then $A.proj\paren{[\eb_{x},\eb_{y}]} = A^{x}\eb_{x}+A^{y}\eb_{y}$. 
+    Similarly if $A = A^{xy}\eb_{x}\W\eb_{y}+A^{yz}\eb_{y}\W\eb_{z}$ then 
+    $A.proj\paren{[\eb_{x}\W\eb_{y}]} = A^{xy}\eb_{x}\W\eb_{y}$.
+\end{quote}
+
+
+
 \T{project\_in\_blade(self,blade)}
 \begin{quote}
     Return the projection of the mutivector $A$ in subspace defined by the blade, $B$, using the formula

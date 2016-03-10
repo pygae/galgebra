@@ -22,6 +22,9 @@ def Mv_setup_options():
     v = o3d.mv('v', 'vector')
     print v
 
+    print v.grade(2)
+    print v.i_grade
+
     return
 
 def dummy():

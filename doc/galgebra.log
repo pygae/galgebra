@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.10.23)  12 NOV 2015 15:30
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2015.11.29)  8 MAR 2016 21:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -694,7 +694,7 @@ Style option: `fancybox' v1.4 <2010/05/15> (tvz)
 ) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2013/08/26 1.5b listings language file
 )
-No file galgebra.aux.
+(./galgebra.aux)
 \openout1 = `galgebra.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 111.
@@ -712,6 +712,7 @@ LaTeX Font Info:    ... okay on input line 111.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 111.
 LaTeX Font Info:    ... okay on input line 111.
 \c@lstlisting=\count135
+
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
 * driver: pdftex
@@ -786,6 +787,8 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 111.
 LaTeX Info: Redefining \pageref on input line 111.
 LaTeX Info: Redefining \nameref on input line 111.
+
+(./galgebra.out) (./galgebra.out)
 \@outlinefile=\write5
 \openout5 = `galgebra.out'.
 
@@ -805,13 +808,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 116--117
 
  []
 
-<dhestenes.jpg, id=14, 517.935pt x 847.165pt>
+<dhestenes.jpg, id=202, 517.935pt x 847.165pt>
 File: dhestenes.jpg Graphic file (type jpg)
  <use dhestenes.jpg>
 Package pdftex.def Info: dhestenes.jpg used on input line 119.
 (pdftex.def)             Requested size: 129.48343pt x 211.79073pt.
 
-<wkclifford.jpg, id=15, 602.25pt x 771.88374pt>
+<wkclifford.jpg, id=203, 602.25pt x 771.88374pt>
 File: wkclifford.jpg Graphic file (type jpg)
  <use wkclifford.jpg>
 Package pdftex.def Info: wkclifford.jpg used on input line 120.
@@ -822,19 +825,20 @@ been already used, duplicate ignored
                    \relax 
 l.144 \tableofcontents
                        [1 <./dhestenes.jpg> <./wkclifford.jpg>] [2]
+(./galgebra.toc [3
+
+])
 \tf@toc=\write6
 \openout6 = `galgebra.toc'.
 
- [3
-
-]
+ [4]
 Chapter 1.
 
 Underfull \hbox (badness 6510) in paragraph at lines 160--160
 [][]\OT1/cmr/m/n/12 Basic ver-sion comes with OSX. For bet-ter in-
  []
 
-[4
+[5
 
 ]
 Underfull \hbox (badness 5475) in paragraph at lines 171--171
@@ -842,111 +846,19 @@ Underfull \hbox (badness 5475) in paragraph at lines 171--171
 y / sympy / releases$[][]
  []
 
-[5] [6]
-
-LaTeX Warning: Reference `stdprint' on page 7 undefined on input line 226.
-
-
-LaTeX Warning: Reference `stdprint' on page 7 undefined on input line 231.
-
-[7]
+[6] [7] [8]
 Chapter 2.
+[9
 
-LaTeX Warning: Citation `Hestenes' on page 8 undefined on input line 249.
-
-
-LaTeX Warning: Citation `Doran' on page 8 undefined on input line 249.
-
-
-LaTeX Warning: Citation `Doran' on page 8 undefined on input line 253.
-
-
-LaTeX Warning: Citation `Doran' on page 8 undefined on input line 264.
-
-[8
-
-] [9]
-
-LaTeX Warning: Reference `reduce' on page 10 undefined on input line 322.
-
-
-LaTeX Warning: Reference `reduce' on page 10 undefined on input line 323.
-
+] [10]
 
 Package amsmath Warning: Foreign command \atopwithdelims;
 (amsmath)                \frac or \genfrac should be used instead
 (amsmath)                 on input line 327.
 
-
-LaTeX Warning: Citation `Doran' on page 10 undefined on input line 332.
-
-
-LaTeX Warning: Reference `wedge' on page 10 undefined on input line 347.
-
-[10]
-
-LaTeX Warning: Citation `Hestenes' on page 11 undefined on input line 387.
-
-[11] [12] [13] [14]
-
-LaTeX Warning: Reference `eq_79' on page 15 undefined on input line 552.
-
-
-LaTeX Warning: Reference `eq_81' on page 15 undefined on input line 553.
-
-
-LaTeX Warning: Reference `eq_50' on page 15 undefined on input line 573.
-
-[15] [16] [17]
-
-LaTeX Warning: Reference `eq_66a' on page 18 undefined on input line 706.
-
-[18]
-
-LaTeX Warning: Reference `eq_66b' on page 19 undefined on input line 718.
-
-
-LaTeX Warning: Reference `eq_66b' on page 19 undefined on input line 720.
-
-
-LaTeX Warning: Reference `eq_67a' on page 19 undefined on input line 733.
-
-
-LaTeX Warning: Reference `eq_68a' on page 19 undefined on input line 733.
-
-
-LaTeX Warning: Reference `eq_71a' on page 19 undefined on input line 764.
-
-
-LaTeX Warning: Reference `eq_67a' on page 19 undefined on input line 764.
-
-
-LaTeX Warning: Reference `eq_71a' on page 19 undefined on input line 764.
-
-
-LaTeX Warning: Reference `eq_71a' on page 19 undefined on input line 765.
-
-
-LaTeX Warning: Reference `eq_71a' on page 19 undefined on input line 771.
-
-
-LaTeX Warning: Reference `eq_68a' on page 19 undefined on input line 772.
-
-[19] [20]
-
-LaTeX Warning: Reference `eq_85a' on page 21 undefined on input line 842.
-
-
-LaTeX Warning: Reference `eq_85' on page 21 undefined on input line 844.
-
-
-LaTeX Warning: Reference `eq_82' on page 21 undefined on input line 845.
-
-
-LaTeX Warning: Reference `eq_84' on page 21 undefined on input line 845.
-
-[21pdfTeX warning (ext4): destination with the same identifier (name{Hfootnote.
-11}) has been already used, duplicate ignored
+[11] [12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22pdfTeX warning (ext4)
+: destination with the same identifier (name{Hfootnote.11}) has been already us
+ed, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
@@ -957,203 +869,88 @@ ame{Hfootnote.11}) has been already used, duplicate ignored
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.850 \end{align}
-                 ]
-
-LaTeX Warning: Citation `Hestenes' on page 22 undefined on input line 869.
-
-[22]
-
-LaTeX Warning: Reference `vrep' on page 23 undefined on input line 908.
-
-
-LaTeX Warning: Reference `rvrep' on page 23 undefined on input line 908.
-
-[23] [24]
-
-LaTeX Warning: Reference `eq108' on page 25 undefined on input line 967.
-
-
-LaTeX Warning: Reference `eq108' on page 25 undefined on input line 970.
-
-
-LaTeX Warning: Reference `114a' on page 25 undefined on input line 982.
-
-[25]
-
-LaTeX Warning: Reference `eq108a' on page 26 undefined on input line 1021.
-
-
-LaTeX Warning: Reference `eq121a' on page 26 undefined on input line 1035.
-
-[26]
-
-LaTeX Warning: Reference `eq122a' on page 27 undefined on input line 1040.
-
-
-LaTeX Warning: Reference `eq124a' on page 27 undefined on input line 1058.
-
-
-LaTeX Warning: Reference `eq122a' on page 27 undefined on input line 1058.
-
-[27]
-
-LaTeX Warning: Reference `eq111a' on page 28 undefined on input line 1071.
-
-
-LaTeX Warning: Reference `eq111a' on page 28 undefined on input line 1080.
-
-
-LaTeX Warning: Reference `eq126a' on page 28 undefined on input line 1109.
-
-[28]
-
-LaTeX Warning: Reference `ops' on page 29 undefined on input line 1155.
-
-[29]
+                 ] [23] [24] [25] [26] [27] [28] [29] [30]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/it' in size <12> not available
 (Font)              Font shape `OT1/cmtt/m/it' tried instead on input line 1198
 .
- [30]
+ [31]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <12> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 1204.
 
- [31]
-
-LaTeX Warning: Reference `metric' on page 32 undefined on input line 1274.
-
-[32]
+ [32] [33]
 Overfull \hbox (5.03647pt too wide) in paragraph at lines 1344--1345
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[33] [34]
-
-LaTeX Warning: Reference `bladexpand' on page 35 undefined on input line 1449.
-
-[35]
-
-LaTeX Warning: Reference `bladexpand' on page 36 undefined on input line 1465.
-
-
-LaTeX Warning: Reference `baseexpand' on page 36 undefined on input line 1468.
-
-
-LaTeX Warning: Reference `baseexpand' on page 36 undefined on input line 1484.
-
-
-LaTeX Warning: Reference `bladexpand' on page 36 undefined on input line 1485.
-
-
+[34] [35] [36]
 Overfull \hbox (27.7958pt too wide) in paragraph at lines 1491--1496
 [][]\OT1/cmr/m/n/12 Note that in the mul-ti-vec-tor class \OT1/cmtt/m/n/12 Mv \
 OT1/cmr/m/n/12 there is a class vari-able for each in-stan-ti-a-tion, \OT1/cmtt
 /m/n/12 self.is[]blade[]rep\OT1/cmr/m/n/12 ,
  []
 
-[36] [37]
+[37] [38]
 Chapter 3.
-[38
+[39
 
 ]
-
-LaTeX Warning: Reference `BasisMetric' on page 39 undefined on input line 1536.
-
-
-
 Overfull \hbox (19.32547pt too wide) in paragraph at lines 1542--1543
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-
-LaTeX Warning: Citation `Hestenes' on page 39 undefined on input line 1573.
-
-[39] [40]
-
-LaTeX Warning: Reference `ldops' on page 41 undefined on input line 1635.
-
-
+[40] [41]
 Overfull \hbox (34.1456pt too wide) in paragraph at lines 1651--1652
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[41] [42]
+[42] [43]
 Overfull \hbox (62.01324pt too wide) in paragraph at lines 1709--1715
 []\OT1/cmr/m/n/12 . 
  []
 
 
-Overfull \hbox (7.62103pt too wide) in paragraph at lines 1724--1735
+Overfull \hbox (7.62103pt too wide) in paragraph at lines 1726--1737
  [][] 
  []
 
-[43]
-
-LaTeX Warning: Reference `ldops' on page 44 undefined on input line 1773.
-
-[44] [45] [46]
-Overfull \hbox (2.02625pt too wide) in paragraph at lines 1897--1899
+[44] [45] [46] [47]
+Overfull \hbox (2.02625pt too wide) in paragraph at lines 1899--1901
 [][]\OT1/cmr/m/n/12 Return mul-ti-vec-tor in which each co-ef-fi-cient has been
  ex-panded us-ing \OT1/cmr/m/it/12 sympy \OT1/cmtt/m/n/12 expand()
  []
 
-[47] Excluding 'comment' comment.
+[48] Excluding 'comment' comment. [49]
 
-LaTeX Warning: Citation `Macdonald 1' on page 48 undefined on input line 1974.
+LaTeX Warning: Reference `reverse' on page 50 undefined on input line 2010.
 
-
-LaTeX Warning: Citation `Macdonald 1' on page 48 undefined on input line 1986.
-
-[48]
-
-LaTeX Warning: Reference `reverse' on page 49 undefined on input line 1991.
-
-[49]
-
-LaTeX Warning: Reference `fn_6' on page 50 undefined on input line 2062.
-
-
-LaTeX Warning: Citation `Hestenes' on page 50 undefined on input line 2069.
-
-
-LaTeX Warning: Citation `Doran' on page 50 undefined on input line 2069.
-
-[50] [51] [52]
-
-LaTeX Warning: Reference `sect_manifold' on page 53 undefined on input line 221
-8.
-
-[53]
+[50] [51] [52] [53] [54]
 Package srcltx Info: Expanded filename `python/submanifold.py' to `python/subma
-nifold.py.tex' on input line 2238.
+nifold.py.tex' on input line 2257.
 
 :<+ python/submanifold.py.tex
-(./python/submanifold.py
+(./python/submanifold.py [55]
 Overfull \hbox (4.50534pt too wide) in paragraph at lines 14--15
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-[54])
+)
 :<-
-<python/submanifold.pdf, id=660, 214.8025pt x 212.795pt>
+<python/submanifold.pdf, id=907, 214.8025pt x 212.795pt>
 File: python/submanifold.pdf Graphic file (type pdf)
 
 <use python/submanifold.pdf>
-Package pdftex.def Info: python/submanifold.pdf used on input line 2241.
+Package pdftex.def Info: python/submanifold.pdf used on input line 2260.
 (pdftex.def)             Requested size: 193.32045pt x 191.51372pt.
- [55 <./python/submanifold.pdf>]
-<python/submanifold1.pdf, id=704, 323.2075pt x 244.915pt>
+ [56]
+<python/submanifold1.pdf, id=941, 323.2075pt x 244.915pt>
 File: python/submanifold1.pdf Graphic file (type pdf)
 
 <use python/submanifold1.pdf>
-Package pdftex.def Info: python/submanifold1.pdf used on input line 2254.
+Package pdftex.def Info: python/submanifold1.pdf used on input line 2273.
 (pdftex.def)             Requested size: 323.20671pt x 244.91438pt.
-
-
-LaTeX Warning: Reference `Ltrans' on page 56 undefined on input line 2260.
-
-[56 <./python/submanifold1.pdf>]
+ [57 <./python/submanifold.pdf>] [58 <./python/submanifold1.pdf>]
 Package srcltx Info: Expanded filename `python/LtransInst.py' to `python/Ltrans
-Inst.py.tex' on input line 2298.
+Inst.py.tex' on input line 2317.
 
 :<+ python/LtransInst.py.tex
 (./python/LtransInst.py
@@ -1162,24 +959,24 @@ Overfull \hbox (12.44653pt too wide) in paragraph at lines 7--9
 ][][][][] 
  []
 
-[57])
+[59])
 :<-
-<python/LtransInst.pdf, id=770, 298.11375pt x 301.125pt>
+<python/LtransInst.pdf, id=1038, 298.11375pt x 301.125pt>
 File: python/LtransInst.pdf Graphic file (type pdf)
 
 <use python/LtransInst.pdf>
-Package pdftex.def Info: python/LtransInst.pdf used on input line 2301.
+Package pdftex.def Info: python/LtransInst.pdf used on input line 2320.
 (pdftex.def)             Requested size: 298.11302pt x 301.12425pt.
- [58]
-Overfull \hbox (13.12704pt too wide) in paragraph at lines 2313--2314
+ [60]
+Overfull \hbox (13.12704pt too wide) in paragraph at lines 2332--2333
 [][]\OT1/cmr/m/n/12 Returns the de-ter-mi-nant (a scalar) of the lin-ear trans-
 for-ma-tion, $\OML/cmm/m/it/12 L$\OT1/cmr/m/n/12 , de-fined by $[] [] \OML/cmm/
 m/it/12 I \OT1/cmr/m/n/12 =
  []
 
-[59 <./python/LtransInst.pdf>]
+[61 <./python/LtransInst.pdf>]
 Package srcltx Info: Expanded filename `python/Ltrans.py' to `python/Ltrans.py.
-tex' on input line 2340.
+tex' on input line 2359.
 
 :<+ python/Ltrans.py.tex
 (./python/Ltrans.py
@@ -1188,94 +985,82 @@ Overfull \hbox (12.44653pt too wide) in paragraph at lines 7--8
 ][][][][] 
  []
 
-[60] [61])
+[62] [63])
 :<-
-[62] <python/Ltrans.pdf, id=905, 722.7pt x 867.24pt>
+[64] <python/Ltrans.pdf, id=1173, 722.7pt x 867.24pt>
 File: python/Ltrans.pdf Graphic file (type pdf)
  <use python/Ltrans.pdf>
-Package pdftex.def Info: python/Ltrans.pdf used on input line 2343.
+Package pdftex.def Info: python/Ltrans.pdf used on input line 2362.
 (pdftex.def)             Requested size: 433.62334pt x 520.34802pt.
 
-
-LaTeX Warning: Reference `ldops' on page 63 undefined on input line 2348.
-
-[63 <./python/Ltrans.pdf>]
+[65 <./python/Ltrans.pdf>]
 Package srcltx Info: Expanded filename `python/Dop.py' to `python/Dop.py.tex' o
-n input line 2352.
+n input line 2371.
 
 :<+ python/Dop.py.tex
-(./python/Dop.py [64])
+(./python/Dop.py [66])
 :<-
-<python/Dop.pdf, id=992, 401.5pt x 376.40625pt>
+<python/Dop.pdf, id=1261, 401.5pt x 376.40625pt>
 File: python/Dop.pdf Graphic file (type pdf)
  <use python/Dop.pdf>
-Package pdftex.def Info: python/Dop.pdf used on input line 2355.
+Package pdftex.def Info: python/Dop.pdf used on input line 2374.
 (pdftex.def)             Requested size: 401.49901pt x 376.40532pt.
- [65 <./python/Dop.pdf>]
+ [67 <./python/Dop.pdf>]
 
-LaTeX Warning: Reference `MLtrans' on page 66 undefined on input line 2362.
+LaTeX Warning: Reference `MLtrans' on page 68 undefined on input line 2381.
 
 Package srcltx Info: Expanded filename `python/TensorDef.py' to `python/TensorD
-ef.py.tex' on input line 2382.
+ef.py.tex' on input line 2401.
 :<+ python/TensorDef.py.tex
-(./python/TensorDef.py [66])
+(./python/TensorDef.py [68])
 :<-
 
-LaTeX Warning: Reference `MLtrans' on page 67 undefined on input line 2387.
+LaTeX Warning: Reference `MLtrans' on page 69 undefined on input line 2406.
 
 
-LaTeX Warning: Reference `MLtrans' on page 67 undefined on input line 2412.
+LaTeX Warning: Reference `MLtrans' on page 69 undefined on input line 2431.
 
-[67]
-Overfull \hbox (9.75868pt too wide) in paragraph at lines 2452--2455
+[69]
+Overfull \hbox (9.75868pt too wide) in paragraph at lines 2471--2474
 [][]\OT1/cmr/m/n/12 For for-mat-ting the mul-ti-vec-tor out-put there is the me
 m-ber func-tion \OT1/cmtt/m/n/12 Fmt(self,fmt=1,title=None)
  []
 
-[68]
-Overfull \hbox (24.95834pt too wide) in paragraph at lines 2467--2474
+[70]
+Overfull \hbox (24.95834pt too wide) in paragraph at lines 2486--2493
 [][][] 
  []
 
-[69] [70] [71] [72]
+[71] [72] [73] [74]
 
-LaTeX Warning: Reference `Fmt_format' on page 73 undefined on input line 2650.
+LaTeX Warning: Reference `Fmt_format' on page 75 undefined on input line 2669.
 
-[73] [74]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2685.
- [75
+[75] [76]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2704.
+ [77
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 2685.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 2704.
  (./galgebra.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2685.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2685.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2704.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2704.
 
+Package rerunfilecheck Info: File `galgebra.out' has not changed.
+(rerunfilecheck)             Checksum: B3950DA6A7279AAD547DAA33E4DC06D4;3561.
 
-
-Package rerunfilecheck Warning: File `galgebra.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `galgebra.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  B3950DA6A7279AAD547DAA33E4DC06D4;3561.
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2685.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2704.
  ) 
 Here is how much of TeX's memory you used:
- 12162 strings out of 493304
- 173637 string characters out of 6139870
+ 12222 strings out of 493304
+ 174477 string characters out of 6139870
  327853 words of memory out of 5000000
- 14769 multiletter control sequences out of 15000+600000
+ 14819 multiletter control sequences out of 15000+600000
  25532 words of font info for 96 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 36i,21n,40p,416b,1936s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,21n,40p,416b,1934s stack positions out of 5000i,500n,10000p,200000b,80000s
 pdfTeX warning (dest): name{Hfootnote.28} has been referenced but does not ex
 ist, replaced by a fixed one
 
@@ -1314,10 +1099,10 @@ hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/share/t
 exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/share/texlive/texmf
 -dist/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on galgebra.pdf (76 pages, 1078380 bytes).
+Output written on galgebra.pdf (78 pages, 1087017 bytes).
 PDF statistics:
- 1410 PDF objects out of 1440 (max. 8388607)
- 1223 compressed objects within 13 object streams
- 631 named destinations out of 1000 (max. 500000)
- 36 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1671 PDF objects out of 1728 (max. 8388607)
+ 1480 compressed objects within 15 object streams
+ 633 named destinations out of 1000 (max. 500000)
+ 412 words of extra memory for PDF output out of 10000 (max. 10000000)
 

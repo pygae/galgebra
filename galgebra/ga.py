@@ -340,6 +340,7 @@ class Ga(metric.Metric):
 
         self.lt_flg = False
         self.e = mv.Mv(self.iobj, ga=self)  # Pseudo-scalar for geometric algebra
+        print 'self.e =', self.e
         self.e_sq = simplify(expand((self.e*self.e).scalar()))
 
         # Calculate normalized pseudo scalar (I**2 = +/-1)
@@ -453,6 +454,7 @@ class Ga(metric.Metric):
         If the basis is not orthogonal and norm=False then
         e_{i}\cdot e^{j} = I^{2}\delta_{i}^{j}.
         """
+
         if self.r_basis_mv is None:
             self.build_reciprocal_basis(self.gsym)
         if norm and not self.is_ortho:
@@ -1373,7 +1375,7 @@ class Ga(metric.Metric):
 
         If gsym = True then (E_{n})**2 is not evaluated, but is represented
         as (E_{n})**2 = (-1)**(n*(n-1)/2)*det(g) where det(g) the determinant
-        of the metric tensor is a general scalar function of the coordinates.
+        of the metric tensor can be general scalar function of the coordinates.
         """
 
         if self.debug:
@@ -1382,20 +1384,23 @@ class Ga(metric.Metric):
         if self.is_ortho:
             self.r_basis = [self.basis[i] / self.g[i, i] for i in self.n_range]
         else:
-            self.e_obj = self.blade_to_base_rep(self.blades_lst[-1])
+            self.e_obj = self.e.obj
             if gsym is not None:
+                # Define name of metric tensor determinant as sympy symbol
                 if printer.GaLatexPrinter.latex_flg:
                     det_str = r'\det\left ( ' + gsym + r'\right ) '
                 else:
                     det_str = 'det(' + gsym + ')'
-                if self.coords is None:
+                # Define square of pseudo-scalar in terms of metric tensor
+                # determinant
+                n = self.n
+                if self.coords is None:  # Metric tensor is constant
                     self.e_sq = (-1) ** (n*(n - 1)/2) * Symbol(det_str,real=True)
-                else:
+                else:  # Metric tensor is function of coordinates
                     n = len(self.coords)
                     self.e_sq = (-1) ** (n*(n - 1)/2) * Function(det_str,real=True)(*self.coords)
             else:
-                self.e = expand(self.basic_mul(self.e_obj, self.e_obj))
-                self.e_sq = metric.Simp.apply(self.e * self.e)
+                self.e_sq = simplify((self.e * self.e).obj)
             if self.debug:
                 print 'E**2 =', self.e_sq
             duals = list(self.blades_lst[-(self.n + 1):-1])

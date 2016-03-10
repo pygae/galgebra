@@ -38,7 +38,7 @@
 \contentsline {section}{\numberline {3.5}Basic Multivector Functions}{51}{section.3.5}
 \contentsline {section}{\numberline {3.6}Multivector Derivatives}{53}{section.3.6}
 \contentsline {section}{\numberline {3.7}Submanifolds}{55}{section.3.7}
-\contentsline {section}{\numberline {3.8}Linear Transformations}{57}{section.3.8}
+\contentsline {section}{\numberline {3.8}Linear Transformations}{58}{section.3.8}
 \contentsline {section}{\numberline {3.9}Differential Operators}{66}{section.3.9}
 \contentsline {section}{\numberline {3.10}Instantiating a Multi-linear Functions (Tensors)}{68}{section.3.10}
 \contentsline {section}{\numberline {3.11}Basic Multilinear Function Class Functions}{69}{section.3.11}

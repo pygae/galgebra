@@ -21,7 +21,6 @@ def make_vector(a,n = 3, ga=None):
     else:
         return(F(a))
 
-
 def basic_multivector_operations_3D():
     Print_Function()
 
