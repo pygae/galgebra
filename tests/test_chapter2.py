@@ -3,7 +3,7 @@ sys.path.append('../galgebra')
 
 import unittest
 
-from sympy import Symbol, solve
+from sympy import Symbol, Matrix, solve, cos, sin
 from ga import Ga
 
 class TestChapter2(unittest.TestCase):
@@ -71,6 +71,43 @@ class TestChapter2(unittest.TestCase):
         x = x.subs(R)
 
         self.assertTrue(x == e_1 + 2*e_2)
+
+
+    def test2_12_2_1(self):
+        """
+        In R2 with Euclidean metric, choose an orthonormal basis {e_1, e_2} in the plane of a and b such that e1 is parallel to a.
+        Write x = a * e_1 and y = b * (cos(t) * e_1 + sin(t) * e_2), whete t is the angle from a to b.
+        Evaluate the outer product. What is the geometrical interpretation ?
+        """
+        (_g2d, e_1, e_2) = Ga.build('e*1|2', g='1 0, 0 1')
+
+        # TODO: use alpha, beta and theta instead of a, b and t (it crashes sympy)
+        a = Symbol('a')
+        b = Symbol('b')
+        t = Symbol('t')
+        x = a * e_1
+        y = b * (cos(t) * e_1 + sin(t) * e_2)
+        B = x ^ y
+        self.assertTrue(B == (a * b * sin(t) * (e_1 ^ e_2)))
+
+        # Retrieve the parallelogram area from the 2-vector
+        area = B.norm()
+        self.assertTrue(area == (a * b * sin(t)))
+
+        # Compute the parallelogram area using the determinant
+        x = [a, 0]
+        y = [b * cos(t), b * sin(t)]
+        area = Matrix([x, y]).det()
+        self.assertTrue(area == (a * b * sin(t)))
+
+
+    def test2_12_2_2(self):
+        """
+        Consider R4 with basis {e_1, e_2, e_3, e_4}. Show that the 2-vector B = (e_1 ^ e_2) + (e_3 ^ e_4)
+        is not a 2-blade (i.e., it cannot be written as the outer product of two vectors).
+        """
+
+        (g4d, e_1, e_2, e_3, e_4) = Ga.build('e*1|2|3|4')
 
 
 if __name__ == '__main__':
