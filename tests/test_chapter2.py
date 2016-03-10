@@ -106,7 +106,6 @@ class TestChapter2(unittest.TestCase):
         Consider R4 with basis {e_1, e_2, e_3, e_4}. Show that the 2-vector B = (e_1 ^ e_2) + (e_3 ^ e_4)
         is not a 2-blade (i.e., it cannot be written as the outer product of two vectors).
         """
-
         (_g4d, e_1, e_2, e_3, e_4) = Ga.build('e*1|2|3|4')
 
         # B
