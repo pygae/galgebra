@@ -1823,6 +1823,14 @@ debug=False,curv=(None,None))}
 
 If we can instantiate multivectors we can use all the multivector class functions as described as follows.
 
+\T{blade\_coefs(self,basis\_lst)}
+\begin{quote}
+   Find coefficients (sympy expressions) of multivector basis blade expansion corresponding to basis 
+   blades in \T{basis\_lst}. For example if $V = V^{x}\eb_{x}+V^{y}\eb_{x}+V^{z}\eb_{x}$ Then
+   $V.blade\_coefs([\eb_{z},\eb_{x}]) = [V^{z},V^{x}]$ or if $B = B^{xy}\eb_{x}\W\eb_{y}+V^{yz}\eb_{y}\W\eb_{z}$
+   then $B.blade\_coefs([\eb_{x}\W\eb_{y}]) = [B^{xy}]$.
+\end{quote}
+
 \T{convert\_to\_blades(self)}
 \begin{quote}
    Convert multivector from the base representation to the blade representation.
