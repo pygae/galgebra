@@ -322,6 +322,9 @@ class Ga(metric.Metric):
         if self.coords is not None:
             self.coords = list(self.coords)
 
+        self.e = mv.Mv(self.iobj, ga=self)  # Pseudo-scalar for geometric algebra
+        self.e_sq = simplify(expand((self.e*self.e).scalar()))
+
         if self.coords is not None:
             self.coord_vec = sum([coord * base for (coord, base) in zip(self.coords, self.basis)])
             self.build_reciprocal_basis(self.gsym)
@@ -339,8 +342,7 @@ class Ga(metric.Metric):
             self.build_connection()
 
         self.lt_flg = False
-        self.e = mv.Mv(self.iobj, ga=self)  # Pseudo-scalar for geometric algebra
-        self.e_sq = simplify(expand((self.e*self.e).scalar()))
+
 
         # Calculate normalized pseudo scalar (I**2 = +/-1)
         if self.e_sq_sgn == '+': # I**2 = 1
