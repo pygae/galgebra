@@ -921,11 +921,11 @@ class Mv(object):
             return self.blade_flg
 
     def is_base(self):
-        (coefs,bases) = linear_expand(self.obj)
+        (coefs, _bases) = metric.linear_expand(self.obj)
         if len(coefs) > 1:
             return False
         else:
-            return True
+            return coefs[0] == ONE
 
     def is_versor(self):  # Test for versor (geometric product of vectors)
         """
@@ -986,6 +986,9 @@ class Mv(object):
         a list (sympy expressions) of the coefficients of each basis blade
         in blade_lst
         """
+        for blade in blade_lst:
+            if not blade.is_base() or not blade.is_blade():
+                raise ValueError("%s expression isn't a basis blade" % blade)
         blade_lst = [x.obj for x in blade_lst]
         (coefs, bases) = metric.linear_expand(self.obj)
         coef_lst = []
@@ -994,9 +997,6 @@ class Mv(object):
                 coef_lst.append(coefs[bases.index(blade)])
             else:
                 coef_lst.append(ZERO)
-        for (coef, base) in zip(coefs, bases):
-            if base in bases_lst:
-                coef_lst.append(coef)
         return coef_lst
 
     def proj(self, bases_lst):
