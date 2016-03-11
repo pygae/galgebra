@@ -340,7 +340,6 @@ class Ga(metric.Metric):
 
         self.lt_flg = False
         self.e = mv.Mv(self.iobj, ga=self)  # Pseudo-scalar for geometric algebra
-        print 'self.e =', self.e
         self.e_sq = simplify(expand((self.e*self.e).scalar()))
 
         # Calculate normalized pseudo scalar (I**2 = +/-1)
