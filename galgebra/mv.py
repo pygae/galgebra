@@ -980,12 +980,16 @@ class Mv(object):
         (coefs, bases) = zip(*cb)
         return coefs
 
-    def blade_coefs(self, blade_lst):
+    def blade_coefs(self, blade_lst=None):
         """
         For a multivector, A, and a list of basis blades, blade_lst return
         a list (sympy expressions) of the coefficients of each basis blade
         in blade_lst
         """
+
+        if blade_lst is None:
+            blade_lst = self.Ga.mv_blades_lst
+
         for blade in blade_lst:
             if not blade.is_base() or not blade.is_blade():
                 raise ValueError("%s expression isn't a basis blade" % blade)

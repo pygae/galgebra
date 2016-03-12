@@ -664,6 +664,11 @@ class Ga(metric.Metric):
                                 'bases_to_indexes_dict', self.bases_to_indexes_dict,
                                 'indexes_to_bases_dict', self.indexes_to_bases_dict,
                                 'bases_to_grades_dict', self.bases_to_grades_dict)
+
+        self.mv_blades_lst = []
+        for obj in self.blades_lst:
+            self.mv_blades_lst.append(self.mv(obj))
+
         return
 
     def basis_product_tables(self):
