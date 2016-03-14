@@ -988,7 +988,7 @@ class Mv(object):
         """
 
         if blade_lst is None:
-            blade_lst = self.Ga.mv_blades_lst
+            blade_lst = [self.Ga.mv(ONE)] + self.Ga.mv_blades_lst
 
         for blade in blade_lst:
             if not blade.is_base() or not blade.is_blade():

@@ -182,7 +182,7 @@ class Lt(object):
                 for (lt_i, base) in zip(mat_rep, self.Ga.basis):
                     self.lt_dict[base] = lt_i
             else:
-                mat_rep = map(list, zip(*mat_rep))  # Transpose list of lists
+                #mat_rep = map(list, zip(*mat_rep))  # Transpose list of lists
                 for (row, base1) in zip(mat_rep, self.Ga.basis):
                     tmp = 0
                     for (col, base2) in zip(row, self.Ga.basis):
