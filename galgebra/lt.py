@@ -89,23 +89,24 @@ def Matrix_to_dictionary(mat_rep,basis):
             dict_rep[basis[row]] += mat_rep[row,col]*basis[col]
     return dict_rep
 
-def Dictionary_to_Matrix(dict_rep):
+def Dictionary_to_Matrix(dict_rep, ga):
     # Convert dictionary representation of linear transformation to matrix
     basis = dict_rep.keys()
     n = len(basis)
     n_range = range(n)
-    mat_rep = zeros(n)
+    lst_mat = []  # list representation of sympy matrix
     for row in n_range:
-        row_rep = dict_rep[basis[row]]
-        (coefs,bases) = metric.linear_expand(row_rep)
-        for col in n_range:
-            base = basis[col]
-            if base in bases:
-                index = basis.index(base)
-                mat_rep[row,col] = coefs[index]
-            else:
-                mat_rep[row,col] = S(0)
-    return mat_rep
+        e_row = ga.basis[row]
+        lst_mat_row = n * [S(0)]
+        if e_row in basis:
+            (coefs,bases) = metric.linear_expand(dict_rep[e_row])
+            for col in n_range:
+                base = basis[col]
+                if base in bases:
+                    index = basis.index(base)
+                    lst_mat_row[index] = coefs[index]
+        lst_mat.append(lst_mat_row)
+    return Matrix(lst_mat)
 
 class Lt(object):
 
@@ -472,7 +473,7 @@ class Lt(object):
                         mat_rep.append(self.Ga.n * [0])
                 return(Matrix(mat_rep).transpose())
                 """
-                self.mat = Dictionary_to_Matrix(self.lt_dict) * self.Ga.g
+                self.mat = Dictionary_to_Matrix(self.lt_dict, self.Ga) * self.Ga.g
                 return self.mat
 
 
