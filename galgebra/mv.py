@@ -986,13 +986,12 @@ class Mv(object):
         a list (sympy expressions) of the coefficients of each basis blade
         in blade_lst
         """
-
         if blade_lst is None:
             blade_lst = [self.Ga.mv(ONE)] + self.Ga.mv_blades_lst
-
-        for blade in blade_lst:
-            if not blade.is_base() or not blade.is_blade():
-                raise ValueError("%s expression isn't a basis blade" % blade)
+        else:
+            for blade in blade_lst:
+                if not blade.is_base() or not blade.is_blade():
+                    raise ValueError("%s expression isn't a basis blade" % blade)
         blade_lst = [x.obj for x in blade_lst]
         (coefs, bases) = metric.linear_expand(self.obj)
         coef_lst = []
