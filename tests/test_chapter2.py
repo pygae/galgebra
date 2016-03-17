@@ -3,7 +3,7 @@ sys.path.append('../galgebra')
 
 import unittest
 
-from sympy import Symbol, Matrix, solve, cos, sin
+from sympy import Symbol, Matrix, solve, solve_poly_system, cos, sin
 from ga import Ga
 
 class TestChapter2(unittest.TestCase):
@@ -107,7 +107,46 @@ class TestChapter2(unittest.TestCase):
         is not a 2-blade (i.e., it cannot be written as the outer product of two vectors).
         """
 
-        (g4d, e_1, e_2, e_3, e_4) = Ga.build('e*1|2|3|4')
+        (_g4d, e_1, e_2, e_3, e_4) = Ga.build('e*1|2|3|4')
+
+        # B
+        B = (e_1 ^ e_2) + (e_3 ^ e_4)
+
+        # C is the product of a and b vectors
+        a_1 = Symbol('a_1')
+        a_2 = Symbol('a_2')
+        a_3 = Symbol('a_3')
+        a_4 = Symbol('a_4')
+        a = a_1 * e_1 + a_2 * e_2 + a_3 * e_3 + a_4 * e_4
+
+        b_1 = Symbol('b_1')
+        b_2 = Symbol('b_2')
+        b_3 = Symbol('b_3')
+        b_4 = Symbol('b_4')
+        b = b_1 * e_1 + b_2 * e_2 + b_3 * e_3 + b_4 * e_4
+
+        C = a ^ b
+
+        # other coefficients are null
+        blades = [
+            e_1 ^ e_2, e_1 ^ e_3, e_1 ^ e_4, e_2 ^ e_3, e_2 ^ e_4, e_3 ^ e_4,
+        ]
+
+        C_coefs = C.blade_coefs(blades)
+        B_coefs = B.blade_coefs(blades)
+
+        # try to solve the system and show there is no solution
+        system = [
+            (C_coef) - (B_coef) for C_coef, B_coef in zip(C_coefs, B_coefs)
+        ]
+
+        unknowns = [
+            a_1, a_2, a_3, a_4, b_1, b_2, b_3, b_4
+        ]
+
+        # TODO: use solve if sympy fix it
+        result = solve_poly_system(system, unknowns)
+        self.assertTrue(result is None)
 
 
 if __name__ == '__main__':
