@@ -1,0 +1,4 @@
+*.pyc
+build/
+dist/
+galgebra.egg-info/
