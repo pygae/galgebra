@@ -2,6 +2,7 @@ import sys
 sys.path.append('../galgebra')
 
 import unittest
+import itertools
 
 from sympy import Symbol, Matrix, solve, solve_poly_system, cos, sin
 from ga import Ga
@@ -147,6 +148,34 @@ class TestChapter2(unittest.TestCase):
         # TODO: use solve if sympy fix it
         result = solve_poly_system(system, unknowns)
         self.assertTrue(result is None)
+
+
+    def test2_12_2_9(self):
+        """
+        Prove Ak ^ Bl = (-1**kl) Bl ^ Ak.
+        """
+
+        # very slow if bigger
+        dimension = 5
+
+        # create the vector space
+        # e*1|2|3|4|5 if dimension == 5
+        # TODO: don't fix the vector space dimension
+        ga = Ga('e*%s' % '|'.join(str(i) for i in range(1, dimension+1)))
+
+        # an helper for building multivectors
+        # Ak = a1 ^ a2 ^ ... ^ ak if _build('a', k)
+        def _build(name, grade):
+            M = ga.mv('%s1' % name, 'vector')
+            for k in range(2, grade+1):
+                M = M ^ ga.mv('%s%d' % (name, k), 'vector')
+            return M
+
+        # prove for k in [1, 5] and l in [1, 5]
+        for k, l in itertools.product(range(1, dimension+1), range(1, dimension+1)):
+            Ak = _build('a', k)
+            Bl = _build('b', l)
+            self.assertTrue((Ak ^ Bl) == (-1)**(k*l) * (Bl ^ Ak))
 
 
 if __name__ == '__main__':
