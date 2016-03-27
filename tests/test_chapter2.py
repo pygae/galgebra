@@ -1,6 +1,3 @@
-import sys
-sys.path.append('../galgebra')
-
 import unittest
 import itertools
 
