@@ -389,7 +389,8 @@ class Mv(object):
 
     def __eq__(self, A):
         if isinstance(A, Mv):
-            diff = (self - A).expand()
+            diff = (self - A).expand().simplify()
+            #diff = (self - A).expand()
             if diff.obj == S(0):
                 return True
             else:
@@ -2191,6 +2192,7 @@ class Dop(object):
         if isinstance(dop, Dop):
             if self.Ga != dop.Ga:
                 return False
+
             self = Sdop.consolidate_coefs(self)
             dop = Sdop.consolidate_coefs(dop)
             if len(self.terms) != len(dop.terms):
