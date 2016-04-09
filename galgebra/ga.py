@@ -397,6 +397,9 @@ class Ga(metric.Metric):
 
     def I(self):
         return self.i
+    
+    def I_inv(self):
+        return self.i_inv
 
     def X(self):
         return self.mv(sum([coord*base for (coord, base) in zip(self.coords, self.basis)]))
