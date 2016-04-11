@@ -515,7 +515,7 @@ class GaLatexPrinter(LatexPrinter):
     greek_translated = {'lamda': 'lambda', 'Lamda': 'Lambda'}
 
     other = set(['aleph', 'beth', 'daleth', 'gimel', 'ell', 'eth',
-                 'hbar', 'hslash', 'mho'])
+                 'hbar', 'hslash', 'mho', 'infty'])
 
     special_alphabet = list(reversed(sorted(list(greek) + list(other), key=len)))
 
