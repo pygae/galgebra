@@ -4,7 +4,8 @@ import operator
 import copy
 from sympy import diff, Rational, Symbol, S, Mul, Pow, Add, \
     collect, expand, simplify, eye, trigsimp, sin, cos, sinh, cosh, \
-    symbols, sqrt, Abs, numbers
+    symbols, sqrt, Abs, numbers, Integer
+import sympy
 from collections import OrderedDict
 #from sympy.core.compatibility import combinations
 from itertools import combinations
@@ -343,14 +344,22 @@ class Ga(metric.Metric):
 
         self.lt_flg = False
 
-
         # Calculate normalized pseudo scalar (I**2 = +/-1)
-        if self.e_sq_sgn == '+': # I**2 = 1
-            self.i = self.e/sqrt(self.e_sq)
-            self.i_inv = self.i
-        else:  # I**2 = -1
-            self.i = self.e/sqrt(-self.e_sq)
-            self.i_inv = -self.i
+
+        if self.e_sq.is_number:
+            if self.e_sq > S(0):
+                self.i = self.e/sqrt(self.e_sq)
+                self.i_inv = self.i
+            else:  # I**2 = -1
+                self.i = self.e/sqrt(-self.e_sq)
+                self.i_inv = -self.i
+        else:
+            if self.e_sq_sgn == '+': # I**2 = 1
+                self.i = self.e/sqrt(self.e_sq)
+                self.i_inv = self.i
+            else:  # I**2 = -1
+                self.i = self.e/sqrt(-self.e_sq)
+                self.i_inv = -self.i
 
         if Ga.restore:  # restore printer to appropriate enhanced mode after ga is instantiated
             printer.GaLatexPrinter.redirect()
@@ -1769,6 +1778,8 @@ class Sm(Ga):
 
     def __init__(self, *kargs, **kwargs):
 
+        #print '!!!Enter Sm!!!'
+
         if printer.GaLatexPrinter.latex_flg:
             printer.GaLatexPrinter.restore()
             Ga.restore = True
@@ -1793,11 +1804,15 @@ class Sm(Ga):
         basis_str = basis_str[:-1]
         """
 
+        #print 'u =', u
+
         if isinstance(u,mv.Mv):  #Define vector manifold
             self.ebasis = []
             for coord in coords:
                 #Partial derivation of vector function to get basis vectors
                 self.ebasis.append(u.diff(coord))
+
+            #print 'sm ebasis =', self.ebasis
 
             self.g = []
             for b1 in self.ebasis:
@@ -1818,6 +1833,8 @@ class Sm(Ga):
                 for u_j in coords:
                     tmp.append(diff(x_i, u_j))
                 dxdu.append(tmp)
+
+            #print 'dxdu =', dxdu
 
             sub_pairs = zip(ga.coords, u)
 
