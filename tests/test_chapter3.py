@@ -180,6 +180,56 @@ class TestChapter3(unittest.TestCase):
         # with the contraction
         for X, B in product(X_blades, B_blades):
             self.assertEquals(X < B, P(X, B) < B)
+            
+    
+    def test_3_10_1_1(self):
+        """
+        Drills.
+        """
+        
+        Ga.dual_mode("Iinv+")
+
+        _R, e_1, e_2, e_3 = Ga.build('e*1|2|3', g='1 0 0, 0 1 0, 0 0 1')
+        
+        a = e_1 + e_2
+        b = e_2 + e_3
+        
+        # a
+        self.assertEquals(e_1 < a, (e_1 < e_1) + (e_1 < e_2))
+        self.assertEquals(e_1 < e_1, e_1 | e_1)
+        self.assertEquals(e_1 < e_1, 1)
+        self.assertEquals(e_1 < e_2, e_1 | e_2)
+        self.assertEquals(e_1 < e_2, 0)
+        self.assertEquals(e_1 < a, 1)
+        
+        # b
+        self.assertEquals(e_1 < (a ^ b), ((e_1 < a) ^ b) - (a ^ (e_1 < b)))        
+        self.assertEquals((e_1 < a) ^ b, b)         # reusing drill a
+        self.assertEquals(e_1 < b, (e_1 < e_2) + (e_1 < e_3))
+        self.assertEquals(e_1 < b, 0)
+        self.assertEquals(e_1 < (a ^ b), b)
+        
+        # c
+        self.assertEquals((a ^ b) < e_1, a < (b < e_1))
+        self.assertEquals((a ^ b) < e_1, a < ((e_2 < e_1) + (e_3 < e_1)))
+        self.assertEquals((a ^ b) < e_1, 0)
+        
+        # d
+        self.assertEquals(((2 * a) + b) < (a + b), ((2 * a) < a) + ((2 * a) < b) + (b < a) + (b < b))
+        self.assertEquals(((2 * a) + b) < (a + b), ((2 * (a < a)) + (2 * (a < b)) + (b < a) + (b < b)))
+        self.assertEquals(((2 * a) + b) < (a + b), 4 + 2 + 1 + 2)
+        
+        # e
+        self.assertEquals(a < (e_1 ^ e_2 ^ e_3), a < ((e_1 ^ e_2) ^ e_3))
+        self.assertEquals(a < (e_1 ^ e_2 ^ e_3), ((a < (e_1 ^ e_2)) ^ e_3) + ((e_1 ^ e_2) ^ (a < e_3)))
+        self.assertEquals(a < (e_1 ^ e_2 ^ e_3), (((e_1 < (e_1 ^ e_2)) + (e_2 < (e_1 ^ e_2))) ^ e_3) + ((e_1 ^ e_2) ^ ((e_1 < e_3) + (e_2 < e_3))))        
+        self.assertEquals(((e_1 < (e_1 ^ e_2)) + (e_2 < (e_1 ^ e_2))) ^ e_3, (((e_1 < e_1) ^ e_2) - (e_1 ^ (e_1 < e_2)) + ((e_2 < e_1) ^ e_2) - (e_1 ^ (e_2 < e_2))) ^ e_3)        
+        self.assertEquals(((e_1 < (e_1 ^ e_2)) + (e_2 < (e_1 ^ e_2))) ^ e_3, (e_2 - e_1) ^ e_3)
+        self.assertEquals(((e_1 < (e_1 ^ e_2)) + (e_2 < (e_1 ^ e_2))) ^ e_3, (e_2 ^ e_3) - (e_1 ^ e_3))        
+        self.assertEquals(e_1 < e_3, 0)
+        self.assertEquals(e_2 < e_3, 0)
+        self.assertEquals(((e_1 ^ e_2) ^ ((e_1 < e_3) + (e_2 < e_3))), 0)        
+        self.assertEquals(a < (e_1 ^ e_2 ^ e_3), (e_2 ^ e_3) - (e_1 ^ e_3))
 
 
 if __name__ == '__main__':
