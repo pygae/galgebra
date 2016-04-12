@@ -30,9 +30,9 @@ class TestChapter3(unittest.TestCase):
         Ga.dual_mode("Iinv+")
 
         R = Ga('e*1|2|3')
-        A_blades = [Mv('A', i, 'grade', ga=R) for i in range(R.n + 1)]
-        B_blades = [Mv('B', i, 'grade', ga=R) for i in range(R.n + 1)]
-        C_blades = [Mv('C', i, 'grade', ga=R) for i in range(R.n + 1)]
+        A_blades = [R.mv('A', i, 'grade') for i in range(R.n + 1)]
+        B_blades = [R.mv('B', i, 'grade') for i in range(R.n + 1)]
+        C_blades = [R.mv('C', i, 'grade') for i in range(R.n + 1)]
 
         # scalar and blades of various grades
         A = A_blades[0]
@@ -69,7 +69,7 @@ class TestChapter3(unittest.TestCase):
             self.assertEquals((alpha * A) < B, alpha * (A < B))
             self.assertEquals((alpha * A) < B, A < (alpha * B))
 
-        a = Mv('a', 1, 'grade', ga=R)
+        a = R.mv('a', 1, 'grade')
         for A_minus1, B in product(A_blades[:-1], B_blades):
             A = A_minus1 ^ a
             self.assertEquals(A < B, (A_minus1 ^ a) < B)
@@ -84,8 +84,8 @@ class TestChapter3(unittest.TestCase):
         Ga.dual_mode("Iinv+")
 
         R = Ga('e*1|2|3')
-        A_blades = [Mv('A', i, 'grade', ga=R) for i in range(R.n + 1)]
-        B_blades = [Mv('B', i, 'grade', ga=R) for i in range(R.n + 1)]
+        A_blades = [R.mv('A', i, 'grade') for i in range(R.n + 1)]
+        B_blades = [R.mv('B', i, 'grade') for i in range(R.n + 1)]
 
         for A, B in product(A_blades, B_blades):
             self.assertEquals(B > A, ((-1) ** (A.pure_grade() * (B.pure_grade() - 1))) * (A < B))
@@ -102,7 +102,7 @@ class TestChapter3(unittest.TestCase):
         Ga.dual_mode("Iinv+")
 
         R = Ga('e*1|2|3')
-        A_blades = [Mv('A', i, 'grade', ga=R) for i in range(R.n + 1)]
+        A_blades = [R.mv('A', i, 'grade') for i in range(R.n + 1)]
 
         for A in A_blades:
             self.assertEquals(A.inv(), ((-1) ** (A.pure_grade() * (A.pure_grade() - 1) / 2)) * (A / A.norm2()))
@@ -122,8 +122,8 @@ class TestChapter3(unittest.TestCase):
         Ga.dual_mode("Iinv+")
 
         # some blades by grades for each space
-        spaces = [([Mv('A', i, 'grade', ga=R) for i in range(R.n + 1)], R) for R in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]]
-
+        spaces = [([R.mv('A', i, 'grade') for i in range(R.n + 1)], R) for R in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]]
+        
         # dualization
         for blades, R in spaces:
             for A in blades:
@@ -148,8 +148,8 @@ class TestChapter3(unittest.TestCase):
         Ga.dual_mode("Iinv+")
 
         R = Ga('e*1|2|3')
-        A_blades = [Mv('A', i, 'grade', ga=R) for i in range(R.n + 1)]
-        B_blades = [Mv('B', i, 'grade', ga=R) for i in range(R.n + 1)]
+        A_blades = [R.mv('A', i, 'grade') for i in range(R.n + 1)]
+        B_blades = [R.mv('B', i, 'grade') for i in range(R.n + 1)]
 
         for A, B in product(A_blades, B_blades):
             self.assertEquals((A ^ B).dual(), A < B.dual())
@@ -166,8 +166,8 @@ class TestChapter3(unittest.TestCase):
         Ga.dual_mode("Iinv+")
 
         R = Ga('e*1|2|3')
-        X_blades = [Mv('X', i, 'grade', ga=R) for i in range(R.n + 1)]
-        B_blades = [Mv('B', i, 'grade', ga=R) for i in range(R.n + 1)]
+        X_blades = [R.mv('X', i, 'grade') for i in range(R.n + 1)]
+        B_blades = [R.mv('B', i, 'grade') for i in range(R.n + 1)]
 
         # projection of X on B
         def P(X, B):
