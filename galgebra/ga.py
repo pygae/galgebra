@@ -347,6 +347,8 @@ class Ga(metric.Metric):
         # Calculate normalized pseudo scalar (I**2 = +/-1)
 
         if self.e_sq.is_number:
+            if self.e_sq == S(0):
+                raise ValueError('!!!!If I**2 = 0, I cannot be normalized!!!!')
             if self.e_sq > S(0):
                 self.i = self.e/sqrt(self.e_sq)
                 self.i_inv = self.i
