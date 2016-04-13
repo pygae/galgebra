@@ -865,6 +865,35 @@ Thus
 	                     &= v. 
 \end{align}
 
+One more topic to consider is whether or not $T^{i}_{j}$ should be called the matrix representation of $T$? The reason that
+this is a question is that for a general metric $g_{ij}$ is that because of the dependence of the dot product on the metric
+$T^{i}_{j}$ does not necessarily show the symmetries of the underlying transformation $T$. Consider the expression
+\begin{align}
+	a\cdot\f{T}{b} &= a^{i}\eb_{i}\cdot\f{T}{b^{j}\eb_{j}} \nonumber \\
+	               &= a^{i}\eb_{i}\cdot \f{T}{\eb_{j}}b^{j} \nonumber \\
+	               &= a^{i}\eb_{i}\cdot\eb_{k} T_{j}^{k}b^{j} \nonumber \\
+	               &= a^{i}g_{ik}T_{j}^{k}b^{j}.
+\end{align}
+It is
+\begin{equation}
+	T_{ij} = g_{ik}T_{j}^{k}
+\end{equation}
+that has the proper symmetry for self adjoint transformations $(a\cdot\f{T}{b} = b\cdot\f{T}{a})$ in the sense that if 
+$T = \overline{T}$ then $T_{ij} = T_{ji}$. Of course if we are dealing with a manifold where the $g_{ij}$'s are functions
+of the coordinates then the matrix representation of a linear transformation will also be a function of the coordinates. 
+Assuming we use $T_{ij}$ for the matrix representation of the linear transformation, $T$, then if we given the matrix 
+representation, $T_{ij}$, we can construct the linear transformation given by $T^{i}_{j}$ as follows
+\begin{align}
+	T_{ij} &= g_{ik}T_{j}^{k} \nonumber \\
+	g^{li}T_{ij} &= g^{li}g_{ik}T_{j}^{k} \nonumber \\
+	g^{li}T_{ij} &= \delta_{k}^{l}T_{j}^{k} \nonumber \\
+	g^{li}T_{ij} &= T_{j}^{l}.
+\end{align} 
+Any program/code that represents $T$ should allow one to define $T$ in terms of $T_{ij}$ or $T_{j}^{l}$ and likewise 
+given a linear transformation $T$ obtain both $T_{ij}$ and $T_{j}^{l}$ from it. Please note that these considerations 
+come into play for any non-Euclidean metric with respect to the trace and adjoint of a linear transformation since 
+calculating either requires a dot product.
+
 \section{Multilinear Functions}\label{MLTrans}
 A multivector multilinear function\footnote{We are following the treatment of Tensors in section 3--10 of \cite{Hestenes}.} is a
 multivector function $\f{T}{A_{1},\dots,A_{r}}$ that is linear in each of it arguments\footnote{We assume that the arguments
@@ -1965,10 +1994,9 @@ If we can instantiate multivectors we can use all the multivector class function
 
 \T{norm2(self)}
 \begin{quote}
-   Return the absolute value (using sympy \T{Abs()} function) of the scalar defined by $MM^{\R}$ if $MM^{\R}$ is a scalar.  If 
+   Return the the scalar defined by $MM^{\R}$ if $MM^{\R}$ is a scalar.  If 
    $MM^{\R}$ is not a scalar the program exits with an error message.
 \end{quote}
-
 
 \begin{comment}
 \T{proj(self,bases\_lst)}

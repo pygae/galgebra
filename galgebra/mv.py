@@ -1212,7 +1212,7 @@ class Mv(object):
         reverse = self.rev()
         product = self * reverse
         if product.is_scalar():
-            return Abs(product.scalar())
+            return product.scalar()
         else:
             raise TypeError('"(' + str(product) + ')**2" is not a scalar in norm2.')
 
