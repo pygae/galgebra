@@ -189,7 +189,7 @@ class TestChapter3(unittest.TestCase):
         
         Ga.dual_mode("Iinv+")
 
-        _R, e_1, e_2, e_3 = Ga.build('e*1|2|3', g='1 0 0, 0 1 0, 0 0 1')
+        R, e_1, e_2, e_3 = Ga.build('e*1|2|3', g='1 0 0, 0 1 0, 0 0 1')
         
         a = e_1 + e_2
         b = e_2 + e_3
@@ -208,6 +208,7 @@ class TestChapter3(unittest.TestCase):
         self.assertEquals(e_1 < b, (e_1 < e_2) + (e_1 < e_3))
         self.assertEquals(e_1 < b, 0)
         self.assertEquals(e_1 < (a ^ b), b)
+        self.assertEquals(e_1 < (a ^ b), e_2 + e_3)
         
         # c
         self.assertEquals((a ^ b) < e_1, a < (b < e_1))
@@ -228,8 +229,29 @@ class TestChapter3(unittest.TestCase):
         self.assertEquals(((e_1 < (e_1 ^ e_2)) + (e_2 < (e_1 ^ e_2))) ^ e_3, (e_2 ^ e_3) - (e_1 ^ e_3))        
         self.assertEquals(e_1 < e_3, 0)
         self.assertEquals(e_2 < e_3, 0)
-        self.assertEquals(((e_1 ^ e_2) ^ ((e_1 < e_3) + (e_2 < e_3))), 0)        
+        self.assertEquals(((e_1 ^ e_2) ^ ((e_1 < e_3) + (e_2 < e_3))), 0)
         self.assertEquals(a < (e_1 ^ e_2 ^ e_3), (e_2 ^ e_3) - (e_1 ^ e_3))
+        
+        # f
+        self.assertEquals(a < R.I_inv(), a < (-e_1 ^ e_2 ^ e_3))        # equals because we fixed the metric
+        self.assertEquals(a < R.I_inv(), a < ((e_1 ^ e_2) ^ (-e_3)))    # almost last drill
+        self.assertEquals(a < R.I_inv(), -(e_2 ^ e_3) + (e_1 ^ e_3))
+        
+        # g
+        self.assertEquals((a ^ b) < R.I_inv(), -((b ^ a) < R.I_inv()))
+        self.assertEquals((a ^ b) < R.I_inv(), -(b < (a < R.I_inv())))
+        self.assertEquals((a ^ b) < R.I_inv(), -((e_2 + e_3) < (-(e_2 ^ e_3) + (e_1 ^ e_3))))        
+        self.assertEquals((a ^ b) < R.I_inv(), ((e_2 + e_3) < (e_2 ^ e_3)) - ((e_2 + e_3) < (e_1 ^ e_3)))
+        self.assertEquals((a ^ b) < R.I_inv(), ((e_2 < (e_2 ^ e_3)) + (e_3 < (e_2 ^ e_3)) - (e_2 < (e_1 ^ e_3)) - (e_3 < (e_1 ^ e_3))))
+        self.assertEquals(e_2 < (e_2 ^ e_3), e_3)
+        self.assertEquals(e_3 < (e_2 ^ e_3), -e_2)
+        self.assertEquals(e_2 < (e_1 ^ e_3), 0)
+        self.assertEquals(e_3 < (e_1 ^ e_3), -e_1)
+        self.assertEquals((a ^ b) < R.I_inv(), e_3 - e_2 + e_1)
+        
+        # h
+        self.assertEquals(a < (b < R.I_inv()), (a ^ b) < R.I_inv())
+        self.assertEquals(a < (b < R.I_inv()), e_3 - e_2 + e_1)
 
 
 if __name__ == '__main__':
