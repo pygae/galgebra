@@ -9,7 +9,7 @@ from operator import itemgetter, mul, add
 from itertools import combinations
 #from numpy.linalg import matrix_rank
 from sympy import Symbol, Function, S, expand, Add, Mul, Pow, Basic, \
-    sin, cos, sinh, cosh, sqrt, trigsimp, \
+    sin, cos, sinh, cosh, sqrt, trigsimp, expand, \
     simplify, diff, Rational, Expr, Abs, collect, combsimp
 from sympy import exp as sympy_exp
 from sympy import N as Nsympy
@@ -122,7 +122,7 @@ class Mv(object):
     def characterise_Mv(self):
         if self.char_Mv:
             return
-        obj = self.obj
+        obj = expand(self.obj)
         if isinstance(obj, numbers.Number):
             self.i_grade = 0
             self.is_blade_rep = True
@@ -138,6 +138,7 @@ class Mv(object):
         else:
             args = [obj]
         grades = []
+        #print 'args =', args
         self.is_blade_rep = True
         for term in args:
             if term.is_commutative:
@@ -146,6 +147,7 @@ class Mv(object):
             else:
                 c, nc = term.args_cnc(split_1=False)
                 blade = nc[0]
+                #print 'blade =',blade
                 if blade in self.Ga.blades_lst:
                     grade = self.Ga.blades_to_grades_dict[blade]
                     if not grade in grades:
@@ -573,26 +575,27 @@ class Mv(object):
         return str(self)
 
     def Mv_str(self):
+        #print '\n1 - self.obj =',self.obj
         # str representation of multivector
         if self.i_grade == 0:
             return str(self.obj)
         self.obj = expand(self.obj)
         self.characterise_Mv()
         self.obj = metric.Simp.apply(self.obj)
-        #print '\nself.obj =',self.obj
+        #print '2 - self.obj =',self.obj
+        #print 'is_blade_rep =',self.is_blade_rep,' is_ortho =',self.Ga.is_ortho
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
         else:
             base_keys = self.Ga.bases_lst
             grade_keys = self.Ga.bases_to_grades_dict
-        #print '\nblade_rep =', self.is_blade_rep
-        #print '\nGa_ortho =', self.Ga.is_ortho
+        #print 'base_keys =',base_keys,'\ngrade_keys =',grade_keys
         if isinstance(self.obj, Add):  # collect coefficients of bases
             if self.obj.is_commutative:
                 return self.obj
             args = self.obj.args
-            #print '\nargs =', args
+            #print 'args =', args
             terms = {}  # dictionary with base indexes as keys
             grade0 = S(0)
             for arg in args:
@@ -601,10 +604,10 @@ class Mv(object):
                     c = reduce(mul, c)
                 else:
                     c = S(1)
-                #print '\n(c,nc) =', (c, nc)
+                #print '(c,nc) =', (c, nc)
                 if len(nc) > 0:
                     base = nc[0]
-                    #print '\nbase,base_keys =',base,base_keys
+                    #print 'base,base_keys =',base,base_keys
                     if base in base_keys:
                         index = base_keys.index(base)
                         if index in terms:
@@ -612,15 +615,17 @@ class Mv(object):
                             terms[index] = (c_tmp + c, base, g_keys)
                         else:
                             terms[index] = (c, base, grade_keys[base])
-                    #print '\nterms =', terms
+                    #print 'terms =', terms
                 else:
                     grade0 += c
             if grade0 != S(0):
                 terms[-1] = (grade0, S(1), -1)
-
+            #print 'terms =', terms
             terms = terms.items()
-
+            #print 'terms =', terms
             sorted_terms = sorted(terms, key=itemgetter(0))  # sort via base indexes
+
+            #print 'sorted_terms =',sorted_terms
 
             s = str(sorted_terms[0][1][0] * sorted_terms[0][1][1])
             if printer.GaPrinter.fmt == 3:
@@ -799,6 +804,15 @@ class Mv(object):
             return Mv(ga=self.Ga)
         else:
             return A | self
+
+    def __pow__(self,n):  # Integer power operator
+        if not isinstance(n,int):
+            raise ValueError('!!!!Multivector exponentiation can only be to integer power!!!!')
+
+        result = S(1)
+        for x in range(n):
+            result *= self
+        return result
 
     def __lshift__(self, A): # anti-comutator (<<)
         return half * (self * A + A * self)
@@ -1261,10 +1275,18 @@ class Mv(object):
             return self.Ga.mv(S(1)/self.obj)
         self_sq = self * self
         if self_sq.is_scalar():  # self*self is a scalar
+            """
+            if self_sq.scalar() == S(0):
+                raise ValueError('!!!!In multivector inverse, A*A is zero!!!!')
+            """
             return (S(1)/self_sq.obj)*self
         self_rev = self.rev()
         self_self_rev = self * self_rev
         if(self_self_rev.is_scalar()): # self*self.rev() is a scalar
+            """
+            if self_self_rev.scalar() == S(0):
+                raise ValueError('!!!!In multivector inverse A*A.rev() is zero!!!!')
+            """
             return (S(1)/self_self_rev.obj) * self_rev
         raise TypeError('In inv() for self =' + str(self) + 'self, or self*self or self*self.rev() is not a scalar')
 

@@ -452,6 +452,8 @@ class GaLatexPrinter(LatexPrinter):
     latex_str = ''
     ipy = False
 
+    inv_trig_style = None
+
     preamble = \
 """
 \\pagestyle{empty}
@@ -772,22 +774,23 @@ class GaLatexPrinter(LatexPrinter):
             args = [str(self._print(arg)) for arg in expr.args]
             # How inverse trig functions should be displayed, formats are:
             # abbreviated: asin, full: arcsin, power: sin^-1
-            inv_trig_style = self._settings['inv_trig_style']
+            #inv_trig_style = self._settings['inv_trig_style']
+            inv_trig_style = GaLatexPrinter.inv_trig_style
             # If we are dealing with a power-style inverse trig function
             inv_trig_power_case = False
             # If it is applicable to fold the argument brackets
             can_fold_brackets = self._settings['fold_func_brackets'] and \
                 len(args) == 1 and not self._needs_function_brackets(expr.args[0])
 
-            inv_trig_table = ["asin", "acos", "atan", "acot"]
+            inv_trig_table = ["asin", "acos", "atan", "acot","acosh","asinh","atanh"]
 
             # If the function is an inverse trig function, handle the style
             if func in inv_trig_table:
-                if inv_trig_style == "abbreviated":
+                if GaLatexPrinter.inv_trig_style == "abbreviated":
                     func = func
-                elif inv_trig_style == "full":
+                elif GaLatexPrinter.inv_trig_style == "full":
                     func = "arc" + func[1:]
-                elif inv_trig_style == "power":
+                elif GaLatexPrinter.inv_trig_style == "power":
                     func = func[1:]
                     inv_trig_power_case = True
 
@@ -946,7 +949,7 @@ def print_latex(expr, **settings):
     print latex(expr, **settings)
 
 
-def Format(Fmode=True, Dmode=True, dop=1):
+def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
     """
     Set modes for latex printer -
 
@@ -959,6 +962,7 @@ def Format(Fmode=True, Dmode=True, dop=1):
 
     GaLatexPrinter.Dmode = Dmode
     GaLatexPrinter.Fmode = Fmode
+    GaLatexPrinter.inv_trig_style = inverse
 
     if Format_cnt == 0:
         Format_cnt += 1
