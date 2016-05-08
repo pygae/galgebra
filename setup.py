@@ -9,8 +9,9 @@ setup(name='galgebra',
       author='Alan Bromborsky',
       author_email='abrombo@verizon.net',
       license='BSD',
-      packages=find_packages(),
-      package_dir={'galgebra':'galgebra'},
+      py_modules=['ga','mv','lt','metric','printer'],
+      #packages=find_packages(''),
+      package_dir={'':'galgebra'},
       install_requires = [
                 'sympy',
                 'numpy'],
@@ -25,4 +26,3 @@ setup(name='galgebra',
             'Programming Language :: Python :: 2.7',
             'Topic :: Scientific/Engineering :: Mathematics',
             'Topic :: Scientific/Engineering :: Physics'])
-
