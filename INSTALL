@@ -1,15 +1,14 @@
-To install for standard use 
+To install, please read through the instructions in section 1.3 of
+doc/galgebra.pdf and do not use `python setup.py install`.
 
-    python setup.py install
+In short, you would need to install python and sympy properly, then:
 
-to install for development 
-
-    python setup.py develop
-
+    cd galgebra
+    python setgapth.py
 
 Notes:
 
-To use the LaTeX printing options in galgebra a LaTeX distibution is required 
+To use the LaTeX printing options in galgebra a LaTeX distibution is required
 containing pdflatex (texlive for linux, miktex for windows).
 
 To use the enhances printing options in windows ansicon must be installed -
@@ -21,6 +20,3 @@ It is strongly reccomended that the geany editor/development environment be inst
 www.geany.org
 
 for developing code using galgebra.
-
-
-
