@@ -152,28 +152,32 @@ class TestTest(unittest.TestCase):
         assert str(grad>C) == 'D{x}C__x + D{y}C__y + D{z}C__z + D{x}C*e_x + D{y}C*e_y + D{z}C*e_z'
 
         return
-    #
-    # def test_derivatives_in_spherical_coordinates():
-    #
-    #     X = (r,th,phi) = symbols('r theta phi')
-    #     curv = [[r*cos(phi)*sin(th),r*sin(phi)*sin(th),r*cos(th)],[1,r,r*sin(th)]]
-    #     (er,eth,ephi,grad) = Mv.setup('e_r e_theta e_phi',metric='[1,1,1]',coords=X,curv=curv)
-    #
-    #     f = Mv('f','scalar',fct=True)
-    #     A = Mv('A','vector',fct=True)
-    #     B = Mv('B','grade2',fct=True)
-    #
-    #     assert str(f) == 'f'
-    #     assert str(A) == 'A__r*e_r + A__theta*e_theta + A__phi*e_phi'
-    #     assert str(B) == 'B__rtheta*e_r^e_theta + B__rphi*e_r^e_phi + B__thetaphi*e_theta^e_phi'
-    #
-    #     assert str(grad*f) == 'D{r}f*e_r + D{theta}f/r*e_theta + D{phi}f/(r*sin(theta))*e_phi'
-    #     assert str(grad|A) == 'D{r}A__r + 2*A__r/r + A__theta*cos(theta)/(r*sin(theta)) + D{theta}A__theta/r + D{phi}A__phi/(r*sin(theta))'
-    #     assert str(-Mv.I*(grad^A)) == '((A__phi*cos(theta)/sin(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))/r)*e_r + (-D{r}A__phi - A__phi/r + D{phi}A__r/(r*sin(theta)))*e_theta + (D{r}A__theta + A__theta/r - D{theta}A__r/r)*e_phi'
-    #     assert str(grad^B) == '(D{r}B__thetaphi - B__rphi*cos(theta)/(r*sin(theta)) + 2*B__thetaphi/r - D{theta}B__rphi/r + D{phi}B__rtheta/(r*sin(theta)))*e_r^e_theta^e_phi'
 
-    #     return
-    #
+    def test_derivatives_in_spherical_coordinates(self):
+
+        X = (r, th, phi) = symbols('r theta phi')
+        s3d = Ga('e_r e_theta e_phi', g=[1, r ** 2, r ** 2 * sin(th) ** 2], coords=X, norm=True)
+        (er, eth, ephi) = s3d.mv()
+        grad = s3d.grad
+
+        f = s3d.mv('f', 'scalar', f=True)
+        A = s3d.mv('A', 'vector', f=True)
+        B = s3d.mv('B', 'bivector', f=True)
+
+        assert str(f) == 'f'
+        assert str(A) == 'A__r*e_r + A__theta*e_theta + A__phi*e_phi'
+        assert str(B) == 'B__rtheta*e_r^e_theta + B__rphi*e_r^e_phi + B__thetaphi*e_theta^e_phi'
+
+        assert str(grad*f) == 'D{r}f*e_r + D{theta}f*e_theta/r + D{phi}f*e_phi/(r*sin(theta))'
+        # FIXME assert str(grad|A) == 'D{r}A__r + 2*A__r/r + A__theta*cos(theta)/(r*sin(theta)) + D{theta}A__theta/r + D{phi}A__phi/(r*sin(theta))'
+        # Got: str(grad|A) == 'D{r}A__r + (A__r + D{theta}A__theta)/r + (A__r*sin(theta) + A__theta*cos(theta) + D{phi}A__phi)/(r*sin(theta))'
+        # FIXME assert str(-s3d.I()*(grad^A)) == '((A__phi*cos(theta)/sin(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))/r)*e_r + (-D{r}A__phi - A__phi/r + D{phi}A__r/(r*sin(theta)))*e_theta + (D{r}A__theta + A__theta/r - D{theta}A__r/r)*e_phi'
+        # Got: str(-s3d.I()*(grad^A)) == '(A__phi/tan(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))*e_r/r + (-r*D{r}A__phi - A__phi + D{phi}A__r/sin(theta))*e_theta/r + (r*D{r}A__theta + A__theta - D{theta}A__r)*e_phi/r'
+        # FIXME assert str(grad^B) == '(D{r}B__thetaphi - B__rphi*cos(theta)/(r*sin(theta)) + 2*B__thetaphi/r - D{theta}B__rphi/r + D{phi}B__rtheta/(r*sin(theta)))*e_r^e_theta^e_phi'
+        # Got: assert str(grad^B) == '(r*D{r}B__thetaphi - B__rphi/tan(theta) + 2*B__thetaphi - D{theta}B__rphi + D{phi}B__rtheta/sin(theta))*e_r^e_theta^e_phi/r'
+
+        return
+
     # def test_rounding_numerical_components():
     #
     #     (ex,ey,ez) = Mv.setup('e_x e_y e_z',metric='[1,1,1]')
