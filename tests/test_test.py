@@ -7,7 +7,7 @@ import sys
 from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
 # from ga import Mv,Nga,simplify,com,ONE,ZERO
 # from ga_print import GA_Printer
-from printer import Format, Eprint, Get_Program, Print_Function
+from printer import Format, Eprint, Get_Program
 from ga import Ga, one, zero
 from mv import Mv, Nga, com
 
@@ -30,9 +30,13 @@ def make_vector(a,n = 3):
     return(F(a))
 
 class TestTest(unittest.TestCase):
+    def setUp(self):
+        pass # Eprint()
+
+    def tearDown(self):
+        pass
 
     def test_basic_multivector_operations(self):
-        Print_Function()
 
         g3d = Ga('e*x|y|z')
         (ex,ey,ez) = g3d.mv()
@@ -94,7 +98,7 @@ class TestTest(unittest.TestCase):
         return
 
     def test_check_generalized_BAC_CAB_formulas(self):
-        Print_Function()
+
         (a,b,c,d,e) = Ga('a b c d e').mv()
 
         assert str(a|(b*c)) == '-(a.c)*b + (a.b)*c'
@@ -102,7 +106,9 @@ class TestTest(unittest.TestCase):
         assert str(a|(b^c^d)) == '(a.d)*b^c - (a.c)*b^d + (a.b)*c^d'
 
         # FIXME failed with value: (a.b)*c - (b.c)*a - ((a.b)*c - (b.c)*a)
-        print str((a|(b^c))+(c|(a^b))+(b|(c^a))) # == '0'
+        expr = (a|(b^c))+(c|(a^b))+(b|(c^a))
+        print str(expr) # == '0'
+        print str(expr.simplify())
 
         assert str(a*(b^c)-b*(a^c)+c*(a^b)) == '3*a^b^c'
         assert str(a*(b^c^d)-b*(a^c^d)+c*(a^b^d)-d*(a^b^c)) == '4*a^b^c^d'
@@ -114,7 +120,7 @@ class TestTest(unittest.TestCase):
         return
 
     # def test_derivatives_in_rectangular_coordinates():
-    #     Print_Function()
+    #
     #     X = (x,y,z) = symbols('x y z')
     #     (ex,ey,ez,grad) = Mv.setup('e_x e_y e_z',metric='[1,1,1]',coords=X)
     #
@@ -147,7 +153,7 @@ class TestTest(unittest.TestCase):
     #     return
     #
     # def test_derivatives_in_spherical_coordinates():
-    #     Print_Function()
+    #
     #     X = (r,th,phi) = symbols('r theta phi')
     #     curv = [[r*cos(phi)*sin(th),r*sin(phi)*sin(th),r*cos(th)],[1,r,r*sin(th)]]
     #     (er,eth,ephi,grad) = Mv.setup('e_r e_theta e_phi',metric='[1,1,1]',coords=X,curv=curv)
@@ -168,7 +174,7 @@ class TestTest(unittest.TestCase):
     #     return
     #
     # def test_rounding_numerical_components():
-    #     Print_Function()
+    #
     #     (ex,ey,ez) = Mv.setup('e_x e_y e_z',metric='[1,1,1]')
     #
     #     X = 1.2*ex+2.34*ey+0.555*ez
@@ -183,7 +189,7 @@ class TestTest(unittest.TestCase):
     #
     # def test_noneuclidian_distance_calculation():
     #     from sympy import solve,sqrt
-    #     Print_Function()
+    #
     #     metric = '0 # #,# 0 #,# # 1'
     #     (X,Y,e) = Mv.setup('X Y e',metric)
     #
@@ -279,7 +285,7 @@ class TestTest(unittest.TestCase):
     #
     # def test_conformal_representations_of_circles_lines_spheres_and_planes():
     #     global n,nbar
-    #     Print_Function()
+    #
     #
     #     metric = '1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 0 2,0 0 0 2 0'
     #
@@ -312,7 +318,7 @@ class TestTest(unittest.TestCase):
     #     return
     #
     # def test_properties_of_geometric_objects():
-    #     Print_Function()
+    #
     #     metric = '# # # 0 0,'+ \
     #              '# # # 0 0,'+ \
     #              '# # # 0 0,'+ \
@@ -337,7 +343,7 @@ class TestTest(unittest.TestCase):
     #     return
     #
     # def test_extracting_vectors_from_conformal_2_blade():
-    #     Print_Function()
+    #
     #     metric = ' 0 -1 #,'+ \
     #              '-1  0 #,'+ \
     #              ' #  # #,'
@@ -365,7 +371,7 @@ class TestTest(unittest.TestCase):
     #     return
     #
     # def test_reciprocal_frame_test():
-    #     Print_Function()
+    #
     #     metric = '1 # #,'+ \
     #              '# 1 #,'+ \
     #              '# # 1,'
