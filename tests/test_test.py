@@ -118,38 +118,40 @@ class TestTest(unittest.TestCase):
 
         return
 
-    # def test_derivatives_in_rectangular_coordinates():
-    #
-    #     X = (x,y,z) = symbols('x y z')
-    #     (ex,ey,ez,grad) = Mv.setup('e_x e_y e_z',metric='[1,1,1]',coords=X)
-    #
-    #     f = Mv('f','scalar',fct=True)
-    #     A = Mv('A','vector',fct=True)
-    #     B = Mv('B','grade2',fct=True)
-    #     C = Mv('C','mv',fct=True)
-    #
-    #     assert str(f) == 'f'
-    #     assert str(A) == 'A__x*e_x + A__y*e_y + A__z*e_z'
-    #     assert str(B) == 'B__xy*e_x^e_y + B__xz*e_x^e_z + B__yz*e_y^e_z'
-    #     assert str(C) == 'C + C__x*e_x + C__y*e_y + C__z*e_z + C__xy*e_x^e_y + C__xz*e_x^e_z + C__yz*e_y^e_z + C__xyz*e_x^e_y^e_z'
-    #
-    #     assert str(grad*f) == 'D{x}f*e_x + D{y}f*e_y + D{z}f*e_z'
-    #     assert str(grad|A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
-    #     assert str(grad*A) == 'D{x}A__x + D{y}A__y + D{z}A__z + (-D{y}A__x + D{x}A__y)*e_x^e_y + (-D{z}A__x + D{x}A__z)*e_x^e_z + (-D{z}A__y + D{y}A__z)*e_y^e_z'
-    #
-    #     assert str(-Mv.I*(grad^A)) == '(-D{z}A__y + D{y}A__z)*e_x + (D{z}A__x - D{x}A__z)*e_y + (-D{y}A__x + D{x}A__y)*e_z'
-    #     assert str(grad*B) == '(-(D{y}B__xy + D{z}B__xz))*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z + (D{z}B__xy - D{y}B__xz + D{x}B__yz)*e_x^e_y^e_z'
-    #     assert str(grad^B) == '(D{z}B__xy - D{y}B__xz + D{x}B__yz)*e_x^e_y^e_z'
-    #     assert str(grad|B) == '(-(D{y}B__xy + D{z}B__xz))*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z'
-    #
-    #     assert str(grad<A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
-    #     assert str(grad>A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
-    #     assert str(grad<B) == '(-(D{y}B__xy + D{z}B__xz))*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z'
-    #     assert str(grad>B) == '0'
-    #     assert str(grad<C) == 'D{x}C__x + D{y}C__y + D{z}C__z + (-(D{y}C__xy + D{z}C__xz))*e_x + (D{x}C__xy - D{z}C__yz)*e_y + (D{x}C__xz + D{y}C__yz)*e_z + D{z}C__xyz*e_x^e_y - D{y}C__xyz*e_x^e_z + D{x}C__xyz*e_y^e_z'
-    #     assert str(grad>C) == 'D{x}C__x + D{y}C__y + D{z}C__z + D{x}C*e_x + D{y}C*e_y + D{z}C*e_z'
+    def test_derivatives_in_rectangular_coordinates(self):
 
-    #     return
+        X = (x, y, z) = symbols('x y z')
+        o3d = Ga('e_x e_y e_z', g=[1, 1, 1], coords=X)
+        (ex, ey, ez) = o3d.mv()
+        grad = o3d.grad
+
+        f = o3d.mv('f', 'scalar', f=True)
+        A = o3d.mv('A', 'vector', f=True)
+        B = o3d.mv('B', 'bivector', f=True)
+        C = o3d.mv('C', 'mv', f=True)
+
+        assert str(f) == 'f'
+        assert str(A) == 'A__x*e_x + A__y*e_y + A__z*e_z'
+        assert str(B) == 'B__xy*e_x^e_y + B__xz*e_x^e_z + B__yz*e_y^e_z'
+        assert str(C) == 'C + C__x*e_x + C__y*e_y + C__z*e_z + C__xy*e_x^e_y + C__xz*e_x^e_z + C__yz*e_y^e_z + C__xyz*e_x^e_y^e_z'
+
+        assert str(grad*f) == 'D{x}f*e_x + D{y}f*e_y + D{z}f*e_z'
+        assert str(grad|A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
+        assert str(grad*A) == 'D{x}A__x + D{y}A__y + D{z}A__z + (-D{y}A__x + D{x}A__y)*e_x^e_y + (-D{z}A__x + D{x}A__z)*e_x^e_z + (-D{z}A__y + D{y}A__z)*e_y^e_z'
+
+        assert str(-o3d.I()*(grad^A)) == '(-D{z}A__y + D{y}A__z)*e_x + (D{z}A__x - D{x}A__z)*e_y + (-D{y}A__x + D{x}A__y)*e_z'
+        assert str(grad*B) == '(-D{y}B__xy - D{z}B__xz)*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z + (D{z}B__xy - D{y}B__xz + D{x}B__yz)*e_x^e_y^e_z'
+        assert str(grad^B) == '(D{z}B__xy - D{y}B__xz + D{x}B__yz)*e_x^e_y^e_z'
+        assert str(grad|B) == '(-D{y}B__xy - D{z}B__xz)*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z'
+
+        assert str(grad<A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
+        assert str(grad>A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
+        assert str(grad<B) == '(-D{y}B__xy - D{z}B__xz)*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z'
+        assert str(grad>B) == '0'
+        assert str(grad<C) == 'D{x}C__x + D{y}C__y + D{z}C__z + (-D{y}C__xy - D{z}C__xz)*e_x + (D{x}C__xy - D{z}C__yz)*e_y + (D{x}C__xz + D{y}C__yz)*e_z + D{z}C__xyz*e_x^e_y - D{y}C__xyz*e_x^e_z + D{x}C__xyz*e_y^e_z'
+        assert str(grad>C) == 'D{x}C__x + D{y}C__y + D{z}C__z + D{x}C*e_x + D{y}C*e_y + D{z}C*e_z'
+
+        return
     #
     # def test_derivatives_in_spherical_coordinates():
     #
