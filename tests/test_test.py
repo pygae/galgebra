@@ -2,91 +2,100 @@
 
 import unittest
 
-# import sys
-#
-# from sympy import symbols,sin,cos,Rational,expand,collect,Symbol
-# from ga import MV,Nga,simplify,Com,ONE,ZERO
+import sys
+
+from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
+# from ga import Mv,Nga,simplify,Com,ONE,ZERO
 # from ga_print import GA_Printer
-#
-# HALF = Rational(1,2)
-#
-# def F(x):
-#     global n,nbar
-#     Fx = HALF*((x*x)*n+2*x-nbar)
-#     return(Fx)
-#
-# def make_vector(a,n = 3):
-#     if isinstance(a,str):
-#         sym_str = ''
-#         for i in range(n):
-#             sym_str += a+str(i+1)+' '
-#         sym_lst = list(symbols(sym_str))
-#         sym_lst.append(ZERO)
-#         sym_lst.append(ZERO)
-#         a = MV(sym_lst,'vector')
-#     return(F(a))
+from printer import Format, Eprint, Get_Program, Print_Function
+from ga import Ga, one, zero
+from mv import Mv, Nga, com
+
+HALF = Rational(1,2)
+
+def F(x):
+    global n,nbar
+    Fx = HALF*((x*x)*n+2*x-nbar)
+    return(Fx)
+
+def make_vector(a,n = 3):
+    if isinstance(a,str):
+        sym_str = ''
+        for i in range(n):
+            sym_str += a+str(i+1)+' '
+        sym_lst = list(symbols(sym_str))
+        sym_lst.append(ZERO)
+        sym_lst.append(ZERO)
+        a = Mv(sym_lst,'vector')
+    return(F(a))
 
 class TestTest(unittest.TestCase):
-    def test_dummy(arg):
-        assert True
-    # def test_basic_multivector_operations():
-    #     GA_Printer.on()
-    #     (ex,ey,ez) = MV.setup('e*x|y|z')
-    #
-    #     A = MV('A','mv')
-    #
-    #     assert str(A) == 'A + A__x*e_x + A__y*e_y + A__z*e_z + A__xy*e_x^e_y + A__xz*e_x^e_z + A__yz*e_y^e_z + A__xyz*e_x^e_y^e_z'
-    #     assert str(A) == 'A + A__x*e_x + A__y*e_y + A__z*e_z + A__xy*e_x^e_y + A__xz*e_x^e_z + A__yz*e_y^e_z + A__xyz*e_x^e_y^e_z'
-    #     assert str(A) == 'A + A__x*e_x + A__y*e_y + A__z*e_z + A__xy*e_x^e_y + A__xz*e_x^e_z + A__yz*e_y^e_z + A__xyz*e_x^e_y^e_z'
-    #
-    #     X = MV('X','vector')
-    #     Y = MV('Y','vector')
-    #
-    #
-    #     assert str(X) == 'X__x*e_x + X__y*e_y + X__z*e_z'
-    #     assert str(Y) == 'Y__x*e_x + Y__y*e_y + Y__z*e_z'
-    #
-    #     assert str((X*Y)) == '(e_x.e_x)*X__x*Y__x + (e_x.e_y)*X__x*Y__y + (e_x.e_y)*X__y*Y__x + (e_x.e_z)*X__x*Y__z + (e_x.e_z)*X__z*Y__x + (e_y.e_y)*X__y*Y__y + (e_y.e_z)*X__y*Y__z + (e_y.e_z)*X__z*Y__y + (e_z.e_z)*X__z*Y__z + (X__x*Y__y - X__y*Y__x)*e_x^e_y + (X__x*Y__z - X__z*Y__x)*e_x^e_z + (X__y*Y__z - X__z*Y__y)*e_y^e_z'
-    #     assert str((X^Y)) == '(X__x*Y__y - X__y*Y__x)*e_x^e_y + (X__x*Y__z - X__z*Y__x)*e_x^e_z + (X__y*Y__z - X__z*Y__y)*e_y^e_z'
-    #     assert str((X|Y)) == '(e_x.e_x)*X__x*Y__x + (e_x.e_y)*X__x*Y__y + (e_x.e_y)*X__y*Y__x + (e_x.e_z)*X__x*Y__z + (e_x.e_z)*X__z*Y__x + (e_y.e_y)*X__y*Y__y + (e_y.e_z)*X__y*Y__z + (e_y.e_z)*X__z*Y__y + (e_z.e_z)*X__z*Y__z'
-    #
-    #     (ex,ey) = MV.setup('e*x|y')
-    #
-    #
-    #     X = MV('X','vector')
-    #     A = MV('A','spinor')
-    #
-    #     assert str(X) == 'X__x*e_x + X__y*e_y'
-    #     assert str(A) == 'A + A__xy*e_x^e_y'
-    #
-    #     assert str((X|A)) == '(-A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y))*e_x + (A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y))*e_y'
-    #     assert str((X<A)) == '(-A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y))*e_x + (A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y))*e_y'
-    #     assert str((A>X)) == '(A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y))*e_x + (-A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y))*e_y'
-    #
-    #     (ex,ey) = MV.setup('e*x|y',metric='[1,1]')
-    #
-    #
-    #     X = MV('X','vector')
-    #     A = MV('A','spinor')
-    #
-    #     assert str(X) == 'X__x*e_x + X__y*e_y'
-    #     assert str(A) == 'A + A__xy*e_x^e_y'
-    #
-    #     assert str((X*A)) == '(A*X__x - A__xy*X__y)*e_x + (A*X__y + A__xy*X__x)*e_y'
-    #     assert str((X|A)) == '-A__xy*X__y*e_x + A__xy*X__x*e_y'
-    #     assert str((X<A)) == '-A__xy*X__y*e_x + A__xy*X__x*e_y'
-    #     assert str((X>A)) == 'A*X__x*e_x + A*X__y*e_y'
-    #
-    #     assert str((A*X)) == '(A*X__x + A__xy*X__y)*e_x + (A*X__y - A__xy*X__x)*e_y'
-    #     assert str((A|X)) == 'A__xy*X__y*e_x - A__xy*X__x*e_y'
-    #     assert str((A<X)) == 'A*X__x*e_x + A*X__y*e_y'
-    #     assert str((A>X)) == 'A__xy*X__y*e_x - A__xy*X__x*e_y'
-    #     GA_Printer.off()
-    #     return
-    #
+
+    def test_basic_multivector_operations(self):
+        Print_Function()
+
+        g3d = Ga('e*x|y|z')
+        (ex,ey,ez) = g3d.mv()
+
+        A = g3d.mv('A','mv')
+
+        assert str(A) == 'A + A__x*e_x + A__y*e_y + A__z*e_z + A__xy*e_x^e_y + A__xz*e_x^e_z + A__yz*e_y^e_z + A__xyz*e_x^e_y^e_z'
+        assert str(A) == 'A + A__x*e_x + A__y*e_y + A__z*e_z + A__xy*e_x^e_y + A__xz*e_x^e_z + A__yz*e_y^e_z + A__xyz*e_x^e_y^e_z'
+        assert str(A) == 'A + A__x*e_x + A__y*e_y + A__z*e_z + A__xy*e_x^e_y + A__xz*e_x^e_z + A__yz*e_y^e_z + A__xyz*e_x^e_y^e_z'
+
+        X = g3d.mv('X','vector')
+        Y = g3d.mv('Y','vector')
+
+        assert str(X) == 'X__x*e_x + X__y*e_y + X__z*e_z'
+        assert str(Y) == 'Y__x*e_x + Y__y*e_y + Y__z*e_z'
+
+        assert str((X*Y)) == '(e_x.e_x)*X__x*Y__x + (e_x.e_y)*X__x*Y__y + (e_x.e_y)*X__y*Y__x + (e_x.e_z)*X__x*Y__z + (e_x.e_z)*X__z*Y__x + (e_y.e_y)*X__y*Y__y + (e_y.e_z)*X__y*Y__z + (e_y.e_z)*X__z*Y__y + (e_z.e_z)*X__z*Y__z + (X__x*Y__y - X__y*Y__x)*e_x^e_y + (X__x*Y__z - X__z*Y__x)*e_x^e_z + (X__y*Y__z - X__z*Y__y)*e_y^e_z'
+        assert str((X^Y)) == '(X__x*Y__y - X__y*Y__x)*e_x^e_y + (X__x*Y__z - X__z*Y__x)*e_x^e_z + (X__y*Y__z - X__z*Y__y)*e_y^e_z'
+        assert str((X|Y)) == '(e_x.e_x)*X__x*Y__x + (e_x.e_y)*X__x*Y__y + (e_x.e_y)*X__y*Y__x + (e_x.e_z)*X__x*Y__z + (e_x.e_z)*X__z*Y__x + (e_y.e_y)*X__y*Y__y + (e_y.e_z)*X__y*Y__z + (e_y.e_z)*X__z*Y__y + (e_z.e_z)*X__z*Y__z'
+
+
+        g2d = Ga('e*x|y')
+        (ex,ey) = g2d.mv()
+
+        X = g2d.mv('X','vector')
+        A = g2d.mv('A','spinor')
+
+        assert str(X) == 'X__x*e_x + X__y*e_y'
+        assert str(A) == 'A + A__xy*e_x^e_y'
+
+        # print str((X|A))
+        # print str((X<A))
+        # print str((A>X))
+
+        assert str((X|A)) == '-A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y)*e_x + A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y)*e_y'
+        assert str((X<A)) == '-A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y)*e_x + A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y)*e_y'
+        assert str((A>X)) == 'A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y)*e_x - A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y)*e_y'
+
+
+        o2d = Ga('e*x|y', g=[1, 1])
+        (ex, ey) = o2d.mv()
+
+        X = o2d.mv('X', 'vector')
+        A = o2d.mv('A', 'spinor')
+
+        assert str(X) == 'X__x*e_x + X__y*e_y'
+        assert str(A) == 'A + A__xy*e_x^e_y'
+
+        assert str((X*A)) == '(A*X__x - A__xy*X__y)*e_x + (A*X__y + A__xy*X__x)*e_y'
+        assert str((X|A)) == '-A__xy*X__y*e_x + A__xy*X__x*e_y'
+        assert str((X<A)) == '-A__xy*X__y*e_x + A__xy*X__x*e_y'
+        assert str((X>A)) == 'A*X__x*e_x + A*X__y*e_y'
+
+        assert str((A*X)) == '(A*X__x + A__xy*X__y)*e_x + (A*X__y - A__xy*X__x)*e_y'
+        assert str((A|X)) == 'A__xy*X__y*e_x - A__xy*X__x*e_y'
+        assert str((A<X)) == 'A*X__x*e_x + A*X__y*e_y'
+        assert str((A>X)) == 'A__xy*X__y*e_x - A__xy*X__x*e_y'
+
+        return
+
     # def test_check_generalized_BAC_CAB_formulas():
-    #     GA_Printer.on()
-    #     (a,b,c,d,e) = MV.setup('a b c d e')
+    #     Print_Function()
+    #     (a,b,c,d,e) = Mv.setup('a b c d e')
     #
     #     assert str(a|(b*c)) == '-(a.c)*b + (a.b)*c'
     #     assert str(a|(b^c)) == '-(a.c)*b + (a.b)*c'
@@ -102,14 +111,14 @@ class TestTest(unittest.TestCase):
     #     return
     #
     # def test_derivatives_in_rectangular_coordinates():
-    #     GA_Printer.on()
+    #     Print_Function()
     #     X = (x,y,z) = symbols('x y z')
-    #     (ex,ey,ez,grad) = MV.setup('e_x e_y e_z',metric='[1,1,1]',coords=X)
+    #     (ex,ey,ez,grad) = Mv.setup('e_x e_y e_z',metric='[1,1,1]',coords=X)
     #
-    #     f = MV('f','scalar',fct=True)
-    #     A = MV('A','vector',fct=True)
-    #     B = MV('B','grade2',fct=True)
-    #     C = MV('C','mv',fct=True)
+    #     f = Mv('f','scalar',fct=True)
+    #     A = Mv('A','vector',fct=True)
+    #     B = Mv('B','grade2',fct=True)
+    #     C = Mv('C','mv',fct=True)
     #
     #     assert str(f) == 'f'
     #     assert str(A) == 'A__x*e_x + A__y*e_y + A__z*e_z'
@@ -120,7 +129,7 @@ class TestTest(unittest.TestCase):
     #     assert str(grad|A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
     #     assert str(grad*A) == 'D{x}A__x + D{y}A__y + D{z}A__z + (-D{y}A__x + D{x}A__y)*e_x^e_y + (-D{z}A__x + D{x}A__z)*e_x^e_z + (-D{z}A__y + D{y}A__z)*e_y^e_z'
     #
-    #     assert str(-MV.I*(grad^A)) == '(-D{z}A__y + D{y}A__z)*e_x + (D{z}A__x - D{x}A__z)*e_y + (-D{y}A__x + D{x}A__y)*e_z'
+    #     assert str(-Mv.I*(grad^A)) == '(-D{z}A__y + D{y}A__z)*e_x + (D{z}A__x - D{x}A__z)*e_y + (-D{y}A__x + D{x}A__y)*e_z'
     #     assert str(grad*B) == '(-(D{y}B__xy + D{z}B__xz))*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z + (D{z}B__xy - D{y}B__xz + D{x}B__yz)*e_x^e_y^e_z'
     #     assert str(grad^B) == '(D{z}B__xy - D{y}B__xz + D{x}B__yz)*e_x^e_y^e_z'
     #     assert str(grad|B) == '(-(D{y}B__xy + D{z}B__xz))*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z'
@@ -135,14 +144,14 @@ class TestTest(unittest.TestCase):
     #     return
     #
     # def test_derivatives_in_spherical_coordinates():
-    #     GA_Printer.on()
+    #     Print_Function()
     #     X = (r,th,phi) = symbols('r theta phi')
     #     curv = [[r*cos(phi)*sin(th),r*sin(phi)*sin(th),r*cos(th)],[1,r,r*sin(th)]]
-    #     (er,eth,ephi,grad) = MV.setup('e_r e_theta e_phi',metric='[1,1,1]',coords=X,curv=curv)
+    #     (er,eth,ephi,grad) = Mv.setup('e_r e_theta e_phi',metric='[1,1,1]',coords=X,curv=curv)
     #
-    #     f = MV('f','scalar',fct=True)
-    #     A = MV('A','vector',fct=True)
-    #     B = MV('B','grade2',fct=True)
+    #     f = Mv('f','scalar',fct=True)
+    #     A = Mv('A','vector',fct=True)
+    #     B = Mv('B','grade2',fct=True)
     #
     #     assert str(f) == 'f'
     #     assert str(A) == 'A__r*e_r + A__theta*e_theta + A__phi*e_phi'
@@ -150,14 +159,14 @@ class TestTest(unittest.TestCase):
     #
     #     assert str(grad*f) == 'D{r}f*e_r + D{theta}f/r*e_theta + D{phi}f/(r*sin(theta))*e_phi'
     #     assert str(grad|A) == 'D{r}A__r + 2*A__r/r + A__theta*cos(theta)/(r*sin(theta)) + D{theta}A__theta/r + D{phi}A__phi/(r*sin(theta))'
-    #     assert str(-MV.I*(grad^A)) == '((A__phi*cos(theta)/sin(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))/r)*e_r + (-D{r}A__phi - A__phi/r + D{phi}A__r/(r*sin(theta)))*e_theta + (D{r}A__theta + A__theta/r - D{theta}A__r/r)*e_phi'
+    #     assert str(-Mv.I*(grad^A)) == '((A__phi*cos(theta)/sin(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))/r)*e_r + (-D{r}A__phi - A__phi/r + D{phi}A__r/(r*sin(theta)))*e_theta + (D{r}A__theta + A__theta/r - D{theta}A__r/r)*e_phi'
     #     assert str(grad^B) == '(D{r}B__thetaphi - B__rphi*cos(theta)/(r*sin(theta)) + 2*B__thetaphi/r - D{theta}B__rphi/r + D{phi}B__rtheta/(r*sin(theta)))*e_r^e_theta^e_phi'
     #     GA_Printer.off()
     #     return
     #
     # def test_rounding_numerical_components():
-    #     GA_Printer.on()
-    #     (ex,ey,ez) = MV.setup('e_x e_y e_z',metric='[1,1,1]')
+    #     Print_Function()
+    #     (ex,ey,ez) = Mv.setup('e_x e_y e_z',metric='[1,1,1]')
     #
     #     X = 1.2*ex+2.34*ey+0.555*ez
     #     Y = 0.333*ex+4*ey+5.3*ez
@@ -171,9 +180,9 @@ class TestTest(unittest.TestCase):
     #
     # def test_noneuclidian_distance_calculation():
     #     from sympy import solve,sqrt
-    #     GA_Printer.on()
+    #     Print_Function()
     #     metric = '0 # #,# 0 #,# # 1'
-    #     (X,Y,e) = MV.setup('X Y e',metric)
+    #     (X,Y,e) = Mv.setup('X Y e',metric)
     #
     #     assert str((X^Y)*(X^Y)) == '(X.Y)**2'
     #
@@ -267,11 +276,11 @@ class TestTest(unittest.TestCase):
     #
     # def test_conformal_representations_of_circles_lines_spheres_and_planes():
     #     global n,nbar
-    #     GA_Printer.on()
+    #     Print_Function()
     #
     #     metric = '1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 0 2,0 0 0 2 0'
     #
-    #     (e1,e2,e3,n,nbar) = MV.setup('e_1 e_2 e_3 n nbar',metric)
+    #     (e1,e2,e3,n,nbar) = Mv.setup('e_1 e_2 e_3 n nbar',metric)
     #
     #     e = n+nbar
     #     #conformal representation of points
@@ -300,14 +309,14 @@ class TestTest(unittest.TestCase):
     #     return
     #
     # def test_properties_of_geometric_objects():
-    #     GA_Printer.on()
+    #     Print_Function()
     #     metric = '# # # 0 0,'+ \
     #              '# # # 0 0,'+ \
     #              '# # # 0 0,'+ \
     #              '0 0 0 0 2,'+ \
     #              '0 0 0 2 0'
     #
-    #     (p1,p2,p3,n,nbar) = MV.setup('p1 p2 p3 n nbar',metric)
+    #     (p1,p2,p3,n,nbar) = Mv.setup('p1 p2 p3 n nbar',metric)
     #
     #     P1 = F(p1)
     #     P2 = F(p2)
@@ -325,12 +334,12 @@ class TestTest(unittest.TestCase):
     #     return
     #
     # def test_extracting_vectors_from_conformal_2_blade():
-    #     GA_Printer.on()
+    #     Print_Function()
     #     metric = ' 0 -1 #,'+ \
     #              '-1  0 #,'+ \
     #              ' #  # #,'
     #
-    #     (P1,P2,a) = MV.setup('P1 P2 a',metric)
+    #     (P1,P2,a) = Mv.setup('P1 P2 a',metric)
     #
     #     B = P1^P2
     #     Bsq = B*B
@@ -353,12 +362,12 @@ class TestTest(unittest.TestCase):
     #     return
     #
     # def test_reciprocal_frame_test():
-    #     GA_Printer.on()
+    #     Print_Function()
     #     metric = '1 # #,'+ \
     #              '# 1 #,'+ \
     #              '# # 1,'
     #
-    #     (e1,e2,e3) = MV.setup('e1 e2 e3',metric)
+    #     (e1,e2,e3) = Mv.setup('e1 e2 e3',metric)
     #
     #     E = e1^e2^e3
     #     Esq = (E*E).scalar()
