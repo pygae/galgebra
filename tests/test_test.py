@@ -105,10 +105,9 @@ class TestTest(unittest.TestCase):
         assert str(a|(b^c)) == '-(a.c)*b + (a.b)*c'
         assert str(a|(b^c^d)) == '(a.d)*b^c - (a.c)*b^d + (a.b)*c^d'
 
-        # FIXME failed with value: (a.b)*c - (b.c)*a - ((a.b)*c - (b.c)*a)
-        expr = (a|(b^c))+(c|(a^b))+(b|(c^a))
-        print str(expr) # == '0'
-        print str(expr.simplify())
+        expr = (a|(b^c))+(c|(a^b))+(b|(c^a)) # = (a.b)*c - (b.c)*a - ((a.b)*c - (b.c)*a)
+        # print str(expr)
+        assert str(expr.simplify()) == '0'
 
         assert str(a*(b^c)-b*(a^c)+c*(a^b)) == '3*a^b^c'
         assert str(a*(b^c^d)-b*(a^c^d)+c*(a^b^d)-d*(a^b^c)) == '4*a^b^c^d'
