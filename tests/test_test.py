@@ -170,8 +170,7 @@ class TestTest(unittest.TestCase):
 
         assert str(grad*f) == 'D{r}f*e_r + D{theta}f*e_theta/r + D{phi}f*e_phi/(r*sin(theta))'
         assert str((grad|A).simplify()) == '(r*D{r}A__r + 2*A__r + A__theta/tan(theta) + D{theta}A__theta + D{phi}A__phi/sin(theta))/r'
-        # FIXME assert str(-s3d.I()*(grad^A)) == '((A__phi*cos(theta)/sin(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))/r)*e_r + (-D{r}A__phi - A__phi/r + D{phi}A__r/(r*sin(theta)))*e_theta + (D{r}A__theta + A__theta/r - D{theta}A__r/r)*e_phi'
-        # Got: str(-s3d.I()*(grad^A)) == '(A__phi/tan(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))*e_r/r + (-r*D{r}A__phi - A__phi + D{phi}A__r/sin(theta))*e_theta/r + (r*D{r}A__theta + A__theta - D{theta}A__r)*e_phi/r'
+        assert str(-s3d.I()*(grad^A)) == '(A__phi/tan(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))*e_r/r + (-r*D{r}A__phi - A__phi + D{phi}A__r/sin(theta))*e_theta/r + (r*D{r}A__theta + A__theta - D{theta}A__r)*e_phi/r'
         # FIXME assert str(grad^B) == '(D{r}B__thetaphi - B__rphi*cos(theta)/(r*sin(theta)) + 2*B__thetaphi/r - D{theta}B__rphi/r + D{phi}B__rtheta/(r*sin(theta)))*e_r^e_theta^e_phi'
         # Got: assert str(grad^B) == '(r*D{r}B__thetaphi - B__rphi/tan(theta) + 2*B__thetaphi - D{theta}B__rphi + D{phi}B__rtheta/sin(theta))*e_r^e_theta^e_phi/r'
 
