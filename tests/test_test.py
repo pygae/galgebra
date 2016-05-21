@@ -179,19 +179,20 @@ class TestTest(unittest.TestCase):
 
         return
 
-    # def test_rounding_numerical_components():
-    #
-    #     (ex,ey,ez) = Mv.setup('e_x e_y e_z',metric='[1,1,1]')
-    #
-    #     X = 1.2*ex+2.34*ey+0.555*ez
-    #     Y = 0.333*ex+4*ey+5.3*ez
-    #
-    #     assert str(X) == '1.20000000000000*e_x + 2.34000000000000*e_y + 0.555000000000000*e_z'
-    #     assert str(Nga(X,2)) == '1.2*e_x + 2.3*e_y + 0.55*e_z'
-    #     assert str(X*Y) == '12.7011000000000 + 4.02078000000000*e_x^e_y + 6.17518500000000*e_x^e_z + 10.1820000000000*e_y^e_z'
-    #     assert str(Nga(X*Y,2)) == '13. + 4.0*e_x^e_y + 6.2*e_x^e_z + 10.*e_y^e_z'
+    def test_rounding_numerical_components(self):
 
-    #     return
+        o3d = Ga('e_x e_y e_z', g=[1, 1, 1])
+        (ex, ey, ez) = o3d.mv()
+
+        X = 1.2*ex+2.34*ey+0.555*ez
+        Y = 0.333*ex+4*ey+5.3*ez
+
+        assert str(X) == '1.2*e_x + 2.34*e_y + 0.555*e_z'
+        assert str(Nga(X,2)) == '1.2*e_x + 2.3*e_y + 0.55*e_z'
+        assert str(X*Y) == '12.7011000000000 + 4.02078*e_x^e_y + 6.175185*e_x^e_z + 10.182*e_y^e_z'
+        assert str(Nga(X*Y,2)) == '13. + 4.0*e_x^e_y + 6.2*e_x^e_z + 10.0*e_y^e_z'
+
+        return
     #
     # def test_noneuclidian_distance_calculation():
     #     from sympy import solve,sqrt
