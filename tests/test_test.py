@@ -193,102 +193,107 @@ class TestTest(unittest.TestCase):
         assert str(Nga(X*Y,2)) == '13. + 4.0*e_x^e_y + 6.2*e_x^e_z + 10.0*e_y^e_z'
 
         return
-    #
-    # def test_noneuclidian_distance_calculation():
-    #     from sympy import solve,sqrt
-    #
-    #     metric = '0 # #,# 0 #,# # 1'
-    #     (X,Y,e) = Mv.setup('X Y e',metric)
-    #
-    #     assert str((X^Y)*(X^Y)) == '(X.Y)**2'
-    #
-    #     L = X^Y^e
-    #     B = L*e
-    #     assert str(B) == 'X^Y - (Y.e)*X^e + (X.e)*Y^e'
-    #     Bsq = B*B
-    #     assert str(Bsq) == '(X.Y)*((X.Y) - 2*(X.e)*(Y.e))'
-    #     Bsq = Bsq.scalar()
-    #     assert str(B) == 'X^Y - (Y.e)*X^e + (X.e)*Y^e'
-    #
-    #     BeBr =B*e*B.rev()
-    #     assert str(BeBr) == '((X.Y)*(-(X.Y) + 2*(X.e)*(Y.e)))*e'
-    #     assert str(B*B) == '(X.Y)*((X.Y) - 2*(X.e)*(Y.e))'
-    #     assert str(L*L) == '(X.Y)*((X.Y) - 2*(X.e)*(Y.e))'
-    #     (s,c,Binv,M,S,C,alpha,XdotY,Xdote,Ydote) = symbols('s c (1/B) M S C alpha (X.Y) (X.e) (Y.e)')
-    #
-    #     Bhat = Binv*B
-    #     R = c+s*Bhat
-    #     assert str(R) == 'c + (1/B)*s*X^Y - (1/B)*(Y.e)*s*X^e + (1/B)*(X.e)*s*Y^e'
-    #
-    #     Z = R*X*R.rev()
-    #     Z.obj = expand(Z.obj)
-    #     Z.obj = Z.obj.collect([Binv,s,c,XdotY])
-    #     assert str(Z) == '((1/B)**2*(X.Y)**2*s**2 - 2*(1/B)**2*(X.Y)*(X.e)*(Y.e)*s**2 + 2*(1/B)*(X.Y)*c*s - 2*(1/B)*(X.e)*(Y.e)*c*s + c**2)*X + 2*(1/B)*(X.e)**2*c*s*Y + (2*(1/B)*(X.Y)*(X.e)*s*(-(1/B)*(X.Y)*s + 2*(1/B)*(X.e)*(Y.e)*s - c))*e'
-    #     W = Z|Y
-    #     # From this point forward all calculations are with sympy scalars
-    #     W = W.scalar()
-    #     assert str(W) == '(1/B)**2*(X.Y)**3*s**2 - 4*(1/B)**2*(X.Y)**2*(X.e)*(Y.e)*s**2 + 4*(1/B)**2*(X.Y)*(X.e)**2*(Y.e)**2*s**2 + 2*(1/B)*(X.Y)**2*c*s - 4*(1/B)*(X.Y)*(X.e)*(Y.e)*c*s + (X.Y)*c**2'
-    #     W = expand(W)
-    #     W = simplify(W)
-    #     W = W.collect([s*Binv])
-    #
-    #     M = 1/Bsq
-    #     W = W.subs(Binv**2,M)
-    #     W = simplify(W)
-    #     Bmag = sqrt(XdotY**2-2*XdotY*Xdote*Ydote)
-    #     W = W.collect([Binv*c*s,XdotY])
-    #
-    #     #Double angle substitutions
-    #
-    #     W = W.subs(2*XdotY**2-4*XdotY*Xdote*Ydote,2/(Binv**2))
-    #     W = W.subs(2*c*s,S)
-    #     W = W.subs(c**2,(C+1)/2)
-    #     W = W.subs(s**2,(C-1)/2)
-    #     W = simplify(W)
-    #     W = W.subs(1/Binv,Bmag)
-    #     W = expand(W)
-    #
-    #
-    #     assert str(W) == '(X.Y)*C - (X.e)*(Y.e)*C + (X.e)*(Y.e) + S*sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
-    #
-    #     Wd = collect(W,[C,S],exact=True,evaluate=False)
-    #
-    #     Wd_1 = Wd[ONE]
-    #     Wd_C = Wd[C]
-    #     Wd_S = Wd[S]
-    #
-    #     assert str(Wd_1) == '(X.e)*(Y.e)'
-    #     assert str(Wd_C) == '(X.Y) - (X.e)*(Y.e)'
-    #     assert str(Wd_S) == 'sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
-    #
-    #     assert str(Bmag) == 'sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
-    #     Wd_1 = Wd_1.subs(Bmag,1/Binv)
-    #     Wd_C = Wd_C.subs(Bmag,1/Binv)
-    #     Wd_S = Wd_S.subs(Bmag,1/Binv)
-    #
-    #     lhs = Wd_1+Wd_C*C
-    #     rhs = -Wd_S*S
-    #     lhs = lhs**2
-    #     rhs = rhs**2
-    #     W = expand(lhs-rhs)
-    #     W = expand(W.subs(1/Binv**2,Bmag**2))
-    #     W = expand(W.subs(S**2,C**2-1))
-    #     W = W.collect([C,C**2],evaluate=False)
-    #
-    #     a = simplify(W[C**2])
-    #     b = simplify(W[C])
-    #     c = simplify(W[ONE])
-    #
-    #
-    #     assert str(a) == '(X.e)**2*(Y.e)**2'
-    #     assert str(b) == '2*(X.e)*(Y.e)*((X.Y) - (X.e)*(Y.e))'
-    #     assert str(c) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e) + (X.e)**2*(Y.e)**2'
-    #
-    #     x = Symbol('x')
-    #     C =  solve(a*x**2+b*x+c,x)[0]
-    #     assert str(expand(simplify(expand(C)))) == '-(X.Y)/((X.e)*(Y.e)) + 1'
 
-    #     return
+    def test_noneuclidian_distance_calculation(self):
+        from sympy import solve,sqrt
+
+        g = '0 # #,# 0 #,# # 1'
+        necl = Ga('X Y e',g=g)
+        (X,Y,e) = necl.mv()
+
+        assert str((X^Y)*(X^Y)) == '(X.Y)**2'
+
+        L = X^Y^e
+        B = (L*e).expand().blade_rep() # D&L 10.152
+        assert str(B) == 'X^Y - (Y.e)*X^e + (X.e)*Y^e'
+        Bsq = B*B
+        assert str(Bsq) == '(X.Y)*((X.Y) - 2*(X.e)*(Y.e))'
+        Bsq = Bsq.scalar()
+        assert str(B) == 'X^Y - (Y.e)*X^e + (X.e)*Y^e'
+
+        BeBr = B*e*B.rev()
+        assert str(BeBr) == '(X.Y)*(-(X.Y) + 2*(X.e)*(Y.e))*e'
+        assert str(B*B) == '(X.Y)*((X.Y) - 2*(X.e)*(Y.e))'
+        assert str(L*L) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e)' # D&L 10.153
+
+        (s,c,Binv,M,S,C,alpha) = symbols('s c (1/B) M S C alpha')
+
+        XdotY = necl.g[0,1]
+        Xdote = necl.g[0,2]
+        Ydote = necl.g[1,2]
+
+        Bhat = Binv*B # D&L 10.154
+        R = c+s*Bhat # Rotor R = exp(alpha*Bhat/2)
+        assert str(R) == 'c + (1/B)*s*X^Y - (1/B)*(Y.e)*s*X^e + (1/B)*(X.e)*s*Y^e'
+
+        Z = R*X*R.rev() # D&L 10.155
+        Z.obj = expand(Z.obj)
+        Z.obj = Z.obj.collect([Binv,s,c,XdotY])
+        assert str(Z) == '((1/B)**2*(X.Y)**2*s**2 - 2*(1/B)**2*(X.Y)*(X.e)*(Y.e)*s**2 + 2*(1/B)*(X.Y)*c*s - 2*(1/B)*(X.e)*(Y.e)*c*s + c**2)*X + 2*(1/B)*(X.e)**2*c*s*Y + 2*(1/B)*(X.Y)*(X.e)*s*(-(1/B)*(X.Y)*s + 2*(1/B)*(X.e)*(Y.e)*s - c)*e'
+        W = Z|Y
+        # From this point forward all calculations are with sympy scalars
+        W = W.scalar()
+        assert str(W) == '(1/B)**2*(X.Y)**3*s**2 - 4*(1/B)**2*(X.Y)**2*(X.e)*(Y.e)*s**2 + 4*(1/B)**2*(X.Y)*(X.e)**2*(Y.e)**2*s**2 + 2*(1/B)*(X.Y)**2*c*s - 4*(1/B)*(X.Y)*(X.e)*(Y.e)*c*s + (X.Y)*c**2'
+        W = expand(W)
+        W = simplify(W)
+        W = W.collect([s*Binv])
+
+        M = 1/Bsq
+        W = W.subs(Binv**2,M)
+        W = simplify(W)
+        Bmag = sqrt(XdotY**2-2*XdotY*Xdote*Ydote)
+        W = W.collect([Binv*c*s,XdotY])
+
+        #Double angle substitutions
+
+        W = W.subs(2*XdotY**2-4*XdotY*Xdote*Ydote,2/(Binv**2))
+        W = W.subs(2*c*s,S)
+        W = W.subs(c**2,(C+1)/2)
+        W = W.subs(s**2,(C-1)/2)
+        W = simplify(W)
+        W = W.subs(1/Binv,Bmag)
+        W = expand(W)
+
+        # FIXME assert str(W.simplify()) == '(X.Y)*C - (X.e)*(Y.e)*C + (X.e)*(Y.e) + S*sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
+
+        Wd = collect(W,[C,S],exact=True,evaluate=False)
+
+        Wd_1 = Wd[one]
+        Wd_C = Wd[C]
+        Wd_S = Wd[S]
+
+        # FIXME assert str(Wd_1) == '(X.e)*(Y.e)'
+        # FIXME assert str(Wd_C) == '(X.Y) - (X.e)*(Y.e)'
+        # FIXME assert str(Wd_S) == 'sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
+
+        assert str(Bmag) == 'sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
+        Wd_1 = Wd_1.subs(Bmag,1/Binv)
+        Wd_C = Wd_C.subs(Bmag,1/Binv)
+        Wd_S = Wd_S.subs(Bmag,1/Binv)
+
+        lhs = Wd_1+Wd_C*C
+        rhs = -Wd_S*S
+        lhs = lhs**2
+        rhs = rhs**2
+        W = expand(lhs-rhs)
+        W = expand(W.subs(1/Binv**2,Bmag**2))
+        W = expand(W.subs(S**2,C**2-1))
+        W = W.collect([C,C**2],evaluate=False)
+
+        a = simplify(W[C**2])
+        b = simplify(W[C])
+        c = simplify(W[one])
+
+
+        assert str(a) == '(X.e)**2*(Y.e)**2'
+        assert str(b) == '2*(X.e)*(Y.e)*((X.Y) - (X.e)*(Y.e))'
+        assert str(c) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e) + (X.e)**2*(Y.e)**2'
+
+        x = Symbol('x')
+        C =  solve(a*x**2+b*x+c,x)[0]
+        assert str(expand(simplify(expand(C)))) == '-(X.Y)/((X.e)*(Y.e)) + 1'
+
+        return
     #
     # def test_conformal_representations_of_circles_lines_spheres_and_planes():
     #     global n,nbar
