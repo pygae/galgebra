@@ -1059,8 +1059,13 @@ class Mv(object):
 
     def diff(self, coord):
         Dself = Mv(ga=self.Ga)
-        if coord not in self.Ga.coords:
+        if self.Ga.coords is None:
+           Dself.obj = diff(self.obj, coord)
+           return Dself
+        elif coord not in self.Ga.coords:
             if self.Ga.par_coords is None:
+                Dself.obj = diff(self.obj, coord)
+            elif coords not in self.Ga.par_coords:
                 Dself.obj = diff(self.obj, coord)
             else:
                 Dself.obj = diff(self.obj, coord)
