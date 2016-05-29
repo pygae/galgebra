@@ -23,6 +23,7 @@
 \usepackage{makecell}
 \usepackage{longtable}
 \usepackage{scrextend}
+\usepackage[makeroom]{cancel}
 \usepackage[hyphens]{url}
 \DeclareGraphicsExtensions{.pdf}
 \definecolor{LinkColor} {rgb} {0, 0, .8}
@@ -34,6 +35,9 @@
 \newcommand{\ebh}{\bm{\hat{e}}}
 \newcommand{\ebf}{\bm{e}}
 \newcommand{\mat}[1]{\left [ {#1} \right ]}
+\newcommand{\bra}[1]{{#1}_{\mathcal{G}}}
+\newcommand{\ket}[1]{{#1}_{\mathcal{D}}}
+\newcommand{\ds}{\displaystyle}
 \definecolor{red}{rgb}{1,0,0}
 \definecolor{gray}{rgb}{0.95,0.95,0.95}
 \setlength{\parindent}{0in}
@@ -792,6 +796,56 @@ or if we wish to simulate the dot notation (Doran and Lasenby)
 \be
     \dot{F}\dot{\nabla} = F\bar{\nabla}.
 \ee
+
+\subsection{Split Differential Operator}
+
+To implement the general ``dot'' notation for differential operators in python is not possible.  Another type of symbolic notation is required.  I
+propose what one could call the ``split differential operator.''  For $\nabla$ denote the corresponding split operator by two operators 
+$\bra{\nabla}$ and
+$\ket{\nabla}$ where in practice $\bra{\nabla}$ is a tuple of vectors and $\ket{\nabla}$ is a tuple of corresponding partial derivatives.  Then the equivalent of
+the ``dot'' notation would be
+\begin{equation}
+	\dot{\nabla}\paren{A\dot{B}C} = \bra{\nabla}\paren{A\paren{\ket{\nabla}B}C}.\label{splitopV}
+\end{equation}
+We are using the $\mathcal{G}$ subscript to indicate the geometric algebra parts of the multivector differential operator and the $\mathcal{D}$ subscript
+to indicate the scalar differential operator parts of the multivector differential operator.  An example of this notation in 3D Euclidean space is
+\begin{eqnarray}
+	\bra{\nabla} &= \paren{\eb_{x},\eb_{y},\eb_{z}}, \\
+	\ket{\nabla} &= \paren{\pdiff{}{x},\pdiff{}{y},\pdiff{}{x}},
+\end{eqnarray}
+To implement $\bra{\nabla}$ and $\ket{\nabla}$ we have in the example
+\begin{eqnarray}
+	\ket{\nabla}B &= \paren{\pdiff{B}{x},\pdiff{B}{y},\pdiff{B}{z}} \\
+	\paren{\ket{\nabla}B}C &= \paren{\pdiff{B}{x}C,\pdiff{B}{y}C,\pdiff{B}{z}C} \\
+	A\paren{\ket{\nabla}B}C &= \paren{A\pdiff{B}{x}C,A\pdiff{B}{y}C,A\pdiff{B}{z}C}.
+\end{eqnarray}
+Then the final evaluation is
+\begin{equation}
+	\bra{\nabla}\paren{A\paren{\ket{\nabla}B}C} = \eb_{x}A\pdiff{B}{x}C+\eb_{y}A\pdiff{B}{y}C+\eb_{z}A\pdiff{B}{z}C,
+\end{equation}
+which could be called the ``dot'' product of two tuples.  Note that $\nabla = \bra{\nabla}\ket{\nabla}$ and 
+$\dot{F}\dot{\nabla} = F\bar{\nabla} = \paren{\ket{\nabla}F}\bra{\nabla}$.
+
+For the general multivector differential operator, $D$, the split operator parts are $\bra{D}$, a tuple of basis blade multivectors and $\ket{D}$, a 
+tuple of scalar differential operators that correspond to the coefficients of the basis-blades in the total operator $D$ so that
+\begin{equation}
+	\dot{D}\paren{A\dot{B}C} = \bra{D}\paren{A\paren{\ket{D}B}C}. \label{splitopM}
+\end{equation}
+If the index set for the basis blades of a geometric algebra is denoted by $\set{n}$ where $\set{n}$ contains $2^{n}$ indices for an $n$ dimensional 
+geometric algebra then the most general multivector differential operator can be written\footnote{For example in three dimensions 
+$\set{3} = (0,1,2,3,(1,2),(2,3),(1,3),(1,2,3))$ and as an example of how the superscript would work with each grade $\eb^{0}=1$, $\eb^{1}=\eb^{1}$, $\eb^{\paren{1,2}}=\eb^{1}\W\eb^{2}$, and $\eb^{\paren{1,2,3}}=\eb^{1}\W\eb^{2}\W\eb^{3}$.}
+\begin{equation}
+	D = {\ds \sum_{l\in\set{n}}\eb^{l}D_{\set{l}}}
+\end{equation}
+\begin{equation}
+	\dot{D}\paren{A\dot{B}C} = \bra{D}\paren{A\paren{\ket{D}B}C} = {\ds \sum_{l\in\set{n}}\eb^{l}\paren{A\paren{D_{l}B}C}}
+\end{equation}
+or
+\begin{equation}
+	\paren{A\dot{B}C}\dot{D} = \paren{A\paren{\ket{D}B}C}\bra{D} = {\ds \sum_{l\in\set{n}}\paren{A\paren{D_{l}B}C}\eb^{l}}.
+\end{equation}
+The implementation of equations~\ref{splitopV} and \ref{splitopM} is described in sections~\ref{makeMV} and \ref{makeMVD}.
+
 
 \section{Linear Transformations/Outermorphisms}\label{Ltrans}
 
@@ -1560,7 +1614,7 @@ The geometric algebra module consists of the following files and classes
 
 The geometric algebra class is instantiated with
 
-\T{Ga(basis, g=None, coords=None, X=None, norm=False, sig='e', debug=False)}
+\T{Ga(basis, g=None, coords=None, X=None, norm=False, sig='e', Isq='-', debug=False)}
 \begin{quote}
    The \T{basis} and \T{g} parameters were described in section~\ref{BasisMetric}.
    If the metric is a function of position, if we have multivector fields, or we
@@ -1620,6 +1674,9 @@ The geometric algebra class is instantiated with
    
    Currently one need not be concerned about inputting \T{sig} unless one in using the \emph{Ga} member
    function \T{Ga.I()} or the functions \T{Mv.dual()} or \T{cross()} which also use \T{Ga.I()}.
+
+   If $I^{2}$ is numeric it is calculated if it is not numeric then \T{Isq='-'} is the sign of the square of the pseudo-scalar. This is needed
+   for some operations.  The default is chosen for the case of a general 3D Euclidean metric. 
 
    If \T{debug=True} the data structures required to initialize the Ga class
    are printed out.
@@ -1713,7 +1770,7 @@ geometric algebra object.  Thus we have
 for the instantiation of various objects from the \T{Ga} class.  This means that in order to
 instantiate any of these objects we need only to import \T{Ga} into our program.
 
-\section{Instantiating a Multivector}
+\section{Instantiating a Multivector}\label{makeMV}
 
 Since we need to associate each multivector with the geometric algebra that contains it
 we use a member function of Ga to instantiate every multivector\footnote{There is a
@@ -2213,7 +2270,7 @@ If we can instantiate multivectors we can use all the multivector class function
 
 \end{quote}
 
-\section{Multivector Derivatives}
+\section{Multivector Derivatives}\label{makeMVD}
 
 The various derivatives of a multivector function is accomplished by
 multiplying the gradient operator vector with the function.  The gradient
