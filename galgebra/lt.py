@@ -98,13 +98,13 @@ def Dictionary_to_Matrix(dict_rep, ga):
     for row in n_range:
         e_row = ga.basis[row]
         lst_mat_row = n * [S(0)]
-        if e_row in basis:
+
+        if e_row in basis:  # If not in basis row all zeros
             (coefs,bases) = metric.linear_expand(dict_rep[e_row])
-            for col in n_range:
-                base = basis[col]
-                if base in bases:
-                    index = basis.index(base)
-                    lst_mat_row[index] = coefs[index]
+            for (coef,base) in zip(coefs,bases):
+                index = basis.index(base)
+                lst_mat_row[index] = coef
+
         lst_mat.append(lst_mat_row)
     return Matrix(lst_mat)
 
