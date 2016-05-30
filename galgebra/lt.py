@@ -4,7 +4,7 @@ import sys
 import inspect
 import types
 import itertools
-from sympy import collect, expand, symbols, Matrix, zeros, Symbol, Function, S, Add
+from sympy import collect, expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add
 from copy import copy
 import printer
 import metric
@@ -78,6 +78,7 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
 
 def Matrix_to_dictionary(mat_rep,basis):
     # Convert matrix representation of linear transformation to dictionary
+    mat_rep = Transpose(mat_rep)
     dict_rep = {}
     n = len(basis)
     if mat_rep.rows != n or mat_rep.cols != n:
@@ -106,7 +107,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
                 lst_mat_row[index] = coef
 
         lst_mat.append(lst_mat_row)
-    return Matrix(lst_mat)
+    return Transpose(Matrix(lst_mat))
 
 class Lt(object):
 
