@@ -356,7 +356,7 @@ class Ga(metric.Metric):
                 self.i = self.e/sqrt(-self.e_sq)
                 self.i_inv = -self.i
         else:
-            if self.e_sq_sgn == '+': # I**2 = 1
+            if self.Isq == '+': # I**2 = 1
                 self.i = self.e/sqrt(self.e_sq)
                 self.i_inv = self.i
             else:  # I**2 = -1
@@ -403,10 +403,10 @@ class Ga(metric.Metric):
     def __str__(self):
         return self.name
 
-    def E(self):
+    def E(self):  # Unnoromalized pseudo-scalar
         return self.e
 
-    def I(self):
+    def I(self):  # Noromalized pseudo-scalar
         return self.i
 
     def X(self):

@@ -256,7 +256,8 @@ class Metric(object):
                   'norm': (False, 'True to normalize basis vectors'),
                   'debug': (False, 'True to print out debugging information'),
                   'gsym': (None, 'String s to use "det("+s+")" function in reciprocal basis'),
-                  'sig': ('e', 'Signature of metric, default is (n,0) a Euclidean metric')}
+                  'sig': ('e', 'Signature of metric, default is (n,0) a Euclidean metric'),
+                  'Isq': ('-', "Sign of square of pseudo-scalar, default is '-'")}
 
     @staticmethod
     def dot_orthogonal(V1, V2, g=None):
@@ -594,6 +595,7 @@ class Metric(object):
         systems or for calculations with general metric.
         """
         self.gsym = kwargs['gsym']
+        self.Isq = kwargs['Isq']  # Sign of I**2, only needed if I**2 not a number
 
         self.debug = debug
         self.is_ortho = False  # Is basis othogonal
