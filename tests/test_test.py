@@ -5,17 +5,13 @@ import unittest
 import sys
 
 from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
-# from ga import Mv,Nga,simplify,com,ONE,ZERO
-# from ga_print import GA_Printer
 from printer import Format, Eprint, Get_Program
 from ga import Ga, one, zero
 from mv import Mv, Nga, com
 
-HALF = Rational(1,2)
-
 def F(x):
-    global n,nbar
-    Fx = HALF*((x*x)*n+2*x-nbar)
+    global n, nbar
+    Fx =  ((x * x) * n + 2 * x - nbar) / 2
     return(Fx)
 
 def make_vector(a, n=3, ga=None):
@@ -31,7 +27,7 @@ def make_vector(a, n=3, ga=None):
 
 class TestTest(unittest.TestCase):
     def setUp(self):
-        pass # Eprint()
+        pass
 
     def tearDown(self):
         pass
@@ -66,10 +62,6 @@ class TestTest(unittest.TestCase):
 
         assert str(X) == 'X__x*e_x + X__y*e_y'
         assert str(A) == 'A + A__xy*e_x^e_y'
-
-        # print str((X|A))
-        # print str((X<A))
-        # print str((A>X))
 
         assert str((X|A)) == '-A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y)*e_x + A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y)*e_y'
         assert str((X<A)) == '-A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y)*e_x + A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y)*e_y'
@@ -106,7 +98,6 @@ class TestTest(unittest.TestCase):
         assert str(a|(b^c^d)) == '(a.d)*b^c - (a.c)*b^d + (a.b)*c^d'
 
         expr = (a|(b^c))+(c|(a^b))+(b|(c^a)) # = (a.b)*c - (b.c)*a - ((a.b)*c - (b.c)*a)
-        # print str(expr)
         assert str(expr.simplify()) == '0'
 
         assert str(a*(b^c)-b*(a^c)+c*(a^b)) == '3*a^b^c'
@@ -283,7 +274,6 @@ class TestTest(unittest.TestCase):
         a = simplify(W[C**2])
         b = simplify(W[C])
         c = simplify(W[one])
-
 
         assert str(a) == '(X.e)**2*(Y.e)**2'
         assert str(b) == '2*(X.e)*(Y.e)*((X.Y) - (X.e)*(Y.e))'
