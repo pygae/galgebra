@@ -242,10 +242,10 @@ class TestTest(unittest.TestCase):
         W = W.subs(c**2,(C+1)/2)
         W = W.subs(s**2,(C-1)/2)
         W = simplify(W)
-        W = W.subs(1/Binv,Bmag)
+        W = W.subs(Binv,1/Bmag)
         W = expand(W)
 
-        # FIXME assert str(W.simplify()) == '(X.Y)*C - (X.e)*(Y.e)*C + (X.e)*(Y.e) + S*sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
+        assert str(W.simplify()) == '(X.Y)*C - (X.e)*(Y.e)*C + (X.e)*(Y.e) + S*sqrt((X.Y)*((X.Y) - 2*(X.e)*(Y.e)))'
 
         Wd = collect(W,[C,S],exact=True,evaluate=False)
 
@@ -253,14 +253,15 @@ class TestTest(unittest.TestCase):
         Wd_C = Wd[C]
         Wd_S = Wd[S]
 
-        # FIXME assert str(Wd_1) == '(X.e)*(Y.e)'
-        # FIXME assert str(Wd_C) == '(X.Y) - (X.e)*(Y.e)'
-        # FIXME assert str(Wd_S) == 'sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
+        assert str(Wd_1) == '(X.e)*(Y.e)'
+        assert str(Wd_C) == '(X.Y) - (X.e)*(Y.e)'
 
+        assert str(Wd_S) == 'sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
         assert str(Bmag) == 'sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
-        Wd_1 = Wd_1.subs(Bmag,1/Binv)
-        Wd_C = Wd_C.subs(Bmag,1/Binv)
-        Wd_S = Wd_S.subs(Bmag,1/Binv)
+
+        Wd_1 = Wd_1.subs(Binv,1/Bmag)
+        Wd_C = Wd_C.subs(Binv,1/Bmag)
+        Wd_S = Wd_S.subs(Binv,1/Bmag)
 
         lhs = Wd_1+Wd_C*C
         rhs = -Wd_S*S
