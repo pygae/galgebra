@@ -706,6 +706,7 @@ class GaLatexPrinter(LatexPrinter):
                 for glyph in GaLatexPrinter.special_alphabet:
                     if glyph in tmp:
                         parse_sym = '????' + str(i_sub)
+                        i_sub += 1
                         parse_dict[parse_sym] = '\\' + glyph + ' '
                         tmp = tmp.replace(glyph, parse_sym)
 
@@ -772,6 +773,7 @@ class GaLatexPrinter(LatexPrinter):
             return getattr(self, '_print_' + func)(expr, exp)
         else:
             args = [str(self._print(arg)) for arg in expr.args]
+
             # How inverse trig functions should be displayed, formats are:
             # abbreviated: asin, full: arcsin, power: sin^-1
             #inv_trig_style = self._settings['inv_trig_style']

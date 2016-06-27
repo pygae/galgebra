@@ -5,7 +5,7 @@ import unittest
 import sys
 
 from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
-from printer import Format, Eprint, Get_Program
+from printer import Format, Eprint, Get_Program, latex
 from ga import Ga, one, zero
 from mv import Mv, Nga, com
 
@@ -163,8 +163,8 @@ class TestTest(unittest.TestCase):
         assert str((grad|A).simplify()) == '(r*D{r}A__r + 2*A__r + A__theta/tan(theta) + D{theta}A__theta + D{phi}A__phi/sin(theta))/r'
         assert str(-s3d.I()*(grad^A)) == '(A__phi/tan(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))*e_r/r + (-r*D{r}A__phi - A__phi + D{phi}A__r/sin(theta))*e_theta/r + (r*D{r}A__theta + A__theta - D{theta}A__r)*e_phi/r'
 
-        # str("str(B|(eth^ephi))") => "-B__thetaphi"
-        # FIXME printer.print_latex("str(B|(eth^ephi))") => "- B^{\phi \phi } {\left (r,\theta ,\phi  \right )}"
+        assert latex(grad) == r'\boldsymbol{e}_{r} \frac{\partial}{\partial r} + \boldsymbol{e}_{\theta } \frac{1}{r} \frac{\partial}{\partial \theta } + \boldsymbol{e}_{\phi } \frac{1}{r \sin{\left (\theta  \right )}} \frac{\partial}{\partial \phi }'
+        assert latex(B|(eth^ephi)) == r'- B^{\theta \phi } {\left (r,\theta ,\phi  \right )}'
 
         assert str(grad^B) == '(r*D{r}B__thetaphi - B__rphi/tan(theta) + 2*B__thetaphi - D{theta}B__rphi + D{phi}B__rtheta/sin(theta))*e_r^e_theta^e_phi/r'
 
