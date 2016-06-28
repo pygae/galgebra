@@ -175,6 +175,7 @@ class Mv(object):
             if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
                 self.obj = sum([Symbol(root + super_script, real=True) * base
                                 for (super_script, base) in zip(self.Ga.blade_super_scripts[grade], self.Ga.blades[grade])])
+
             else:
                 if isinstance(kwargs['f'], bool):  #Is a multivector function of all coordinates
                     self.obj = sum([Function(root + super_script, real=True)(*self.Ga.coords) * base
@@ -653,6 +654,7 @@ class Mv(object):
             return str(self.obj)
 
     def Mv_latex_str(self):
+
         if self.obj == 0:
             return ' 0 '
 

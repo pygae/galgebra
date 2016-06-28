@@ -129,7 +129,7 @@ def derivatives_in_rectangular_coordinates():
     print 'grad|A =',grad|A
     print 'grad*A =',grad*A
 
-    print '-I*(grad^A) =',-o3d.E()*(grad^A)
+    print '-I*(grad^A) =',-o3d.I()*(grad^A)
     print 'grad*B =',grad*B
     print 'grad^B =',grad^B
     print 'grad|B =',grad|B
