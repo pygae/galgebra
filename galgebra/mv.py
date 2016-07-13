@@ -576,27 +576,22 @@ class Mv(object):
         return str(self)
 
     def Mv_str(self):
-        #print '\n1 - self.obj =',self.obj
-        # str representation of multivector
+        global print_replace_old, print_replace_new
         if self.i_grade == 0:
             return str(self.obj)
         self.obj = expand(self.obj)
         self.characterise_Mv()
         self.obj = metric.Simp.apply(self.obj)
-        #print '2 - self.obj =',self.obj
-        #print 'is_blade_rep =',self.is_blade_rep,' is_ortho =',self.Ga.is_ortho
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
         else:
             base_keys = self.Ga.bases_lst
             grade_keys = self.Ga.bases_to_grades_dict
-        #print 'base_keys =',base_keys,'\ngrade_keys =',grade_keys
         if isinstance(self.obj, Add):  # collect coefficients of bases
             if self.obj.is_commutative:
                 return self.obj
             args = self.obj.args
-            #print 'args =', args
             terms = {}  # dictionary with base indexes as keys
             grade0 = S(0)
             for arg in args:
@@ -605,10 +600,8 @@ class Mv(object):
                     c = reduce(mul, c)
                 else:
                     c = S(1)
-                #print '(c,nc) =', (c, nc)
                 if len(nc) > 0:
                     base = nc[0]
-                    #print 'base,base_keys =',base,base_keys
                     if base in base_keys:
                         index = base_keys.index(base)
                         if index in terms:
@@ -616,17 +609,12 @@ class Mv(object):
                             terms[index] = (c_tmp + c, base, g_keys)
                         else:
                             terms[index] = (c, base, grade_keys[base])
-                    #print 'terms =', terms
                 else:
                     grade0 += c
             if grade0 != S(0):
                 terms[-1] = (grade0, S(1), -1)
-            #print 'terms =', terms
             terms = terms.items()
-            #print 'terms =', terms
             sorted_terms = sorted(terms, key=itemgetter(0))  # sort via base indexes
-
-            #print 'sorted_terms =',sorted_terms
 
             s = str(sorted_terms[0][1][0] * sorted_terms[0][1][1])
             if printer.GaPrinter.fmt == 3:
@@ -649,6 +637,8 @@ class Mv(object):
                     s += term
             if s[-1] == '\n':
                 s = s[:-1]
+            if printer.print_replace_old is not None:
+                s = s.replace(printer.print_replace_old,printer.print_replace_new)
             return s
         else:
             return str(self.obj)
