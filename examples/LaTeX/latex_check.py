@@ -93,8 +93,8 @@ def basic_multivector_operations_2D_orthogonal():
 
 def check_generalized_BAC_CAB_formulas():
     Print_Function()
-    g4d = Ga('a b c d')
-    (a,b,c,d) = g4d.mv()
+    g4d = Ga('a b c d e')
+    (a,b,c,d,e) = g4d.mv()
 
     print 'g_{ij} =',g4d.g
 
@@ -107,6 +107,7 @@ def check_generalized_BAC_CAB_formulas():
     print '\\bm{(a^b)|(c^d)} =',(a^b)|(c^d)
     print '\\bm{((a^b)|c)|d} =',((a^b)|c)|d
     print '\\bm{(a^b)\\times (c^d)} =',com(a^b,c^d)
+    print '\\bm{(a^b^c)(d^e)} =',((a^b^c)*(d^e)).Fmt(2)
     return
 
 def derivatives_in_rectangular_coordinates():
@@ -520,7 +521,6 @@ def dummy():
 
 def main():
     Get_Program()
-
     Format()
 
     basic_multivector_operations_3D()
@@ -537,6 +537,7 @@ def main():
     reciprocal_frame_test()
     signature_test()
     Fmt_test()
+
     xpdf()
     return
 
