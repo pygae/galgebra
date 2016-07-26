@@ -136,7 +136,16 @@ class Mv(object):
         if isinstance(obj, Add):
             args = obj.args
         else:
-            args = [obj]
+            if obj in self.Ga.blades_lst:
+                self.is_blade_rep = True
+                self.i_grade = self.Ga.blades_to_grades_dict[obj]
+                self.grades = [self.i_grade]
+                self.char_Mv = True
+                self.blade_flg = True
+                return
+            else:
+                args = [obj]
+
         grades = []
         #print 'args =', args
         self.is_blade_rep = True
@@ -915,6 +924,7 @@ class Mv(object):
 
     def is_blade(self):  # True is self is blade, otherwise False
         # sets self.blade_flg and returns value
+
         if self.blade_flg is not None:
             return self.blade_flg
         else:
@@ -940,6 +950,7 @@ class Mv(object):
         Leo Dorst, 'Geometric Algebra for Computer Science,' p.533
         Sets self.versor_flg and returns value
         """
+
         if self.versor_flg is not None:
             return self.versor_flg
         self.characterise_Mv()
@@ -996,6 +1007,8 @@ class Mv(object):
 
         if blade_lst is None:
             blade_lst = [self.Ga.mv(ONE)] + self.Ga.mv_blades_lst
+
+        #print 'Enter blade_coefs blade_lst =', blade_lst, type(blade_lst), [i.is_blade() for i in blade_lst]
 
         for blade in blade_lst:
             if not blade.is_base() or not blade.is_blade():
