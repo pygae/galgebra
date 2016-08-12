@@ -1282,7 +1282,7 @@ class Mv(object):
         else:
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
-    __abs__=norm # allow `|x|` to call z.norm()
+    __abs__=norm # allow `abs(x)` to call z.norm()
     
     def inv(self):
         if self.is_scalar():  # self is a scalar
