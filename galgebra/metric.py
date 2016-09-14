@@ -730,7 +730,7 @@ class Metric(object):
             self.signature()
             # Sign of square of pseudo scalar
             self.e_sq_sgn = '+'
-            if ((self.n*(self.n-1))/2+self.sig[1])%2 == 1:
+            if ((self.n*(self.n-1))//2+self.sig[1])%2 == 1:
                 self.e_sq_sgn = '-'
 
         if self.debug:
