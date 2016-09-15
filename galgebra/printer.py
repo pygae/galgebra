@@ -22,10 +22,6 @@ except ImportError:
     pass
 
 from inspect import getouterframes, currentframe
-import ga
-import mv
-import lt
-import metric
 
 Format_cnt = 0
 
