@@ -186,8 +186,11 @@ def find_functions(expr):
 
 
 def coef_simplify(expr):
+    """
     fcts = find_functions(expr)
     return expr.collect(fcts)
+    """
+    return expr
 
 
 def oprint(*args, **kwargs):
