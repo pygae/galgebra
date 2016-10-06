@@ -18,6 +18,9 @@ half = Rational(1, 2)
 one = S(1)
 zero = S(0)
 
+def all_same(items):
+    return all(x == items[0] for x in items)
+
 
 def is_bases_product(w):
     nc_w = w.args_cnc()
@@ -309,6 +312,8 @@ class Ga(metric.Metric):
 
         kwargs = metric.test_init_slots(metric.Metric.init_slots, **kwargs)
 
+        self.wedge_print = kwargs['wedge']
+
         if printer.GaLatexPrinter.latex_flg:
             printer.GaLatexPrinter.restore()
             Ga.restore = True
@@ -593,7 +598,23 @@ class Ga(metric.Metric):
             blades = []
             super_scripts = []
             for base_index in grade_index:
-                symbol_str = (''.join([str(self.basis[i]) + '^' for i in base_index]))[:-1]
+                if self.wedge_print:
+                    symbol_str = (''.join([str(self.basis[i]) + '^' for i in base_index]))[:-1]
+                else:
+                    sub_str = []
+                    root_str = []
+                    for i in base_index:
+                        basis_vec_str = str(self.basis[i])
+                        split_lst = basis_vec_str.split('_')
+                        if len(split_lst) != 2:
+                            raise ValueError('!!!!Incompatible basis vector '+basis_vec_str+' for wedge_print = False!!!!')
+                        else:
+                            sub_str.append(split_lst[1])
+                            root_str.append(split_lst[0])
+                    if all_same(root_str):
+                            symbol_str = root_str[0] + '_' + ''.join(sub_str)
+                    else:
+                        raise ValueError('!!!!No unique root symbol for wedge_print = False!!!!')
                 blade_symbol = Symbol(symbol_str, commutative=False)
                 blades.append(blade_symbol)
                 self.blades_lst.append(blade_symbol)
@@ -1794,6 +1815,7 @@ class Sm(Ga):
         u = kargs[0]  # Coordinate map or vector embedding to define submanifold
         coords = kargs[1]  # List of cordinates
         ga = kwargs['ga']  # base geometric algebra
+        self.wedge_print = kwargs['wedge']
         if ga is None:
             raise ValueError('Base geometric algebra must be specified for submanifold.')
 

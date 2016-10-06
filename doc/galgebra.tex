@@ -1304,7 +1304,7 @@ For those users who wish to define a default operator precedence the functions
    \begin{quote}
    The function \T{GAeval()} returns a multivector expression defined by the
    string \T{s} where the operations in the string are parsed according to
-   the precedences defined by \T{define\_precedence()}. \T{pstr} is a flag
+   the precedences defined by \T{def\_prec()}. \T{pstr} is a flag
    to print the input and output of \T{GAeval()} for debugging purposes.
    \T{GAeval()} works by adding parenthesis to the input string \T{s} with the
    precedence defined by \T{op\_ord='<>|,\^,*'}.  Then the parsed string is
@@ -1614,7 +1614,7 @@ The geometric algebra module consists of the following files and classes
 
 The geometric algebra class is instantiated with
 
-\T{Ga(basis, g=None, coords=None, X=None, norm=False, sig='e', Isq='-', debug=False)}
+\T{Ga(basis,g=None,coords=None,X=None,norm=False,sig='e',Isq='-',wedge=True,debug=False)}
 \begin{quote}
    The \T{basis} and \T{g} parameters were described in section~\ref{BasisMetric}.
    If the metric is a function of position, if we have multivector fields, or we
@@ -1677,6 +1677,11 @@ The geometric algebra class is instantiated with
 
    If $I^{2}$ is numeric it is calculated if it is not numeric then \T{Isq='-'} is the sign of the square of the pseudo-scalar. This is needed
    for some operations.  The default is chosen for the case of a general 3D Euclidean metric. 
+
+   If \T{wedge=True} the basis blades of a multivector are printed using the ``\T{\^}'' symbol between basis vectors.  If \T{wedge=False} the 
+   subscripts of each individual basis vector (assuming that the basis vector symbols are of the form root symbol with a subscript\footnote{Using
+   {\LaTeX} output if a basis vector is denoted by $\eb_{x}$ then $\eb$ is the root symbol and $x$ is the subscript}).  For example in three
+   dimensions if the basis vectors are $\eb_{x}$,  $\eb_{y}$, and $\eb_{z}$ the grade 3 basis blade would be printed as $\eb_{xyz}$.
 
    If \T{debug=True} the data structures required to initialize the Ga class
    are printed out.

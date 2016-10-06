@@ -257,7 +257,8 @@ class Metric(object):
                   'debug': (False, 'True to print out debugging information'),
                   'gsym': (None, 'String s to use "det("+s+")" function in reciprocal basis'),
                   'sig': ('e', 'Signature of metric, default is (n,0) a Euclidean metric'),
-                  'Isq': ('-', "Sign of square of pseudo-scalar, default is '-'")}
+                  'Isq': ('-', "Sign of square of pseudo-scalar, default is '-'"),
+                  'wedge': (True, 'Use ^ symbol to print basis blades')}
 
     @staticmethod
     def dot_orthogonal(V1, V2, g=None):
