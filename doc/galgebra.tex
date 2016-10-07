@@ -2570,6 +2570,10 @@ For formatting the multivector output there is the member function \T{Fmt(self,f
 which is documented in the multivector member functions.  This member function works in the same 
 way for {\LaTeX} printing.
 
+There are two functions for returning string representations of multivectors.  If \T{A} is a multivector then \T{str(A)} returns a string in which the 
+scalar coefficients of the multivector bases have been simplified (grouped, factored, etc.).  The member function \T{A.raw\_str()} returns a string in
+which the scalar coefficients of the multivector bases have not been simplified.
+
 \section{Latex Printing}\label{LatexPrinting}
 
 For latex printing one uses one functions from the \T{ga} module and one
@@ -2747,6 +2751,12 @@ string post processing commands \T{\%} and \T{\#} are not used in this case.}
   \emph{sympy} latex printer is that matrices are printed full size (equation
   displaystyle).
 }
+
+There are two member functions for returning {\LaTeX} string representations of multivectors.  If \T{A} is a multivector then \T{A.Mv\_latex\_str()}
+returns a {\LaTeX} string in which the scalar coefficients of the multivector bases have been simplified (grouped, factored, etc.).  This function
+is used when using \T{print} in the {\LaTeX} mode. The member function \T{A.raw\_latex\_str()} returns a {\LaTeX} string in which the scalar coefficients
+of the multivector bases have not been simplified.
+
 
 \subsection{Printing Lists/Tuples of Multivectors/Differential Operators}
 

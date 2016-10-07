@@ -7,7 +7,6 @@ import operator
 from compiler.ast import flatten
 from operator import itemgetter, mul, add
 from itertools import combinations
-#from numpy.linalg import matrix_rank
 from sympy import Symbol, Function, S, expand, Add, Mul, Pow, Basic, \
     sin, cos, sinh, cosh, sqrt, trigsimp, expand, \
     simplify, diff, Rational, Expr, Abs, collect, combsimp
@@ -584,13 +583,17 @@ class Mv(object):
     def __repr__(self):
         return str(self)
 
-    def Mv_str(self):
+    def raw_str(self):
+        return self.Mv_str(raw=True)
+
+    def Mv_str(self,raw=False):
         global print_replace_old, print_replace_new
         if self.i_grade == 0:
             return str(self.obj)
         self.obj = expand(self.obj)
         self.characterise_Mv()
-        self.obj = metric.Simp.apply(self.obj)
+        if not raw:
+            self.obj = metric.Simp.apply(self.obj)
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
@@ -652,7 +655,10 @@ class Mv(object):
         else:
             return str(self.obj)
 
-    def Mv_latex_str(self):
+    def raw_latex_str(self):
+        return self.Mv_latex_str(raw=True)
+
+    def Mv_latex_str(self, raw=False):
 
         if self.obj == 0:
             return ' 0 '
@@ -673,7 +679,8 @@ class Mv(object):
         # str representation of multivector
         self.obj = expand(self.obj)
         self.characterise_Mv()
-        self.obj = metric.Simp.apply(self.obj)
+        if not raw:
+            self.obj = metric.Simp.apply(self.obj)
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
@@ -2224,6 +2231,12 @@ class Dop(object):
             new_terms.append((metric.Simp.apply(coef), pdiff))
         self.terms = new_terms
         return
+
+    def __div__(self, a):
+        if isinstance(a, (Mv, Dop)):
+            raise TypeError('!!!!Can only divide Dop by sympy scalar expression!!!!')
+        else:
+            return (1/a) * self
 
     def __mul__(self, dopr):  # * geometric product
         return Dop.Mul(self, dopr, op='*')
