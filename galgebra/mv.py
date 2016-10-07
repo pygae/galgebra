@@ -808,7 +808,7 @@ class Mv(object):
 
     def __pow__(self,n):  # Integer power operator
         if not isinstance(n,int):
-            raise ValueError('!!!!Multivector exponentiation can only be to integer power!!!!')
+            raise ValueError('!!!!Multivector power can only be to integer power!!!!')
 
         result = S(1)
         for x in range(n):
@@ -1337,7 +1337,14 @@ class Mv(object):
         return self.Ga.mv(obj)
 
     def expand(self):
-        self.obj = expand(self.obj)
+        coefs,bases = metric.linear_expand(self.obj)
+        new_coefs = []
+        for coef in coefs:
+            new_coefs.append(expand(coef))
+        obj = 0
+        for coef,base in zip(new_coefs,bases):
+            obj += coef * base
+        self.obj = obj
         return self
 
     def list(self):
@@ -1371,6 +1378,36 @@ class Mv(object):
             return self.i_grade
         return -self.grades[-1]
 
+def compare(A,B):
+    """
+    Determine is B = c*A where c is a scalar.  If true return c
+    otherwise return 0.
+    """
+    if isinstance(A, Mv) and isinstance(B, Mv):
+        Acoefs, Abases = metric.linear_expand(A.obj)
+        Bcoefs, Bbases = metric.linear_expand(B.obj)
+        if len(Acoefs) != len(Bcoefs):
+            return 0
+        if Abases != Bbases:
+            return 0
+        if Bcoefs[0] != 0 and Abases[0] == Bbases[0]:
+            c = simplify(Acoefs[0]/Bcoefs[0])
+            print 'c =',c
+        else:
+            return 0
+        for acoef,abase,bcoef,bbase in zip(Acoefs[1:],Abases[1:],Bcoefs[1:],Bbases[1:]):
+            print acoef,'\n',abase,'\n',bcoef,'\n',bbase
+            if bcoef != 0 and abase == bbase:
+                print 'c-a/b =',simplify(c-(acoef/bcoef))
+                if simplify(acoef/bcoef) != c:
+                    return 0
+                else:
+                    pass
+            else:
+                return 0
+        return c
+    else:
+        raise TypeError('In compare both arguments are not multivectors\n')
 
 ################ Scalar Partial Differential Operator Class ############
 
