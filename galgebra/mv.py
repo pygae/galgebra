@@ -595,8 +595,7 @@ class Mv(object):
             return str(self.obj)
         self.obj = expand(self.obj)
         self.characterise_Mv()
-        if not raw:
-            self.obj = metric.Simp.apply(self.obj)
+        self.obj = metric.Simp.apply(self.obj)
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
@@ -658,10 +657,7 @@ class Mv(object):
         else:
             return str(self.obj)
 
-    def raw_latex_str(self):
-        return self.Mv_latex_str(raw=True)
-
-    def Mv_latex_str(self, raw=False):
+    def Mv_latex_str(self):
 
         if self.obj == 0:
             return ' 0 '
@@ -682,8 +678,7 @@ class Mv(object):
         # str representation of multivector
         self.obj = expand(self.obj)
         self.characterise_Mv()
-        if not raw:
-            self.obj = metric.Simp.apply(self.obj)
+        self.obj = metric.Simp.apply(self.obj)
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
