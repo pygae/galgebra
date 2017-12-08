@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 from distutils.core import Extension
 
 
-VERSION = '0.4.0'
+VERSION = '0.4.1.1'
 LONG_DESCRIPTION = """
 A symbolic geometric algebra module for python. BSD License.
 """
