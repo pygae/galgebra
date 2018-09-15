@@ -22,10 +22,6 @@ except ImportError:
     pass
 
 from inspect import getouterframes, currentframe
-import ga
-import mv
-import lt
-import metric
 
 Format_cnt = 0
 
@@ -55,9 +51,18 @@ $\\DeclareMathOperator{\Tr}{Tr}
 \\newcommand{\\eval}[2]{\\left . {#1} \\right |_{#2}}$
 """
 
+print_replace_old = None
+print_replace_new = None
+
 SYS_CMD = {'linux2': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
            'win32': {'rm': 'del', 'evince': '', 'null': ' > NUL', '&': ''},
            'darwin': {'rm': 'rm', 'evince': 'open', 'null': ' > /dev/null', '&': '&'}}
+
+def print_replace(old='^',new='*'):
+    global print_replace_old, print_replace_new
+    print_replace_old = old
+    print_replace_new = new
+    return
 
 def isinteractive():  #Is ipython running
     """
@@ -181,8 +186,11 @@ def find_functions(expr):
 
 
 def coef_simplify(expr):
+    """
     fcts = find_functions(expr)
     return expr.collect(fcts)
+    """
+    return expr
 
 
 def oprint(*args, **kwargs):
