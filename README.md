@@ -13,7 +13,13 @@ Lasenby and on some papers by Lasenby and Hestenes.
 TODO
 ========
 
-Get the library on PyPi
 Get compatible with python 3
+
+Get Travis set up with some good tests
+
 Get the docs on read the docs
+
 Ensure functions are documented
+
+Set up proper release version system
+
