@@ -9,10 +9,11 @@ import sympy
 from collections import OrderedDict
 #from sympy.core.compatibility import combinations
 from itertools import combinations
-import printer
-import metric
-import mv
-import lt
+from . import printer
+from . import metric
+from . import mv
+from . import lt
+from functools import reduce
 
 half = Rational(1, 2)
 one = S(1)
@@ -104,7 +105,7 @@ def nc_subs(expr, base_keys, base_values=None):
     keys for long lists of keys.
     """
     if base_values is None:
-        [base_keys, base_values] = zip(*base_keys)
+        [base_keys, base_values] = list(zip(*base_keys))
 
     if expr.is_commutative:
         return expr
@@ -356,7 +357,7 @@ class Ga(metric.Metric):
         if self.e_sq.is_number:
             if self.e_sq == S(0):
                 self.sing_flg = True
-                print '!!!!If I**2 = 0, I cannot be normalized!!!!'
+                print('!!!!If I**2 = 0, I cannot be normalized!!!!')
                 #raise ValueError('!!!!If I**2 = 0, I cannot be normalized!!!!')
             if self.e_sq > S(0):
                 self.i = self.e/sqrt(self.e_sq)
@@ -379,7 +380,7 @@ class Ga(metric.Metric):
             self.grads()
 
         if self.debug:
-            print 'Exit Ga.__init__()'
+            print('Exit Ga.__init__()')
 
         self.a = []  # List of dummy vectors for Mlt calculations
         self.agrads = {}  # Gradient operator with respect to vector a
@@ -393,7 +394,7 @@ class Ga(metric.Metric):
                 self.make_grad(ai)
             return
 
-        if a in self.agrads.keys():
+        if a in list(self.agrads.keys()):
             return self.agrads[a]
 
         if isinstance(a, mv.Mv):
@@ -765,7 +766,7 @@ class Ga(metric.Metric):
 
         self.dot_mode = '|'
         if self.debug:
-            print 'Exit basis_product_tables.\n'
+            print('Exit basis_product_tables.\n')
         return
 
     def build_connection(self):
@@ -1056,7 +1057,7 @@ class Ga(metric.Metric):
         self.basic_mul_table_dict = OrderedDict(mul_table)
 
         if self.debug:
-            print 'basic_mul_table =\n', self.basic_mul_table
+            print('basic_mul_table =\n', self.basic_mul_table)
         return
 
     def non_orthogonal_bases_products(self, base12):  # base12 = (base1,base2)
@@ -1103,10 +1104,10 @@ class Ga(metric.Metric):
                 blade_expansion.append(expand(a_W_A))
 
         self.blade_expansion = blade_expansion
-        self.blade_expansion_dict = OrderedDict(zip(self.blades_lst, blade_expansion))
+        self.blade_expansion_dict = OrderedDict(list(zip(self.blades_lst, blade_expansion)))
 
         if self.debug:
-            print 'blade_expansion_dict =', self.blade_expansion_dict
+            print('blade_expansion_dict =', self.blade_expansion_dict)
 
         # expand base basis in terms of blade basis
 
@@ -1126,7 +1127,7 @@ class Ga(metric.Metric):
         self.base_expansion_dict = OrderedDict(base_expand)
 
         if self.debug:
-            print 'base_expansion_dict =', self.base_expansion_dict
+            print('base_expansion_dict =', self.base_expansion_dict)
 
         return
 
@@ -1236,7 +1237,7 @@ class Ga(metric.Metric):
         grade_dict = {}
         for (coef,blade) in zip(coefs,blades):
             if blade == one:
-                if 0 in grade_dict.keys():
+                if 0 in list(grade_dict.keys()):
                     grade_dict[0] += coef
                 else:
                     grade_dict[0] = coef
@@ -1247,7 +1248,7 @@ class Ga(metric.Metric):
                 else:
                     grade_dict[grade] = coef * blade
         if isinstance(A, mv.Mv):
-            for grade in grade_dict.keys():
+            for grade in list(grade_dict.keys()):
                 grade_dict[grade] = self.mv(grade_dict[grade])
         return grade_dict
 
@@ -1439,7 +1440,7 @@ class Ga(metric.Metric):
         """
 
         if self.debug:
-            print 'Enter build_reciprocal_basis.\n'
+            print('Enter build_reciprocal_basis.\n')
 
         if self.is_ortho:
             self.r_basis = [self.basis[i] / self.g[i, i] for i in self.n_range]
@@ -1462,7 +1463,7 @@ class Ga(metric.Metric):
             else:
                 self.e_sq = simplify((self.e * self.e).obj)
             if self.debug:
-                print 'E**2 =', self.e_sq
+                print('E**2 =', self.e_sq)
             duals = list(self.blades_lst[-(self.n + 1):-1])
             duals.reverse()
 
@@ -1477,14 +1478,14 @@ class Ga(metric.Metric):
             if self.debug:
                 printer.oprint('E', self.iobj, 'E**2', self.e_sq, 'unnormalized reciprocal basis =\n', self.r_basis)
                 self.dot_mode = '|'
-                print 'reciprocal basis test ='
+                print('reciprocal basis test =')
                 for ei in self.basis:
                     for ej in self.r_basis:
                         ei_dot_ej = self.dot(ei, ej)
                         if ei_dot_ej == zero:
-                            print 'e_{i}|e_{j} = ' + str(ei_dot_ej)
+                            print('e_{i}|e_{j} = ' + str(ei_dot_ej))
                         else:
-                            print 'e_{i}|e_{j} = ' + str(expand(ei_dot_ej / self.e_sq))
+                            print('e_{i}|e_{j} = ' + str(expand(ei_dot_ej / self.e_sq)))
 
         self.e_obj = self.blades_lst[-1]
 
@@ -1527,7 +1528,7 @@ class Ga(metric.Metric):
         self.g_inv = g_inv
 
         if self.debug:
-            print 'reciprocal basis dictionary =\n', self.r_basis_dict
+            print('reciprocal basis dictionary =\n', self.r_basis_dict)
 
         # True is for left derivative and False is for right derivative
         self.deriv = {('*', True): [], ('^', True): [], ('|', True): [],
@@ -1663,9 +1664,9 @@ class Ga(metric.Metric):
         mode = *_{2} = *, ^, or |.
         """
         (Sop, Bop) = Ga.DopFop[(grad_sqr_mode, mode)]
-        print '(Sop, Bop) =', Sop, Bop
+        print('(Sop, Bop) =', Sop, Bop)
 
-        print 'grad_sqr:A =', A
+        print('grad_sqr:A =', A)
 
         self.dot_mode == '|'
         s = zero
@@ -1677,7 +1678,7 @@ class Ga(metric.Metric):
         for coord_i in self.coords:
             dA_i.append(self.pDiff(A, coord_i))
 
-        print 'dA_i =', dA_i
+        print('dA_i =', dA_i)
 
         if Sop:
             for i in self.n_range:
@@ -1692,8 +1693,8 @@ class Ga(metric.Metric):
         if Bop and self.connect_flg:
             for i in self.n_range:
                 coord_i = self.coords[i]
-                print 'mode =', mode
-                print 'dA_i[i] =', dA_i[i]
+                print('mode =', mode)
+                print('dA_i[i] =', dA_i[i])
                 if left:
                     if mode == '|':
                         s += self.dot(self.grad_sq_mv_connect[coord_i], dA_i[i])
@@ -1882,11 +1883,11 @@ class Sm(Ga):
 
             #print 'dxdu =', dxdu
 
-            sub_pairs = zip(ga.coords, u)
+            sub_pairs = list(zip(ga.coords, u))
 
             #Construct metric tensor form coordinate maps
             g = eye(n_sub)  #Zero n_sub x n_sub sympy matrix
-            n_range = range(n_sub)
+            n_range = list(range(n_sub))
             for i in n_range:
                 for j in n_range:
                     s = zero
@@ -1912,7 +1913,7 @@ class Sm(Ga):
         self.u = u
 
         if debug:
-            print 'Exit Sm.__init__()'
+            print('Exit Sm.__init__()')
 
     def vpds(self):
         if not self.is_ortho:

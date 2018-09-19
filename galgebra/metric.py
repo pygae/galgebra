@@ -8,7 +8,7 @@ from sympy import diff, trigsimp, Matrix, Rational, \
     Add, simplify, together, ratsimp, Expr, latex, \
     numbers, Function
 
-import printer
+from . import printer
 
 half = Rational(1, 2)
 
@@ -84,7 +84,7 @@ def linear_expand(expr, mode=True):
     if mode:
         return (coefs, bases)
     else:
-        return zip(coefs, bases)
+        return list(zip(coefs, bases))
 
 
 def square_root_of_expr(expr):
@@ -165,9 +165,9 @@ def test_init_slots(init_slots, **kwargs):
 
     for slot in kwargs:
         if slot not in init_slots:
-            print 'Allowed keyed input arguments'
+            print('Allowed keyed input arguments')
             for key in init_slots:
-                print key + ': ' + init_slots[key][1]
+                print(key + ': ' + init_slots[key][1])
             raise ValueError('"' + slot + ' = " not in allowed values.')
     for slot in init_slots:
         if slot in kwargs:
@@ -303,7 +303,7 @@ class Metric(object):
             s = self.n * (s[:-1] + ',')
             s = s[:-1]
 
-        if isinstance(s, basestring):
+        if isinstance(s, str):
             rows = s.split(',')
             n_rows = len(rows)
 
@@ -345,7 +345,7 @@ class Metric(object):
                 if n != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
                                      ' different rank than bases "' + str(self.basis) + '"')
-                n_range = range(n)
+                n_range = list(range(n))
                 for (row, i1) in zip(m_lst, n_range):
                     row_symbols = []
                     for (s, i2) in zip(row, n_range):
@@ -392,7 +392,7 @@ class Metric(object):
             self.de = None
             return
 
-        n_range = range(len(self.basis))
+        n_range = list(range(len(self.basis)))
 
         de = []  # de[i][j] = \partial_{x_{i}}e^{x_{j}}
 
@@ -460,7 +460,7 @@ class Metric(object):
                 self.de = None
                 return
 
-            n_range = range(len(self.basis))
+            n_range = list(range(len(self.basis)))
 
             dG = []  # dG[i][j][k] = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
 
@@ -524,7 +524,7 @@ class Metric(object):
         if self.debug:
             for x_i in self.n_range:
                 for jb in self.n_range:
-                    print '\partial_{' + str(self.coords[x_i]) + '}\hat{e}_{' + str(self.coords[jb]) + '} =', self.de[x_i][jb]
+                    print('\partial_{' + str(self.coords[x_i]) + '}\hat{e}_{' + str(self.coords[jb]) + '} =', self.de[x_i][jb])
 
         # Normalize metric tensor
 
@@ -580,7 +580,7 @@ class Metric(object):
         self.name = 'GA' + str(Metric.count)
         Metric.count += 1
 
-        if not isinstance(basis, basestring):
+        if not isinstance(basis, str):
             raise TypeError('"' + str(basis) + '" must be string')
 
         X = kwargs['X']  # Vector manifold
@@ -628,7 +628,7 @@ class Metric(object):
         if self.debug:
             printer.oprint('e_{i}', self.basis, 'e^{i}', self.r_symbols)
         self.n = len(self.basis)
-        self.n_range = range(self.n)
+        self.n_range = list(range(self.n))
 
         # Generate metric as list of lists of symbols, rationals, or functions of coordinates
 
@@ -655,7 +655,7 @@ class Metric(object):
                         printer.oprint('X_{i}', X, 'D_{i}X_{j}', dX)
 
         else:  # metric is symbolic or list of lists of functions of coordinates
-            if isinstance(g, basestring):  # metric elements are symbols or constants
+            if isinstance(g, str):  # metric elements are symbols or constants
                 if g == 'g':  # general symbolic metric tensor (g_ij functions of position)
                     g_lst = []
                     g_inv_lst = []
@@ -735,7 +735,7 @@ class Metric(object):
                 self.e_sq_sgn = '-'
 
         if self.debug:
-            print 'signature =', self.sig
+            print('signature =', self.sig)
 
 
 if __name__ == "__main__":

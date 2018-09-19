@@ -3,11 +3,11 @@
 import sys
 import unittest
 from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
-from printer import Format, Eprint, Get_Program, latex, GaPrinter
-from ga import Ga, one, zero
-from mv import Mv, Nga, com
+from .printer import Format, Eprint, Get_Program, latex, GaPrinter
+from .ga import Ga, one, zero
+from .mv import Mv, Nga, com
 # for backward compatibility
-from mv import MV, ONE, ZERO
+from .mv import MV, ONE, ZERO
 
 def F(x):
     global n, nbar
