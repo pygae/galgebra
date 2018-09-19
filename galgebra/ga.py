@@ -1,5 +1,9 @@
 # ga.py
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import operator
 import copy
 from sympy import diff, Rational, Symbol, S, Mul, Pow, Add, \

@@ -1,6 +1,10 @@
 #!/usr/bin/python
 #setgapth.py
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 Completion_Message = \
 """
 Python pth file Ga.pth for all modules of galgebra has been created and
