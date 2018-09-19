@@ -388,16 +388,18 @@ class Lt(object):
         if self.spinor:
             s = '\\left \\{ \\begin{array}{ll} '
             for base in self.Ga.basis:
-                s += 'L \\left ( ' + str(base) + '\\right ) =& ' + str(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
+                str_base = printer.latex(base)
+                s += 'L \\left ( ' + str_base + '\\right ) =& ' + printer.latex(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
         else:
             s = '\\left \\{ \\begin{array}{ll} '
             for base in self.Ga.basis:
+                str_base = printer.latex(base)
                 if base in self.lt_dict:
-                    s += 'L \\left ( ' + str(base) + '\\right ) =& ' + str(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
+                    s += 'L \\left ( ' + str_base + '\\right ) =& ' + printer.latex(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
                 else:
-                    s += 'L \\left ( ' + str(base) + '\\right ) =& 0 \\\\ '
+                    s += 'L \\left ( ' + str_base + '\\right ) =& 0 \\\\ '
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
 

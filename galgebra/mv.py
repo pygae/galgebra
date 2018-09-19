@@ -1494,7 +1494,8 @@ class Sdop(object):
         self.sort_terms()
         s = ''
         for (coef, pdop) in self.terms:
-            pd_str = str(pdop)
+            coef_str = printer.latex(coef)
+            pd_str = printer.latex(pdop)
 
             if coef == S(1):
                 s += pd_str
@@ -1502,9 +1503,9 @@ class Sdop(object):
                 s += '-' + pd_str
             else:
                 if isinstance(coef, Add):
-                    s += '(' + str(coef) + ')*' + pd_str
+                    s += '(' + coef_str + ')*' + pd_str
                 else:
-                    s += str(coef) + '*' + pd_str
+                    s += coef_str + '*' + pd_str
             s += ' + '
 
         s = s.replace('+ -','- ')
@@ -1522,7 +1523,8 @@ class Sdop(object):
 
         s = ''
         for (coef, pdop) in self.terms:
-            pd_str = str(pdop)
+            coef_str = printer.latex(coef)
+            pd_str = printer.latex(pdop)
             if coef == S(1):
                 if pd_str == '':
                     s += '1'
@@ -1535,9 +1537,9 @@ class Sdop(object):
                     s += '-' + pd_str
             else:
                 if isinstance(coef, Add):
-                    s += r'\left ( ' + str(coef) + r'\right ) ' + pd_str
+                    s += r'\left ( ' + coef_str + r'\right ) ' + pd_str
                 else:
-                    s += str(coef) + ' ' + pd_str
+                    s += coef_str + ' ' + pd_str
             s += ' + '
 
         s = s.replace('+ -','- ')
@@ -1941,15 +1943,15 @@ class Pdop(object):
             return ''
         s = r'\frac{\partial'
         if self.order > 1:
-            s += '^{' + str(self.order) + '}'
+            s += '^{' + printer.latex(self.order) + '}'
         s += '}{'
         keys = self.pdiffs.keys()
         keys.sort(key=(self.Ga.coords + keys).index)
         for key in keys:
             i = self.pdiffs[key]
-            s += r'\partial ' + str(key)
+            s += r'\partial ' + printer.latex(key)
             if i > 1:
-                s += '^{' + str(i) + '}'
+                s += '^{' + printer.latex(i) + '}'
         s += '}'
         return s
 
@@ -2373,26 +2375,27 @@ class Dop(object):
         s = ''
 
         for (sdop, base) in mv_terms:
-            str_sdop = str(sdop)
+            str_base = printer.latex(base)
+            str_sdop = printer.latex(sdop)
             if base == S(1):
                 s += str_sdop
             else:
                 if len(sdop.terms) > 1:
                     if self.cmpflg:
-                        s += '(' + str_sdop + ')*' + str(base)
+                        s += '(' + str_sdop + ')*' + str_base
                     else:
-                        s += str(base) + '*(' + str_sdop + ')'
+                        s += str_base + '*(' + str_sdop + ')'
                 else:
                     if str_sdop[0] == '-' and not isinstance(sdop.terms[0][0], Add):
                         if self.cmpflg:
-                            s += str_sdop + '*' + str(base)
+                            s += str_sdop + '*' + str_base
                         else:
-                            s += '-' + str(base) + '*' + str_sdop[1:]
+                            s += '-' + str_base + '*' + str_sdop[1:]
                     else:
                         if self.cmpflg:
-                            s += str_dop + '*' + str(base)
+                            s += str_dop + '*' + str_base
                         else:
-                            s += str(base) + '*' + str_sdop
+                            s += str_base + '*' + str_sdop
             s += ' + '
 
         s = s.replace('+ -','-')
@@ -2408,33 +2411,34 @@ class Dop(object):
         s = ''
 
         for (sdop, base) in mv_terms:
-            str_sdop = str(sdop)
+            str_base = printer.latex(base)
+            str_sdop = printer.latex(sdop)
             if base == S(1):
                 s += str_sdop
             else:
                 if str_sdop == '1':
-                    s += str(base)
+                    s += str_base
                 if str_sdop == '-1':
-                    s += '-' + str(base)
+                    s += '-' + str_base
                     if str_sdop[1:] != '1':
                         s += ' ' + str_sdop[1:]
                 else:
                     if len(sdop.terms) > 1:
                         if self.cmpflg:
-                            s += r'\left ( ' + str_sdop + r'\right ) ' + str(base)
+                            s += r'\left ( ' + str_sdop + r'\right ) ' + str_base
                         else:
-                            s += str(base) + ' ' + r'\left ( ' + str_sdop + r'\right ) '
+                            s += str_base + ' ' + r'\left ( ' + str_sdop + r'\right ) '
                     else:
                         if str_sdop[0] == '-' and not isinstance(sdop.terms[0][0], Add):
                             if self.cmpflg:
-                                s += str_sdop + str(base)
+                                s += str_sdop + str_base
                             else:
-                                s += '-' + str(base) + ' ' + str_sdop[1:]
+                                s += '-' + str_base + ' ' + str_sdop[1:]
                         else:
                             if self.cmpflg:
-                                s += str_sdop + ' ' + str(base)
+                                s += str_sdop + ' ' + str_base
                             else:
-                                s += str(base) + ' ' + str_sdop
+                                s += str_base + ' ' + str_sdop
             s += ' + '
 
         s = s.replace('+ -','-')
