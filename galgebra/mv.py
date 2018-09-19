@@ -4,7 +4,9 @@ import itertools
 import copy
 import numbers
 import operator
-from compiler.ast import flatten
+# from compiler.ast import flatten
+# https://stackoverflow.com/questions/16176742/python-3-replacement-for-deprecated-compiler-ast-flatten-function
+from .utils import flatten
 from operator import itemgetter, mul, add
 from itertools import combinations
 from sympy import Symbol, Function, S, expand, Add, Mul, Pow, Basic, \
@@ -1742,7 +1744,7 @@ class Sdop(object):
 #################### Partial Derivative Operator Class #################
 
 class Pdop(object):
-    """
+    r"""
     Partial derivative class for multivectors.  The partial derivatives
     are of the form
 
@@ -1973,7 +1975,7 @@ class Pdop(object):
 ################# Multivector Differential Operator Class ##############
 
 class Dop(object):
-    """
+    r"""
     Differential operator class for multivectors.  The operators are of
     the form
 

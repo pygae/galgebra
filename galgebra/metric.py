@@ -524,7 +524,7 @@ class Metric(object):
         if self.debug:
             for x_i in self.n_range:
                 for jb in self.n_range:
-                    print('\partial_{' + str(self.coords[x_i]) + '}\hat{e}_{' + str(self.coords[jb]) + '} =', self.de[x_i][jb])
+                    print(r'\partial_{' + str(self.coords[x_i]) + r'}\hat{e}_{' + str(self.coords[jb]) + '} =', self.de[x_i][jb])
 
         # Normalize metric tensor
 

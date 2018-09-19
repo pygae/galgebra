@@ -411,7 +411,7 @@ class Lt(object):
 
         latex_str = printer.GaLatexPrinter.latex(self)
 
-        """
+        r"""
         if printer.GaLatexPrinter.ipy:
             if title is None:
                 if r'\begin{align*}' not in latex_str:

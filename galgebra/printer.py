@@ -392,7 +392,7 @@ def enhance_print():
     return
 
 class GaLatexPrinter(LatexPrinter):
-    """
+    r"""
     The latex printer is turned on with the function (in ga.py) -
 
         Format(Fmode=True,Dmode=True,ipy=False)

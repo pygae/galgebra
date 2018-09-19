@@ -2,7 +2,7 @@
 import unittest
 
 from sympy import Symbol
-from ga import Ga
+from galgebra.ga import Ga
 
 class TestMv(unittest.TestCase):
 

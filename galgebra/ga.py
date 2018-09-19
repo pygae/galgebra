@@ -130,7 +130,7 @@ def nc_subs(expr, base_keys, base_values=None):
 
 
 class Ga(metric.Metric):
-    """
+    r"""
     The vector space (basis, metric, derivatives of basis vectors) is
     defined by the base class 'Metric'.
 
@@ -468,7 +468,7 @@ class Ga(metric.Metric):
         return mv.Mv(root, *kargs, **kwargs)
 
     def mvr(self,norm=True):
-        """
+        r"""
         Returns tumple of reciprocal basis vectors.  If norm=True or
         basis vectors are orthogonal the reciprocal basis is normalized
         in the sense that
@@ -1423,7 +1423,7 @@ class Ga(metric.Metric):
     ##################### Multivector derivatives ######################
 
     def build_reciprocal_basis(self,gsym):
-        """
+        r"""
         Calculate reciprocal basis vectors e^{j} where
                 e^{j}\cdot e_{k} = \delta_{k}^{j}
         and \delta_{k}^{j} is the kronecker delta.  We use the formula
