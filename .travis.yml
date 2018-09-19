@@ -1,0 +1,29 @@
+
+sudo: false
+
+language: python
+
+matrix:
+  include:
+    - os: linux
+      python: '2.7'
+      env: CONDA=true
+    # Remove too many targets for now to speed up a build
+    # - os: linux
+    #   python: '3.5'
+    #   env: CONDA=true
+    - os: linux
+      python: '3.6'
+      env: CONDA=true
+
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then lsb_release -a ; fi
+
+install:
+  - python setup.py install
+
+script:
+  # run tests but ignore failures for now
+  - py.test galgebra/test_test.py || true
+  - py.test galgebra/test_mv.py || true
