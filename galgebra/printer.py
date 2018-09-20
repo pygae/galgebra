@@ -342,7 +342,10 @@ class GaPrinter(StrPrinter):
         return Eprint.Fct("%s" % (name,))
 
     def _print_Derivative(self, expr):
-        function, *diff_args = expr.args
+        # Break the following to support both py 2 & 3
+        # function, *diff_args = expr.args
+        function = expr.args[0]
+        diff_args = expr.args[1:]
         
         xi = []
         ni = []
