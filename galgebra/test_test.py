@@ -9,9 +9,10 @@ import unittest
 from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
 from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter
 from galgebra.ga import Ga, one, zero
-from galgebra.mv import Mv, Nga, com
+from galgebra.mv import Mv, Nga
 # for backward compatibility
 from galgebra.mv import MV, ONE, ZERO
+from galgebra import ga
 
 def F(x):
     global n, nbar
@@ -108,7 +109,7 @@ class TestTest(unittest.TestCase):
         assert str(a*(b^c^d)-b*(a^c^d)+c*(a^b^d)-d*(a^b^c)) == '4*a^b^c^d'
         assert str((a^b)|(c^d)) == '-(a.c)*(b.d) + (a.d)*(b.c)'
         assert str(((a^b)|c)|d) == '-(a.c)*(b.d) + (a.d)*(b.c)'
-        assert str(com(a^b,c^d)) == '-(b.d)*a^c + (b.c)*a^d + (a.d)*b^c - (a.c)*b^d'
+        assert str(Ga.com(a^b,c^d)) == '-(b.d)*a^c + (b.c)*a^d + (a.d)*b^c - (a.c)*b^d'
         assert str((a|(b^c))|(d^e)) == '(-(a.b)*(c.e) + (a.c)*(b.e))*d + ((a.b)*(c.d) - (a.c)*(b.d))*e'
 
         return

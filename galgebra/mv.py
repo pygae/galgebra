@@ -19,7 +19,6 @@ from sympy import exp as sympy_exp
 from sympy import N as Nsympy
 from . import printer
 from . import metric
-from . import ga
 import sys
 from functools import reduce
 

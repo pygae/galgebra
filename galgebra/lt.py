@@ -12,7 +12,6 @@ from copy import copy
 from . import printer
 from . import metric
 from . import mv
-from . import lt
 from functools import reduce
 
 def aprint(a):
@@ -690,7 +689,7 @@ class Mlt(object):
                 self.nargs = nargs
                 self.fvalue = f
                 self.f = None
-        elif isinstance(f, lt.Lt): #  f is linear transformation T = a1 | f(a2)
+        elif isinstance(f, Lt): #  f is linear transformation T = a1 | f(a2)
             if self.nargs != 2:
                 raise ValueError('For mlt nargs != 2 for linear transformation!\n')
             Ga.make_grad(self.args)
