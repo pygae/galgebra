@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
 import os
 import sys
 import io
@@ -29,7 +30,7 @@ from inspect import getouterframes, currentframe
 Format_cnt = 0
 
 ip_cmds = \
-"""
+r"""
 $\\DeclareMathOperator{\Tr}{Tr}
 \\DeclareMathOperator{\Adj}{Adj}
 \\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
@@ -341,23 +342,24 @@ class GaPrinter(StrPrinter):
         return Eprint.Fct("%s" % (name,))
 
     def _print_Derivative(self, expr):
-        diff_args = list(map(self._print, expr.args))
+        function, *diff_args = expr.args
+        
         xi = []
         ni = []
-        for x in diff_args[1:]:
+        for x, n in diff_args:
             if x in xi:
                 i = xi.index(x)
-                ni[i] += 1
+                ni[i] += n
             else:
-                xi.append(x)
-                ni.append(1)
+                xi.append(self._print(x))
+                ni.append(n)
 
         s = 'D'
-        for (x, n) in zip(xi, ni):
+        for x, n in zip(xi, ni):
             s += '{' + str(x) + '}'
             if n > 1:
                 s += '^' + str(n)
-        s += str(diff_args[0])
+        s += str(self._print(function))
         return Eprint.Deriv(s)
 
     def _print_Matrix(self, expr):
@@ -466,7 +468,7 @@ class GaLatexPrinter(LatexPrinter):
     inv_trig_style = None
 
     preamble = \
-"""
+r"""
 \\pagestyle{empty}
 \\usepackage[latin1]{inputenc}
 \\usepackage{amsmath}
@@ -1026,7 +1028,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
     latex_str = GaLatexPrinter.latex_str + sys.stdout.getvalue()
     GaLatexPrinter.latex_str = ''
     GaLatexPrinter.restore()
-    """
+    r"""
     Each line in the latex_str is interpreted to be an equation or align
     environment.  If the line does not begin with '\begin{align*}' then
     'begin{equation*}' will be added to the beginning of the line and
@@ -1165,7 +1167,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
         print(print_cmd)
 
         os.system(print_cmd)
-        input('!!!!Return to continue!!!!\n')
+        eval(input('!!!!Return to continue!!!!\n'))
 
         if debug:
             os.system(sys_cmd['rm'] + ' ' + filename[:-4] + '.aux ' + filename[:-4] + '.log')
@@ -1216,8 +1218,8 @@ def Print_Function():
     fct_name = fct_name.replace('_', ' ')
     if GaLatexPrinter.latex_flg:
         #print '#Code for '+fct_name
-        print('##\\begin{lstlisting}[language=Python,showspaces=false,' + \
-              'showstringspaces=false,backgroundcolor=\color{gray},frame=single]')
+        print(r'##\\begin{lstlisting}[language=Python,showspaces=false,' + \
+              r'showstringspaces=false,backgroundcolor=\color{gray},frame=single]')
         print(tmp_str)
         print('##\\end{lstlisting}')
         print('#Code Output:')
@@ -1417,7 +1419,7 @@ def GAeval(s, pstr=False):
         print(seval)
     return eval(seval, global_dict)
 
-"""
+r"""
 \begin{array}{c}
 \left ( \begin{array}{c} F,\\ \end{array} \right . \\
 \begin{array}{c} F, \\ \end{array} \\

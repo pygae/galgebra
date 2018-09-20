@@ -20,7 +20,7 @@ from sympy import N as Nsympy
 from . import printer
 from . import metric
 import sys
-from functools import reduce
+from functools import reduce, cmp_to_key
 
 ONE = S(1)
 ZERO = S(0)
@@ -1489,7 +1489,8 @@ class Sdop(object):
         return self
 
     def sort_terms(self):
-        self.terms.sort(key=operator.itemgetter(1), cmp=Pdop.compare)
+        # self.terms.sort(key=operator.itemgetter(1))
+        self.terms.sort(key=cmp_to_key(Pdop.compare))
         return
 
     def Sdop_str(self):

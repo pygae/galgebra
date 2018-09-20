@@ -131,7 +131,7 @@ class TestTest(unittest.TestCase):
         assert str(B) == 'B__xy*e_x^e_y + B__xz*e_x^e_z + B__yz*e_y^e_z'
         assert str(C) == 'C + C__x*e_x + C__y*e_y + C__z*e_z + C__xy*e_x^e_y + C__xz*e_x^e_z + C__yz*e_y^e_z + C__xyz*e_x^e_y^e_z'
 
-        assert str(grad*f) == 'D{x}f*e_x + D{y}f*e_y + D{z}f*e_z' or str(grad*f) == 'D{(x, 1)}f*e_x + D{(y, 1)}f*e_y + D{(z, 1)}f*e_z'
+        assert str(grad*f) == 'D{x}f*e_x + D{y}f*e_y + D{z}f*e_z'
         assert str(grad|A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
         assert str(grad*A) == 'D{x}A__x + D{y}A__y + D{z}A__z + (-D{y}A__x + D{x}A__y)*e_x^e_y + (-D{z}A__x + D{x}A__z)*e_x^e_z + (-D{z}A__y + D{y}A__z)*e_y^e_z'
 
@@ -164,7 +164,7 @@ class TestTest(unittest.TestCase):
         assert str(A) == 'A__r*e_r + A__theta*e_theta + A__phi*e_phi'
         assert str(B) == 'B__rtheta*e_r^e_theta + B__rphi*e_r^e_phi + B__thetaphi*e_theta^e_phi'
 
-        assert str(grad*f) == 'D{r}f*e_r + D{theta}f*e_theta/r + D{phi}f*e_phi/(r*sin(theta))' or str(grad*f) == 'D{(r, 1)}f*e_r + D{(theta, 1)}f*e_theta/r + D{(phi, 1)}f*e_phi/(r*sin(theta))'
+        assert str(grad*f) == 'D{r}f*e_r + D{theta}f*e_theta/r + D{phi}f*e_phi/(r*sin(theta))'
         assert str((grad|A).simplify()) == '(r*D{r}A__r + 2*A__r + A__theta/tan(theta) + D{theta}A__theta + D{phi}A__phi/sin(theta))/r'
         assert str(-s3d.I()*(grad^A)) == '(A__phi/tan(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))*e_r/r + (-r*D{r}A__phi - A__phi + D{phi}A__r/sin(theta))*e_theta/r + (r*D{r}A__theta + A__theta - D{theta}A__r)*e_phi/r'
 

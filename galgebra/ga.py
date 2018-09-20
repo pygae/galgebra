@@ -304,7 +304,7 @@ class Ga(metric.Metric):
         return Ga(*kargs, **kwargs)
 
     def __eq__(self, ga):
-        if self.name == self.ga:
+        if self.name == ga.name:
             return True
         return False
 
