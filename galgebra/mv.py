@@ -24,6 +24,7 @@ from functools import reduce, cmp_to_key
 
 ONE = S(1)
 ZERO = S(0)
+HALF = Rational(1, 2)
 
 half = Rational(1, 2)
 

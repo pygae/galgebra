@@ -11,12 +11,12 @@ from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Mv, Nga
 # for backward compatibility
-from galgebra.mv import MV, ONE, ZERO
+from galgebra.mv import MV, ONE, ZERO, HALF
 from galgebra import ga
 
 def F(x):
     global n, nbar
-    Fx =  ((x * x) * n + 2 * x - nbar) / 2
+    Fx =  HALF * ((x * x) * n + 2 * x - nbar)
     return(Fx)
 
 def make_vector(a, n=3, ga=None):
