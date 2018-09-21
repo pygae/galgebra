@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -43,7 +44,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*.cover
+*.covercover
 .hypothesis/
 
 # Translations
@@ -102,3 +103,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# py.test cache
+.pytest_cache
+
+# backup files from 2to3
+**/*.bak

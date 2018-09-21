@@ -1,8 +1,12 @@
 #printer.py
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import sys
-import StringIO
+import io
 import re
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
 from itertools import islice
@@ -26,7 +30,7 @@ from inspect import getouterframes, currentframe
 Format_cnt = 0
 
 ip_cmds = \
-"""
+r"""
 $\\DeclareMathOperator{\Tr}{Tr}
 \\DeclareMathOperator{\Adj}{Adj}
 \\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
@@ -136,7 +140,7 @@ def ostr(obj, dict_mode=False, indent=True):
         elif isinstance(obj, dict):
             if dict_mode:
                 ostr_s += '\n'
-                for key in obj.keys():
+                for key in list(obj.keys()):
                     ostr_rec(key, dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
@@ -147,7 +151,7 @@ def ostr(obj, dict_mode=False, indent=True):
                     ostr_s += '\n'
             else:
                 ostr_s += '{'
-                for key in obj.keys():
+                for key in list(obj.keys()):
                     ostr_rec(key, dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
@@ -227,16 +231,16 @@ def oprint(*args, **kwargs):
 
         for (title, obj) in zip(titles, objs):
             if obj is None:
-                print title
+                print(title)
             else:
                 npad = n - len(title)
                 if isinstance(obj, dict):
-                    print title + ':' + ostr(obj, dict_mode)
+                    print(title + ':' + ostr(obj, dict_mode))
                 else:
-                    print title + npad * ' ' + ' = ' + ostr(obj, dict_mode)
+                    print(title + npad * ' ' + ' = ' + ostr(obj, dict_mode))
     else:
         for arg in args:
-            print ostr(arg, dict_mode)
+            print(ostr(arg, dict_mode))
     return
 
 
@@ -252,7 +256,7 @@ class Eprint:
                     'dark gray': '1;30', 'bright yellow': '1;33',
                     'normal': '0'}
 
-    InvColorCode = dict(zip(ColorCode.values(), ColorCode.keys()))
+    InvColorCode = dict(list(zip(list(ColorCode.values()), list(ColorCode.keys()))))
 
     normal = ''
     base = ''
@@ -285,10 +289,10 @@ class Eprint:
             Eprint.normal = '\033[0m'
 
             if debug:
-                print 'Enhanced Printing is on:'
-                print 'Base/Blade color is ' + Eprint.InvColorCode[Eprint.base]
-                print 'Function color is ' + Eprint.InvColorCode[Eprint.fct]
-                print 'Derivative color is ' + Eprint.InvColorCode[Eprint.deriv] + '\n'
+                print('Enhanced Printing is on:')
+                print('Base/Blade color is ' + Eprint.InvColorCode[Eprint.base])
+                print('Function color is ' + Eprint.InvColorCode[Eprint.fct])
+                print('Derivative color is ' + Eprint.InvColorCode[Eprint.deriv] + '\n')
 
             Eprint.base = '\033[' + Eprint.base + 'm'
             Eprint.fct = '\033[' + Eprint.fct + 'm'
@@ -338,23 +342,27 @@ class GaPrinter(StrPrinter):
         return Eprint.Fct("%s" % (name,))
 
     def _print_Derivative(self, expr):
-        diff_args = map(self._print, expr.args)
+        # Break the following to support both py 2 & 3
+        # function, *diff_args = expr.args
+        function = expr.args[0]
+        diff_args = expr.args[1:]
+        
         xi = []
         ni = []
-        for x in diff_args[1:]:
+        for x, n in diff_args:
             if x in xi:
                 i = xi.index(x)
-                ni[i] += 1
+                ni[i] += n
             else:
-                xi.append(x)
-                ni.append(1)
+                xi.append(self._print(x))
+                ni.append(n)
 
         s = 'D'
-        for (x, n) in zip(xi, ni):
+        for x, n in zip(xi, ni):
             s += '{' + str(x) + '}'
             if n > 1:
                 s += '^' + str(n)
-        s += str(diff_args[0])
+        s += str(self._print(function))
         return Eprint.Deriv(s)
 
     def _print_Matrix(self, expr):
@@ -392,7 +400,7 @@ def enhance_print():
     return
 
 class GaLatexPrinter(LatexPrinter):
-    """
+    r"""
     The latex printer is turned on with the function (in ga.py) -
 
         Format(Fmode=True,Dmode=True,ipy=False)
@@ -463,7 +471,7 @@ class GaLatexPrinter(LatexPrinter):
     inv_trig_style = None
 
     preamble = \
-"""
+r"""
 \\pagestyle{empty}
 \\usepackage[latin1]{inputenc}
 \\usepackage{amsmath}
@@ -620,7 +628,7 @@ class GaLatexPrinter(LatexPrinter):
             pass
         else:
             GaLatexPrinter.stdout = sys.stdout
-            sys.stdout = StringIO.StringIO()
+            sys.stdout = io.StringIO()
         return
 
     @staticmethod
@@ -737,10 +745,10 @@ class GaLatexPrinter(LatexPrinter):
                     name = '\\boldsymbol{' + name +'}'
 
                 if supers != []:
-                    supers = map(translate, supers)
+                    supers = list(map(translate, supers))
 
                 if subs != []:
-                    subs = map(translate, subs)
+                    subs = list(map(translate, subs))
 
                 # glue all items together:
                 if len(supers) > 0:
@@ -781,6 +789,7 @@ class GaLatexPrinter(LatexPrinter):
             return getattr(self, '_print_' + func)(expr, exp)
         else:
             args = [str(self._print(arg)) for arg in expr.args]
+
             # How inverse trig functions should be displayed, formats are:
             # abbreviated: asin, full: arcsin, power: sin^-1
             #inv_trig_style = self._settings['inv_trig_style']
@@ -955,7 +964,7 @@ def latex(expr, **settings):
 
 def print_latex(expr, **settings):
     """Prints LaTeX representation of the given expression."""
-    print latex(expr, **settings)
+    print(latex(expr, **settings))
 
 
 def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
@@ -1022,7 +1031,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
     latex_str = GaLatexPrinter.latex_str + sys.stdout.getvalue()
     GaLatexPrinter.latex_str = ''
     GaLatexPrinter.restore()
-    """
+    r"""
     Each line in the latex_str is interpreted to be an equation or align
     environment.  If the line does not begin with '\begin{align*}' then
     'begin{equation*}' will be added to the beginning of the line and
@@ -1107,7 +1116,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
         latex_str = prog_str + latex_str
 
     if debug:
-        print latex_str
+        print(latex_str)
 
     if paper == 'letter':
         paper_size = \
@@ -1134,7 +1143,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
         rootfilename = pyfilename.replace('.py', '')
         filename = rootfilename + '.tex'
 
-    print 'latex file =', filename
+    print('latex file =', filename)
 
     latex_file = open(filename, 'w')
     latex_file.write(latex_str)
@@ -1144,7 +1153,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
 
     pdflatex = find_executable('pdflatex')
 
-    print 'pdflatex path =', pdflatex
+    print('pdflatex path =', pdflatex)
 
     if pdflatex is not None:
         latex_str = 'pdflatex'
@@ -1158,10 +1167,10 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
             os.system(latex_str + ' ' + filename[:-4] + sys_cmd['null'])
 
         print_cmd = sys_cmd['evince'] + ' ' + filename[:-4] + '.pdf ' + sys_cmd['&']
-        print print_cmd
+        print(print_cmd)
 
         os.system(print_cmd)
-        raw_input('!!!!Return to continue!!!!\n')
+        eval(input('!!!!Return to continue!!!!\n'))
 
         if debug:
             os.system(sys_cmd['rm'] + ' ' + filename[:-4] + '.aux ' + filename[:-4] + '.log')
@@ -1212,16 +1221,16 @@ def Print_Function():
     fct_name = fct_name.replace('_', ' ')
     if GaLatexPrinter.latex_flg:
         #print '#Code for '+fct_name
-        print '##\\begin{lstlisting}[language=Python,showspaces=false,' + \
-              'showstringspaces=false,backgroundcolor=\color{gray},frame=single]'
-        print tmp_str
-        print '##\\end{lstlisting}'
-        print '#Code Output:'
+        print(r'##\\begin{lstlisting}[language=Python,showspaces=false,' + \
+              r'showstringspaces=false,backgroundcolor=\color{gray},frame=single]')
+        print(tmp_str)
+        print('##\\end{lstlisting}')
+        print('#Code Output:')
     else:
-        print '\n' + 80 * '*'
+        print('\n' + 80 * '*')
         #print '\nCode for '+fct_name
-        print tmp_str
-        print 'Code output:\n'
+        print(tmp_str)
+        print('Code output:\n')
     return
 
 
@@ -1409,11 +1418,11 @@ def GAeval(s, pstr=False):
 
     seval = parse_line(s)
     if pstr:
-        print s
-        print seval
+        print(s)
+        print(seval)
     return eval(seval, global_dict)
 
-"""
+r"""
 \begin{array}{c}
 \left ( \begin{array}{c} F,\\ \end{array} \right . \\
 \begin{array}{c} F, \\ \end{array} \\

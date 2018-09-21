@@ -2,7 +2,6 @@
 from setuptools import setup, find_packages
 from distutils.core import Extension
 
-
 VERSION = '0.4.1.1'
 LONG_DESCRIPTION = """
 A symbolic geometric algebra module for python. BSD License.
@@ -13,7 +12,7 @@ setup(name='galgebra',
       description='Symbolic Geometric Algebra/Calculus modules for sympy',
       author='Alan Bromborsky',
       author_email='hadfield.hugo@gmail.com',
-      url='https://github.com/hugohadfield/galgebra',
+      url='https://github.com/pygae/galgebra',
       license='BSD',
       packages=find_packages(),
       package_dir={'galgebra':'galgebra'},
@@ -31,4 +30,3 @@ setup(name='galgebra',
             'Programming Language :: Python :: 2.7',
             'Topic :: Scientific/Engineering :: Mathematics',
             'Topic :: Scientific/Engineering :: Physics'])
-

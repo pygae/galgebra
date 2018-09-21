@@ -1,21 +1,24 @@
 #linear_transformations
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 import sys
 import inspect
 import types
 import itertools
 from sympy import collect, expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add
 from copy import copy
-import printer
-import metric
-import mv
-import lt
+from . import printer
+from . import metric
+from . import mv
+from functools import reduce
 
 def aprint(a):
     out = ''
     for ai in a:
         out += str(ai)+','
-    print '['+out[:-1]+']'
+    print('['+out[:-1]+']')
     return
 
 def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
@@ -25,7 +28,7 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
         pos = '__'
     if isinstance(coords,(list,tuple)):
         n = len(coords)
-        n_range = xrange(n)
+        n_range = range(n)
         mat = zeros(n)
         if mode == 'g':  # General symbolic matrix
             for row in n_range:
@@ -83,7 +86,7 @@ def Matrix_to_dictionary(mat_rep,basis):
     n = len(basis)
     if mat_rep.rows != n or mat_rep.cols != n:
         raise ValueError('Matrix and Basis dimensions not equal for Matrix = ' + str(mat))
-    n_range = range(n)
+    n_range = list(range(n))
     for row in n_range:
         dict_rep[basis[row]] = S(0)
         for col in n_range:
@@ -92,9 +95,9 @@ def Matrix_to_dictionary(mat_rep,basis):
 
 def Dictionary_to_Matrix(dict_rep, ga):
     # Convert dictionary representation of linear transformation to matrix
-    basis = dict_rep.keys()
+    basis = list(dict_rep.keys())
     n = len(basis)
-    n_range = range(n)
+    n_range = list(range(n))
     lst_mat = []  # list representation of sympy matrix
     for row in n_range:
         e_row = ga.basis[row]
@@ -277,7 +280,7 @@ class Lt(object):
             raise ValueError("Attempting addition of Lt's from different geometric algebras")
 
         self_add_LT = copy(self.lt_dict)
-        for key in LT.lt_dict.keys():
+        for key in list(LT.lt_dict.keys()):
             if key in self_add_LT:
                 self_add_LT[key] = collect(self_add_LT[key] + LT.lt_dict[key], self.Ga.basis)
             else:
@@ -290,7 +293,7 @@ class Lt(object):
             raise ValueError("Attempting subtraction of Lt's from different geometric algebras")
 
         self_add_LT = copy(self.lt_dict)
-        for key in LT.lt_dict.keys():
+        for key in list(LT.lt_dict.keys()):
             if key in self_add_LT:
                 self_add_LT[key] = collect(self_add_LT[key] - LT.lt_dict[key], self.Ga.basis)
             else:
@@ -388,16 +391,18 @@ class Lt(object):
         if self.spinor:
             s = '\\left \\{ \\begin{array}{ll} '
             for base in self.Ga.basis:
-                s += 'L \\left ( ' + str(base) + '\\right ) =& ' + str(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
+                str_base = printer.latex(base)
+                s += 'L \\left ( ' + str_base + '\\right ) =& ' + printer.latex(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
         else:
             s = '\\left \\{ \\begin{array}{ll} '
             for base in self.Ga.basis:
+                str_base = printer.latex(base)
                 if base in self.lt_dict:
-                    s += 'L \\left ( ' + str(base) + '\\right ) =& ' + str(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
+                    s += 'L \\left ( ' + str_base + '\\right ) =& ' + printer.latex(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
                 else:
-                    s += 'L \\left ( ' + str(base) + '\\right ) =& 0 \\\\ '
+                    s += 'L \\left ( ' + str_base + '\\right ) =& 0 \\\\ '
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
 
@@ -408,7 +413,7 @@ class Lt(object):
 
         latex_str = printer.GaLatexPrinter.latex(self)
 
-        """
+        r"""
         if printer.GaLatexPrinter.ipy:
             if title is None:
                 if r'\begin{align*}' not in latex_str:
@@ -514,7 +519,7 @@ class Mlt(object):
         i = 0
         for a in anew:
             acoefs = a.get_coefs(1)
-            sub_lst += zip(Ga.pdiffs[i], acoefs)
+            sub_lst += list(zip(Ga.pdiffs[i], acoefs))
             i += 1
         return sub_lst
 
@@ -624,9 +629,9 @@ class Mlt(object):
             display(Math(latex_str))
         else:
             if title is not None:
-                print title + ' = ' + latex_str
+                print(title + ' = ' + latex_str)
             else:
-                print latex_str
+                print(latex_str)
         return
 
     @staticmethod
@@ -684,7 +689,7 @@ class Mlt(object):
                 self.nargs = nargs
                 self.fvalue = f
                 self.f = None
-        elif isinstance(f, lt.Lt): #  f is linear transformation T = a1 | f(a2)
+        elif isinstance(f, Lt): #  f is linear transformation T = a1 | f(a2)
             if self.nargs != 2:
                 raise ValueError('For mlt nargs != 2 for linear transformation!\n')
             Ga.make_grad(self.args)
@@ -700,8 +705,8 @@ class Mlt(object):
                 self.nargs = 1
             if self.nargs > 1: #  General tensor of rank > 1
                 t_indexes = self.nargs * [Mlt.extact_basis_indexes(self.Ga)]
-                print t_indexes
-                print self.Ga.Pdiffs
+                print(t_indexes)
+                print(self.Ga.Pdiffs)
                 self.fvalue = 0
                 for (t_index,a_prod) in zip(itertools.product(*t_indexes),
                                             itertools.product(*self.Ga.Pdiffs)):
@@ -819,7 +824,7 @@ class Mlt(object):
         if slot == nargs:
             return mv
         for islot in range(slot, nargs):
-            mv = mv.subs(zip(ga.pdiffs[islot], ga.pdiffs[islot - 1]))
+            mv = mv.subs(list(zip(ga.pdiffs[islot], ga.pdiffs[islot - 1])))
         return mv
 
     def contract(self, slot1, slot2):
@@ -857,12 +862,12 @@ class Mlt(object):
         basis = self.Ga.mv()
         rank = self.nargs
         ndim = len(basis)
-        i_indexes = rank*[range(ndim)]
+        i_indexes = rank*[list(range(ndim))]
         indexes = rank*[basis]
         i = 1
         output = ''
         for (e,i_index) in zip(itertools.product(*indexes),itertools.product(*i_indexes)):
-            if i_index[-1] % ndim == 0: print ''
+            if i_index[-1] % ndim == 0: print('')
             output += str(i)+':'+str(i_index)+':'+str(self(*e)) + '\n'
             i += 1
         return output

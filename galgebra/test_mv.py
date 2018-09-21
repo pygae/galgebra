@@ -1,8 +1,10 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import unittest
-
 from sympy import Symbol
-from ga import Ga
+from galgebra.ga import Ga
 
 class TestMv(unittest.TestCase):
 

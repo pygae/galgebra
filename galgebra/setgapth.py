@@ -1,6 +1,10 @@
 #!/usr/bin/python
 #setgapth.py
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 Completion_Message = \
 """
 Python pth file Ga.pth for all modules of galgebra has been created and
@@ -29,11 +33,11 @@ pth_file = open(pth_name,'w')
 pth_file.write('#Path of Ga module\n'+cur_dir)
 pth_file.close()
 
-print 'os name:',os.name
-print 'site-packages directory:',pth_name
-print 'Ga.pth:'
-print os.system('more ' + pth_name)
+print('os name:',os.name)
+print('site-packages directory:',pth_name)
+print('Ga.pth:')
+print(os.system('more ' + pth_name))
 
-print Completion_Message
+print(Completion_Message)
 
 
