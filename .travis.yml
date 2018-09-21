@@ -21,16 +21,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then lsb_release -a ; fi
 
 install:
-  - pip install pytest-cov
-  - pip install python-coveralls
   - python setup.py install
 
 script:
-  - pytest --cov=galgebra galgebra
-
-after_success:
-  - coveralls
-
-env:
-  global:
-    secure: aMFLWySkx+e2z0HOUg+jziFzvaTrZfw2t1tyRr3gUouEiiNiDVMRQ8hc46iSZLYITzNTX0d11iTrJObF4Cn3cnHZrAeUDu73xzosELb0Abt8/wIPGw7ltWljz8gmV++EyK1bW9xkBj7Zebjm6Wl/usCt0sUbpm5vhJbwE0qgHbeLalXFX17JDunBmVnMT6S1M62r9REvDh9DvQdunbKpUr5cDqGPmG2RVVjYOiz3vUB62d4blgB349gSygLZjWeXPL9VzaR5al9psGypeHJWc3sWRowXUTVYkCJ+2vXynZjsEyPfhZYIK2s/Dm7hqqqH9NmqMpi57ml3lSBPBfAV6VlcZJxYYY0HR8c72kSGq87bEIRjgkXA25Po6ad7DsyMnwtKiy6Eu2SGWfPa8MTAe5rDQrXr7eqNpo3mr5o6lVtWpXqWEi8NtJ6a5rVcKcHKoffn2ZHUzQvFscaT9sr3xIUtUcIzq3JsJFYHphMKEqO7Fdzcm50lKXqc4Q6VEE/l0tEzwjId5/Wfxf6mmc5S7JHGGQDzvp8KuZjjIkzN/lgpMBNasQq85+aBVQ7tkv0UetgvB0f/jgH2x4vGDiB1C0J+VzlILawcqPFBIKCsN3xmblPYFwrMWb84C9579Ze5k25xFlA3m2xWiue58sSKav1CJhRdMbxmx1hRTv8rOfE=
+  - py.test galgebra/test_test.py
+  - py.test galgebra/test_mv.py
