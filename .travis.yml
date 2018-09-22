@@ -27,6 +27,10 @@ install:
 script:
   # Run tests and generate coverage report
   - pytest --cov=galgebra test
+  # Validate Jupyter notebooks and generate coverage report
+  - if [[ "$TRAVIS_PYTHON_VERSION" == 2.7 ]]; then pip install ipython==5.8.0 ; fi
+  - pip install nbval
+  - pytest --nbval examples/ipython/dop.ipynb --current-env
 
 after_success:
   - pip install codecov
