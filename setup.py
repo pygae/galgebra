@@ -17,8 +17,7 @@ setup(name='galgebra',
       packages=find_packages(),
       package_dir={'galgebra':'galgebra'},
       install_requires = [
-                'sympy',
-                'numpy'],
+                'sympy'],
       long_description=LONG_DESCRIPTION,
       classifiers=[
             'Development Status :: 4 - Beta',
