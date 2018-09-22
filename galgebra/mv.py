@@ -1048,7 +1048,7 @@ class Mv(object):
         return Mv(obj, ga=self.Ga)
 
     def dual(self):
-        mode = ga.Ga.dual_mode_value
+        mode = self.Ga.dual_mode_value
         sign = S(1)
         if '-' in mode:
             sign = -sign

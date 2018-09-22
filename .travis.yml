@@ -30,7 +30,7 @@ script:
   # Validate Jupyter notebooks and generate coverage report
   - if [[ "$TRAVIS_PYTHON_VERSION" == 2.7 ]]; then pip install ipython==5.8.0 ; fi
   - pip install nbval
-  - pytest --nbval examples/ipython/dop.ipynb --current-env
+  - pytest --nbval examples/ipython/ --current-env
 
 after_success:
   - pip install codecov
