@@ -63,9 +63,3 @@ class TestMv(unittest.TestCase):
         self.assertRaises(ValueError, lambda: m1.blade_coefs([e_1, e_2 ^ e_1]))
         self.assertRaises(ValueError, lambda: m1.blade_coefs([a * e_1]))
         self.assertRaises(ValueError, lambda: m1.blade_coefs([3 * e_3]))
-
-
-if __name__ == '__main__':
-
-    unittest.main()
-
