@@ -25,10 +25,14 @@ install:
   - python setup.py install
 
 script:
+  # Run tests and generate coverage report
   - pytest --cov=galgebra test
 
 after_success:
+  # python-coveralls requires a lower version of coverage than pytest-cov
+  # so the installation needs to be done here
   - pip install python-coveralls
+  # Upload coverage report to https://coveralls.io/github/pygae/galgebra
   - coveralls
 
 env:
