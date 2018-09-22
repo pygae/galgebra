@@ -1490,8 +1490,10 @@ class Sdop(object):
         return self
 
     def sort_terms(self):
-        # self.terms.sort(key=operator.itemgetter(1))
-        self.terms.sort(key=cmp_to_key(Pdop.compare))
+        # self.terms.sort(key=operator.itemgetter(1), cmp=Pdop.compare)
+        # terms are in the form of (coef, pdiff)
+        # so we need to first extract pdiff and then use Pdop.compare to compare
+        self.terms.sort(key=cmp_to_key(lambda term1, term2 : Pdop.compare(term1[1], term2[1])))
         return
 
     def Sdop_str(self):

@@ -18,7 +18,7 @@ class TestMv(unittest.TestCase):
         self.assertTrue((e_1 ^ e_3).is_base())
         self.assertTrue((e_1 ^ e_2 ^ e_3).is_base())
 
-        self.assertFalse((2*e_1).is_base())
+        self.assertFalse((2 * e_1).is_base())
         self.assertFalse((e_1 + e_2).is_base())
         self.assertFalse((e_3 * 4).is_base())
         self.assertFalse(((3 * e_1) ^ e_2).is_base())
