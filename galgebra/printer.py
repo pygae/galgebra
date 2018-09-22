@@ -681,7 +681,7 @@ r"""
                 (1, self._print(Pow(expr.base, -expr.exp)))
         else:
             if expr.base.is_Function:
-                return self._print(expr.base, self._print(expr.exp))
+                return r"%s^%s" % (self._print(expr.base), self._print(expr.exp))
             else:
                 if expr.is_commutative and expr.exp == -1:
                     #solves issue 1030
