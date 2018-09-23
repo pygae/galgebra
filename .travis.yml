@@ -31,6 +31,7 @@ script:
   - if [[ "$TRAVIS_PYTHON_VERSION" == 2.7 ]]; then pip install ipython==5.8.0 ; fi
   - pip install nbval
   - pytest --nbval examples/ipython/ --current-env
+  - pytest --nbval doc/ipython/ --current-env
 
 after_success:
   - pip install codecov
