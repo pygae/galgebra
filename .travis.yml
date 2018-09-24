@@ -21,8 +21,24 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then lsb_release -a ; fi
 
 install:
-  - python setup.py install
+  - pip install pytest-cov
+  - pip install .
 
 script:
-  - py.test galgebra/test_test.py
-  - py.test galgebra/test_mv.py
+  # Run tests and generate coverage report
+  - pytest --cov=galgebra test
+  # Validate Jupyter notebooks and generate coverage report
+  - if [[ "$TRAVIS_PYTHON_VERSION" == 2.7 ]]; then pip install ipython==5.8.0 ; fi
+  - pip install nbval
+  - pytest --nbval examples/ipython/ --current-env
+  - pytest --nbval doc/ipython/ --current-env
+
+after_success:
+  - pip install codecov
+  - codecov
+
+env:
+  global:
+    - secure: aMFLWySkx+e2z0HOUg+jziFzvaTrZfw2t1tyRr3gUouEiiNiDVMRQ8hc46iSZLYITzNTX0d11iTrJObF4Cn3cnHZrAeUDu73xzosELb0Abt8/wIPGw7ltWljz8gmV++EyK1bW9xkBj7Zebjm6Wl/usCt0sUbpm5vhJbwE0qgHbeLalXFX17JDunBmVnMT6S1M62r9REvDh9DvQdunbKpUr5cDqGPmG2RVVjYOiz3vUB62d4blgB349gSygLZjWeXPL9VzaR5al9psGypeHJWc3sWRowXUTVYkCJ+2vXynZjsEyPfhZYIK2s/Dm7hqqqH9NmqMpi57ml3lSBPBfAV6VlcZJxYYY0HR8c72kSGq87bEIRjgkXA25Po6ad7DsyMnwtKiy6Eu2SGWfPa8MTAe5rDQrXr7eqNpo3mr5o6lVtWpXqWEi8NtJ6a5rVcKcHKoffn2ZHUzQvFscaT9sr3xIUtUcIzq3JsJFYHphMKEqO7Fdzcm50lKXqc4Q6VEE/l0tEzwjId5/Wfxf6mmc5S7JHGGQDzvp8KuZjjIkzN/lgpMBNasQq85+aBVQ7tkv0UetgvB0f/jgH2x4vGDiB1C0J+VzlILawcqPFBIKCsN3xmblPYFwrMWb84C9579Ze5k25xFlA3m2xWiue58sSKav1CJhRdMbxmx1hRTv8rOfE=
+    - secure: Ygar4HcsSsMw4DQCQwXDEBppsoFwXLhkFp0HWzZ2WJpKu3uXoCTt2uxH+RvvQBLp9d+EsmP7QnPdLh1CIbITw3ybgv/bOACZaIeM4JfFHzPX4u5E0eE2S5qnkQvJ7aq7lY1TLXXIw7GF9HFJqN42qvx4FNHXDpzd+tlAgDJe/LyocYAzkH4XZ4b8SICsDKVaylTbv1NwWU9gUDqv+0c50e1wcoVnHR4yWAFe+y+BTbUrWTCiLsn5DMgZJbbgD8B3TjBEWcaDD5t9rA1aopIaNuFeIIi49KlZWgnqRAg0nwS0NdbhpqWqAateQMorhx6ZNxWlShRxhE3n51+wUOtcXjJ24/3WZTdaq6oXUAScNNe5SBKsSx2V7XUNdK7oIGHYU6bQNln8o03mBzPp5fmGj+71/pyXsqwRUqTPBi6SU+WeVA9fMuI4s6K/up5bSJ7II+/0fvPgwrQficnW8U+3GR6gxXi4d5D9MrJWSsqkab+QfSAuJ0bwEZOhX1MKYqCBHQVxKGxV686L1rYalGYSqkMZEGwmbwAnU41KzIPKQW3yuNu5ytukoFbI9ndtbx87qImxn++TD4UtClGcOJoL98N+OrZnnxJAhkZm8Ork8s8h0uGkKRfnfcBqZVOP7ZCbQD/MNK/kxg6GWqCOY4h9PdcjX0fOGA1Icw7AxGRlzg0=
+

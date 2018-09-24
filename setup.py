@@ -4,21 +4,19 @@ from distutils.core import Extension
 
 VERSION = '0.4.1.1'
 LONG_DESCRIPTION = """
-A symbolic geometric algebra module for python. BSD License.
+Symbolic Geometric Algebra/Calculus package for SymPy. BSD License.
 """
 
 setup(name='galgebra',
       version=VERSION,
-      description='Symbolic Geometric Algebra/Calculus modules for sympy',
+      description='Symbolic Geometric Algebra/Calculus package for SymPy.',
       author='Alan Bromborsky',
       author_email='hadfield.hugo@gmail.com',
       url='https://github.com/pygae/galgebra',
       license='BSD',
       packages=find_packages(),
       package_dir={'galgebra':'galgebra'},
-      install_requires = [
-                'sympy',
-                'numpy'],
+      install_requires = ['sympy'],
       long_description=LONG_DESCRIPTION,
       classifiers=[
             'Development Status :: 4 - Beta',

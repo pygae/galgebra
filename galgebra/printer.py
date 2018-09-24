@@ -90,14 +90,14 @@ def find_executable(executable, path=None):
     paths = path.split(os.pathsep)
     extlist = ['']
     if os.name == 'os2':
-        (base, ext) = os.path.splitext(executable)
+        (_base, ext) = os.path.splitext(executable)
         # executable files on OS/2 can have an arbitrary extension, but
         # .exe is automatically appended if no dot is present in the name
         if not ext:
             executable = executable + ".exe"
     elif sys.platform == 'win32':
         pathext = os.environ['PATHEXT'].lower().split(os.pathsep)
-        (base, ext) = os.path.splitext(executable)
+        (_base, ext) = os.path.splitext(executable)
         if ext.lower() not in pathext:
             extlist = pathext
     for ext in extlist:
@@ -681,7 +681,7 @@ r"""
                 (1, self._print(Pow(expr.base, -expr.exp)))
         else:
             if expr.base.is_Function:
-                return self._print(expr.base, self._print(expr.exp))
+                return r"%s^%s" % (self._print(expr.base), self._print(expr.exp))
             else:
                 if expr.is_commutative and expr.exp == -1:
                     #solves issue 1030
@@ -793,7 +793,7 @@ r"""
             # How inverse trig functions should be displayed, formats are:
             # abbreviated: asin, full: arcsin, power: sin^-1
             #inv_trig_style = self._settings['inv_trig_style']
-            inv_trig_style = GaLatexPrinter.inv_trig_style
+            _inv_trig_style = GaLatexPrinter.inv_trig_style
             # If we are dealing with a power-style inverse trig function
             inv_trig_power_case = False
             # If it is applicable to fold the argument brackets
@@ -1192,7 +1192,7 @@ def LatexFormat(Fmode=True, Dmode=True, ipy=False):
     GaLatexPrinter.Dmode = Dmode
     GaLatexPrinter.Fmode = Fmode
     GaLatexPrinter.ipy = ipy
-    GaLatexPrinter.redirect(ipy)
+    GaLatexPrinter.redirect()
     return
 
 prog_str = ''
@@ -1299,7 +1299,7 @@ def parse_paren(line):
         raise ValueError('Mismatched Parenthesis in: ' + line + '\n')
     if max_level > 0:
         level_lst = []
-        for x in range(max_level + 1):
+        for _x in range(max_level + 1):
             level_lst.append([])
         for group in paren_lst:
             level_lst[group[0]].append(group[1:])

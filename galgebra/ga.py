@@ -1376,7 +1376,7 @@ class Ga(metric.Metric):
                 else:
                     blades[0] = term
             else:
-                c, nc = term.args_cnc()
+                _c, nc = term.args_cnc()
                 blade = nc[0]
                 grade = self.blades_to_grades_dict[blade]
                 if grade in blades:
@@ -1630,7 +1630,7 @@ class Ga(metric.Metric):
                 x = self.coords[i]
                 xn = coord[i]
                 if xn > 0:  # Differentiate with respect to coordinate x
-                    for j in range(xn):  # xn > 1 multiple differentiation
+                    for _j in range(xn):  # xn > 1 multiple differentiation
                         dA = self.pDiff(dA, x)
 
             return dA
