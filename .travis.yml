@@ -21,17 +21,14 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then lsb_release -a ; fi
 
 install:
+  - pip install -e .
   - pip install pytest-cov
-  - pip install .
-
-script:
-  # Run tests and generate coverage report
-  - pytest --cov=galgebra test
-  # Validate Jupyter notebooks and generate coverage report
   - if [[ "$TRAVIS_PYTHON_VERSION" == 2.7 ]]; then pip install ipython==5.8.0 ; fi
   - pip install nbval
-  - pytest --nbval examples/ipython/ --current-env
-  - pytest --nbval doc/ipython/ --current-env
+
+script:
+  # Run tests, validate Jupyter notebooks and generate coverage report
+  - pytest --cov=galgebra --nbval examples/ipython/ --nbval doc/ipython/ --current-env test
 
 after_success:
   - pip install codecov
