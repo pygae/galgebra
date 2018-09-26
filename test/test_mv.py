@@ -1,6 +1,7 @@
 import unittest
 from sympy import Symbol
 from galgebra.ga import Ga
+from galgebra import utils
 
 class TestMv(unittest.TestCase):
 

@@ -1,8 +1,5 @@
 #metric.py
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 import sys
 import copy
 import itertools
@@ -12,6 +9,7 @@ from sympy import diff, trigsimp, Matrix, Rational, \
     numbers, Function
 
 from . import printer
+from . import utils
 
 half = Rational(1, 2)
 
@@ -306,7 +304,7 @@ class Metric(object):
             s = self.n * (s[:-1] + ',')
             s = s[:-1]
 
-        if isinstance(s, str):
+        if utils.isstr(s):
             rows = s.split(',')
             n_rows = len(rows)
 
@@ -563,7 +561,7 @@ class Metric(object):
                 return
             else:
                 raise ValueError('self.sig = ' + str(self.sig) + ' > self.n, not an allowed hint')
-        if isinstance(self.sig,str):
+        if utils.isstr(self.sig):
             if self.sig == 'e':  # Euclidean metric signature
                 self.sig = (self.n, 0)
             elif self.sig == 'm+':  # Minkowski metric signature (n-1,1)
@@ -583,7 +581,7 @@ class Metric(object):
         self.name = 'GA' + str(Metric.count)
         Metric.count += 1
 
-        if not isinstance(basis, str):
+        if not utils.isstr(basis):
             raise TypeError('"' + str(basis) + '" must be string')
 
         X = kwargs['X']  # Vector manifold
@@ -658,7 +656,7 @@ class Metric(object):
                         printer.oprint('X_{i}', X, 'D_{i}X_{j}', dX)
 
         else:  # metric is symbolic or list of lists of functions of coordinates
-            if isinstance(g, str):  # metric elements are symbols or constants
+            if utils.isstr(g):  # metric elements are symbols or constants
                 if g == 'g':  # general symbolic metric tensor (g_ij functions of position)
                     g_lst = []
                     g_inv_lst = []

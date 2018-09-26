@@ -1,8 +1,5 @@
 #mv.py
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 import itertools
 import copy
 import numbers
@@ -19,6 +16,7 @@ from sympy import exp as sympy_exp
 from sympy import N as Nsympy
 from . import printer
 from . import metric
+from . import utils
 import sys
 from functools import reduce, cmp_to_key
 
@@ -184,7 +182,7 @@ class Mv(object):
 
         grade = kargs[1]
         self.i_grade = grade
-        if isinstance(kargs[0],str):
+        if utils.isstr(kargs[0]):
             root = kargs[0] + '__'
             if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
                 self.obj = sum([Symbol(root + super_script, real=True) * base
@@ -211,7 +209,7 @@ class Mv(object):
     def make_scalar(self, *kargs, **kwargs):
     # Called by __init__ to make a scalar multivector
 
-        if isinstance(kargs[0],str):
+        if utils.isstr(kargs[0]):
             if 'f' in kwargs and isinstance(kwargs['f'],bool):
                 if kwargs['f']:
                     self.obj = Function(kargs[0])(*self.Ga.coords)
@@ -309,7 +307,7 @@ class Mv(object):
         if len(kargs) == 0:  # default constructor 0
             self.obj = S(0)
             self.i_grade = 0
-        elif len(kargs) == 1 and not isinstance(kargs[0], str):  # copy constructor
+        elif len(kargs) == 1 and not utils.isstr(kargs[0]):  # copy constructor
             x = kargs[0]
             if isinstance(x, Mv):
                 self.obj = x.obj
@@ -324,10 +322,10 @@ class Mv(object):
                 self.characterise_Mv()
         else:
             if not isinstance(kargs[1],int):
-                if isinstance(kargs[1],str) and kargs[1] not in Mv.init_dict:
+                if utils.isstr(kargs[1]) and kargs[1] not in Mv.init_dict:
                     raise ValueError('"' + str(kargs[1]) + '" not an allowed multivector type.')
 
-            if isinstance(kargs[1],str):
+            if utils.isstr(kargs[1]):
                 mode = kargs[1]
                 kargs = [kargs[0]] + list(kargs[2:])
                 Mv.init_dict[mode](self, *kargs, **kwargs)
@@ -337,7 +335,7 @@ class Mv(object):
                 else:
                     Mv.init_dict['grade'](self, *kargs, **kwargs)
 
-            if isinstance(kargs[0],str):
+            if utils.isstr(kargs[0]):
                 self.title = kargs[0]
             self.characterise_Mv()
 
@@ -2694,7 +2692,7 @@ class MV(Mv):
     @staticmethod
     def setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None)):
 
-        if isinstance(metric,str):
+        if utils.isstr(metric):
             metric = MV.convert_metric(metric)
         if curv != (None,None):
             MV.GA = ga.Ga(basis, g=None, coords=coords, X=curv[0], debug=debug)

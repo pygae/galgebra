@@ -1,9 +1,5 @@
 #printer.py
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 import sys
 import io
@@ -15,6 +11,7 @@ from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
+from . import utils
 
 try:
     from IPython.display import display, Latex, Math, display_latex
@@ -214,7 +211,7 @@ def oprint(*args, **kwargs):
     else:
         dict_mode = False
 
-    if isinstance(args[0], str) or args[0] is None:
+    if utils.isstr(args[0]) or args[0] is None:
         titles = list(islice(args, None, None, 2))
         objs = tuple(islice(args, 1, None, 2))
         if len(args) > 2:
