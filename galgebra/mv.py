@@ -2560,8 +2560,11 @@ def printrref(matrix, vars="xyzuvwrs"):   # Print rref of matrix with variables.
         result += ' = ' + str(rrefmatrix[i, cols - 1])
         print(result)
 
+
 def com(A, B):
-    return ga.Ga.com(A, B)
+    raise ImportError(
+        """mv.com is removed, please use ga.Ga.com(A, B) instead.""")
+
 
 def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors u and v.
     rows, cols = u.shape
