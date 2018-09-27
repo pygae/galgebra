@@ -1,5 +1,5 @@
-from __future__ import print_function
-
+from __future__ import absolute_import, division
+from __future__ import print_function, unicode_literals
 import sys
 from sympy import symbols, sin, cos
 from galgebra.printer import Format, xpdf, Get_Program, Print_Function
@@ -23,6 +23,7 @@ print('\\text{8-component real spinor\\;\\;}\\bm{\\psi} =', psi)
 dirac_eq = (st4d.grad * psi) * I * sig_z - e * A * psi - m * psi * g0
 dirac_eq = dirac_eq.simplify()
 
-dirac_eq.Fmt(3, r'%\text{Dirac Equation\;\;}\nabla \bm{\psi}' +
-             r' I \sigma_{z}-e\bm{A}\bm{\psi}-m\bm{\psi}\gamma_{t} = 0')
+# FIXME terms of \psi^{ty} are not grouped together
+print(dirac_eq.Fmt(3, r'%\text{Dirac Equation\;\;}\nabla \bm{\psi}' +
+             r' I \sigma_{z}-e\bm{A}\bm{\psi}-m\bm{\psi}\gamma_{t} = 0'))
 xpdf(paper='landscape', prog=True)

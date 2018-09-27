@@ -1,4 +1,5 @@
-from __future__ import print_function
+from __future__ import absolute_import, division
+from __future__ import print_function, unicode_literals
 import sys
 from sympy import symbols, sin
 from galgebra.printer import Format, xpdf
@@ -20,6 +21,7 @@ print('f =', f)
 print('A =', A)
 print('B =', B)
 
+# FIXME xxxx/r printed as \frac{xxxx}{r} instead of \frac{1}{r} xxxx
 print('grad*f =', grad * f)
 print('grad|A =', grad | A)
 print('-I*(grad^A) =', (-s3d.i * (grad ^ A)).simplify())

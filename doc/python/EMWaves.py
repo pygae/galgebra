@@ -1,6 +1,5 @@
-from __future__ import division
-from __future__ import print_function
-from past.utils import old_div
+from __future__ import absolute_import, division
+from __future__ import print_function, unicode_literals
 import sys
 from sympy import symbols, exp, I, Matrix, solve, simplify
 from galgebra.printer import Format, xpdf, Get_Program, Print_Function
@@ -32,14 +31,14 @@ F = F * exp(I * KX)
 
 print(r'\text{Pseudo Scalar\;\;}I =', i)
 print(r'%I_{xyz} =', Ixyz)
-F.Fmt(3, '\\text{Electromagnetic Field Bi-Vector\\;\\;} F')
+print(F.Fmt(3, '\\text{Electromagnetic Field Bi-Vector\\;\\;} F'))
 gradF = st4d.grad * F
 
 print('#Geom Derivative of Electomagnetic Field Bi-Vector')
-gradF.Fmt(3, 'grad*F = 0')
+print(gradF.Fmt(3, 'grad*F = 0'))
 
-gradF = old_div(gradF, (I * exp(I * KX)))
-gradF.Fmt(3, r'%\lp\bm{\nabla}F\rp /\lp i e^{iK\cdot X}\rp = 0')
+gradF = gradF /  (I * exp(I * KX))
+print(gradF.Fmt(3, r'%\lp\bm{\nabla}F\rp /\lp i e^{iK\cdot X}\rp = 0'))
 
 g = '1 # 0 0,# 1 0 0,0 0 1 0,0 0 0 -1'
 X = (xE, xB, xk, t) = symbols('x_E x_B x_k t', real=True)
@@ -65,15 +64,15 @@ print('K|X =', KX)
 print('F =', F)
 (EBkst.grad * F).Fmt(3, 'grad*F = 0')
 
-gradF_reduced = old_div((EBkst.grad * F), (I * exp(I * KX)))
+gradF_reduced = (EBkst.grad * F) /  (I * exp(I * KX))
 
-gradF_reduced.Fmt(3, r'%\lp\bm{\nabla}F\rp/\lp ie^{iK\cdot X} \rp = 0')
+print(gradF_reduced.Fmt(3, r'%\lp\bm{\nabla}F\rp/\lp ie^{iK\cdot X} \rp = 0'))
 
 print(r'%\mbox{Previous equation requires that: }e_{E}\cdot e_{B} = 0' +
       r'\mbox{ if }B\ne 0\mbox{ and }k\ne 0')
 
 gradF_reduced = gradF_reduced.subs({EBkst.g[0, 1]: 0})
-gradF_reduced.Fmt(3, r'%\lp\bm{\nabla}F\rp/\lp ie^{iK\cdot X} \rp = 0')
+print(gradF_reduced.Fmt(3, r'%\lp\bm{\nabla}F\rp/\lp ie^{iK\cdot X} \rp = 0'))
 
 (coefs, bases) = linear_expand(gradF_reduced.obj)
 
@@ -89,7 +88,7 @@ print(r'\mbox{eq2: }B =', B2)
 eq3 = B1 - B2
 
 print(r'\mbox{eq3 = eq1-eq2: }0 =', eq3)
-eq3 = simplify(old_div(eq3, E))
+eq3 = simplify(eq3 /  E)
 print(r'\mbox{eq3 = (eq1-eq2)/E: }0 =', eq3)
 print(r'#Solutions for $k$ and $B$ in terms of $\omega$ and $E$:')
 print('k =', Matrix(solve(eq3, k)))

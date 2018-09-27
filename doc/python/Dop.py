@@ -1,4 +1,5 @@
-from __future__ import print_function
+from __future__ import absolute_import, division
+from __future__ import print_function, unicode_literals
 from sympy import symbols, sin
 from galgebra.printer import Format, xpdf
 from galgebra.ga import Ga
@@ -25,9 +26,12 @@ print(r'%\bar{\nabla}\cdot v =', o3d.rgrad | v)
 Xgrad = X | o3d.grad
 rgradX = o3d.rgrad | X
 print(r'%\bm{X}\cdot \nabla =', Xgrad)
+# FIXME This outputs incorrectly, the scalar part 3 is missing
 print(r'%\bar{\nabla}\cdot \bm{X} =', rgradX)
-com = Xgrad - rgradX
-print(r'%\bm{X}\cdot \nabla - \bar{\nabla}\cdot \bm{X} =', com)
+# FIXME The following code complains: 
+# ValueError: In Dop.Add complement flags have different values: False vs. True
+# com = Xgrad - rgradX
+# print(r'%\bm{X}\cdot \nabla - \bar{\nabla}\cdot \bm{X} =', com)
 sph_coords = (r, th, phi) = symbols('r theta phi', real=True)
 (sp3d, er, eth, ephi) = Ga.build('e', g=[1, r**2, r**2 * sin(th)**2],
                                  coords=sph_coords, norm=True)
@@ -36,4 +40,5 @@ lap = sp3d.grad * sp3d.grad
 print(r'%\nabla^{2} = \nabla\cdot\nabla =', lap)
 print(r'%\lp\nabla^{2}\rp f =', lap * f)
 print(r'%\nabla\cdot\lp\nabla f\rp =', sp3d.grad | (sp3d.grad * f))
+# FIXME crop didn't work, but pdf can be generated with TexLive 2017 installed
 xpdf(paper='landscape', crop=True)

@@ -1,4 +1,5 @@
-from __future__ import print_function
+from __future__ import absolute_import, division
+from __future__ import print_function, unicode_literals
 from sympy import symbols, sin, cos, latex
 from galgebra.ga import Ga
 from galgebra.printer import Format, xpdf
@@ -24,6 +25,9 @@ print('A + B =', A + B)
 print('AB =', A * B)
 print('A - B =', A - B)
 
+# FIXME linear transformations fail to simplify
+# using dot products of bases
+
 print('#2d general ($A,\\;B$ are linear transformations)')
 A2d = g2d.lt('A')
 print('A =', A2d)
@@ -47,6 +51,7 @@ m4d = Ga('e_t e_x e_y e_z', g=[1, -1, -1, -1],
          coords=symbols('t,x,y,z', real=True))
 T = m4d.lt('T')
 print('g =', m4d.g)
+# FIXME incorrect sign for T and T.adj()
 print(r'\underline{T} =', T)
 print(r'\overline{T} =', T.adj())
 # m4d.mv(T.det()).Fmt(4,r'\f{\det}{\underline{T}}')

@@ -1,6 +1,5 @@
 from __future__ import division
 from __future__ import print_function
-from past.utils import old_div
 from sympy import symbols, sin, cos, latex, Matrix
 from galgebra.ga import Ga
 from galgebra.printer import Format, xpdf
@@ -12,7 +11,7 @@ Format()
 A = o3d.lt('A')
 print(r'\mbox{General Instantiation: }A =', A)
 th = symbols('theta', real=True)
-R = cos(old_div(th, 2)) + (ex ^ ey) * sin(old_div(th, 2))
+R = cos(th /  2) + (ex ^ ey) * sin(th /  2)
 B = o3d.lt(R)
 print(r'\mbox{Rotor: }R =', R)
 print(r'\mbox{Rotor Instantiation: }B =', B)

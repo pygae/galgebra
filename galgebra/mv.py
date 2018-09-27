@@ -2130,7 +2130,7 @@ class Dop(object):
                 raise ValueError('In Dop.Add Dop arguments are not from same geometric algebra')
 
             if dop1.cmpflg != dop2.cmpflg:
-                raise ValueError('In Dop.Add complement flags have different values.')
+                raise ValueError('In Dop.Add complement flags have different values: %s vs. %s' % (dop1.cmpflg, dop2.cmpflg))
 
             coefs1, pdiffs1 = list(zip(*dop1.terms))
             coefs2, pdiffs2 = list(zip(*dop2.terms))

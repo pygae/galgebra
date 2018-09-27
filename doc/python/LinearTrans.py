@@ -1,4 +1,5 @@
-from __future__ import print_function
+from __future__ import absolute_import, division
+from __future__ import print_function, unicode_literals
 from sympy import symbols, sin, cos
 from galgebra.ga import Ga
 from galgebra.printer import Format, xpdf
@@ -28,6 +29,9 @@ b = g2d.mv('b', 'vector')
 
 print(r'a|\f{\overline{A}}{b}-b|\f{\underline{A}}{a} =',
       ((a | A2d.adj()(b)) - (b | A2d(a))).simplify())
+
+# FIXME All above prints incorrect result 
+# (more complicated and not equivalent )
 
 m4d = Ga('e_t e_x e_y e_z', g=[1, -1, -1, -1],
          coords=symbols('t,x,y,z', real=True))

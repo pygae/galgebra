@@ -1,6 +1,5 @@
-from __future__ import division
-from __future__ import print_function
-from past.utils import old_div
+from __future__ import absolute_import, division
+from __future__ import print_function, unicode_literals
 from sympy import symbols, sin, pi, latex
 from galgebra.ga import Ga
 from galgebra.printer import Format, xpdf
@@ -15,6 +14,7 @@ sph_map = [1, u, v]  # Coordinate map for sphere of r = 1
 sph2d = sp3d.sm(sph_map, sph_uv)
 
 print(r'(u,v)\rightarrow (r,\theta,\phi) = ', latex(sph_map))
+# FIXME submanifold basis vectors are not normalized, g is incorrect
 print('g =', latex(sph2d.g))
 F = sph2d.mv('F', 'vector', f=True)  # scalar function
 f = sph2d.mv('f', 'scalar', f=True)  # vector function
@@ -23,7 +23,7 @@ print('F =', F)
 print(r'\nabla F = ', sph2d.grad * F)
 
 cir_s = s = symbols('s', real=True)
-cir_map = [old_div(pi, 8), s]
+cir_map = [pi /  8, s]
 cir1d = sph2d.sm(cir_map, (cir_s,))
 
 print('g =', latex(cir1d.g))

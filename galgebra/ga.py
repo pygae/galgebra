@@ -1835,7 +1835,6 @@ class Sm(Ga):
         u = kargs[0]  # Coordinate map or vector embedding to define submanifold
         coords = kargs[1]  # List of cordinates
         ga = kwargs['ga']  # base geometric algebra
-        self.wedge_print = kwargs['wedge']
         if ga is None:
             raise ValueError('Base geometric algebra must be specified for submanifold.')
 
