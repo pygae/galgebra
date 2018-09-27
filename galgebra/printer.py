@@ -27,9 +27,9 @@ from inspect import getouterframes, currentframe
 Format_cnt = 0
 
 ip_cmds = \
-r"""
-$\\DeclareMathOperator{\Tr}{Tr}
-\\DeclareMathOperator{\Adj}{Adj}
+"""
+$\\DeclareMathOperator{\\Tr}{Tr}
+\\DeclareMathOperator{\\Adj}{Adj}
 \\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
 \\newcommand{\\lp}{\\left (}
 \\newcommand{\\rp}{\\right )}
@@ -56,6 +56,7 @@ print_replace_old = None
 print_replace_new = None
 
 SYS_CMD = {'linux2': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
+           'linux': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
            'win32': {'rm': 'del', 'evince': '', 'null': ' > NUL', '&': ''},
            'darwin': {'rm': 'rm', 'evince': 'open', 'null': ' > /dev/null', '&': '&'}}
 
@@ -468,7 +469,7 @@ class GaLatexPrinter(LatexPrinter):
     inv_trig_style = None
 
     preamble = \
-r"""
+"""
 \\pagestyle{empty}
 \\usepackage[latin1]{inputenc}
 \\usepackage{amsmath}
@@ -483,8 +484,8 @@ r"""
 \\usepackage{breqn}
 \\definecolor{gray}{rgb}{0.95,0.95,0.95}
 \\setlength{\\parindent}{0pt}
-\\DeclareMathOperator{\Tr}{Tr}
-\\DeclareMathOperator{\Adj}{Adj}
+\\DeclareMathOperator{\\Tr}{Tr}
+\\DeclareMathOperator{\\Adj}{Adj}
 \\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
 \\newcommand{\\lp}{\\left (}
 \\newcommand{\\rp}{\\right )}
