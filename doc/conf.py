@@ -67,6 +67,18 @@ nbsphinx_timeout = 60
 # -- extensions configuration ---------------------------------------------------
 
 napoleon_include_init_with_doc= False
+
+autoclass_content = "both"  # include both class docstring and __init__
+autodoc_default_flags = [
+        # Make sure that any autodoc declarations show the right members
+        "members",
+        "inherited-members",
+        "special-members",
+        "undoc-members",
+        "private-members",
+        "show-inheritance",
+]
+
 #autodoc_default_flags='members'
 # you have to list all files with automodule here due to bug in sphinx and nbsphinx
 # https://github.com/spatialaudio/nbsphinx/issues/14

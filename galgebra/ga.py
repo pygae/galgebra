@@ -1,4 +1,6 @@
-# ga.py
+"""
+Geometric Algebra (inherits Metric)
+"""
 
 import operator
 import copy

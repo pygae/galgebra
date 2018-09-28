@@ -1,4 +1,6 @@
-#mv.py
+"""
+Multivector and Linear Multivector Differential Operator
+"""
 
 import itertools
 import copy

@@ -113,6 +113,7 @@ venv.bak/
 # Sphinx
 <<<<<<< HEAD
 doc/_build
+doc/generated
 doc/python/*.tex
 doc/python/*.aux
 doc/python/*.bak.pdf

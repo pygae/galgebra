@@ -1,4 +1,6 @@
-#linear_transformations
+"""
+Multivector Linear Transformation
+"""
 
 import sys
 import inspect
