@@ -714,12 +714,13 @@ $$\be \f{T}{a_{i},\dots,a_{j-1},\nabla_{a_{k}},a_{j+1},\dots,a_{r}} = \nabla_{a_
 
 This operation reduces the rank of the tensor by two. This definition gives the standard results for *metric contraction* which is proved as follows for a rank $r$ grade zero tensor (the circumflex “$\breve{\:\:}$” indicates that a term is to be deleted from the product).
 
-$$\be \begin{aligned}
-    {{T}\lp {a_{1},\dots,a_{r}} \rp } =& a^{i_{1}}\dots a^{i_{r}}T_{i_{1}\dots i_{r}} \\
-    \nabla_{a_{j}}T =& {{\eb}}^{l_{j}} a^{i_{1}}\dots\lp \partial_{a^{l_j}}a^{i_{j}}\rp \dots a_{i_{r}}T_{i_{1}\dots i_{r}} \nonumber \\
-    =& {{\eb}}^{l_{j}}\delta_{l_{j}}^{i_{j}} a^{i_{1}}\dots \breve{a}^{i_{j}}\dots a^{i_{r}}T_{i_{1}\dots i_{r}} \\
-    \nabla_{a_{m}}\cdot\lp \nabla_{a_{j}}T\rp =& {{\eb}}^{k_{m}}\cdot{{\eb}}^{l_{j}}\delta_{l_{j}}^{i_{j}}
-                                              a^{i_{1}}\dots \breve{a}^{i_{j}}\dots\lp \partial_{a^{k_m}}a^{i_{m}}\rp \dots a^{i_{r}}T_{i_{1}\dots i_{r}} \nonumber \\
+$$\begin{align}
+    \f{T}{a_{1},\dots,a_{r}} =& a^{i_{1}}\dots a^{i_{r}}T_{i_{1}\dots i_{r}} \\
+    \nabla_{a_{j}}T =& \eb^{l_{j}} a^{i_{1}}\dots\lp\partial_{a^{l_j}}a^{i_{j}}\rp\dots a_{i_{r}}T_{i_{1}\dots i_{r}} \nonumber \\
+    =& \eb^{l_{j}}\delta_{l_{j}}^{i_{j}} a^{i_{1}}\dots \breve{a}^{i_{j}}\dots a^{i_{r}}T_{i_{1}\dots i_{r}} \\
+    \nabla_{a_{m}}\cdot\lp\nabla_{a_{j}}T\rp =& \eb^{k_{m}}\cdot\eb^{l_{j}}\delta_{l_{j}}^{i_{j}}
+                                              a^{i_{1}}\dots \breve{a}^{i_{j}}\dots\lp\partial_{a^{k_m}}a^{i_{m}}\rp
+                                              \dots a^{i_{r}}T_{i_{1}\dots i_{r}} \nonumber \\
                                              =& g^{k_{m}l_{j}}\delta_{l_{j}}^{i_{j}}\delta_{k_{m}}^{i_{m}}
                                               a^{i_{1}}\dots \breve{a}^{i_{j}}\dots\breve{a}^{i_{m}}
                                               \dots a^{i_{r}}T_{i_{1}\dots i_{r}} \nonumber \\
@@ -728,7 +729,8 @@ $$\be \begin{aligned}
                                              =& g^{i_{j}i_{m}}a^{i_{1}}\dots \breve{a}^{i_{j}}\dots\breve{a}^{i_{m}}
                                               \dots a^{i_{r}}T_{i_{1}\dots i_{j}\dots i_{m}\dots i_{r}}  \nonumber \\
                                              =& \lp g^{i_{j}i_{m}}T_{i_{1}\dots i_{j}\dots i_{m}\dots i_{r}}\rp a^{i_{1}}\dots
-                                              \breve{a}^{i_{j}}\dots\breve{a}^{i_{m}}\dots a^{i_{r}} \label{eq108}\end{aligned} \ee$$
+                                              \breve{a}^{i_{j}}\dots\breve{a}^{i_{m}}\dots a^{i_{r}} \label{eq108}
+\end{align}$$
 
 Equation ($\ref{eq108}$) is the correct formula for the metric contraction of a tensor.
 
@@ -851,7 +853,7 @@ $$\be \f{T}{a_{1},\dots,a_{r};x} =
 
 the covariant derivative of the tensor is
 
-$$\begin{aligned}
+$$\begin{align}
     {\lp {a_{r+1}\cdot D} \rp } {{T}\lp {a_{1},\dots,a_{r};x} \rp } =&
         {{\displaystyle\frac{\partial {T\indices{_{i_{1}\dots i_{s}}^{i_{s+1}\dots i_{r}}}}}{\partial {x^{r+1}}}}}a^{i_{1}}\dots a^{i_{s}}a_{i_{s+1}}\dots a^{r}_{i_{r}}
         a^{i_{r+1}} \nonumber \\
@@ -866,7 +868,8 @@ $$\begin{aligned}
         a^{l_{p}}\dots a^{i_{s}}a_{i_{s+1}}\dots a_{i_{r}}a^{i_{r+1}} \nonumber \\
         &\hspace{-0.5in}+ \sum_{q=s+1}^{r}\Gamma_{i_{r+1}i_{q}}^{l_{q}}T\indices{_{i_{1}\dots i_{s}}^{i_{s+1}\dots i_{q}
         \dots i_{r}}}a^{i_{1}}\dots
-        a^{i_{s}}a_{i_{s+1}}\dots a_{l_{q}}\dots a_{i_{r}}a^{i_{r+1}}   .   \label{eq126a}\end{aligned}$$
+        a^{i_{s}}a_{i_{s+1}}\dots a_{l_{q}}\dots a_{i_{r}}a^{i_{r+1}}   .   \label{eq126a} \\
+\end{align}$$
 
 From eq ($\ref{eq126a}$) we obtain the components of the covariant derivative to be
 
@@ -949,17 +952,19 @@ The two structures that define the `metric` class (inherited by the geometric al
 
 that would be input into the geometric algebra class instantiation function, `Ga()`. The next step would be to define the symbolic metric for the geometric algebra of the basis we have defined. The default metric is the most general and is the matrix of the following symbols
 
-$$\be \label{metric}
-  g = \lbrk \begin{array}{ccc}
+$$\begin{equation}\label{metric}
+  g = \lbrk
+  \begin{array}{ccc}
     (a0.a0)   & (a0.a1)  & (a0.a2) \\
     (a0.a1) & (a1.a1)  & (a1.a2) \\
     (a0.a2) & (a1.a2) & (a2.a2) \\
   \end{array}
-  \rbrk  \ee$$
+  \rbrk
+  \end{equation}$$
 
 where each of the $g_{ij}$ is a symbol representing all of the dot products of the basis vectors. Note that the symbols are named so that $g_{ij} = g_{ji}$ since for the symbol function $(a0.a1) \ne (a1.a0)$.
 
-Note that the strings shown in eq. ($\ref{metric}$) are only used when the values of $g_{ij}$ are output (printed). In the ga module (library) the $g_{ij}$ symbols are stored in a member of the geometric algebra instance so that if `o3d` is a geometric algebra then `o3d.g` is the metric tensor ( $g_{ij} =$ `o3d.g[i,j]`) for that algebra.
+Note that the strings shown in the above equation are only used when the values of $g_{ij}$ are output (printed). In the ga module (library) the $g_{ij}$ symbols are stored in a member of the geometric algebra instance so that if `o3d` is a geometric algebra then `o3d.g` is the metric tensor ( $g_{ij} =$ `o3d.g[i,j]`) for that algebra.
 
 The default definition of $g$ can be overwritten by specifying a string that will define $g$. As an example consider a symbolic representation for conformal geometry. Define for a basis
 
@@ -1458,7 +1463,7 @@ A^{2} > 0 : & & &\\
 
 `rev(self)`
 
-> Return the reverse of the multivector. See eq. ($\ref{reverse}$).
+> Return the reverse of the multivector.
 
 `rotate_multivector(self,itheta,hint=’-’)`
 
