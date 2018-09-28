@@ -1129,7 +1129,6 @@ The geometric algebra module consists of the following files and classes
 |`printer.py` | `Eprint` | Starts enhanced text printing on ANSI terminal (requires $\T{ConEmu}$ on Windows). |
 | | `GaPrinter` | Text printer for all geometric algebra classes (inherits from $\T{sympy}$ $\T{StringPrinter}$). |
 | | `GaLatexPrinter` | $\LaTeX$printer for all geometric algebra classes (inherits from$\T{sympy}$ $\T{LatexPrinter}$). |
-****
 
 Instantiating a Geometric Algebra
 ---------------------------------
