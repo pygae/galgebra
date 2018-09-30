@@ -6,7 +6,7 @@ import itertools
 from sympy import diff, trigsimp, Matrix, Rational, \
     sqf_list, Symbol, sqrt, eye, zeros, S, expand, Mul, \
     Add, simplify, together, ratsimp, Expr, latex, \
-    numbers, Function
+    Function
 
 from . import printer
 from . import utils
@@ -200,22 +200,12 @@ class Simp:
                 obj += coef * base
         else:
             for (coef, base) in zip(coefs, bases):
-                obj += modes(coef) * base
+                obj += Simp.modes(coef) * base
         return obj
 
     @staticmethod
     def applymv(mv):
-        (coefs, bases) = linear_expand(mv.obj)
-        obj = S(0)
-        if isinstance(Simp.modes, list) or isinstance(Simp.modes, tuple):
-            for (coef, base) in zip(coefs, bases):
-                for mode in Simp.modes:
-                    coef = mode(coef)
-                obj += coef * base
-        else:
-            for (coef, base) in zip(coefs, bases):
-                obj += modes(coef) * base
-        mv.obj = obj
+        mv.obj = Simp.apply(mv.obj)
         return mv
 
 
@@ -497,7 +487,7 @@ class Metric(object):
                         Gamma_ijk = S(0)
                         l = 0
                         for Gijl in Gij:
-                            Gamma_ijk += Gijl * g(l,)
+                            Gamma_ijk += Gijl * self.g(l,)
 
             else:
                 return
@@ -660,8 +650,8 @@ class Metric(object):
                 if g == 'g':  # general symbolic metric tensor (g_ij functions of position)
                     g_lst = []
                     g_inv_lst = []
-                    for coord1 in self.coords:
-                        i1 = str(coord2)
+                    for coord in self.coords:
+                        i1 = str(coord)
                         tmp = []
                         tmp_inv = []
                         for coord2 in self.coords:

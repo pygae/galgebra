@@ -88,10 +88,6 @@ class Mv(object):
         return I, basis, x
 
     @staticmethod
-    def get_Ga(name):
-        return(Mv.ga[name])
-
-    @staticmethod
     def Format(mode=1):
         Mv.latex_flg = True
         Mv.fmt = mode
@@ -119,7 +115,7 @@ class Mv(object):
         elif op == '>':
             return A > B
         else:
-            raise ValeError('Operation ' + op + 'not allowed in Mv.Mul!')
+            raise ValueError('Operation ' + op + 'not allowed in Mv.Mul!')
         return
 
     def characterise_Mv(self):
@@ -1081,7 +1077,7 @@ class Mv(object):
         elif coord not in self.Ga.coords:
             if self.Ga.par_coords is None:
                 Dself.obj = diff(self.obj, coord)
-            elif coords not in self.Ga.par_coords:
+            elif coord not in self.Ga.par_coords:
                 Dself.obj = diff(self.obj, coord)
             else:
                 Dself.obj = diff(self.obj, coord)
@@ -1448,7 +1444,7 @@ class Sdop(object):
     def TSimplify(self):
         new_terms = []
         for (coef, pdiff) in self.terms:
-            new_terms.append((Simp.apply(coef), pdiff))
+            new_terms.append((metric.Simp.apply(coef), pdiff))
         self.terms = new_terms
         return
 
@@ -1708,9 +1704,8 @@ class Sdop(object):
 
         elif isinstance(sdop, tuple):
             self.term.append(sdop)
-            self = Dfop.consolidate_coefs(self)
+            self = Sdop.consolidate_coefs(self)
             return
-
         else:
             self.terms.append((sdop, self.Ga.Pdop_identity))
             self = Sdop.consolidate_coefs(self)
@@ -1722,7 +1717,8 @@ class Sdop(object):
     def __rsub__(self, sdop):
         return Sdop.Add(-self, sdop)
 
-    def __mul__(sdopl, sdopr):
+    def __mul__(self, sdopr):
+        sdopl = self
         if isinstance(sdopl, Sdop) and isinstance(sdopr, Sdop):
             if sdopl.Ga != sdopr.Ga:
                 raise ValueError('In Sdop.__mul__ Sdop arguments are not from same geometric algebra')
@@ -2400,7 +2396,7 @@ class Dop(object):
                             s += '-' + str_base + '*' + str_sdop[1:]
                     else:
                         if self.cmpflg:
-                            s += str_dop + '*' + str_base
+                            s += str_sdop + '*' + str_base
                         else:
                             s += str_base + '*' + str_sdop
             s += ' + '
