@@ -11,7 +11,7 @@ print('g_{ij} =', g4d.g)
 print('\\bm{a|(b*c)} =', a | (b * c))
 print('\\bm{a|(b^c)} =', a | (b ^ c))
 print('\\bm{a|(b^c^d)} =', a | (b ^ c ^ d))
-# FIXME this should print 0, got blank
+# FIXME:FIXED this should print 0, got blank
 print('\\bm{a|(b^c)+c|(a^b)+b|(c^a)} =',
       (a | (b ^ c)) + (c | (a ^ b)) + (b | (c ^ a)))
 print('\\bm{a*(b^c)-b*(a^c)+c*(a^b)} =',

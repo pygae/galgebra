@@ -680,6 +680,9 @@ class Mv(object):
         self.characterise_Mv()
         self.obj = metric.Simp.apply(self.obj)
 
+        if self.obj == S(0):
+            return ' 0 '
+
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
