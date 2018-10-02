@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division
-from __future__ import print_function, unicode_literals
+from __future__ import print_function
 from sympy import symbols, sin
 from galgebra.printer import Format, xpdf
 from galgebra.ga import Ga
