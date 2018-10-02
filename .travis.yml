@@ -28,7 +28,7 @@ install:
 
 script:
   # Run tests, validate Jupyter notebooks and generate coverage report
-  - pytest --cov=galgebra --nbval examples/ipython/ --nbval doc/ipython/ --current-env test
+  - pytest --cov=galgebra --nbval examples/ipython/ --nbval doc/ipython/ --nbval doc/python/ --current-env test
 
 after_success:
   - pip install codecov
