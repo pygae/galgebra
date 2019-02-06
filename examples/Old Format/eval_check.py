@@ -19,10 +19,10 @@ def main():
 
     oprint('Frame',(eu,ev),'Reciprocal Frame',(eu_r,ev_r))
 
-    print 'eu.eu_r =',eu|eu_r
-    print 'eu.ev_r =',eu|ev_r
-    print 'ev.eu_r =',ev|eu_r
-    print 'ev.ev_r =',ev|ev_r
+    print('eu.eu_r =',eu|eu_r)
+    print('eu.ev_r =',eu|ev_r)
+    print('ev.eu_r =',ev|eu_r)
+    print('ev.ev_r =',ev|ev_r)
 
     eu = ex+ey+ez
     ev = ex-ey
@@ -31,18 +31,18 @@ def main():
 
     oprint('Frame',(eu,ev),'Reciprocal Frame',(eu_r,ev_r))
 
-    print 'eu.eu_r =',eu|eu_r
-    print 'eu.ev_r =',eu|ev_r
-    print 'ev.eu_r =',ev|eu_r
-    print 'ev.ev_r =',ev|ev_r
+    print('eu.eu_r =',eu|eu_r)
+    print('eu.ev_r =',eu|ev_r)
+    print('ev.eu_r =',ev|eu_r)
+    print('ev.ev_r =',ev|ev_r)
 
-    print 'eu =',eu
-    print 'ev =',ev
+    print('eu =',eu)
+    print('ev =',ev)
 
     def_prec(locals())
 
-    print GAeval('eu^ev|ex',True)
-    print GAeval('eu^ev|ex*eu',True)
+    print(GAeval('eu^ev|ex',True))
+    print(GAeval('eu^ev|ex*eu',True))
     return
 
 if __name__ == "__main__":

@@ -11,12 +11,12 @@ def main():
     u = MV('u','vector')
     v = MV('v','vector')
     w = MV('w','vector')
-    print u
-    print v
+    print(u)
+    print(v)
 
     uv = u^v
-    print uv
-    print uv.is_blade()
+    print(uv)
+    print(uv.is_blade())
 
     exp_uv = uv.exp()
     exp_uv.Fmt(2,'exp(uv)')

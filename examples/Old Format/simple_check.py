@@ -12,18 +12,18 @@ def main():
     u = MV('u','vector')
     v = MV('v','vector')
     w = MV('w','vector')
-    print u
-    print v
-    print w
+    print(u)
+    print(v)
+    print(w)
 
     uv = u^v
-    print uv
-    print uv.is_blade()
+    print(uv)
+    print(uv.is_blade())
     uvw = u^v^w
-    print uvw
-    print uvw.is_blade()
+    print(uvw)
+    print(uvw.is_blade())
 
-    print simplify((uv*uv).scalar())
+    print(simplify((uv*uv).scalar()))
     return
 
 if __name__ == "__main__":

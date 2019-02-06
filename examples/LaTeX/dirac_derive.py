@@ -11,12 +11,12 @@ Format()
 
 psi = sp4d.mv('psi','even')
 
-print psi
+print(psi)
 
 B = sp4d.mv('B','bivector')
 
-print B
+print(B)
 
-print B*psi-psi*B
+print(B*psi-psi*B)
 
 xpdf()

@@ -6,7 +6,7 @@ def basic_multivector_operations_3D():
 
     (ex,ey,ez) = MV.setup('e*x|y|z')
 
-    print 'g_{ij} =',MV.metric
+    print('g_{ij} =',MV.metric)
 
     A = MV('A','mv')
 
@@ -33,7 +33,7 @@ def basic_multivector_operations_2D():
 
     (ex,ey) = MV.setup('e*x|y')
 
-    print 'g_{ij} =',MV.metric
+    print('g_{ij} =',MV.metric)
 
     X = MV('X','vector')
     A = MV('A','spinor')

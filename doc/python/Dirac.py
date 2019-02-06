@@ -15,8 +15,8 @@ psi = st4d.mv('psi','spinor',f=True)
 A = st4d.mv('A','vector',f=True)
 sig_z = g3*g0
 
-print '\\text{4-Vector Potential\\;\\;}\\bm{A} =',A
-print '\\text{8-component real spinor\\;\\;}\\bm{\\psi} =',psi
+print('\\text{4-Vector Potential\\;\\;}\\bm{A} =',A)
+print('\\text{8-component real spinor\\;\\;}\\bm{\\psi} =',psi)
 
 dirac_eq = (st4d.grad*psi)*I*sig_z-e*A*psi-m*psi*g0
 dirac_eq = dirac_eq.simplify()

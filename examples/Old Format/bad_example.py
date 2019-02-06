@@ -6,10 +6,10 @@ from mv import MV
 
 v = S(3)*ex+S(4)*ey
 
-print v
-print v.norm()
-print v.norm2()
-print v/v.norm()
-print v/(v.norm()**2)
-print v*(v/v.norm2())
-print v.inv()
+print(v)
+print(v.norm())
+print(v.norm2())
+print(v/v.norm())
+print(v/(v.norm()**2))
+print(v*(v/v.norm2()))
+print(v.inv())

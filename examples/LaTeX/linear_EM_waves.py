@@ -23,11 +23,11 @@ def EM_Waves_in_Geom_Calculus_Complex():
 
     g = EBkst.g
 
-    print 'g =', g
-    print 'X =', X
-    print 'K =', K
-    print 'K|X =', KX
-    print 'F =', F
+    print('g =', g)
+    print('X =', X)
+    print('K =', K)
+    print('K|X =', KX)
+    print('F =', F)
 
     gradF = EBkst.grad*F
 
@@ -39,7 +39,7 @@ def EM_Waves_in_Geom_Calculus_Complex():
 
     KX = KX.subs({g[0,1]:0,g[0,2]:0,g[1,2]:0})
 
-    print r'%\mbox{Substituting }e_{E}\cdot e_{B} = e_{E}\cdot e_{k} = e_{B}\cdot e_{k} = 0'
+    print(r'%\mbox{Substituting }e_{E}\cdot e_{B} = e_{E}\cdot e_{k} = e_{B}\cdot e_{k} = 0')
 
     (gradF / (I*exp(I*KX))).Fmt(3,r'%\lp\bm{\nabla}F\rp/\lp ie^{iK\cdot X}\rp = 0')
 
@@ -64,10 +64,10 @@ def EM_Waves_in_Geom_Calculus_Real():
 
     g = EBkst.g
 
-    print 'g =', g
-    print 'X =', X
-    print 'K =', K
-    print 'K|X =', KX
+    print('g =', g)
+    print('X =', X)
+    print('K =', K)
+    print('K|X =', KX)
     F.Fmt(3,'F')
 
     gradF = EBkst.grad*F
@@ -80,7 +80,7 @@ def EM_Waves_in_Geom_Calculus_Real():
 
     KX = KX.subs({g[0,1]:0,g[0,2]:0,g[1,2]:0})
 
-    print r'%\mbox{Substituting }e_{E}\cdot e_{B} = e_{E}\cdot e_{k} = e_{B}\cdot e_{k} = 0'
+    print(r'%\mbox{Substituting }e_{E}\cdot e_{B} = e_{E}\cdot e_{k} = e_{B}\cdot e_{k} = 0')
 
     (gradF / (cos(KX))).Fmt(3,r'%\lp\bm{\nabla}F\rp/\lp \f{\cos}{K\cdot X}\rp = 0')
 

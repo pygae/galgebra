@@ -14,15 +14,15 @@ def derivatives_in_spherical_coordinates():
     A = sp3d.mv('A','vector',f=True)
     B = sp3d.mv('B','bivector',f=True)
 
-    print 'f =',f
-    print 'A =',A
-    print 'B =',B
+    print('f =',f)
+    print('A =',A)
+    print('B =',B)
 
-    print 'grad*f =',grad*f
-    print 'grad|A =',grad|A
-    print 'grad\\times A = -I*(grad^A) =',-sp3d.i*(grad^A)
-    print '%\\nabla^{2}f =',grad|(grad*f)
-    print 'grad^B =',grad^B
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('grad\\times A = -I*(grad^A) =',-sp3d.i*(grad^A))
+    print('%\\nabla^{2}f =',grad|(grad*f))
+    print('grad^B =',grad^B)
 
     """
     print '( \\nabla\\W\\nabla )\\bm{e}_{r} =',((grad^grad)*er).trigsimp()
@@ -43,16 +43,16 @@ def derivatives_in_paraboloidal_coordinates():
     A = par3d.mv('A','vector',f=True)
     B = par3d.mv('B','bivector',f=True)
 
-    print '#Derivatives in Paraboloidal Coordinates'
+    print('#Derivatives in Paraboloidal Coordinates')
 
-    print 'f =',f
-    print 'A =',A
-    print 'B =',B
+    print('f =',f)
+    print('A =',A)
+    print('B =',B)
 
-    print 'grad*f =',grad*f
-    print 'grad|A =',grad|A
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
     (-par3d.i*(grad^A)).Fmt(3,'grad\\times A = -I*(grad^A)')
-    print 'grad^B =',grad^B
+    print('grad^B =',grad^B)
 
     return
 
@@ -68,14 +68,14 @@ def derivatives_in_elliptic_cylindrical_coordinates():
     A = elip3d.mv('A','vector',f=True)
     B = elip3d.mv('B','bivector',f=True)
 
-    print 'f =',f
-    print 'A =',A
-    print 'B =',B
+    print('f =',f)
+    print('A =',A)
+    print('B =',B)
 
-    print 'grad*f =',grad*f
-    print 'grad|A =',grad|A
-    print '-I*(grad^A) =',-elip3d.i*(grad^A)
-    print 'grad^B =',grad^B
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('-I*(grad^A) =',-elip3d.i*(grad^A))
+    print('grad^B =',grad^B)
     return
 
 
@@ -91,12 +91,12 @@ def derivatives_in_prolate_spheroidal_coordinates():
     A = ps3d.mv('A','vector',f=True)
     B = ps3d.mv('B','bivector',f=True)
 
-    print 'f =',f
-    print 'A =',A
-    print 'B =',B
+    print('f =',f)
+    print('A =',A)
+    print('B =',B)
 
-    print 'grad*f =',grad*f
-    print 'grad|A =',grad|A
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
     (-ps3d.i*(grad^A)).Fmt(3,'-I*(grad^A)')
     (grad^B).Fmt(3,'grad^B')
     return
@@ -113,14 +113,14 @@ def derivatives_in_oblate_spheroidal_coordinates():
     A = Mv('A','vector',f=True)
     B = Mv('B','bivector',f=True)
 
-    print 'f =',f
-    print 'A =',A
-    print 'B =',B
+    print('f =',f)
+    print('A =',A)
+    print('B =',B)
 
-    print 'grad*f =',grad*f
-    print 'grad|A =',grad|A
-    print '-I*(grad^A) =',-Mv.i*(grad^A)
-    print 'grad^B =',grad^B
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('-I*(grad^A) =',-Mv.i*(grad^A))
+    print('grad^B =',grad^B)
     return
 
 
@@ -134,14 +134,14 @@ def derivatives_in_bipolar_coordinates():
     A = Mv('A','vector',f=True)
     B = Mv('B','bivector',f=True)
 
-    print 'f =',f
-    print 'A =',A
-    print 'B =',B
+    print('f =',f)
+    print('A =',A)
+    print('B =',B)
 
-    print 'grad*f =',grad*f
-    print 'grad|A =',grad|A
-    print '-I*(grad^A) =',-Mv.i*(grad^A)
-    print 'grad^B =',grad^B
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('-I*(grad^A) =',-Mv.i*(grad^A))
+    print('grad^B =',grad^B)
     return
 
 
@@ -157,14 +157,14 @@ def derivatives_in_toroidal_coordinates():
     A = Mv('A','vector',f=True)
     B = Mv('B','bivector',f=True)
 
-    print 'f =',f
-    print 'A =',A
-    print 'B =',B
+    print('f =',f)
+    print('A =',A)
+    print('B =',B)
 
-    print 'grad*f =',grad*f
-    print 'grad|A =',grad|A
-    print '-I*(grad^A) =',-Mv.i*(grad^A)
-    print 'grad^B =',grad^B
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('-I*(grad^A) =',-Mv.i*(grad^A))
+    print('grad^B =',grad^B)
     return
 
 

@@ -11,15 +11,15 @@ def main():
     u = o3d.mv('u','vector')
     v = o3d.mv('v','vector')
     w = o3d.mv('w','vector')
-    print u
-    print v
+    print(u)
+    print(v)
 
     uv = u^v
-    print uv
-    print uv.is_blade()
+    print(uv)
+    print(uv.is_blade())
 
     exp_uv = uv.exp()
-    print 'exp(uv) =', exp_uv
+    print('exp(uv) =', exp_uv)
 
     return
 

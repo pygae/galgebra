@@ -10,14 +10,14 @@ f = o3d.mv('f', 'scalar', f=True)
 F = o3d.mv('F', 'vector', f=True)
 B = o3d.mv('B', 'bivector', f=True)
 l = [f,F,B]
-print Fmt(l)
-print Fmt(l,1)
-print F.Fmt(3)
-print B.Fmt(3)
+print(Fmt(l))
+print(Fmt(l,1))
+print(F.Fmt(3))
+print(B.Fmt(3))
 
 lap = o3d.grad*o3d.grad
-print r'%\nabla^{2} = \nabla\cdot\nabla =', lap
+print(r'%\nabla^{2} = \nabla\cdot\nabla =', lap)
 dop = lap + o3d.grad
-print dop.Fmt(fmt=3,dop_fmt=3)
+print(dop.Fmt(fmt=3,dop_fmt=3))
 
 xpdf(paper=(6, 7))

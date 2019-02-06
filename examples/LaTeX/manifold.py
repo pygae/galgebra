@@ -21,15 +21,15 @@ sub_coords = (u,v)
 
 smap = [1, u, v]  # Coordinate map for sphere of r = 1 in 3-d
 
-print r'(u,v)\rightarrow (r,\theta,\phi) = ',smap
+print(r'(u,v)\rightarrow (r,\theta,\phi) = ',smap)
 
 #Define unit sphere manifold
 
 sph2d = sp3d.sm(smap,sub_coords)
 
-print '#Unit Sphere Manifold:'
+print('#Unit Sphere Manifold:')
 
-print 'g =',sph2d.g
+print('g =',sph2d.g)
 
 (eu,ev) = sph2d.mv()
 
@@ -40,19 +40,19 @@ b = sph2d.mv('b','vector')
 c = sph2d.mv('c','vector')
 f = sph2d.mv('f','vector',f=True)
 
-print 'a =', a
-print 'f =', f
-print r'%\nabla =', sph2d.grad
+print('a =', a)
+print('f =', f)
+print(r'%\nabla =', sph2d.grad)
 
 #Define directional derivative in direction a for unit sphere manifold
 
 dd = a|sph2d.grad
 
-print r'%a\cdot\nabla =', dd
-print r'%\paren{a\cdot\nabla}\bm{e}_u =', dd * eu
-print r'%\paren{a\cdot\nabla}\bm{e}_v =', dd * ev
-print r'%\paren{a\cdot\nabla}f =',dd * f
-print r'%\nabla f =', sph2d.grad * f
+print(r'%a\cdot\nabla =', dd)
+print(r'%\paren{a\cdot\nabla}\bm{e}_u =', dd * eu)
+print(r'%\paren{a\cdot\nabla}\bm{e}_v =', dd * ev)
+print(r'%\paren{a\cdot\nabla}f =',dd * f)
+print(r'%\nabla f =', sph2d.grad * f)
 
 a1 = sph2d.mv('a_1','vector')
 a2 = sph2d.mv('a_2','vector')
@@ -68,16 +68,16 @@ crv1d = sph2d.sm([us,vs],[s])
 
 (es,) = crv1d.mv()
 
-print '#1-D Manifold On Unit Sphere:'
+print('#1-D Manifold On Unit Sphere:')
 
-print r'%\nabla =', crv1d.grad
+print(r'%\nabla =', crv1d.grad)
 
 #Define scalar and vector fields on 1-d manifold tangent space
 
 g = crv1d.mv('g','scalar',f=True)
 h = crv1d.mv('h','vector',f=True)
 
-print r'%\nabla g =', crv1d.grad * g
-print r'%\nabla \cdot \bm{h} =', crv1d.grad | h
+print(r'%\nabla g =', crv1d.grad * g)
+print(r'%\nabla \cdot \bm{h} =', crv1d.grad | h)
 
 xpdf()
