@@ -18,10 +18,15 @@ Installing Galgebra
 
 ### Dependencies
 
-- [Python](https://www.python.org/) 2.7
-  - with experimental Python 3 support
+- [Python](https://www.python.org/) 2.7 & 3
   - tests pass under both Python 2.7 & 3.6
 - [SymPy](https://www.sympy.org)
+
+### Installing Galgebra From PyPI
+
+```bash
+pip install galgebra
+```
 
 ### Installing Galgebra From Source
 
@@ -30,8 +35,6 @@ To install from local source code, run from the repository root:
 ```bash
 pip install .
 ```
-
-We are also working towards a PyPI release based on pygae/galgebra.
 
 ### Running tests to verify the installation
 
@@ -50,10 +53,6 @@ pytest test
 
 TODO
 -----
-
-Get compatible with python 3
-
-Get Travis set up with some good tests
 
 Get the docs on read the docs
 
