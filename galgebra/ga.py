@@ -1,9 +1,5 @@
 # ga.py
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import operator
 import copy
 from sympy import diff, Rational, Symbol, S, Mul, Pow, Add, \
@@ -17,6 +13,7 @@ from . import printer
 from . import metric
 from . import mv
 from . import lt
+from . import utils
 from functools import reduce
 
 half = Rational(1, 2)
@@ -443,7 +440,7 @@ class Ga(metric.Metric):
 
         kwargs['ga'] = self
 
-        if not isinstance(root,str):
+        if not utils.isstr(root):
             return mv.Mv(root, *kargs, **kwargs)
 
         if ' ' in root and ' ' not in kargs[0]:
@@ -1838,7 +1835,6 @@ class Sm(Ga):
         u = kargs[0]  # Coordinate map or vector embedding to define submanifold
         coords = kargs[1]  # List of cordinates
         ga = kwargs['ga']  # base geometric algebra
-        self.wedge_print = kwargs['wedge']
         if ga is None:
             raise ValueError('Base geometric algebra must be specified for submanifold.')
 

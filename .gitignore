@@ -109,3 +109,9 @@ venv.bak/
 
 # backup files from 2to3
 **/*.bak
+
+# Sphinx
+doc/_build
+doc/python/*.tex
+doc/python/*.aux
+doc/python/*.bak.pdf

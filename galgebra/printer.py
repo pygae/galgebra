@@ -1,9 +1,5 @@
 #printer.py
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 import sys
 import io
@@ -15,6 +11,7 @@ from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
+from . import utils
 
 try:
     from IPython.display import display, Latex, Math, display_latex
@@ -30,9 +27,9 @@ from inspect import getouterframes, currentframe
 Format_cnt = 0
 
 ip_cmds = \
-r"""
-$\\DeclareMathOperator{\Tr}{Tr}
-\\DeclareMathOperator{\Adj}{Adj}
+"""
+$\\DeclareMathOperator{\\Tr}{Tr}
+\\DeclareMathOperator{\\Adj}{Adj}
 \\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
 \\newcommand{\\lp}{\\left (}
 \\newcommand{\\rp}{\\right )}
@@ -59,6 +56,7 @@ print_replace_old = None
 print_replace_new = None
 
 SYS_CMD = {'linux2': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
+           'linux': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
            'win32': {'rm': 'del', 'evince': '', 'null': ' > NUL', '&': ''},
            'darwin': {'rm': 'rm', 'evince': 'open', 'null': ' > /dev/null', '&': '&'}}
 
@@ -214,7 +212,7 @@ def oprint(*args, **kwargs):
     else:
         dict_mode = False
 
-    if isinstance(args[0], str) or args[0] is None:
+    if utils.isstr(args[0]) or args[0] is None:
         titles = list(islice(args, None, None, 2))
         objs = tuple(islice(args, 1, None, 2))
         if len(args) > 2:
@@ -471,7 +469,7 @@ class GaLatexPrinter(LatexPrinter):
     inv_trig_style = None
 
     preamble = \
-r"""
+"""
 \\pagestyle{empty}
 \\usepackage[latin1]{inputenc}
 \\usepackage{amsmath}
@@ -486,8 +484,8 @@ r"""
 \\usepackage{breqn}
 \\definecolor{gray}{rgb}{0.95,0.95,0.95}
 \\setlength{\\parindent}{0pt}
-\\DeclareMathOperator{\Tr}{Tr}
-\\DeclareMathOperator{\Adj}{Adj}
+\\DeclareMathOperator{\\Tr}{Tr}
+\\DeclareMathOperator{\\Adj}{Adj}
 \\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
 \\newcommand{\\lp}{\\left (}
 \\newcommand{\\rp}{\\right )}

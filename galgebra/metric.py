@@ -1,17 +1,15 @@
 #metric.py
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 import sys
 import copy
 import itertools
 from sympy import diff, trigsimp, Matrix, Rational, \
     sqf_list, Symbol, sqrt, eye, zeros, S, expand, Mul, \
     Add, simplify, together, ratsimp, Expr, latex, \
-    numbers, Function
+    Function
 
 from . import printer
+from . import utils
 
 half = Rational(1, 2)
 
@@ -202,22 +200,12 @@ class Simp:
                 obj += coef * base
         else:
             for (coef, base) in zip(coefs, bases):
-                obj += modes(coef) * base
+                obj += Simp.modes(coef) * base
         return obj
 
     @staticmethod
     def applymv(mv):
-        (coefs, bases) = linear_expand(mv.obj)
-        obj = S(0)
-        if isinstance(Simp.modes, list) or isinstance(Simp.modes, tuple):
-            for (coef, base) in zip(coefs, bases):
-                for mode in Simp.modes:
-                    coef = mode(coef)
-                obj += coef * base
-        else:
-            for (coef, base) in zip(coefs, bases):
-                obj += modes(coef) * base
-        mv.obj = obj
+        mv.obj = Simp.apply(mv.obj)
         return mv
 
 
@@ -306,7 +294,7 @@ class Metric(object):
             s = self.n * (s[:-1] + ',')
             s = s[:-1]
 
-        if isinstance(s, str):
+        if utils.isstr(s):
             rows = s.split(',')
             n_rows = len(rows)
 
@@ -499,7 +487,7 @@ class Metric(object):
                         Gamma_ijk = S(0)
                         l = 0
                         for Gijl in Gij:
-                            Gamma_ijk += Gijl * g(l,)
+                            Gamma_ijk += Gijl * self.g(l,)
 
             else:
                 return
@@ -563,7 +551,7 @@ class Metric(object):
                 return
             else:
                 raise ValueError('self.sig = ' + str(self.sig) + ' > self.n, not an allowed hint')
-        if isinstance(self.sig,str):
+        if utils.isstr(self.sig):
             if self.sig == 'e':  # Euclidean metric signature
                 self.sig = (self.n, 0)
             elif self.sig == 'm+':  # Minkowski metric signature (n-1,1)
@@ -583,7 +571,7 @@ class Metric(object):
         self.name = 'GA' + str(Metric.count)
         Metric.count += 1
 
-        if not isinstance(basis, str):
+        if not utils.isstr(basis):
             raise TypeError('"' + str(basis) + '" must be string')
 
         X = kwargs['X']  # Vector manifold
@@ -658,12 +646,12 @@ class Metric(object):
                         printer.oprint('X_{i}', X, 'D_{i}X_{j}', dX)
 
         else:  # metric is symbolic or list of lists of functions of coordinates
-            if isinstance(g, str):  # metric elements are symbols or constants
+            if utils.isstr(g):  # metric elements are symbols or constants
                 if g == 'g':  # general symbolic metric tensor (g_ij functions of position)
                     g_lst = []
                     g_inv_lst = []
-                    for coord1 in self.coords:
-                        i1 = str(coord2)
+                    for coord in self.coords:
+                        i1 = str(coord)
                         tmp = []
                         tmp_inv = []
                         for coord2 in self.coords:

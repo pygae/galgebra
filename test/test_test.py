@@ -7,6 +7,7 @@ from galgebra.mv import Mv, Nga
 # for backward compatibility
 from galgebra.mv import MV, ONE, ZERO, HALF
 from galgebra import ga
+from galgebra import utils
 
 def F(x):
     global n, nbar
@@ -14,7 +15,7 @@ def F(x):
     return(Fx)
 
 def make_vector(a, n=3, ga=None):
-    if isinstance(a,str):
+    if utils.isstr(a):
         v = zero
         for i in range(n):
             a_i = Symbol(a+str(i+1))
