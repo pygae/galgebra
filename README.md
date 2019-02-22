@@ -3,6 +3,7 @@ Galgebra
 
 Symbolic Geometric Algebra/Calculus package for SymPy.
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/fe7642c639a54d909a36c75db6c2fa49)](https://app.codacy.com/app/utensilcandel/galgebra?utm_source=github.com&utm_medium=referral&utm_content=pygae/galgebra&utm_campaign=Badge_Grade_Settings)
 [![Build Status](https://travis-ci.com/pygae/galgebra.svg?branch=master)](https://travis-ci.com/pygae/galgebra) [![codecov](https://codecov.io/gh/pygae/galgebra/branch/master/graph/badge.svg)](https://codecov.io/gh/pygae/galgebra)
 
 This package was originally written by Alan Bromborsky.
