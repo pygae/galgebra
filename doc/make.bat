@@ -12,6 +12,18 @@ set BUILDDIR=_build
 
 if "%1" == "" goto help
 
+notedown >NUL 2>NUL
+if errorlevel 9009 (
+	echo.
+	echo.The 'notedown' command was not found. 
+	echo.
+	echo.If you don't have notedown installed, grab it from
+	echo.https://github.com/aaren/notedown or install it by
+	echo.
+	echo.        pip install notedown
+	exit /b 1
+)
+
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
 	echo.
@@ -25,6 +37,7 @@ if errorlevel 9009 (
 	exit /b 1
 )
 
+notedown galgebra.md > galgebra_guide.ipynb
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS%
 goto end
 
