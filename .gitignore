@@ -111,12 +111,16 @@ venv.bak/
 **/*.bak
 
 # Sphinx
-<<<<<<< HEAD
 doc/_build
 doc/generated
 doc/python/*.tex
 doc/python/*.aux
 doc/python/*.bak.pdf
-=======
-doc/_build
->>>>>>> 9a6fdce... Setup nbsphinx
+
+# LaTeX generated
+doc/*.fdb_latexmk
+doc/*.aux
+doc/*.toc
+doc/*.synctex.gz
+doc/*.out
+doc/*.fls
