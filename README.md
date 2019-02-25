@@ -18,8 +18,7 @@ Installing Galgebra
 
 ### Dependencies
 
-- [Python](https://www.python.org/) 2.7 & 3
-  - tests pass under both Python 2.7 & 3.6
+- [Python](https://www.python.org/) 2.7 or 3
 - [SymPy](https://www.sympy.org)
 
 ### Installing Galgebra From PyPI
@@ -59,4 +58,3 @@ Get the docs on read the docs
 Ensure functions are documented
 
 Set up proper release version system
-

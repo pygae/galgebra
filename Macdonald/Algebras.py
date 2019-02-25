@@ -39,12 +39,12 @@ sp3 = Ga('e_r e_phi e_theta', g=[1, r**2, r**2*sin(ph)**2], coords=sp3coords)
 # (r phi theta) is a right-handed system 
 
 # st4: Spacetime Algebra I
-st4coords = (t,x,y,z) = symbols('t x y z', real=True) 
+st4coords = (t,x,y,z) = symbols('t x y z', real=True)
 st4 = Ga('e_t e_x e_y e_z', g=[1,-1,-1,-1], coords=st4coords)
 (et, ex, ey, ez) = st4.mv()
 
 # st4: Spacetime Algebra II
-st4coords = (t,x,y,z) = symbols('t x y z', real=True) 
+st4coords = (t,x,y,z) = symbols('t x y z', real=True)
 st4 = Ga('e_t e_x e_y e_z', g=[-1,1,1,1], coords=st4coords)
 (et, ex, ey, ez) = st4.mv()
 
