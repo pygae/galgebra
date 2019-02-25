@@ -23,13 +23,13 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'galgebra'
-copyright = '2018, Alan Bromborsky and Galgebra team'
+copyright = '2014-2019, Alan Bromborsky and Galgebra team'
 author = 'Alan Bromborsky'
 
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '0.4.1.1' 
+release = '0.4.3' 
 
 # -- General configuration ---------------------------------------------------
 
