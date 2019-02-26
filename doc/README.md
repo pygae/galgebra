@@ -14,8 +14,8 @@ The structure of the `doc` diretory is:
 │                                   # galgebra_guide.ipynb and api.rst
 ├─ galgebra.tex                     # The orignal LaTeX source that generated books/galgebra.pdf
 ├─ galgebra.md                      # The Markdown source semi-auto converted from galgebra.tex
-│                                   # please edit this instead of galgebra.tex (deprecated by galgebra.md)
-│                                   # or galgebra_guide.ipynb (auto generated from galgebra.md)
+│                                   # please edit this instead of galgebra.tex (deprecated by it)
+│                                   # or galgebra_guide.ipynb (auto generated from it)
 ├─ galgebra_guide.ipynb             # The Jupyter notebook converted from galgebra.md
 ├─ api.rst                          # Use automodule to extract doc from galgebra Python source files
 │
@@ -37,7 +37,7 @@ The structure of the `doc` diretory is:
 │
 │                                   # Legacy Directories:
 │                                   #
-├─ python/                          # Some Python scripts referenced in the doc but not all of them works now
+├─ python/                          # Some Python scripts referenced in the doc but not all of them works
 ├─ ipython/                         # Some Jupyter notebooks that are now possibly obsolete
-└─ books/                           # Books about galgebra or Geometric Algebra in general from different sources
+└─ books/                           # Books about galgebra or Geometric Algebra from different sources
 ```

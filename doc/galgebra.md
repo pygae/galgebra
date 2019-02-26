@@ -569,9 +569,9 @@ $$\be \newcommand{\f}[2]{{#1}\lp {#2} \rp }
 If $I$ is the pseudo scalar for ${{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}$ we also have the following definitions for determinate, trace, and adjoint ($\overline{T}$) of $\underline{T}$
 
 $$\begin{align}
-    \f{\underline{T}}{I} \equiv&\; \f{\det}{\underline{T}}I\text{,\footnotemark} \label{eq_82}\\
-    \f{\tr}{\underline{T}} \equiv&\; \nabla_{y}\cdot\f{\underline{T}}{y}\text{,\footnotemark} \label{eq_83}\\ \addtocounter{footnote}{-1}
-    x\cdot \f{\overline{T}}{y} \equiv&\; y\cdot \f{\underline{T}}{x}.\text{\footnotemark} \label{eq_84}\\ \addtocounter{footnote}{-1}
+    \f{\underline{T}}{I} \equiv&\; \f{\det}{\underline{T}}I\text{,} \label{eq_82}\\
+    \f{\tr}{\underline{T}} \equiv&\; \nabla_{y}\cdot\f{\underline{T}}{y}\text{,} \label{eq_83}\\ 
+    x\cdot \f{\overline{T}}{y} \equiv&\; y\cdot \f{\underline{T}}{x}.\ \label{eq_84}\\
 \end{align}$$
 
 If ${\left \{{{{\eb}}_{i}} \rbrc}$ is a basis for ${{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}$ then we can represent $\underline{T}$ with the matrix $\underline{T}_{i}^{j}$ used as follows (Einstein summation convention as usual) - 
@@ -698,7 +698,7 @@ In the representation of $T$ one could have any combination of covariant (lower)
 
 To convert a covariant index to a contravariant index simply consider
 
-$$\begin{align}
+$$\begin{aligned}
     \f{T}{\eb_{i_{1}},\dots,\eb^{i_{j}},\dots,\eb_{i_{r}}} =& \f{T}{\eb_{i_{1}},\dots,g^{i_{j}k_{j}}\eb_{k_{j}},\dots,\eb_{i_{r}}} \nonumber \\
                                                            =& g^{i_{j}k_{j}}\f{T}{\eb_{i_{1}},\dots,\eb_{k_{j}},\dots,\eb_{i_{r}}} \nonumber \\
     T_{i_{1}\dots}{}^{i_{j}}{}_{\dots i_{r}} =& g^{i_{j}k_{j}}T\indices{_{i_{1}\dots i_{j}\dots i_{r}}}.
@@ -933,10 +933,9 @@ For those users who wish to define a default operator precedence the functions `
 
 > The function `GAeval()` returns a multivector expression defined by the string `s` where the operations in the string are parsed according to the precedences defined by `def_prec()`. `pstr` is a flag to print the input and output of `GAeval()` for debugging purposes. `GAeval()` works by adding parenthesis to the input string `s` with the precedence defined by `op_ord=’<>|,,*’`. Then the parsed string is converted to a *sympy* expression using the python `eval()` function. For example consider where `X`, `Y`, `Z`, and `W` are multivectors
 >
-> ``` {numbers="none"}
->       def_prec(globals())
->       V = GAeval('X|Y^Z*W')
->     
+> ```python
+> def_prec(globals())
+> V = GAeval('X|Y^Z*W')
 > ```
 >
 > The *sympy* variable `V` would evaluate to `((X|Y)^Z)*W`.
@@ -946,8 +945,8 @@ Vector Basis and Metric
 
 The two structures that define the `metric` class (inherited by the geometric algebra class) are the symbolic basis vectors and the symbolic metric. The symbolic basis vectors are input as a string with the symbol name separated by spaces. For example if we are calculating the geometric algebra of a system with three vectors that we wish to denote as `a0`, `a1`, and `a2` we would define the string variable:
 
-``` {numbers="none"}
-  basis = 'a0 a1 a2'
+```python
+basis = 'a0 a1 a2'
 ```
 
 that would be input into the geometric algebra class instantiation function, `Ga()`. The next step would be to define the symbolic metric for the geometric algebra of the basis we have defined. The default metric is the most general and is the matrix of the following symbols
@@ -968,14 +967,14 @@ Note that the strings shown in the above equation are only used when the values 
 
 The default definition of $g$ can be overwritten by specifying a string that will define $g$. As an example consider a symbolic representation for conformal geometry. Define for a basis
 
-``` {numbers="none"}
-  basis = 'a0 a1 a2 n nbar'
+```python
+basis = 'a0 a1 a2 n nbar'
 ```
 
 and for a metric
 
-``` {numbers="none"}
-  g = '# # # 0 0, # # # 0 0, # # # 0 0, 0 0 0 0 2, 0 0 0 2 0'
+```python
+g = '# # # 0 0, # # # 0 0, # # # 0 0, 0 0 0 0 2, 0 0 0 2 0'
 ```
 
 then calling `cf3d = Ga(basis,g=g)` would initialize the metric tensor
@@ -995,27 +994,27 @@ Here we have specified that `n` and `nbar` are orthogonal to all the `a`’s, `(
 
 When `Ga` is called multivector representations of the basis local to the program are instantiated. For the case of an orthogonal 3-d vector space that means the symbolic vectors named `a0`, `a1`, and `a2` are created. We can instantiate the geometric algebra and obtain the basis vectors with -
 
-``` {numbers="none"}
-  o3d = Ga('a_1 a_2 a_3',g=[1,1,1])
-  (a_1,a_2,a_3) = o3d.mv()
+```python
+o3d = Ga('a_1 a_2 a_3',g=[1,1,1])
+(a_1,a_2,a_3) = o3d.mv()
 ```
 
 or use the `Ga.build()` function -
 
-``` {numbers="none"}
-  (o3d,a_1,a_2,a_3) = Ga.build('a_1 a_2 a_3',g=[1,1,1])
+```python
+(o3d,a_1,a_2,a_3) = Ga.build('a_1 a_2 a_3',g=[1,1,1])
 ```
 
 Note that the python variable name for a basis vector does not have to correspond to the name give in `Ga()` or `Ga.build()`, one may wish to use a shortened python variable name to reduce programming (typing) errors, for example one could use -
 
-``` {numbers="none"}
-  (o3d,a1,a2,a3) = Ga.build('a_1 a_2 a_3',g=[1,1,1])
+```python
+(o3d,a1,a2,a3) = Ga.build('a_1 a_2 a_3',g=[1,1,1])
 ```
 
 or
 
-``` {numbers="none"}
-  (st4d,g0,g1,g2,g3) = Ga.build('gamma_0 gamma_1 gamma_2 gamma_3',\
+```python
+(st4d,g0,g1,g2,g3) = Ga.build('gamma_0 gamma_1 gamma_2 gamma_3',\
                                 g=[1,-1,-1,-1])
 ```
 
@@ -1028,13 +1027,13 @@ Representation and Reduction of Multivector Bases
 
 In our symbolic geometric algebra all multivectors can be obtained from the symbolic basis vectors we have input, via the different operations available to geometric algebra. The first problem we have is representing the general multivector in terms terms of the basis vectors. To do this we form the ordered geometric products of the basis vectors and develop an internal representation of these products in terms of python classes. The ordered geometric products are all multivectors of the form $a_{i_{1}}a_{i_{2}}\dots a_{i_{r}}$ where $i_{1}<i_{2}<\dots <i_{r}$ and $r \le n$. We call these multivectors bases and represent them internally with non-commutative symbols so for example $a_{1}a_{2}a_{3}$ is represented by
 
-``` {numbers="none"}
+```python
 Symbol('a_1*a_2*a_3',commutative=False)
 ```
 
 In the simplest case of two basis vectors `a_1` and `a_2` we have a list of bases
 
-``` {numbers="none"}
+```python
 self.bases = [[Symbol('a_1',commutative=False,real=True),\
              Symbol('a_2',commutative=False,real=True)],\
              [Symbol('a_1*a_2',commutative=False,real=True)]]
@@ -1042,7 +1041,7 @@ self.bases = [[Symbol('a_1',commutative=False,real=True),\
 
 For the case of the basis blades we have
 
-``` {numbers="none"}
+```python
 self.blades = [[Symbol('a_1',commutative=False,real=True),\
               Symbol('a_2',commutative=False,real=True)],\
               [Symbol('a_1^a_2',commutative=False,real=True)]]
@@ -1050,7 +1049,7 @@ self.blades = [[Symbol('a_1',commutative=False,real=True),\
 
 The index tuples for the bases of each pseudo grade and each grade for the case of dimension 3 is
 
-``` {numbers="none"}
+```python
 self.indexes = (((0,),(1,),(2,)),((0,1),(0,2),(1,2)),((0,1,2)))
 ```
 
@@ -1061,7 +1060,7 @@ Base Representation of Multivectors
 
 In terms of the bases defined as non-commutative *sympy* symbols the general multivector is a linear combination (scalar *sympy* coefficients) of bases so that for the case of two bases the most general multivector is given by -
 
-``` {numbers="none"}
+```python
 A = A_0+A__1*self.bases[1][0]+A__2*self.bases[1][1]+\
     A__12*self.bases[2][0]
 ```
@@ -1079,30 +1078,30 @@ where $A_{r}$ is a multivector of grade $r$ and $b$ is a vector. For our example
 
 [h]
 
-``` {numbers="none"}
-   1 = 1
-   a0 = a0
-   a1 = a1
-   a2 = a2
-   a0^a1 = {-(a0.a1)}1+a0a1
-   a0^a2 = {-(a0.a2)}1+a0a2
-   a1^a2 = {-(a1.a2)}1+a1a2
-   a0^a1^a2 = {-(a1.a2)}a0+{(a0.a2)}a1+{-(a0.a1)}a2+a0a1a2
+```python
+1 = 1
+a0 = a0
+a1 = a1
+a2 = a2
+a0^a1 = {-(a0.a1)}1+a0a1
+a0^a2 = {-(a0.a2)}1+a0a2
+a1^a2 = {-(a1.a2)}1+a1a2
+a0^a1^a2 = {-(a1.a2)}a0+{(a0.a2)}a1+{-(a0.a1)}a2+a0a1a2
 ```
 
 [bladexpand]
 
 The important thing to notice about Table [bladexpand] is that it is a triagonal (lower triangular) system of equations so that using a simple back substitution algorithm we can solve for the pseudo bases in terms of the blades giving Table [baseexpand].
 
-``` {numbers="none"}
-   1 = 1
-   a0 = a0
-   a1 = a1
-   a2 = a2
-   a0a1 = {(a0.a1)}1+a0^a1
-   a0a2 = {(a0.a2)}1+a0^a2
-   a1a2 = {(a1.a2)}1+a1^a2
-   a0a1a2 = {(a1.a2)}a0+{-(a0.a2)}a1+{(a0.a1)}a2+a0^a1^a2
+```python
+1 = 1
+a0 = a0
+a1 = a1
+a2 = a2
+a0a1 = {(a0.a1)}1+a0^a1
+a0a2 = {(a0.a2)}1+a0^a2
+a1a2 = {(a1.a2)}1+a1^a2
+a0a1a2 = {(a1.a2)}a0+{-(a0.a2)}a1+{(a0.a1)}a2+a0^a1^a2
 ```
 
 [baseexpand]
@@ -1139,12 +1138,11 @@ The geometric algebra class is instantiated with
 
 > The `basis` and `g` parameters were described in section [BasisMetric]. If the metric is a function of position, if we have multivector fields, or we wish to calculate geometric derivatives a coordinate set, `coords`, is required. `coords` is a list of *sympy* symbols. For the case of instantiating a 3-d geometric algebra in spherical coordinates we have
 >
-> ``` {numbers="none"}
->     (r, th, phi) = coords = symbols('r,theta,phi', real=True)
->     basis = 'e_r e_theta e_phi'
->     g = [1, r**2, r**2*sin(th)**2]
->     sp3d = Ga(basis,g=g,coords=coords,norm=True)
->    
+> ```python
+> (r, th, phi) = coords = symbols('r,theta,phi', real=True)
+> basis = 'e_r e_theta e_phi'
+> g = [1, r**2, r**2*sin(th)**2]
+> sp3d = Ga(basis,g=g,coords=coords,norm=True)
 > ```
 >
 > The input `X` allows the metric to be input as a vector manifold. `X` is a list of functions of `coords` of dimension, $m$, equal to or greater than the number of coordinates. If `g=None` it is assumed that `X` is a vector in an $m$-dimensional orthonormal Euclidean vector space. If it is wished the embedding vector space to be non-Euclidean that condition is specified with `g`. For example if we wish the embedding space to be a 5-dimensional Minkowski space then `g=[-1,1,1,1,1]`. Then the Ga class uses `X` to calculate the manifold basis vectors as a function of the coordinates and from them the metric tensor.[12]
@@ -1179,9 +1177,8 @@ The geometric algebra class is instantiated with
 >
 > To get the basis vectors for `sp3d` we would have to use the member function `Ga.mv()` in the form
 >
-> ``` {numbers="none"}
->     (er,eth,ephi) = sp3d.mv()
->    
+> ```python
+> (er,eth,ephi) = sp3d.mv() 
 > ```
 
 To access the reciprocal basis vectors of the geometric algebra use the member function `mvr()`
@@ -1190,10 +1187,11 @@ To access the reciprocal basis vectors of the geometric algebra use the member f
 
 > `Ga.mvr(norm)` returns the reciprocal basis vectors as a tuple. This allows the programmer to attach any python variable names to the reciprocal basis vectors that is convenient. For example (demonstrating the use of both `mv()` and `mvr()`)
 >
->         (e_x,e_y,e_z) = o3d.mv()
->         (e__x,e__y,e__z) = o3d.mvr()
+> ```python
+> (e_x,e_y,e_z) = o3d.mv()
+> (e__x,e__y,e__z) = o3d.mvr()
+> ```
 >         
->
 > If `norm=’True’` or the basis vectors are orthogonal the dot product of the basis vector and the corresponding reciprocal basis vector is one ${\lp {e_{i}\cdot e^{j}=\delta_{i}^{j}} \rp }$. If `norm=’False’` and the basis is non-orthogonal The dot product of the basis vector and the corresponding reciprocal basis vector is the square of the pseudo scalar, $I^{2}$, of the geometric algebra ${\lp {e_{i}\cdot e^{j}=E^{2}\delta_{i}^{j}} \rp }$.
 
 In addition to the basis vectors, if coordinates are defined for the geometric algebra, the left and right geometric derivative operators are calculated and accessed with the `Ga` member function `grads()`.
@@ -1202,9 +1200,8 @@ In addition to the basis vectors, if coordinates are defined for the geometric a
 
 > `Ga.grads()` returns a tuple with the left and right geometric derivative operators. A typical usage would be
 >
-> ``` {numbers="none"}
->     (grad,rgrad) = sp3d.grads()
->     
+> ```python
+> (grad,rgrad) = sp3d.grads()
 > ```
 >
 > for the spherical 3-d geometric algebra. The left derivative ${\lp {{\texttt{grad}} ={\boldsymbol{\nabla}}} \rp }$ and the right derivative ${\lp {{\texttt{rgrad}} = {\boldsymbol{\bar{\nabla}}}} \rp }$ have been explained in section [ldops]. Again the names `grad` and `rgrad` used in a program are whatever the user chooses them to be. In the previous example `grad` and `rgrad` are used.
@@ -1214,14 +1211,16 @@ an alternative instantiation method is
 `Ga.build(basis, g=None, coords=None, X=None, norm=False, debug=False)`
 
 > The input parameters for `Ga.build()` are the same as for `Ga()`. The difference is that in addition to returning the geometric algebra `Ga.build()` returns the basis vectors at the same time. Using `Ga.build()` in the previous example gives
->
->     (r, th, phi) = coords = symbols('r,theta,phi', real=True)
->     basis = 'e_r e_theta e_phi'
->     g = [1, r**2, r**2*sin(th)**2]
->     (sp3d,er,eth,ephi) = Ga.build(basis,g=g,coord=coords,norm=True)
+
+> ```python
+> (r, th, phi) = coords = symbols('r,theta,phi', real=True)
+> basis = 'e_r e_theta e_phi'
+> g = [1, r**2, r**2*sin(th)**2]
+> (sp3d,er,eth,ephi) = Ga.build(basis,g=g,coord=coords,norm=True)
+> ```
 >         
 
-To access the pseudo scalar of the geometric algebra us the member function `I()`.
+To access the pseudo scalar of the geometric algebra use the member function `I()`.
 
 `Ga.I()`
 
@@ -1251,14 +1250,16 @@ Since we need to associate each multivector with the geometric algebra that cont
 
 > As an example of both instantiating a geometric algebra and multivectors consider the following code fragment for a 3-d Euclidean geometric algebra.
 >
->     from sympy import symbols
->     from ga import Ga
->     (x, y, z) = coords = symbols('x,y,z',real=True)
->     o3d = Ga('e_x e_y e_z', g=[1,1,1], coords=coords)
->     (ex, ey, ez) = o3d.mv()
->     V = o3d.mv('V','vector',f=True)
->     f = o3d.mv(x*y*z)
->     B = o3d.mv('B',2)
+> ```python
+> from sympy import symbols
+> from ga import Ga
+> (x, y, z) = coords = symbols('x,y,z',real=True)
+> o3d = Ga('e_x e_y e_z', g=[1,1,1], coords=coords)
+> (ex, ey, ez) = o3d.mv()
+> V = o3d.mv('V','vector',f=True)
+> f = o3d.mv(x*y*z)
+> B = o3d.mv('B',2)
+> ```
 >
 > First consider the multivector instantiation in line 6,
 >
@@ -1266,7 +1267,7 @@ Since we need to associate each multivector with the geometric algebra that cont
 >
 > .Here a 3-dimensional multivector field that is a function of `x`, `y`, and `z` (`f=True`) is being instantiated. If latex output were used (to be discussed later) the multivector `V` would be displayed as
 > 
-> $$$\be V^{x}\eb_{x} + V^{y}\eb_{y} + V^{z}\eb_{z} \ee$$
+> $$\be V^{x}\eb_{x} + V^{y}\eb_{y} + V^{z}\eb_{z} \ee$$
 > 
 > Where the coefficients of the basis vectors are generalized *sympy* functions of the coordinates. If `f=(x,y)` then the coefficients would be functions of `x` and `y`. In general is `f` is a tuple of symbols then the coefficients of the basis would be functions of those symbols. The superscripts[16] are formed from the coordinate symbols or if there are no coordinates from the subscripts of the basis vectors. The types of name and modes available for multivector instantiation are
 >
@@ -1283,35 +1284,39 @@ Since we need to associate each multivector with the geometric algebra that cont
 >
 > Line 5 of the previous listing illustrates the case of using the `mv` member function with no arguments. The code does not return a multivector, but rather a tuple or the basis vectors of the geometric algebra `o3d`. The elements of the tuple then can be used to construct multivectors, or multivector fields through the operations of addition, subtraction, multiplication (geometric, inner, and outer products and left and right contraction). As an example we could construct the vector function
 >
-> ``` {numbers="none"}
+> ```python
 > F = x**2*ex + z*ey + x*y*ez
 > ```
 >
 > or the bivector function
 >
-> ``` {numbers="none"}
+> ```python
 > B = z*(ex^ey) + y*(ey^ez) + y*(ex^ez).
 > ```
 >
 > Line 7 is an example of instantiating a multivector scalar function (a multivector with only a scalar part). If we print `f` the result is `x*y*z`. Line 8 is an example of instantiating a grade $r$ (in the example a grade 2) multivector where
 >
-> $$$\be B = B^{xy}{\eb}_{x}{\wedge}{\eb}_{y}+B^{yz}{\eb}_{y}{\wedge}{\eb}_{z}+B^{xz}{\eb}_{x}{\wedge}{\eb}_{z}. \ee$$$
+> $$\be B = B^{xy}{\eb}_{x}{\wedge}{\eb}_{y}+B^{yz}{\eb}_{y}{\wedge}{\eb}_{z}+B^{xz}{\eb}_{x}{\wedge}{\eb}_{z}. \ee$$
 
 If one wished to calculate the left and right geometric derivatives of `F` and `B` the required code would be
 
-    (grad,rgrad) = o3d.grads()
-    dF = grad*F
-    dB = grad*B
-    dFr = F*rgrad
-    dBr = B*rgrad.
+```python
+(grad,rgrad) = o3d.grads()
+dF = grad*F
+dB = grad*B
+dFr = F*rgrad
+dBr = B*rgrad
+```
 
 `dF`, `dB`, `dFr`, and `dBr` are all multivector functions. For the code where the order of the operations are reversed
 
-    (grad,rgrad) = o3d.grads()
-    dFop = F*grad
-    dBop = B*grad
-    dFrop = rgrad*F
-    dBrop = rgrad*B.
+```python
+(grad,rgrad) = o3d.grads()
+dFop = F*grad
+dBop = B*grad
+dFrop = rgrad*F
+dBrop = rgrad*B
+```
 
 `dFop`, `dBop`, `dFrop`, and `dBrop` are all multivector differential operators (again see section [ldops]).
 
@@ -1320,8 +1325,7 @@ Backward Compatibility Class MV
 
 In order to be backward compatible with older versions of *galgebra* we introduce the class MV which is inherits it’s functions from then class Mv. To instantiate a geometric algebra using MV use the static function
 
-    MV.setup(basis, metric=None, coords=None, rframe=False,\
-    debug=False,curv=(None,None))}
+`MV.setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None))`
 
 > This function allows a single geometric algebra to be created. If the function is called more than once the old geometric algebra is overwritten by the new geometric algebra. The named input `metric` is the same as the named input `g` in the current version of *galgebra*. Likewise, `basis`, `coords`, and `debug` are the same in the old and current versions of *galgebra*[17]. Due to improvements in *sympy* the inputs `rframe` and `curv[1]` are no longer required. `curv[0]` is the vector function (list or tuple of scalar functions) of the coordinates required to define a vector manifold. For compatibility with the old version of *galgebra* if `curv` is used `metric` should be a orthonormal Euclidean metric of the same dimension as `curv[0]`. It is strongly suggested that one use the new methods of defining a geometric algebra on a manifold.
 
@@ -1476,9 +1480,8 @@ A^{2} > 0 : & & &\\
 
 > `mode` is a *sympy* simplification function of a list/tuple of *sympy* simplification functions that are applied in sequence (if more than one function) each coefficient of the multivector. For example if we wished to applied `trigsimp` and `ratsimp` *sympy* functions to the multivector `F` the code would be
 >
-> ``` {numbers="none"}
->    Fsimp = F.simplify(mode=[trigsimp,ratsimp]).
->    
+> ```python
+> Fsimp = F.simplify(mode=[trigsimp,ratsimp]).
 > ```
 >
 > Actually `simplify` could be used to apply any scalar *sympy* function to the coefficients of the multivector.
@@ -1582,10 +1585,12 @@ Multivector Derivatives
 
 The various derivatives of a multivector function is accomplished by multiplying the gradient operator vector with the function. The gradient operation vector is returned by the `Ga.grads()` function if coordinates are defined. For example if we have for a 3-D vector space
 
-        X = (x,y,z) = symbols('x y z')
-        o3d = Ga('e*x|y|z',metric='[1,1,1]',coords=X)
-        (ex,ey,ez) = o3d.mv()
-        (grad,rgrad) = o3d.grads()
+```python
+X = (x,y,z) = symbols('x y z')
+o3d = Ga('e*x|y|z',metric='[1,1,1]',coords=X)
+(ex,ey,ez) = o3d.mv()
+(grad,rgrad) = o3d.grads()
+```
 
 Then the gradient operator vector is `grad` (actually the user can give it any name he wants to). The derivatives of the multivector function `F = o3d.mv(’F’,’mv’,f=True)` are given by multiplying by the left geometric derivative operator and the right geometric derivative operator ($\T{grad} = \nabla$ and $\T{rgrad} = \bar{\nabla}$). Another option is to use the radiant operator members of the geometric algebra directly where we have $\nabla = {\texttt{o3d.grad}}$ and $\bar{\nabla} = {\texttt{o3d.rgrad}}$.
 
@@ -1628,13 +1633,13 @@ In general the geometric algebra that the user defines exists on the tangent spa
 
 > To define the submanifold we must def a coordinate map from the coordinates of the submanifold to each of the coordinates of the base manifold. Thus the arguments `map` and `coords` are respectively lists of functions and symbols. The list of symbols, `coords`, are the coordinates of the submanifold and are of length equal to the dimension of the submanifold. The list of functions, `map`, define the mapping from the coordinate space of the submanifold to the coordinate space of the base manifold. The length of `map` is equal to the dimension of the base manifold and each function in `map` is a function of the coordinates of the submanifold. `root` is the root of the string that is used to name the basis vectors of the submanifold. The default value of `root` is `e`. The result of this is that if the *sympy* symbols for the coordinates are `u` and `v` (two dimensional manifold) the text symbols for the basis vectors are `e_u` and `e_v` or in LaTeX $e_{u}$ and $e_{v}$. As a concrete example consider the following code. The output of this program (using LaTeX) is
 >
-> ![image](python/submanifold.pdf)
+> ![](images/submanifold.svg)
 >
 > The base manifold, `sp3d`, is a 3-d Euclidean space using standard spherical coordinates. The submanifold `sph2d` of `sp3d` is a spherical surface of radius $1$. To take the sumanifold operation one step further the submanifold `cir1d` of `sph2d` is a circle in `sph2d` where the latitude of the circle is $\pi/8$.
 >
-> In each case, for demonstration purposes, a scalar and vector function on each manifold is defined (`f` and `F` for the 2-d manifold and `h` and `H` for the 1-d manifold) and the geometric derivative of each function is taken. The manifold mapping and the metric tensor for `cir1d` of `sph2d` are also shown. Note that if the submanifold basis vectors are not normalized[21] the program output is.
+> In each case, for demonstration purposes, a scalar and vector function on each manifold is defined (`f` and `F` for the 2-d manifold and `h` and `H` for the 1-d manifold) and the geometric derivative of each function is taken. The manifold mapping and the metric tensor for `cir1d` of `sph2d` are also shown. Note that if the submanifold basis vectors are not normalized[21] the program output is
 >
-> ![image](python/submanifold1.pdf)
+> ![](images/submanifold1.svg)
 
 Linear Transformations
 ----------------------
@@ -1657,7 +1662,7 @@ The mathematical background for linear transformations is in section [Ltrans]. 
 
 The different methods of instantiation are demonstrated in the code `LtransInst.py` with output
 
-![image](python/LtransInst.pdf)
+![](images/LtransInst.svg)
 
 The member function of the `Lt` class are
 
@@ -1687,14 +1692,14 @@ The `matrix()` member function returns a *sympy* `Matrix` object which can be pr
 
 Note that in `Ltrans.py` lines 30 and 49 are commented out since the latex output of those statements would run off the page. The use can uncomment those statements and run the code in the “LaTeX docs” directory to see the output. The output of this code is.
 
-![image](python/Ltrans.pdf)
+![](images/Ltrans.svg)
 
 Differential Operators
 ----------------------
 
 For the mathematical treatment of linear multivector differential operators see section [ldops]. The is a differential operator class `Dop`. However, one never needs to use it directly. The operators are constructed from linear combinations of multivector products of the operators `Ga.grad` and `Ga.rgrad` as shown in the following code for both orthogonal rectangular and spherical 3-d coordinate systems. The output of this code is.
 
-![image](python/Dop.pdf)
+![](images/Dop.svg)
 
 Note that for print an operator in the IPython notebook one must implement (yet to be done) a printing method similar to `mv.Fmt()`.
 
@@ -1817,15 +1822,17 @@ For latex printing one uses one functions from the `ga` module and one function 
 
 As an example of using the latex printing options when the following code is executed
 
-        from printer import Format, xpdf
-        from ga import Ga
-        Format()
-        g3d = Ga('e*x|y|z')
-        A = g3d.mv('A','mv')
-        print r'\bm{A} =',A
-        print A.Fmt(2,r'\bm{A}')
-        print A.Fmt(3,r'\bm{A}')
-        xpdf()
+```python
+from printer import Format, xpdf
+from ga import Ga
+Format()
+g3d = Ga('e*x|y|z')
+A = g3d.mv('A','mv')
+print r'\bm{A} =',A
+print A.Fmt(2,r'\bm{A}')
+print A.Fmt(3,r'\bm{A}')
+xpdf()
+```
 
 The following is displayed
 
@@ -1836,30 +1843,32 @@ $$\begin{aligned}
 
 For the cases of derivatives the code is
 
-        from printer import Format, xpdf
-        from ga import Ga
+```python
+from printer import Format, xpdf
+from ga import Ga
 
-        Format()
-        X = (x,y,z) = symbols('x y z')
-        o3d = Ga('e_x e_y e_z',g=[1,1,1],coords=X)
+Format()
+X = (x,y,z) = symbols('x y z')
+o3d = Ga('e_x e_y e_z',g=[1,1,1],coords=X)
 
-        f = o3d.mv('f','scalar',f=True)
-        A = o3d.mv('A','vector',f=True)
-        B = o3d.mv('B','grade2',f=True)
+f = o3d.mv('f','scalar',f=True)
+A = o3d.mv('A','vector',f=True)
+B = o3d.mv('B','grade2',f=True)
 
-        print r'\bm{A} =',A
-        print r'\bm{B} =',B
+print r'\bm{A} =',A
+print r'\bm{B} =',B
 
-        print 'grad*f =',o3d.grad*f
-        print r'grad|\bm{A} =',o3d.grad|A
-        (o3d.grad*A).Fmt(2,r'grad*\bm{A}')
+print 'grad*f =',o3d.grad*f
+print r'grad|\bm{A} =',o3d.grad|A
+(o3d.grad*A).Fmt(2,r'grad*\bm{A}')
 
-        print r'-I*(grad^\bm{A}) =',-o3g.mv_I*(o3d.grad^A)
-        print (o3d.grad*B).Fmt(2,r'grad*\bm{B}')
-        print r'grad^\bm{B} =',o3d.grad^B
-        print r'grad|\bm{B} =',o3d.grad|B
+print r'-I*(grad^\bm{A}) =',-o3g.mv_I*(o3d.grad^A)
+print (o3d.grad*B).Fmt(2,r'grad*\bm{B}')
+print r'grad^\bm{B} =',o3d.grad^B
+print r'grad|\bm{B} =',o3d.grad|B
 
-        xpdf()
+xpdf()
+```
 
 and the latex displayed output is ($f$ is a scalar function)
 
@@ -1917,19 +1926,27 @@ Since the expressions for multivectors or differential operators can be very lon
 >
 > If l is a list or tuple to print in the LaTeX environment use the command
 >
->         print Fmt(l) # One element of l per line
+> ```python
+> print Fmt(l) # One element of l per line
+> ```
 >
 > or
 >
->         print Fmt(l,1) # All elements of l on one line
+> ```python
+> print Fmt(l,1) # All elements of l on one line
+> ```
 >
 > If you are printing in “ipython notebook” then enter
 >
->         Fmt(l) # One element of l per line
+> ```python
+> Fmt(l) # One element of l per line
+> ```
 >
 > or
->
->         Fmt(l,1) # All elements of l on one line
+
+> ```python
+> Fmt(l,1) # All elements of l on one line
+> ```
 
 Bibliography
 ================
