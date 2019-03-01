@@ -59,7 +59,7 @@ print_replace_new = None
 
 SYS_CMD = {'linux2': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
            'linux': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
-           'win32': {'rm': 'del', 'evince': '', 'null': ' > NUL', '&': ''},
+           'win32': {'rm': 'del', 'evince': 'start', 'null': ' > NUL', '&': ''},
            'darwin': {'rm': 'rm', 'evince': 'open', 'null': ' > /dev/null', '&': '&'}}
 
 def print_replace(old='^',new='*'):
@@ -681,7 +681,7 @@ class GaLatexPrinter(LatexPrinter):
                 (1, self._print(Pow(expr.base, -expr.exp)))
         else:
             if expr.base.is_Function:
-                return r"%s^%s" % (self._print(expr.base), self._print(expr.exp))
+                return r"{%s}^{%s}" % (self._print(expr.base), self._print(expr.exp))
             else:
                 if expr.is_commutative and expr.exp == -1:
                     #solves issue 1030
