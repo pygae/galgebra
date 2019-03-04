@@ -1,0 +1,11 @@
+ports:
+  - port: 8888
+image:
+  file: Dockerfile
+tasks:
+  - command: >
+        mkdir -p /home/gitpod/.pyenv/versions/2.7.15/lib/site-python/ &&
+        cd galgebra &&
+        python setgapth.py &&
+        cd .. &&
+        clear

@@ -32,7 +32,6 @@ pth_file.close()
 print 'os name:',os.name
 print 'site-packages directory:',pth_name
 print 'Ga.pth:'
-print os.system('more ' + pth_name)
 
 print Completion_Message
 
