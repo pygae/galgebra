@@ -1895,12 +1895,6 @@ Bibliography
 7. Christian Perwass, “*Geometric Algebra with Applications in Engineering*,” Springer, 2008
 8. John W. Arthur, “*Understanding Geometric Algebra for Electromagnetic Theory*,” Wiley-IEEE Press, 2011.
 
-[1] Currently `galgebra` supports python versions 2.7+, but not versions 3.0+ of python.
-
-[2] All these modules are in the same directory as `setgapth.py`.
-
-[3] In order for `galgebra` to output latex formatted pdf files your distribution of latex must have `pdflatex` installed.
-
 [4] By the manifold embedding theorem any $m$-dimensional manifold is isomorphic to a $m$-dimensional vector manifold
 
 [5] This product in not necessarily positive definite.

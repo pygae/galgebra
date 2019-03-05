@@ -60,3 +60,9 @@ Geany Programmers Editor
 ------------------------
 
 *Geany* is a very nice *free* programmers editor that work well with *python*. From within *geany* you can execute a *python* program. The *galgebra* printing system is setup so that you can display the program output on an ansi terminal or if you are using the LaTeXoptions has the terminal launch a *pdf* browser to view the LaTeXoutput. To install *geany* on Linux use the command line `sudo apt-get install geany`, on Windows go to <http://www.geany.org/Download/Releases> or to install *geany* in OSX go to <http://wiki.geany.org/howtos/osx/running>.
+
+[1] Currently `galgebra` supports python versions 2.7+, but not versions 3.0+ of python.
+
+[2] All these modules are in the same directory as `setgapth.py`.
+
+[3] In order for `galgebra` to output latex formatted pdf files your distribution of latex must have `pdflatex` installed.
