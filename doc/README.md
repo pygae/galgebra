@@ -1,7 +1,7 @@
 
 # Documentation
 
-This is the diretory containing files to generate the documentation for galgebra ( except for `books/` which contains books about galgebra or Geometric Algebra in general from different sources).
+This is the directory containing files to generate the documentation for galgebra (except for `books/`, which contains books about `galgebra` or Geometric Algebra in general from different sources).
 
 For the generated documentation, please visit https://galgebra.readthedocs.io .
 
