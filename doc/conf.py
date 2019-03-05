@@ -52,6 +52,7 @@ extensions = [
     'IPython.sphinxext.ipython_directive',
     'IPython.sphinxext.ipython_console_highlighting',
     'sphinx_markdown_tables',
+    'm2r'
 ]
 
 # -- nbsphinx configuration ---------------------------------------------------
@@ -73,10 +74,10 @@ autodoc_default_flags = [
         # Make sure that any autodoc declarations show the right members
         "members",
         "inherited-members",
-        "special-members",
-        "undoc-members",
-        "private-members",
-        "show-inheritance",
+        # "undoc-members",
+        # "special-members",
+        # "private-members",
+        # "show-inheritance",
 ]
 
 #autodoc_default_flags='members'
@@ -88,11 +89,11 @@ numpydoc_show_class_members = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-from recommonmark.parser import CommonMarkParser
+# from recommonmark.parser import CommonMarkParser
 
-source_parsers = {
-    '.md': CommonMarkParser,
-}
+# source_parsers = {
+#     '.md': CommonMarkParser,
+# }
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:

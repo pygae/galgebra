@@ -1,22 +1,15 @@
-Welcome to galgebra's documentation!
-====================================
+.. mdinclude:: ../README.md
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-Docs
-====
-
-.. toctree::
-    :maxdepth: 2
-    
-    galgebra_guide
-
-.. toctree::
-    :maxdepth: 2
+    :caption: API
+    :maxdepth: 3
     
     api
+
+.. toctree::
+    :caption: A guide to GAlgebra
+
+    galgebra_guide
 
 Indices and tables
 ==================
