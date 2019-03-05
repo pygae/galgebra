@@ -23,7 +23,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'galgebra'
-copyright = '2014-2019, Alan Bromborsky and Galgebra team'
+copyright = '2014-2019, Alan Bromborsky and GAlgebra team'
 author = 'Alan Bromborsky'
 
 # The short X.Y version
