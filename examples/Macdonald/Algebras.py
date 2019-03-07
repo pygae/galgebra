@@ -29,14 +29,14 @@ sp3 = Ga('e_r e_phi e_theta', g=None, coords=sp3coords, \
           X=[r, r*sin(ph)*cos(th), r*sin(ph)*sin(th), r*cos(ph)], norm=True)
 (er, eph, eth) = sp3.mv()
 # Mathematics naming convention: $\phi$ colatitude, $\theta$ longitude.
-# (r phi theta) is a right-handed system 
+# (r phi theta) is a right-handed system
 
 # sp3: Spherical Coordinates II
 sp3coords = (r, ph, th) = symbols('r phi theta', real=True, norm=True)
 sp3 = Ga('e_r e_phi e_theta', g=[1, r**2, r**2*sin(ph)**2], coords=sp3coords)
 (er, eph, eth) = sp3.mv()
 # Mathematics naming convention: $\phi$ colatitude, $\theta$ longitude.
-# (r phi theta) is a right-handed system 
+# (r phi theta) is a right-handed system
 
 # st4: Spacetime Algebra I
 st4coords = (t,x,y,z) = symbols('t x y z', real=True)
