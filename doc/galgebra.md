@@ -439,7 +439,17 @@ In the our notation the directional derivative operator is $a\cdot\nabla$, the L
 
 $$\be \paren{\nabla\W\nabla}\eb^{i} = \half R^{i}_{jkl}\paren{\eb^{j}\W\eb^{k}}\eb^{l}. \ee$$
 
-We would use the complement if we wish a quantum mechanical type commutator defining [x, ] x- |x, or if we wish to simulate the dot notation (Doran and Lasenby) = F|.
+We would use the complement if we wish a quantum mechanical type commutator defining
+
+$$\be
+    \com{x,\nabla} \equiv x\nabla - \bar{\nabla}x,
+\ee$$
+
+, or if we wish to simulate the dot notation (Doran and Lasenby)
+
+$$\be
+    \dot{F}\dot{\nabla} = F\bar{\nabla}.
+\ee$$
 
 ### Split Differential Operator
 
