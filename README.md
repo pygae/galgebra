@@ -23,20 +23,20 @@ Features
 
 ### Geometric Algebra
 
-- Arbitrary Vector Basis And Metric
+- Arbitrary Vector Basis and Metric
 - Scalar, Vector, Bivector, Multivector, Pseudoscalar, Spinor, Blade
 - Basic Geometic Algebra Operations
   - Sum Difference
   - Geometric Product
-  - Outer And Inner Products
-  - Left And Right Contractions
+  - Outer and Inner Products
+  - Left and Right Contractions
   - Reverse, Dual, Exponential
   - Commutator
   - Projection, Reflection, Rotation
   - Reciprocal Frames
-- Inspecting Base Blade Representation
+- Inspecting Base/Blade Representation
 - Symbolic Manipulations
-  - expand, factor, simplify, subs, trigsimp etc.
+  - `expand`, `factor`, `simplify`, `subs`, `trigsimp` etc.
 
 Overloaded Python operators for basic GA operations:
 
@@ -51,11 +51,9 @@ Overloaded Python operators for basic GA operations:
 
 The various derivatives of a multivector function is accomplished by multiplying the gradient operator vector with the function:
 
-![](https://raw.githubusercontent.com/pygae/galgebra/nbsphinx/doc/images/grad.svg?sanitize=true)
+![](https://raw.githubusercontent.com/pygae/galgebra/nbsphinx/doc/images/grad.svg?sanitize=true) ![](https://raw.githubusercontent.com/pygae/galgebra/nbsphinx/doc/images/grad_cmp.svg?sanitize=true)
 
-![](https://raw.githubusercontent.com/pygae/galgebra/nbsphinx/doc/images/grad_cmp.svg?sanitize=true)
-
-An example for getting `grad` and `rgrad`:
+Tip: an example for getting `grad` and `rgrad`:
 
 ```python
 (ex, ey, ez, grad, rgrad) = 
@@ -72,7 +70,7 @@ An example for getting `grad` and `rgrad`:
 Getting Started
 ---------------------
 
-After [Installing GAlgebra](#installing-galgebra), in a Jupyter Notebook
+After installing GAlgebra (see Section [Installing GAlgebra](#installing-galgebra) below), in a Jupyter Notebook:
 
 ```python
 from sympy import symbols
@@ -91,35 +89,42 @@ M = st4.mv('M','mv',f = True)
 M.grade(3).Fmt(3,r'\langle \mathbf{M} \rangle _3')
 ```
 
-will output
+You will see:
 
 ![](https://raw.githubusercontent.com/pygae/galgebra/nbsphinx/doc/images/st4_M3.svg?sanitize=true)
 
-NOTE: If you are from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out [Migration Guide](#migration-guide).
+For detailed documentation and more examples, please check out https://galgebra.readthedocs.io/ .
+
+**NOTE:** If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out Section [Migration Guide](#migration-guide).
 
 Installing GAlgebra
 ---------------------
 
-### Dependencies
+### Prerequisites
 
+- Works on Linux, Windows, Mac OSX
 - [Python](https://www.python.org/) 2.7 or 3
-- [SymPy](https://www.sympy.org)
+- [SymPy](https://www.sympy.org) (will be automatically installed by `pip`)
 
-### Installing GAlgebra From PyPI
+### Installing GAlgebra From PyPI (Recommended for users)
 
 ```bash
 pip install galgebra
 ```
 
-### Installing GAlgebra From Source
+Then you are all set!
 
-To install from local source code, run from the repository root:
+### Installing GAlgebra From Source (Recommended for developers)
+
+To install from the latest source code of GAlgebra:
 
 ```bash
-pip install .
+git clone https://github.com/pygae/galgebra.git
+cd galgebra
+pip install -e .
 ```
 
-Use the optional `-e` argument for a developer install.
+Note that the optional `-e` argument is used here for a developer install so modifying the source will take effect immediately without the need of reinstallation.
 
 ### Running tests to verify the installation
 
@@ -138,6 +143,22 @@ pytest test
 
 Migration Guide
 ----------------
+
+### Migrating from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/)
+
+GAlgebra is no longer part of SymPy since 1.0.0, if you have an import like this in your source:
+
+```python
+from sympy.galgebra.ga import *
+```
+
+Simply remove the `sympy.` prefix before `galgebra` then you are good to go:
+
+```python
+from galgebra.ga import *
+```
+
+### Migrating from [brombo/galgebra](https://github.com/brombo/galgebra)
 
 The `setgapth.py` way to install is now deprecated by `pip install galgebra` and all modules in GAlgebra should be imported from `galgebra`, for example:
 
