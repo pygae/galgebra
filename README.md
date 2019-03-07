@@ -70,7 +70,7 @@ Tip: an example for getting `grad` and `rgrad`:
 Getting Started
 ---------------------
 
-After installing GAlgebra (see Section [Installing GAlgebra](#installing-galgebra) below), in a Jupyter Notebook:
+After installing GAlgebra (see section [Installing GAlgebra](#installing-galgebra) below), in a Jupyter Notebook:
 
 ```python
 from sympy import symbols
@@ -95,7 +95,7 @@ You will see:
 
 For detailed documentation and more examples, please check out https://galgebra.readthedocs.io/ .
 
-**NOTE:** If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out Section [Migration Guide](#migration-guide).
+**NOTE:** If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out section [Migration Guide](#migration-guide) below.
 
 Installing GAlgebra
 ---------------------
