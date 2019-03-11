@@ -5,7 +5,7 @@ Symbolic Geometric Algebra/Calculus package for SymPy.
 
 [![PyPI](https://img.shields.io/pypi/v/galgebra.svg)](https://pypi.org/project/galgebra/) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/galgebra.svg)](https://pypi.org/project/galgebra/) [![Build Status](https://travis-ci.com/pygae/galgebra.svg?branch=master)](https://travis-ci.com/pygae/galgebra) [![Documentation Status](https://readthedocs.org/projects/galgebra/badge/?version=latest)](https://galgebra.readthedocs.io/en/latest/?badge=latest)
 
-![](https://raw.githubusercontent.com/pygae/galgebra/nbsphinx/doc/images/n_vector_positive_spherical.svg?sanitize=true)
+![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/n_vector_positive_spherical.svg?sanitize=true)
 
 Development Status
 --------------------
@@ -40,7 +40,7 @@ Features
 
 Overloaded Python operators for basic GA operations:
 
-![](https://raw.githubusercontent.com/pygae/galgebra/nbsphinx/doc/images/basic_op.svg?sanitize=true)
+![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/basic_op.svg?sanitize=true)
 
 ### Geometric Calculus
 
@@ -51,7 +51,7 @@ Overloaded Python operators for basic GA operations:
 
 The various derivatives of a multivector function is accomplished by multiplying the gradient operator vector with the function:
 
-![](https://raw.githubusercontent.com/pygae/galgebra/nbsphinx/doc/images/grad.svg?sanitize=true) ![](https://raw.githubusercontent.com/pygae/galgebra/nbsphinx/doc/images/grad_cmp.svg?sanitize=true)
+![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/grad.svg?sanitize=true) ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/grad_cmp.svg?sanitize=true)
 
 Tip: an example for getting `grad` and `rgrad`:
 
@@ -91,7 +91,7 @@ M.grade(3).Fmt(3,r'\langle \mathbf{M} \rangle _3')
 
 You will see:
 
-![](https://raw.githubusercontent.com/pygae/galgebra/nbsphinx/doc/images/st4_M3.svg?sanitize=true)
+![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/st4_M3.svg?sanitize=true)
 
 For detailed documentation and more examples, please check out https://galgebra.readthedocs.io/ .
 
