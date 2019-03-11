@@ -2,9 +2,8 @@ from __future__ import print_function
 
 from sympy import Symbol, symbols, sin, cos, Rational, expand, simplify, collect
 from sympy import Rational as Rat
-from galgebra.printer import Format, Eprint, Get_Program, Print_Function, xpdf
-from galgebra.ga import Ga, one, zero
-from galgebra.mv import Nga
+from galgebra.printer import Format, Eprint, Get_Program
+from galgebra.ga import Ga
 from math import sqrt
 
 global n,nbar,I

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from __future__ import print_function
 from sympy import Symbol, symbols, sin, cos, Rational, expand, simplify, collect
-from galgebra.printer import Format, Eprint, Get_Program, Print_Function
+from galgebra.printer import Eprint, Get_Program, Print_Function
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Nga
 
