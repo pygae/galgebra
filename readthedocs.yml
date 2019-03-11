@@ -1,0 +1,10 @@
+python:
+  version: 3
+
+python:
+  pip_install: true
+
+requirements_file: doc/readthedocs-pip-requirements.txt
+
+# Don't build any extra formats
+formats: []

@@ -1,4 +1,6 @@
-#printer.py
+r"""
+ANSI Enhanced Text Printing, Text Printer and LaTeX Printer for all Geometric Algebra classes
+"""
 
 import os
 import sys

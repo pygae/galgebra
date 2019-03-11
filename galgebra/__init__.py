@@ -1,6 +1,23 @@
 """
-A module for geometric algebra
+.. currentmodule:: galgebra
+========================================
+galgebra (:mod:`galgebra`)
+========================================
 
+A module for geometric algebra.
+
+Submodules
+==========
+
+.. autosummary::
+    :toctree: generated
+
+    metric
+    ga
+    mv
+    lt
+    printer
+    utils
 """
 
 from __future__ import absolute_import, division

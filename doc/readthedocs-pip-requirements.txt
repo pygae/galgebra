@@ -1,0 +1,14 @@
+numpydoc==0.4
+numpy
+ipython
+matplotlib
+scipy
+sphinx>=1.4
+ipykernel
+nbsphinx
+numba
+sphinx_rtd_theme
+recommonmark
+sphinx-markdown-tables
+notedown
+m2r
