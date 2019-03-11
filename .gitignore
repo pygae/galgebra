@@ -127,3 +127,8 @@ doc/*.toc
 doc/*.synctex.gz
 doc/*.out
 doc/*.fls
+# Generated .tex
+examples/LaTeX/*.tex
+
+# Mac
+.DS_Store

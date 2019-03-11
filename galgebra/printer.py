@@ -1011,22 +1011,13 @@ def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
 
     return
 
-
-def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug=False, pt='10pt'):
-
+def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     """
     Post processes LaTeX output (see comments below), adds preamble and
-    postscript, generates tex file, inputs file to latex, displays resulting
-    pdf file.
+    postscript.
 
-    Arg    Value    Result
-    crop   True     Use "pdfcrop" to crop output file (pdfcrop must be installed, linux only)
-    png    True     Use "convert" to produce png output (imagemagick must be installed, linux only)
-
-    We assume that if xpdf() is called then Format() has been called at the beginning of the program.
+    We assume that if tex() is called then Format() has been called at the beginning of the program.
     """
-
-    sys_cmd = SYS_CMD[sys.platform]
 
     latex_str = GaLatexPrinter.latex_str + sys.stdout.getvalue()
     GaLatexPrinter.latex_str = ''
@@ -1138,12 +1129,34 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
     paper_size = paper_size.replace('@10pt@',pt)
     latex_str = paper_size + GaLatexPrinter.preamble + latex_str + GaLatexPrinter.postscript
 
+    return latex_str
+
+def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug=False, pt='10pt', pdfprog='pdflatex'):
+
+    """
+    Post processes LaTeX output (see comments below), adds preamble and
+    postscript, generates tex file, inputs file to latex, displays resulting
+    pdf file.
+
+    Arg         Value       Result
+    pdfprog    'pdflatex'   Use pdfprog to generate pdf output, only generate tex if pdfprog is None
+    crop        True        Use "pdfcrop" to crop output file (pdfcrop must be installed, linux only)
+    png         True        Use "convert" to produce png output (imagemagick must be installed, linux only)
+
+    We assume that if xpdf() is called then Format() has been called at the beginning of the program.
+    """
+
+    sys_cmd = SYS_CMD[sys.platform]
+
+    latex_str = tex(paper=paper, debug=debug, prog=prog, pt=pt)
+
     if filename is None:
         pyfilename = sys.argv[0]
         rootfilename = pyfilename.replace('.py', '')
         filename = rootfilename + '.tex'
 
-    print('latex file =', filename)
+    if debug:
+        print('latex file =', filename)
 
     latex_file = open(filename, 'w')
     latex_file.write(latex_str)
@@ -1151,20 +1164,19 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
 
     latex_str = None
 
-    pdflatex = find_executable('pdflatex')
-
-    print('pdflatex path =', pdflatex)
-
-    if pdflatex is not None:
-        latex_str = 'pdflatex'
-    else:
+    if pdfprog is None:
         return
 
-    if latex_str is not None:
+    pdflatex = find_executable(pdfprog)
+
+    if debug:
+        print('pdflatex path =', pdflatex)
+
+    if pdfprog is not None:
         if debug:  # Display latex excution output for debugging purposes
-            os.system(latex_str + ' ' + filename[:-4])
+            os.system(pdfprog + ' ' + filename[:-4])
         else:  # Works for Linux don't know about Windows
-            os.system(latex_str + ' ' + filename[:-4] + sys_cmd['null'])
+            os.system(pdfprog + ' ' + filename[:-4] + sys_cmd['null'])
 
         print_cmd = sys_cmd['evince'] + ' ' + filename[:-4] + '.pdf ' + sys_cmd['&']
         print(print_cmd)
