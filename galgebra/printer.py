@@ -264,14 +264,14 @@ class Eprint:
     deriv = ''
     bold = ''
 
-    defaults = {('win', 'base'): 'blue', ('unix', 'base'): 'dark gray',
+    defaults = {('win', 'base'): 'blue', ('unix', 'base'): 'blue',
                 ('win', 'fct'): 'red', ('unix', 'fct'): 'red',
                 ('win', 'deriv'): 'cyan', ('unix', 'deriv'): 'cyan'}
 
     def __init__(self, base=None, fct=None, deriv=None, on=True, debug=False):
         if on:
             OS = 'unix'
-            if 'win' in sys.platform:
+            if 'win' in sys.platform and 'darwin' not in sys.platform:
                 OS = 'win'
 
             if base is None:
