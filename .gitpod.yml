@@ -1,0 +1,9 @@
+ports:
+  - port: 8888
+image:
+  file: Dockerfile
+tasks:
+  - command: >
+        pip2 install -e . &&
+        pip3 install -e . &&
+        clear
