@@ -628,7 +628,7 @@ class GaLatexPrinter(LatexPrinter):
             pass
         else:
             GaLatexPrinter.stdout = sys.stdout
-            sys.stdout = io.StringIO()
+            sys.stdout = utils.StringIO()
         return
 
     @staticmethod
