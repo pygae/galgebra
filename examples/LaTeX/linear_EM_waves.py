@@ -1,8 +1,8 @@
 import sys
 from sympy import symbols,sin,cos,exp,I,Matrix,solve,simplify
-from printer import Format,xpdf,Get_Program,Print_Function
-from ga import Ga
-from metric import linear_expand
+from galgebra.printer import Format,xpdf,Get_Program,Print_Function
+from galgebra.ga import Ga
+from galgebra.metric import linear_expand
 
 def EM_Waves_in_Geom_Calculus_Complex():
     #Print_Function()
@@ -95,7 +95,8 @@ def main():
 
     EM_Waves_in_Geom_Calculus_Complex()
     EM_Waves_in_Geom_Calculus_Real()
-    xpdf()
+    # xpdf()
+    xpdf(pdfprog=None)
     return
 
 if __name__ == "__main__":

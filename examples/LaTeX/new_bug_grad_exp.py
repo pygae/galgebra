@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 #computer algebra system
+from __future__ import print_function
 from sympy import *
 from sympy.matrices import *
-from ga import Ga
-from printer import Format, xpdf
+from galgebra.ga import Ga
+from galgebra.printer import Format, xpdf
 
 ########################################################################
 #ALGEBRA & DEFINITIONS
@@ -20,7 +21,7 @@ from printer import Format, xpdf
 
 Format()
 
-print '#Results with all scalar variables declared as real'
+print('#Results with all scalar variables declared as real')
 
 vars = t, x, y, z, w = symbols('t x y z w',real=True)
 E = symbols('E',real=True)
@@ -30,13 +31,13 @@ st4d, gt, gx, gy, gz, gw, = Ga.build(myBasis,g=[1,-1,-1,-1,-1],coords=vars)
 unit=st4d.i*st4d.i
 X = t*gt+x*gx+y*gy+z*gz+w*gw
 K = st4d.mv('k','vector')
-print 'X =',X
-print 'K =',K
-print 'K|X =',K|X
-print '%I^{2} =',unit
+print('X =',X)
+print('K =',K)
+print('K|X =',K|X)
+print('%I^{2} =',unit)
 Ixyzw = st4d.i*gx*gy*gz*gw
-print r'%I_{xyzw} = I\gamma_{x}\gamma_{y}\gamma_{z}\gamma_{w} =',Ixyzw
-print r'%\lp I\gamma_{x}\gamma_{y}\gamma_{z}\gamma_{w}\rp^{2} =',Ixyzw*Ixyzw
+print(r'%I_{xyzw} = I\gamma_{x}\gamma_{y}\gamma_{z}\gamma_{w} =',Ixyzw)
+print(r'%\lp I\gamma_{x}\gamma_{y}\gamma_{z}\gamma_{w}\rp^{2} =',Ixyzw*Ixyzw)
 grad = st4d.grad
 #For symbolic exponent exp() needs hint on whether square of exponent is + or -
 the_exponential= (-E*gw*t).exp(hint='-')
@@ -54,8 +55,8 @@ E*gw*the_exponential*t).Fmt(fmt=1,
 
 EXP = (Ixyzw*(K|X)).exp(hint='-').simplify()
 
-print r'%e^{I_{xyzw}K\cdot X} =', EXP
+print(r'%e^{I_{xyzw}K\cdot X} =', EXP)
 (grad*EXP).Fmt(2,r'%\bm{\nabla}e^{I_{xyzw}K\cdot X}')
 
-
-xpdf()
+# xpdf()
+xpdf(pdfprog=None)
