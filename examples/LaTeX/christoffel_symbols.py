@@ -1,7 +1,7 @@
 import sys
 from galgebra.printer import  Format, xpdf
 Format()
-from sympy import symbols, sin, pi, latex
+from sympy import symbols, sin, pi, latex, Array, permutedims
 from galgebra.ga import Ga
 
 print(r'\bm{\mbox{Base manifold (three dimensional)}}')
@@ -40,7 +40,9 @@ print(r'\text{g\_inv = }', latex(sp2.g_inv))
 #print(r'\text{signature = ', latex(sp2.signature()))
 
 Cf1 = sp2.Christoffel_symbols(mode=1)
-print(r'\text{Christoffel symbols of the first kind = }', latex(Cf1))
+Cf1 = permutedims(Array(Cf1), (2, 0, 1))
+print(r'\text{Christoffel symbols of the first kind: }')
+print(r'\Gamma_{1, \alpha, \beta} = ', latex(Cf1[0, :, :]), r'\quad', r'\Gamma_{2, \alpha, \beta} = ', latex(Cf1[1, :, :]))
 
 #Cf2 = sp2.Christoffel_symbols(mode=2)
 #print(r'\text{Christoffel symbols of the first kind = }', latex(C2))
@@ -78,4 +80,5 @@ print('H =', H)
 print(r'\nabla H = ', (cir1d.grad * H).simplify())
 print('\\' )
 
+# xpdf(paper=(9,10))
 xpdf(paper=(9,10),pdfprog=None)
