@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 from galgebra.printer import  Format, xpdf
 Format()
