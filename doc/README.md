@@ -38,6 +38,5 @@ The structure of the `doc` diretory is:
 │                                   # Legacy Directories:
 │                                   #
 ├─ python/                          # Some Python scripts referenced in the doc but not all of them works
-├─ ipython/                         # Some Jupyter notebooks that are now possibly obsolete
 └─ books/                           # Books about galgebra or Geometric Algebra from different sources
 ```
