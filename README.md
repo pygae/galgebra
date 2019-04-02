@@ -53,11 +53,14 @@ The various derivatives of a multivector function is accomplished by multiplying
 
 ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/grad.svg?sanitize=true) ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/grad_cmp.svg?sanitize=true)
 
-Tip: an example for getting `grad` and `rgrad`:
+Tip: an example for getting `grad` and `rgrad` of a 3-d Euclidean geometric algebra in rectangular coordinates:
 
 ```python
-(ex, ey, ez, grad, rgrad) = 
-  MV.setup('e*x|y|z', metric='[1,1,1]', coords=symbols('x y z'))
+from sympy import symbols
+from galgebra.ga import Ga
+
+o3d = Ga('e_x e_y e_z', g=[1,1,1], coords=symbols('x,y,z',real=True))
+(grad,rgrad) = o3d.grads()
 ```
 
 ### Printing
@@ -166,10 +169,6 @@ The `setgapth.py` way to install is now deprecated by `pip install galgebra` and
 from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Mv, Nga
-# for backward compatibility
-from galgebra.mv import MV, ONE, ZERO, HALF
-from galgebra import ga
-from galgebra import utils
 ```
 
 Resources
