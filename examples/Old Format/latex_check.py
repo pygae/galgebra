@@ -1,6 +1,4 @@
 from __future__ import print_function
-from builtins import str
-from builtins import range
 import sys
 from sympy import Symbol,symbols,sin,cos,Rational,expand,simplify,collect
 from galgebra.printer import xpdf, Get_Program, Print_Function, Format
