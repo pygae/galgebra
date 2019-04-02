@@ -5,7 +5,7 @@ from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Mv, Nga
 # for backward compatibility
-from galgebra.mv import MV, ONE, ZERO, HALF
+from galgebra.mv import ONE, ZERO, HALF
 from galgebra import ga
 from galgebra import utils
 
