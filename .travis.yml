@@ -15,8 +15,9 @@ install:
 - pip install pytest-cov
 - if [[ "$TRAVIS_PYTHON_VERSION" == 2.7 ]]; then pip install ipython==5.8.0 ; fi
 - pip install nbval
+- pip install pytest-xdist
 script:
-- pytest --cov=galgebra --nbval examples/ipython/ test --current-env 
+- pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg
 after_success:
 - pip install codecov
 - codecov
