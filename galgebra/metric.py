@@ -397,6 +397,7 @@ class Metric(object):
         de = []  # de[i][j] = \partial_{x_{i}}e^{x_{j}}
 
         # Christoffel symbols of the first kind, \Gamma_{ijk}
+        # TODO handle None
         dG = self.Christoffel_symbols(mode=1)
 
         # \frac{\partial e_{j}}{\partial x^{i}} = \Gamma_{ijk} e^{k}
@@ -464,6 +465,7 @@ class Metric(object):
             return dG
 
         elif mode == 2:
+            # TODO handle None
             Gamma1 = self.Christoffel_symbols(mode=1)
 
             self.inverse_metric()
@@ -471,8 +473,11 @@ class Metric(object):
             # Christoffel symbols of the second kind, \Gamma_{ij}^{k} = \Gamma_{ijl}g^{lk}
             # \partial_{x^{i}}e_{j} = \Gamma_{ij}^{k}e_{k}
 
+            def Gamma2_ijk(i, j, k):
+                return sum([Gamma_ijl * self.g_inv[l, k] for l, Gamma_ijl in enumerate(Gamma1[i][j])])
+
             Gamma2 = [[[
-                sum([Gamma_ijl * self.g_inv[l, k] for l, Gamma_ijl in enumerate(Gamma1[i][j])])
+                Simp.apply(Gamma2_ijk(i, j, k))
                 for k in n_range]
                 for j in n_range]
                 for i in n_range]
