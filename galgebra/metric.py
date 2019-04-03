@@ -401,7 +401,7 @@ class Metric(object):
 
         # \frac{\partial e_{j}}{\partial x^{i}} = \Gamma_{ijk} e^{k}
         de = [[
-            sum([gamma_ijk * e__k for (gamma_ijk, e__k) in zip(dG[i][j], self.r_symbols)])
+            sum([Gamma_ijk * e__k for (Gamma_ijk, e__k) in zip(dG[i][j], self.r_symbols)])
             for j in n_range]
         for i in n_range]
 
@@ -471,15 +471,13 @@ class Metric(object):
             # Christoffel symbols of the second kind, \Gamma_{ij}^{k} = \Gamma_{ijl}g^{lk}
             # \partial_{x^{i}}e_{j} = \Gamma_{ij}^{k}e_{k}
 
-            Gamma = []
-            for Gi in Gamma1:
-                Gamma_i = []
-                for Gij in Gi:
-                    Gamma_ij = []
-                    Gamma_ijk = S(0)
-                    l = 0
-                    for Gijl in Gij:
-                        Gamma_ijk += Gijl * self.g(l,)
+            Gamma2 = [[[
+                sum([Gamma_ijl * self.g_inv[l, k] for l, Gamma_ijl in enumerate(Gamma1[i][j])])
+                for k in n_range]
+                for j in n_range]
+                for i in n_range]
+
+            return Gamma2
         else:
             raise ValueError('In Christoffle_symobols mode = ' + str(mode) +' is not allowed\n')
 
