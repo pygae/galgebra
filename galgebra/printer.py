@@ -720,10 +720,13 @@ class GaLatexPrinter(LatexPrinter):
                 i_sub = 1
 
                 for glyph in GaLatexPrinter.special_alphabet:
+                    escaped_glyph = '\\' + glyph
                     if glyph in tmp:
                         parse_sym = '????' + str(i_sub)
                         i_sub += 1
-                        parse_dict[parse_sym] = '\\' + glyph + ' '
+                        # If this glyph is already escaped, avoid escaping again
+                        translated_glyph = (escaped_glyph + ' ') if escaped_glyph not in tmp else glyph
+                        parse_dict[parse_sym] = translated_glyph
                         tmp = tmp.replace(glyph, parse_sym)
 
                 for parse_sym in parse_dict:
