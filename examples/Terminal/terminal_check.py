@@ -236,7 +236,7 @@ def noneuclidian_distance_calculation():
     print('W =',W)
 
     Wd = collect(W,[C,S],exact=True,evaluate=False)
-    print('Wd =', Wd)
+
     Wd_1 = Wd[one]
     Wd_C = Wd[C]
     Wd_S = Wd[S]
