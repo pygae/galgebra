@@ -19,6 +19,7 @@ from sympy import N as Nsympy
 from . import printer
 from . import metric
 from . import utils
+from .printer import ZERO_STR
 import sys
 from functools import reduce, cmp_to_key
 
@@ -662,7 +663,7 @@ class Mv(object):
     def Mv_latex_str(self):
 
         if self.obj == 0:
-            return ' 0 '
+            return ZERO_STR
 
         self.first_line = True
 
@@ -683,7 +684,7 @@ class Mv(object):
         self.obj = metric.Simp.apply(self.obj)
 
         if self.obj == S(0):
-            return ' 0 '
+            return ZERO_STR
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
@@ -1497,7 +1498,7 @@ class Sdop(object):
 
     def Sdop_str(self):
         if len(self.terms) == 0:
-            return '0'
+            return ZERO_STR
 
         self.sort_terms()
         s = ''
@@ -1525,7 +1526,7 @@ class Sdop(object):
 
     def Sdop_latex_str(self):
         if len(self.terms) == 0:
-            return '0'
+            return ZERO_STR
 
         self.sort_terms()
 
@@ -2377,7 +2378,7 @@ class Dop(object):
 
     def Dop_str(self):
         if len(self.terms) == 0:
-            return ' 0 '
+            return ZERO_STR
 
         mv_terms = self.Dop_mv_expand(modes=simplify)
         s = ''
@@ -2411,7 +2412,7 @@ class Dop(object):
 
     def Dop_latex_str(self):
         if len(self.terms) == 0:
-            return ' 0 '
+            return ZERO_STR
 
         self.consolidate_coefs()
 

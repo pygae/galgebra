@@ -26,6 +26,8 @@ except ImportError:
 
 from inspect import getouterframes, currentframe
 
+ZERO_STR = ' 0 '
+
 Format_cnt = 0
 
 ip_cmds = \
@@ -371,7 +373,7 @@ class GaPrinter(StrPrinter):
 
     def _print_Mv(self, expr):
         if expr.obj == S(0):
-            return '0'
+            return ZERO_STR
         else:
             return expr.Mv_str()
 
@@ -914,7 +916,7 @@ class GaLatexPrinter(LatexPrinter):
 
     def _print_Mv(self, expr):
         if expr.obj == S(0):
-            return('0 \n')
+            return ZERO_STR
         else:
             return expr.Mv_latex_str()
 
