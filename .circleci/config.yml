@@ -8,6 +8,7 @@ defaults: &defaults
         name: Install
         command: |
           sudo pip install pytest
+          sudo pip install sympy==1.3
           sudo pip install -e .
           sudo pip install pytest-cov
           if [[ "$CIRCLE_JOB" == "python-2.7" ]]; then sudo pip install ipython==5.8.0 ; fi
