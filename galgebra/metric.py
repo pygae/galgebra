@@ -695,6 +695,8 @@ class Metric(object):
         if self.coords is not None:
             self.derivatives_of_basis()  # calculate derivatives of basis
             if self.norm:  # normalize basis, metric, and derivatives of normalized basis
+                if not self.is_ortho:
+                    raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
                 self.e_norm = []
                 for i in self.n_range:
                     self.e_norm.append(square_root_of_expr(self.g[i, i]))
