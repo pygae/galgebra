@@ -184,7 +184,7 @@ def test_init_slots(init_slots, **kwargs):
 
 
 class Simp:
-    modes = (simplify, trigsimp)
+    modes = [simplify]
 
     @staticmethod
     def profile(s):
