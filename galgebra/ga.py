@@ -1534,7 +1534,7 @@ class Ga(metric.Metric):
                 else:
                     g_inv[i, j] = g_inv[j, i]
 
-        self.g_inv = g_inv
+        self.g_inv = simplify(g_inv)
 
         if self.debug:
             print('reciprocal basis dictionary =\n', self.r_basis_dict)

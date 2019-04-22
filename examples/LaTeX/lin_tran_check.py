@@ -1,12 +1,12 @@
 from __future__ import print_function
 from sympy import symbols, sin, cos, simplify
 from galgebra.ga import Ga
-from galgebra.printer import Format, xpdf, Eprint, Print_Function, Get_Program
+from galgebra.printer import Format, xpdf, Eprint, Print_Function, Get_Program, latex
 from galgebra.lt import Symbolic_Matrix
 
 
 def main():
-    Print_Function()
+    # Print_Function()
 
     (x, y, z) = xyz = symbols('x,y,z',real=True)
     (o3d, ex, ey, ez) = Ga.build('e_x e_y e_z', g=[1, 1, 1], coords=xyz)
@@ -48,7 +48,7 @@ def main():
     B = o3d.lt('B')
 
     print('g =', o3d.g)
-    print('%g^{-1} =', o3d.g_inv)
+    print('%g^{-1} =', latex(o3d.g_inv))
 
 
     print('A + B =', A + B)
@@ -67,15 +67,15 @@ def main():
     A2d = g2d.lt('A')
 
     print('g =', g2d.g)
-    print('%g^{-1} =', g2d.g_inv)
-    print('%gg^{-1} =', simplify(g2d.g * g2d.g_inv))
+    print('%g^{-1} =', latex(g2d.g_inv))
+    print('%gg^{-1} =', latex(simplify(g2d.g * g2d.g_inv)))
 
     print('A =', A2d)
     print(r'\f{mat}{A} =', A2d.matrix())
     print('\\f{\\det}{A} =', A2d.det())
     A2d_adj = A2d.adj()
     print('\\overline{A} =', A2d_adj)
-    print('\\f{mat}{\\overline{A}} =', simplify(A2d_adj.matrix()))
+    print('\\f{mat}{\\overline{A}} =', latex(simplify(A2d_adj.matrix())))
     print('\\f{\\Tr}{A} =', A2d.tr())
     print('\\f{A}{e_u^e_v} =', A2d(eu^ev))
     print('\\f{A}{e_u}^\\f{A}{e_v} =', A2d(eu)^A2d(ev))
@@ -158,7 +158,7 @@ def dummy():
 if __name__ == "__main__":
     #Eprint()
     Format()
-    Get_Program()
+    # Get_Program()
     main()
     # xpdf()
     xpdf(pdfprog=None)
