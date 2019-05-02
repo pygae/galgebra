@@ -18,12 +18,12 @@ defaults: &defaults
         name: Test
         command: |
           pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg
-    # - run:
-    #     name: Coverage
-    #     when: on_success
-    #     command: |
-    #       sudo pip install codecov
-    #       codecov
+    - run:
+        name: Coverage
+        when: on_success
+        command: |
+          sudo pip install codecov
+          codecov
 jobs:
   "python-3.7":
     <<: *defaults
