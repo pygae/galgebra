@@ -395,7 +395,8 @@ class GaPrinter(StrPrinter):
 
 Basic.__str__ = lambda self: GaPrinter().doprint(self)
 Matrix.__str__ = lambda self: GaPrinter().doprint(self)
-Basic.__repr_ = lambda self: GaPrinter().doprint(self)
+Basic.__repr__ = lambda self: GaPrinter().doprint(self)
+Matrix.__repr__ = lambda self: GaPrinter().doprint(self)
 
 def enhance_print():
     Eprint()
@@ -946,10 +947,7 @@ class GaLatexPrinter(LatexPrinter):
             out_str = out_str[:-2] + ' \\\\ '
         out_str = out_str[:-4] + ' \\end{array}\\right ] '
 
-        if isinteractive():
-            return display(out_str)
-        else:
-            return out_str
+        return out_str
 
     @staticmethod
     def latex(expr, **settings):
@@ -990,25 +988,13 @@ def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
     if Format_cnt == 0:
         Format_cnt += 1
 
-        """
-        if metric.in_ipynb():
-            GaLatexPrinter.ipy = True
-        else:
-            GaLatexPrinter.ipy = False
-
-        GaLatexPrinter.dop = dop
-        GaLatexPrinter.latex_flg = True
-
-        if not GaLatexPrinter.ipy:
-            GaLatexPrinter.redirect()
-        """
         GaLatexPrinter.dop = dop
         GaLatexPrinter.latex_flg = True
         GaLatexPrinter.redirect()
 
         Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
         Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        Basic.__repr_ = lambda self: GaLatexPrinter().doprint(self)
+        Basic.__repr__ = lambda self: GaLatexPrinter().doprint(self)
         Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
 
         if isinteractive():

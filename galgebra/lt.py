@@ -410,7 +410,7 @@ class Lt(object):
 
     def Fmt(self, fmt=1, title=None):
 
-        if metric.in_ipynb():
+        if printer.isinteractive():
             return self
 
         latex_str = printer.GaLatexPrinter.latex(self)

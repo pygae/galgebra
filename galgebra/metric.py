@@ -24,17 +24,6 @@ def apply_function_list(f,x):
     else:
         return f(x)
 
-def in_ipynb():  # Is Ipython notebook or qtconsole running program
-    try:
-        cfg = get_ipython().config
-        if cfg['IPKernelApp']['parent_appname'] == 'ipython-notebook' or \
-           cfg['IPKernelApp']['parent_appname'] == 'ipython-qtconsole':
-            return True
-        else:
-            return False
-    except NameError:
-        return False
-
 def str_to_lst(s):
     if '[' in s:
         s = s.replace('[', '')
