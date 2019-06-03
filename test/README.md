@@ -10,13 +10,15 @@ It's only some basic test for class `Mv`.
 
 ## `examples/ipython`
 
-We are primarily using [nbval](https://github.com/computationalmodelling/nbval) to verify LaTeX or enhanced console output for GAlgebra by the Jupyter Notebooks in `examples/ipython`.
+We are primarily using [nbval](https://github.com/computationalmodelling/nbval) to verify LaTeX or enhanced console output for GAlgebra by the Jupyter Notebooks in `examples/ipython`. See also [README.md for examples](../examples/README.md).
 
 ### How it works
 
 The test notebooks are used as a recorder of outputs (plain text, color ANSI console output, LaTeX), the author of the test notebook will need to visually inspect the outputs in Jupyter or [nbviewer](https://nbviewer.jupyter.org/) to confirm that GAlgebra is working as expected.
 
 Then `nbval` will be run as a plugin of `pytest` in the CI environment for various versions of Python or even of dependencies to ensure the behavior is identical by checking the actual outputs with the recorded outputs. See `.circleci/config.yml` for up-to-date instructions to run them in CI.
+
+### How to maintain the examples
 
 While `nbval` is an effective way to write and execute tests for a symbolic library that has multiple output formats, it's also sensitive to subtle changes between versions.
 
@@ -46,14 +48,24 @@ These notebooks simply execute every example `.py` file (which are converted fro
 - `Old Format.ipynb`
   - These examples calls deprecated interfaces of GAlgebra
 
-These notebooks are to demonstrate individual scenarios of interest and they are added to tests because they help increasing test coverage of such scenarios :
+These notebooks are to demonstrate individual scenarios of interest and they are added to tests because they help increasing test coverage of such scenarios:
 
-- `simple_ga_test.ipynb`
-- `Smith Sphere.ipynb`
+- `simple_ga_test.ipynb`:
+    - Simple demo for Vector, ∇ operator and Linear Transformation in G3
 - `second_derivative.ipynb`
+    - Second Derivatives in Minkowski Spacetime with signature (+ - - -)
 - `dop.ipynb`
+    - Extensive demo for ∇ operator in G3
+- `Smith Sphere.ipynb`
+    - [Smith chart](https://en.wikipedia.org/wiki/Smith_chart), stereographical projection between G2 and G3
 - `st4.ipynb`
+    - Verify products and inverses of multivectors in Minkowski Spacetime with signature (+ - - -)
 - `colored_christoffel_symbols.ipynb`
+    - Extensive demo for Christoffel symbols of the first and second kind calculation and other operations in G3 and 2D submanifold
+    - Demo for colored symbols in LaTeX output
 - `gr_metrics.ipynb`
+    - Extensive demo for Christoffel symbols of the first and second kind calculation and other operations in some metrics from Special and General Relativity, e.g. Minkowski Spacetime Metric, Kerr-Debney Metric, Schwarzschild Metric etc. 
 - `inner_product.ipynb`
+    - Demo for the definition and semantics of Hestenes' inner product adopted in GAlgebra
 - `verify_doc_python.ipynb`
+    - Unfinished verification for examples in `doc/python/`
