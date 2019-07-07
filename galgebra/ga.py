@@ -6,7 +6,7 @@ import operator
 import copy
 from sympy import diff, Rational, Symbol, S, Mul, Pow, Add, \
     collect, expand, simplify, eye, trigsimp, sin, cos, sinh, cosh, \
-    symbols, sqrt, Abs, numbers, Integer
+    symbols, sqrt, Abs, numbers, Integer, Function
 import sympy
 from collections import OrderedDict
 #from sympy.core.compatibility import combinations
@@ -1467,15 +1467,21 @@ class Ga(metric.Metric):
                 self.e_sq = simplify((self.e * self.e).obj)
             if self.debug:
                 print('E**2 =', self.e_sq)
+
+            # Take all (n-1)-blades
             duals = list(self.blades_lst[-(self.n + 1):-1])
+            # After reverse, the j-th of them is exactly e_{1}^...e_{j-1}^e_{j+1}^...^e_{n}
             duals.reverse()
 
             sgn = 1
             self.r_basis = []
             for dual in duals:
                 dual_base_rep = self.blade_to_base_rep(dual)
-                tmp = collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))), self.blades_lst)
-                self.r_basis.append(tmp)
+                # {E_n}^{-1} = \frac{E_n}{{E_n}^{2}}
+                # r_basis_j = sgn * duals[j] * E_n so it's not normalized, missing a factor of {E_n}^{-2}
+                r_basis_j = collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))), self.blades_lst)
+                self.r_basis.append(r_basis_j)
+                # sgn = (-1)**{j-1}
                 sgn = -sgn
 
             if self.debug:
@@ -1524,11 +1530,11 @@ class Ga(metric.Metric):
                 if j >= i:
                     g_inv[i, j] = self.dot(self.r_basis_dict[rx_i], self.r_basis_dict[rx_j])
                     if not self.is_ortho:
-                        g_inv[i, j] /= self.e_sq
+                        g_inv[i, j] /= self.e_sq**2
                 else:
                     g_inv[i, j] = g_inv[j, i]
 
-        self.g_inv = g_inv
+        self.g_inv = simplify(g_inv)
 
         if self.debug:
             print('reciprocal basis dictionary =\n', self.r_basis_dict)

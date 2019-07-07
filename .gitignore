@@ -116,14 +116,26 @@ venv.bak/
 # Sphinx
 doc/_build
 doc/generated
-doc/python/*.tex
-doc/python/*.aux
-doc/python/*.bak.pdf
 
-# LaTeX generated
-doc/*.fdb_latexmk
-doc/*.aux
-doc/*.toc
-doc/*.synctex.gz
-doc/*.out
-doc/*.fls
+# Ignore LaTeX generated intermediate file
+# keeping only *.tex and *.pdf
+# for doc/ and examples/
+doc/**/*.fdb_latexmk
+doc/**/*.aux
+doc/**/*.toc
+doc/**/*.synctex.gz
+doc/**/*.out
+doc/**/*.fls
+doc/**/*.bak.pdf
+examples/**/*.fdb_latexmk
+examples/**/*.aux
+examples/**/*.toc
+examples/**/*.synctex.gz
+examples/**/*.out
+examples/**/*.fls
+examples/**/*.bak.pdf
+# *.tex files are output of examples, so it's also ignored
+examples/**/*.tex
+
+# Mac
+.DS_Store

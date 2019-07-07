@@ -105,7 +105,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
         if e_row in basis:  # If not in basis row all zeros
             (coefs,bases) = metric.linear_expand(dict_rep[e_row])
             for (coef,base) in zip(coefs,bases):
-                index = basis.index(base)
+                index = ga.basis.index(base)
                 lst_mat_row[index] = coef
 
         lst_mat.append(lst_mat_row)
@@ -410,7 +410,7 @@ class Lt(object):
 
     def Fmt(self, fmt=1, title=None):
 
-        if metric.in_ipynb():
+        if printer.isinteractive():
             return self
 
         latex_str = printer.GaLatexPrinter.latex(self)

@@ -1,7 +1,7 @@
 # Provided by Alan Macdonald   http://faculty.luther.edu  macdonal@luther.edu
 
 from sympy import *
-from ga import *
+from galgebra.ga import *
 
 # g2: Standard 2D Model
 g2coords = (x,y) = symbols('x y', real=True)

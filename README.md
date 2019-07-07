@@ -53,11 +53,14 @@ The various derivatives of a multivector function is accomplished by multiplying
 
 ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/grad.svg?sanitize=true) ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/grad_cmp.svg?sanitize=true)
 
-Tip: an example for getting `grad` and `rgrad`:
+Tip: an example for getting `grad` and `rgrad` of a 3-d Euclidean geometric algebra in rectangular coordinates:
 
 ```python
-(ex, ey, ez, grad, rgrad) = 
-  MV.setup('e*x|y|z', metric='[1,1,1]', coords=symbols('x y z'))
+from sympy import symbols
+from galgebra.ga import Ga
+
+o3d = Ga('e', g=[1,1,1], coords=symbols('x,y,z',real=True))
+(grad,rgrad) = o3d.grads()
 ```
 
 ### Printing
@@ -80,7 +83,7 @@ from galgebra.printer import Format
 Format(Fmode = False, Dmode = True)
 
 st4coords = (t,x,y,z) = symbols('t x y z', real=True)
-st4 = Ga('e_t e_x e_y e_z',
+st4 = Ga('e',
          g=[1,-1,-1,-1],
          coords=st4coords)
 
@@ -104,7 +107,19 @@ Installing GAlgebra
 
 - Works on Linux, Windows, Mac OSX
 - [Python](https://www.python.org/) 2.7 or 3
-- [SymPy](https://www.sympy.org) (will be automatically installed by `pip`)
+- [SymPy](https://www.sympy.org)
+
+Note: 
+
+GAlgebra only supports SymPy 1.3 and below for now, see the tracking issue [#31](https://github.com/pygae/galgebra/issues/31).
+
+Please run the following to freeze the version of SymPy to 1.3:
+
+```bash
+pip install sympy==1.3
+```
+
+If you need to use SymPy 1.4 and above for other libraries, please create a seperate virtual environment with SymPy 1.3 for GAlgebra using [conda](https://github.com/conda/conda) or [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv).
 
 ### Installing GAlgebra From PyPI (Recommended for users)
 
@@ -126,20 +141,21 @@ pip install -e .
 
 Note that the optional `-e` argument is used here for a developer install so modifying the source will take effect immediately without the need of reinstallation.
 
-### Running tests to verify the installation
-
-Run from the root of the repository:
-
-```bash
-python setup.py test
-```
-
-Or, preferably:
+Now you may run tests to verify the installation, run from the root of the repository:
 
 ```bash
 pip install pytest
 pytest test
 ```
+
+Further, to run the complete test suite including the ones using [nbval](https://github.com/computationalmodelling/nbval), just run:
+
+```bash
+pip install nbval
+pytest --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg
+```
+
+This could take more than 10 minutes, please be patient.
 
 Migration Guide
 ----------------
@@ -166,10 +182,6 @@ The `setgapth.py` way to install is now deprecated by `pip install galgebra` and
 from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Mv, Nga
-# for backward compatibility
-from galgebra.mv import MV, ONE, ZERO, HALF
-from galgebra import ga
-from galgebra import utils
 ```
 
 Resources

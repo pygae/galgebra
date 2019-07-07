@@ -1,8 +1,9 @@
+from __future__ import print_function
 import sys
 
 from sympy import symbols,sin,cos
-from mv import MV
-from printer import xdvi,Get_Program,Print_Function,Format
+from galgebra.deprecated import MV
+from galgebra.printer import xpdf,Get_Program,Print_Function,Format
 
 def derivatives_in_spherical_coordinates():
     Print_Function()
@@ -14,14 +15,14 @@ def derivatives_in_spherical_coordinates():
     A = MV('A','vector',fct=True)
     B = MV('B','grade2',fct=True)
 
-    print 'f =',f
-    print 'A =',A
-    print 'B =',B
+    print('f =',f)
+    print('A =',A)
+    print('B =',B)
 
-    print 'grad*f =',grad*f
-    print 'grad|A =',grad|A
-    print '-I*(grad^A) =',-MV.I*(grad^A)
-    print 'grad^B =',grad^B
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('-I*(grad^A) =',-MV.I*(grad^A))
+    print('grad^B =',grad^B)
     return
 def dummy():
     return
@@ -30,7 +31,8 @@ def main():
     Get_Program()
     Format()
     derivatives_in_spherical_coordinates()
-    xdvi()
+    # xpdf()
+    xpdf(pdfprog=None)
     return
 
 if __name__ == "__main__":

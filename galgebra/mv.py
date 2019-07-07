@@ -19,6 +19,7 @@ from sympy import N as Nsympy
 from . import printer
 from . import metric
 from . import utils
+from .printer import ZERO_STR
 import sys
 from functools import reduce, cmp_to_key
 
@@ -662,7 +663,7 @@ class Mv(object):
     def Mv_latex_str(self):
 
         if self.obj == 0:
-            return ' 0 '
+            return ZERO_STR
 
         self.first_line = True
 
@@ -683,7 +684,7 @@ class Mv(object):
         self.obj = metric.Simp.apply(self.obj)
 
         if self.obj == S(0):
-            return ' 0 '
+            return ZERO_STR
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
@@ -1497,7 +1498,7 @@ class Sdop(object):
 
     def Sdop_str(self):
         if len(self.terms) == 0:
-            return '0'
+            return ZERO_STR
 
         self.sort_terms()
         s = ''
@@ -1525,7 +1526,7 @@ class Sdop(object):
 
     def Sdop_latex_str(self):
         if len(self.terms) == 0:
-            return '0'
+            return ZERO_STR
 
         self.sort_terms()
 
@@ -2377,7 +2378,7 @@ class Dop(object):
 
     def Dop_str(self):
         if len(self.terms) == 0:
-            return ' 0 '
+            return ZERO_STR
 
         mv_terms = self.Dop_mv_expand(modes=simplify)
         s = ''
@@ -2411,7 +2412,7 @@ class Dop(object):
 
     def Dop_latex_str(self):
         if len(self.terms) == 0:
-            return ' 0 '
+            return ZERO_STR
 
         self.consolidate_coefs()
 
@@ -2562,7 +2563,7 @@ def printrref(matrix, vars="xyzuvwrs"):   # Print rref of matrix with variables.
 
 def com(A, B):
     raise ImportError(
-        """mv.com is removed, please use ga.Ga.com(A, B) instead.""")
+        """mv.com is removed, please use galgebra.ga.Ga.com(A, B) instead.""")
 
 
 def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors u and v.
@@ -2674,89 +2675,6 @@ def scalar(A):
     if not isinstance(A,Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.scalar()
-
-################################# MV class for backward compatibility ###################
-
-class MV(Mv):
-
-    @staticmethod
-    def convert_metric(gstr):
-        if gstr[0] is '[' and gstr[-1] is ']':
-            gstr_lst = gstr[1:-1].split(',')
-            g = []
-            for x in gstr_lst:
-                g.append(int(x))
-            return g
-        else:
-            return gstr
-
-    @staticmethod
-    def setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None)):
-
-        if utils.isstr(metric):
-            metric = MV.convert_metric(metric)
-        if curv != (None,None):
-            MV.GA = ga.Ga(basis, g=None, coords=coords, X=curv[0], debug=debug)
-        else:
-            MV.GA = ga.Ga(basis, g=metric, coords=coords, X=curv[0], debug=debug)
-        MV.I = MV.GA.i
-        MV.metric = MV.GA.g
-        if coords is not None:
-            (MV.grad,MV.rgrad) = MV.GA.grads()
-            return list(MV.GA.mv()) + [MV.grad]
-        else:
-            return list(MV.GA.mv())
-
-
-    def __init__(self, base, mvtype, fct=False, blade_rep=True):
-        Mv.__init__(self, base, mvtype, f=fct, ga=MV.GA)
-
-    def Fmt(self, fmt=1, title=None):
-        print(Mv.Fmt(self, fmt=fmt, title=title))
-        return
-
-def ReciprocalFrame(basis, mode='norm'):
-
-    GA = basis[0].Ga
-    dim = len(basis)
-    indexes = tuple(range(dim))
-    index = [()]
-
-    for i in indexes[-2:]:
-        index.append(tuple(combinations(indexes, i + 1)))
-
-    MFbasis = []
-
-    for igrade in index[-2:]:
-        grade = []
-        for iblade in igrade:
-            blade = Mv(1, 'scalar', ga=GA)
-            for ibasis in iblade:
-                blade ^= basis[ibasis]
-            blade = blade.trigsimp()
-            grade.append(blade)
-        MFbasis.append(grade)
-    E = MFbasis[-1][0]
-    E_sq = trigsimp((E * E).scalar(),)
-
-    duals = copy.copy(MFbasis[-2])
-
-    duals.reverse()
-    sgn = 1
-    rbasis = []
-    for dual in duals:
-        recpv = (sgn * dual * E).trigsimp()
-        rbasis.append(recpv)
-        sgn = -sgn
-
-    if mode != 'norm':
-        rbasis.append(E_sq)
-    else:
-        for i in range(dim):
-            rbasis[i] = rbasis[i] / E_sq
-
-    return tuple(rbasis)
-
 
 if __name__ == "__main__":
     pass
