@@ -96,7 +96,9 @@ You will see:
 
 ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/st4_M3.svg?sanitize=true)
 
-For detailed documentation and more examples, please check out https://galgebra.readthedocs.io/ .
+You may also check out more examples [here](./examples/README.md).
+
+For detailed documentation, please visit https://galgebra.readthedocs.io/ .
 
 **NOTE:** If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out section [Migration Guide](#migration-guide) below.
 
