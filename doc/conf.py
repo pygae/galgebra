@@ -26,11 +26,6 @@ project = 'galgebra'
 copyright = '2014-2019, Alan Bromborsky and GAlgebra team'
 author = 'Alan Bromborsky'
 
-# The short X.Y version
-version = ''
-# The full version, including alpha/beta/rc tags
-release = '0.4.4'
-
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -52,7 +47,8 @@ extensions = [
     'IPython.sphinxext.ipython_directive',
     'IPython.sphinxext.ipython_console_highlighting',
     'sphinx_markdown_tables',
-    'm2r'
+    'm2r',
+    'releases'
 ]
 
 # -- nbsphinx configuration ---------------------------------------------------
@@ -119,6 +115,18 @@ exclude_patterns = ['_build', '**.ipynb_checkpoints', 'Thumbs.db', '.DS_Store']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# If your project is hosted on Github, set the releases_github_path setting instead, 
+# to e.g. account/project. Releases will then use an appropriate Github URL for both
+# releases and issues.
+releases_github_path = 'pygae/galgebra'
+
+# You may optionally set releases_debug = True to see debug output while building your docs.
+releases_debug = True
+
+# If your changelog includes “simple” pre-1.0 releases derived from a single branch
+# (i.e. without stable release lines & semantic versioning) you may want to set 
+# releases_unstable_prehistory = True.
+releases_unstable_prehistory = True
 
 # -- Options for HTML output -------------------------------------------------
 
