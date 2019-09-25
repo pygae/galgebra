@@ -16,6 +16,7 @@ Changelog
     * Update installation instructions in README
     * Add migration guide from `sympy.galgebra` and `brombo/galgebra`
     * Add Changelog
+    * Add doc for examples, tests and bundled resources
 
 - :bug:`15` Fix printing of some products and inverses of multivectors
 - :bug:`18` Fix TypeError of unicode string, use `BytesIO` instead of `StringIO`
