@@ -16,7 +16,7 @@ Development Status
 
 [pygae/galgebra](https://github.com/pygae/galgebra) is a community fork, maintained by [Pythonic Geometric Algebra Enthusiasts](https://github.com/pygae).
 
-The fork supports Python 3, increases test coverage, set up CI and linters, maintains releases to [PyPI](https://pypi.org/project/galgebra/#history), improves [docs](http://galgebra.readthedocs.io) and has many bug fixes.
+The fork supports Python 3, increases test coverage, set up CI and linters, maintains releases to [PyPI](https://pypi.org/project/galgebra/#history), improves [docs](http://galgebra.readthedocs.io) and has many bug fixes, see [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html).
 
 Features
 --------------------
@@ -96,7 +96,9 @@ You will see:
 
 ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/st4_M3.svg?sanitize=true)
 
-For detailed documentation and more examples, please check out https://galgebra.readthedocs.io/ .
+You may also check out more examples [here](https://github.com/pygae/galgebra/blob/master/examples/).
+
+For detailed documentation, please visit https://galgebra.readthedocs.io/ .
 
 **NOTE:** If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out section [Migration Guide](#migration-guide) below.
 
@@ -184,9 +186,11 @@ from galgebra.ga import Ga, one, zero
 from galgebra.mv import Mv, Nga
 ```
 
-Resources
-------------
+Bundled Resources
+------------------
 
-Note that in the doc directory there is BookGA.pdf which is a collection of notes on 
-Geometric Algebra and Calculus based of "Geometric Algebra for Physicists" by Doran and 
-Lasenby and on some papers by Lasenby and Hestenes.
+Note that in the [doc/books](https://github.com/pygae/galgebra/blob/master/doc/books/) directory there are:
+
+- `BookGA.pdf` which is a collection of notes on Geometric Algebra and Calculus based of "Geometric Algebra for Physicists" by Doran and Lasenby and on some papers by Lasenby and Hestenes.
+- `galgebra.pdf` which is the original main doc of GAlgebra in PDF format, while the math part is still valid, the part describing the installation and usage of GAlgebra is outdated, please read with cautious or visit https://galgebra.readthedocs.io/ instead.
+- `Macdonald` which constains bundled supplementary materials for [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) by Alan Macdonald, see [here](https://github.com/pygae/galgebra/blob/master/doc/books/Macdonald/) and [here](https://github.com/pygae/galgebra/blob/master/examples/Macdonald/) for more information.
