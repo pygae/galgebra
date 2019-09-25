@@ -96,7 +96,7 @@ You will see:
 
 ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/st4_M3.svg?sanitize=true)
 
-You may also check out more examples [here](./examples/README.md).
+You may also check out more examples [here](https://github.com/pygae/galgebra/blob/master/examples/README.md).
 
 For detailed documentation, please visit https://galgebra.readthedocs.io/ .
 
@@ -189,6 +189,8 @@ from galgebra.mv import Mv, Nga
 Resources
 ------------
 
-Note that in the doc directory there is BookGA.pdf which is a collection of notes on 
-Geometric Algebra and Calculus based of "Geometric Algebra for Physicists" by Doran and 
-Lasenby and on some papers by Lasenby and Hestenes.
+Note that in the [doc/books](https://github.com/pygae/galgebra/blob/master/doc/books/) directory there are:
+
+- `BookGA.pdf` which is a collection of notes on Geometric Algebra and Calculus based of "Geometric Algebra for Physicists" by Doran and Lasenby and on some papers by Lasenby and Hestenes.
+- `galgebra.pdf` which is the original main doc of GAlgebra in PDF format, while the math part is still valid, the part describing the installation and usage of GAlgebra is outdated, please read with cautious or visit https://galgebra.readthedocs.io/ instead.
+- `Macdonald` which constains bundled supplementary materials for [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) by Alan Macdonald, see [here](https://github.com/pygae/galgebra/blob/master/doc/books/Macdonald/README.md) and [here](https://github.com/pygae/galgebra/blob/master/examples/Macdonald/README.md) for more information.
