@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 from distutils.core import Extension
 
-VERSION = '0.4.4-rc.1'
+VERSION = '0.4.4'
 LONG_DESCRIPTION = """
 Symbolic Geometric Algebra/Calculus package for SymPy. BSD License.
 """

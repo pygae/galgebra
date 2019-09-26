@@ -24,7 +24,7 @@ after_success:
 - codecov
 deploy:
   on:
-    branch: 0.4.4-release
+    tags: true
   provider: pypi
   skip_existing: true
   user: utensil
