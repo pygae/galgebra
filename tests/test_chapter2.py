@@ -3,6 +3,7 @@ import itertools
 
 from sympy import Symbol, Matrix, solve, solve_poly_system, cos, sin
 from ga import Ga
+from mv import Mv
 
 class TestChapter2(unittest.TestCase):
 
@@ -71,6 +72,15 @@ class TestChapter2(unittest.TestCase):
         self.assertTrue(x == e_1 + 2*e_2)
 
 
+    def test_2_12_1_5(self):
+        """
+        Compute (2 + 3 * e_3) ^ (e_1 + (e_2 ^ e_3) using the grade based defining equations of section 2.9.4.
+        """
+        (_g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+
+        self.assertTrue((2 + 3 * e_3) ^ (e_1 + (e_2 ^ e_3)) == (2 * e_1 + 2 * (e_2 ^ e_3) + 3 * (e_3 ^ e_1)))
+
+
     def test2_12_2_1(self):
         """
         In R2 with Euclidean metric, choose an orthonormal basis {e_1, e_2} in the plane of a and b such that e1 is parallel to a.
@@ -100,6 +110,66 @@ class TestChapter2(unittest.TestCase):
 
 
     def test2_12_2_2(self):
+
+        (_g2d, e_1, e_2) = Ga.build('e*1|2', g='1 0, 0 1')
+
+        a = Symbol('a')
+        b = Symbol('b')
+        t = Symbol('t')
+        x = a * e_1
+        y = b * (cos(t) * e_1 + sin(t) * e_2)
+
+        x_1 = x.blade_coefs([e_1])[0]
+        x_2 = x.blade_coefs([e_2])[0]
+        y_1 = y.blade_coefs([e_1])[0]
+        y_2 = y.blade_coefs([e_2])[0]
+
+        cross = x_1 * y_2 - y_1 * x_2
+
+        self.assertTrue(cross == (a * b * sin(t)))
+
+
+    def test2_12_2_4(self):
+        """
+        Solve the linear system of equation using the outer product.
+        """
+        (g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+
+        a_1 = Symbol('a_1')
+        a_2 = Symbol('a_2')
+        a_3 = Symbol('a_3')
+        b_1 = Symbol('b_1')
+        b_2 = Symbol('b_2')
+        b_3 = Symbol('b_3')
+        c_1 = Symbol('c_1')
+        c_2 = Symbol('c_2')
+        c_3 = Symbol('c_3')
+        a = a_1 * e_1 + a_2 * e_2 + a_3 * e_3
+        b = b_1 * e_1 + b_2 * e_2 + b_3 * e_3
+        c = c_1 * e_1 + c_2 * e_2 + c_3 * e_3
+
+        x_1 = Symbol('x_1')
+        x_2 = Symbol('x_2')
+        x_3 = Symbol('x_3')
+        x = x_1 * a + x_2 * b + x_3 * c
+
+        # Solve x_1
+        self.assertTrue((x ^ a) == (x_2 * (b ^ a) + x_3 * (c ^ a)))
+        self.assertTrue((x ^ a ^ b) == x_3 * (c ^ a ^ b))
+        self.assertTrue((x ^ a ^ b) * (c ^ a ^ b).inv() == Mv(x_3, 'scalar', ga=g3d))
+
+        # Solve x_2
+        self.assertTrue((x ^ b) == (x_1 * (a ^ b) + x_3 * (c ^ b)))
+        self.assertTrue((x ^ b ^ c) == x_1 * (a ^ b ^ c))
+        self.assertTrue((x ^ b ^ c) * (a ^ b ^ c).inv() == Mv(x_1, 'scalar', ga=g3d))
+
+        # Solve x_3
+        self.assertTrue((x ^ c) == (x_1 * (a ^ c) + x_2 * (b ^ c)))
+        self.assertTrue((x ^ c ^ a) == x_2 * (b ^ c ^ a))
+        self.assertTrue((x ^ c ^ a) * (b ^ c ^ a).inv() == Mv(x_2, 'scalar', ga=g3d))
+
+
+    def test2_12_2_5(self):
         """
         Consider R4 with basis {e_1, e_2, e_3, e_4}. Show that the 2-vector B = (e_1 ^ e_2) + (e_3 ^ e_4)
         is not a 2-blade (i.e., it cannot be written as the outer product of two vectors).
