@@ -76,9 +76,16 @@ class TestChapter2(unittest.TestCase):
         """
         Compute (2 + 3 * e_3) ^ (e_1 + (e_2 ^ e_3) using the grade based defining equations of section 2.9.4.
         """
-        (_g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+        (g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
 
-        self.assertTrue((2 + 3 * e_3) ^ (e_1 + (e_2 ^ e_3)) == (2 * e_1 + 2 * (e_2 ^ e_3) + 3 * (e_3 ^ e_1)))
+        A = 2 + 3 * e_3
+        B = e_1 + (e_2 ^ e_3)
+
+        R = Mv(0, 'scalar', ga=g3d)
+        for k, l in itertools.product(range(3), range(3)):
+            R += A.get_grade(k) ^ B.get_grade(l)
+
+        self.assertTrue(R == (2 * e_1 + 3 * (e_3 ^ e_1) + 2 * (e_2 ^ e_3)))
 
 
     def test2_12_2_1(self):
@@ -214,6 +221,38 @@ class TestChapter2(unittest.TestCase):
         # TODO: use solve if sympy fix it
         result = solve_poly_system(system, unknowns)
         self.assertTrue(result is None)
+
+
+    def test2_12_2_6(self):
+        """
+        Show that B = e1 ^ e2 + e3 ^ e4 of the previous exercise doesn't contain any other vector than 0.
+        """
+        (_g4d, e_1, e_2, e_3, e_4) = Ga.build('e*1|2|3|4')
+
+        # B
+        B = (e_1 ^ e_2) + (e_3 ^ e_4)
+
+        # x
+        x_1 = Symbol('x_1')
+        x_2 = Symbol('x_2')
+        x_3 = Symbol('x_3')
+        x_4 = Symbol('x_4')
+        x = x_1 * e_1 + x_2 * e_2 + x_3 * e_3 + x_4 * e_4
+
+        # Solve x ^ B = 0
+        system = (x ^ B).blade_coefs()
+
+        unknowns = [
+            x_1, x_2, x_3, x_4
+        ]
+
+        # TODO: use solve if sympy fix it
+        result = solve_poly_system(system, unknowns)
+
+        self.assertTrue(result[0] == 0)
+        self.assertTrue(result[1] == 0)
+        self.assertTrue(result[2] == 0)
+        self.assertTrue(result[3] == 0)
 
 
     def test2_12_2_9(self):
