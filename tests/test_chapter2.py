@@ -30,6 +30,20 @@ class TestChapter2(unittest.TestCase):
             self.assertEquals(grades.keys()[0], 0 if C == 0 else k + l)
 
 
+    def test2_9_5(self):
+        """
+        Reversion and grade involution.
+        """
+        R, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4')
+
+        for k in range(1, R.n + 1):
+            a = [R.mv('a%d' % i, 'vector') for i in range(k)]
+            A = reduce(Mv.__xor__, a)
+            A_rev = reduce(Mv.__xor__, reversed(a))
+            self.assertEquals(A_rev, A.rev())
+            self.assertEquals(A_rev, ((-1) ** ((k * (k - 1)) / 2)) * A)
+
+
     def test2_12_1_1(self):
         """
         Compute the outer products of the following 3-space expressions,

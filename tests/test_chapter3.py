@@ -412,9 +412,9 @@ class TestChapter3(unittest.TestCase):
         self.assertEquals(e_1_grades[0], 1)
 
         # We use the explicit definition of the contraction instead
-        self.assertEquals(e_1 < (e_1 ^ e_2), ((e_1 < e_1) ^ e_2) + (-1 ** e_1_grades[0]) * (e_1 ^ (e_1 < e_2)))
+        self.assertEquals(e_1 < (e_1 ^ e_2), ((e_1 < e_1) ^ e_2) + ((-1) ** e_1_grades[0]) * (e_1 ^ (e_1 < e_2)))
         # We can't use the definition a < b = a . b using GAlgebra so we solved it ourselves...
-        self.assertEquals(e_1 < (e_1 ^ e_2), (R.mv(1) ^ e_2) + (-1 ** e_1_grades[0]) * (e_1 ^ R.mv(0)))
+        self.assertEquals(e_1 < (e_1 ^ e_2), (R.mv(1) ^ e_2) + ((-1) ** e_1_grades[0]) * (e_1 ^ R.mv(0)))
         self.assertEquals(e_1 < (e_1 ^ e_2), e_2)       # Which is true
 
 
@@ -424,7 +424,21 @@ class TestChapter3(unittest.TestCase):
         C > (B ^ A) = (C > B) > A and C > (B > A) = (C > B) ^ A when A included in C.
         """
 
-        pass
+        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+
+        A_blades = [R.mv('X', k, 'grade') for k in range(R.n + 1)]
+        B_blades = [R.mv('B', l, 'grade') for l in range(R.n + 1)]
+        C_blades = [R.mv('B', m, 'grade') for m in range(R.n + 1)]
+
+        for A, B, C in product(A_blades, B_blades, C_blades):
+            M = C > (B ^ A)
+            self.assertEquals(M, ((A.rev() ^ B.rev()) < C.rev()).rev())
+            self.assertEquals(M, (A.rev() < (B.rev() < C.rev())).rev())
+            self.assertEquals(M, (B.rev() < C.rev()).rev() > A)
+            self.assertEquals(M, (C > B) > A)
+
+            M = C > (B > A)
+            # TODO
 
 
 if __name__ == '__main__':
