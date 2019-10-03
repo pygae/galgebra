@@ -1,18 +1,41 @@
 import unittest
-import itertools
 
+from itertools import product
 from sympy import Symbol, Matrix, solve, solve_poly_system, cos, sin
 from ga import Ga
 from mv import Mv
 
 class TestChapter2(unittest.TestCase):
 
-    def test_2_12_1_1(self):
+    def test2_9_1(self):
+        """
+        Blades and grades.
+        """
+        R, e_1, e_2, e_3, e_4, e_5 = Ga.build('e*1|2|3|4|5')
+
+        # Check for k in [1, R.n]
+        for k in range(1, R.n + 1):
+            Ak = R.mv('a', k, 'grade')
+            grades = R.grade_decomposition(Ak)
+            self.assertEquals(len(grades), 1)
+            self.assertEquals(grades.keys()[0], k)
+
+        # Check for k and l in in [1, R.n]
+        for k, l in product(range(1, R.n + 1), range(1, R.n + 1)):
+            Ak = R.mv('a', k, 'grade')
+            Bl = R.mv('b', l, 'grade')
+            C = Ak ^ Bl
+            grades = R.grade_decomposition(C)
+            self.assertEquals(len(grades), 1)
+            self.assertEquals(grades.keys()[0], 0 if C == 0 else k + l)
+
+
+    def test2_12_1_1(self):
         """
         Compute the outer products of the following 3-space expressions,
         giving the result relative to the basis {1, e_1, e_2, e_3, e_1^e_2, e_1^e_3, e_2^e_3, e_1^e_2^e_3}.
         """
-        (_g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
         self.assertTrue((e_1 + e_2) ^ (e_1 + e_3) == (-e_1 ^ e_2) + (e_1 ^ e_3) + (e_2 ^ e_3))
         self.assertTrue((e_1 + e_2 + e_3) ^ (2*e_1) == -2*(e_1 ^ e_2) - 2*(e_1 ^ e_3))
         self.assertTrue((e_1 - e_2) ^ (e_1 - e_3) == (e_1 ^ e_2) - (e_1 ^ e_3) + (e_2 ^ e_3))
@@ -26,7 +49,7 @@ class TestChapter2(unittest.TestCase):
         Given the 2-blade B = e_1 ^ (e_2 - e_3) that represents a plane,
         determine if each of the following vectors lies in that plane.
         """
-        (_g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
         B = e_1 ^ (e_2 - e_3)
         self.assertTrue(e_1 ^ B == 0)
         self.assertFalse((e_1 + e_2) ^ B == 0)
@@ -39,7 +62,7 @@ class TestChapter2(unittest.TestCase):
         What is the area of the parallelogram spanned by the vectors a = e_1 + 2*e_2
         and b = -e_1 - e_2 (relative to the area of e_1 ^ e_2) ?
         """
-        (_g3d, e_1, e_2, _e_3) = Ga.build('e*1|2|3')
+        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
         a = e_1 + 2*e_2
         b = -e_1 - e_2
         B = a ^ b
@@ -52,7 +75,7 @@ class TestChapter2(unittest.TestCase):
         and direction vector e_2, and the line M with position vector e_2 and direction vector
         (e_1 + e_2), using 2-blades.
         """
-        (_g2d, e_1, e_2) = Ga.build('e*1|2')
+        R, e_1, e_2 = Ga.build('e*1|2')
 
         # x is defined in the basis {e_1, e_2}
         a = Symbol('a')
@@ -72,20 +95,20 @@ class TestChapter2(unittest.TestCase):
         self.assertTrue(x == e_1 + 2*e_2)
 
 
-    def test_2_12_1_5(self):
+    def test2_12_1_5(self):
         """
         Compute (2 + 3 * e_3) ^ (e_1 + (e_2 ^ e_3) using the grade based defining equations of section 2.9.4.
         """
-        (g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         A = 2 + 3 * e_3
         B = e_1 + (e_2 ^ e_3)
 
-        R = Mv(0, 'scalar', ga=g3d)
-        for k, l in itertools.product(range(3), range(3)):
-            R += A.get_grade(k) ^ B.get_grade(l)
+        C = R.mv(0, 'scalar')
+        for k, l in product(range(R.n + 1), range(R.n + 1)):
+            C += A.get_grade(k) ^ B.get_grade(l)
 
-        self.assertTrue(R == (2 * e_1 + 3 * (e_3 ^ e_1) + 2 * (e_2 ^ e_3)))
+        self.assertTrue(C == (2 * e_1 + 3 * (e_3 ^ e_1) + 2 * (e_2 ^ e_3)))
 
 
     def test2_12_2_1(self):
@@ -94,7 +117,7 @@ class TestChapter2(unittest.TestCase):
         Write x = a * e_1 and y = b * (cos(t) * e_1 + sin(t) * e_2), whete t is the angle from a to b.
         Evaluate the outer product. What is the geometrical interpretation ?
         """
-        (_g2d, e_1, e_2) = Ga.build('e*1|2', g='1 0, 0 1')
+        R, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 1')
 
         # TODO: use alpha, beta and theta instead of a, b and t (it crashes sympy)
         a = Symbol('a')
@@ -118,7 +141,7 @@ class TestChapter2(unittest.TestCase):
 
     def test2_12_2_2(self):
 
-        (_g2d, e_1, e_2) = Ga.build('e*1|2', g='1 0, 0 1')
+        R, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 1')
 
         a = Symbol('a')
         b = Symbol('b')
@@ -140,7 +163,7 @@ class TestChapter2(unittest.TestCase):
         """
         Solve the linear system of equation using the outer product.
         """
-        (g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         a_1 = Symbol('a_1')
         a_2 = Symbol('a_2')
@@ -163,17 +186,17 @@ class TestChapter2(unittest.TestCase):
         # Solve x_1
         self.assertTrue((x ^ a) == (x_2 * (b ^ a) + x_3 * (c ^ a)))
         self.assertTrue((x ^ a ^ b) == x_3 * (c ^ a ^ b))
-        self.assertTrue((x ^ a ^ b) * (c ^ a ^ b).inv() == Mv(x_3, 'scalar', ga=g3d))
+        self.assertTrue((x ^ a ^ b) * (c ^ a ^ b).inv() == R.mv(x_3, 'scalar'))
 
         # Solve x_2
         self.assertTrue((x ^ b) == (x_1 * (a ^ b) + x_3 * (c ^ b)))
         self.assertTrue((x ^ b ^ c) == x_1 * (a ^ b ^ c))
-        self.assertTrue((x ^ b ^ c) * (a ^ b ^ c).inv() == Mv(x_1, 'scalar', ga=g3d))
+        self.assertTrue((x ^ b ^ c) * (a ^ b ^ c).inv() == R.mv(x_1, 'scalar'))
 
         # Solve x_3
         self.assertTrue((x ^ c) == (x_1 * (a ^ c) + x_2 * (b ^ c)))
         self.assertTrue((x ^ c ^ a) == x_2 * (b ^ c ^ a))
-        self.assertTrue((x ^ c ^ a) * (b ^ c ^ a).inv() == Mv(x_2, 'scalar', ga=g3d))
+        self.assertTrue((x ^ c ^ a) * (b ^ c ^ a).inv() == R.mv(x_2, 'scalar'))
 
 
     def test2_12_2_5(self):
@@ -181,7 +204,7 @@ class TestChapter2(unittest.TestCase):
         Consider R4 with basis {e_1, e_2, e_3, e_4}. Show that the 2-vector B = (e_1 ^ e_2) + (e_3 ^ e_4)
         is not a 2-blade (i.e., it cannot be written as the outer product of two vectors).
         """
-        (_g4d, e_1, e_2, e_3, e_4) = Ga.build('e*1|2|3|4')
+        R, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4')
 
         # B
         B = (e_1 ^ e_2) + (e_3 ^ e_4)
@@ -227,7 +250,7 @@ class TestChapter2(unittest.TestCase):
         """
         Show that B = e1 ^ e2 + e3 ^ e4 of the previous exercise doesn't contain any other vector than 0.
         """
-        (_g4d, e_1, e_2, e_3, e_4) = Ga.build('e*1|2|3|4')
+        R, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4')
 
         # B
         B = (e_1 ^ e_2) + (e_3 ^ e_4)
@@ -248,6 +271,7 @@ class TestChapter2(unittest.TestCase):
 
         # TODO: use solve if sympy fix it
         result = solve_poly_system(system, unknowns)
+        result = result[0]
 
         self.assertTrue(result[0] == 0)
         self.assertTrue(result[1] == 0)
@@ -260,26 +284,13 @@ class TestChapter2(unittest.TestCase):
         Prove Ak ^ Bl = (-1**kl) Bl ^ Ak.
         """
 
-        # very slow if bigger
-        dimension = 5
-
-        # create the vector space
-        # e*1|2|3|4|5 if dimension == 5
         # TODO: don't fix the vector space dimension
-        ga = Ga('e*%s' % '|'.join(str(i) for i in range(1, dimension+1)))
+        R, e_1, e_2, e_3, e_4, e_5 = Ga.build('e*1|2|3|4|5')
 
-        # an helper for building multivectors
-        # Ak = a1 ^ a2 ^ ... ^ ak if _build('a', k)
-        def _build(name, grade):
-            M = ga.mv('%s1' % name, 'vector')
-            for k in range(2, grade+1):
-                M = M ^ ga.mv('%s%d' % (name, k), 'vector')
-            return M
-
-        # prove for k in [1, 5] and l in [1, 5]
-        for k, l in itertools.product(range(1, dimension+1), range(1, dimension+1)):
-            Ak = _build('a', k)
-            Bl = _build('b', l)
+        # Prove for k in [1, 5] and l in [1, 5]
+        for k, l in product(range(1, R.n + 1), range(1, R.n + 1)):
+            Ak = R.mv('a', k, 'grade')
+            Bl = R.mv('b', l, 'grade')
             self.assertTrue((Ak ^ Bl) == (-1)**(k*l) * (Bl ^ Ak))
 
 
