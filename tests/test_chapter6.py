@@ -120,3 +120,28 @@ class TestChapter3(unittest.TestCase):
 
         M = R.mv('m', 'mv')
         self.assertEquals(a * M, (a < M) + (a ^ M))
+
+
+    def test6_3_2(self):
+        """
+        The subspace products as selected grades.
+        """
+
+        R = Ga('e*1|2|3')
+
+        A_blades = [R.mv('A%d' % k, k, 'grade') for k in range(R.n + 1)]
+        B_blades = [R.mv('B%d' % l, l, 'grade') for l in range(R.n + 1)]
+
+        def grade(M):
+            M_grades = R.grade_decomposition(M).keys()
+            self.assertEquals(len(M_grades), 1)
+            return M_grades[0]
+
+        for A, B in product(A_blades, B_blades):
+            k = grade(A)
+            l = grade(B)
+            self.assertEquals(A ^ B, (A * B).get_grade(k + l))
+            self.assertEquals(A < B, 0 if k > l else (A * B).get_grade(l - k))
+            self.assertEquals(A > B, 0 if l > k else (A * B).get_grade(k - l))
+            # TODO: scalar product
+
