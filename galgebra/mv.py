@@ -500,7 +500,7 @@ class Mv(object):
         if isinstance(A, Dop):
             return A.Mul(self, A, op='*')
 
-        if self.is_scalar():
+        if self.is_scalar() or A.is_scalar():
             return Mv(self.obj * A, ga=self.Ga)
 
         if self.is_blade_rep and A.is_blade_rep:
