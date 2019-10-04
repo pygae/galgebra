@@ -472,6 +472,28 @@ class TestChapter3(unittest.TestCase):
             M = C > (B > A)
             # TODO
 
+    def test3_10_2_11(self):
+        """
+        Derive the notorious bac-cab formula for the cross product (a x (b x c) = b (a . c) - c (a . b)),
+        directly from its definition (3.28). What is the corresponding formula using ^ and < ?
+        """
+        Ga.dual_mode("Iinv+")
+
+        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        a = R.mv('a', 'vector')
+        b = R.mv('b', 'vector')
+        c = R.mv('c', 'vector')
+
+        xx = cross(a, cross(b, c))
+        self.assertEquals(xx, (a ^ (b ^ c).dual()).dual())
+        self.assertEquals(xx, a < (b ^ c).dual().dual())
+        self.assertEquals(xx, -a < (b ^ c))
+        self.assertEquals(xx, (-a < b) ^ c - b ^ (-a < c))
+        self.assertEquals(xx, b ^ (a < c) - c ^ (a < b))
+        self.assertTrue((a < c).is_scalar())
+        self.assertTrue((a < b).is_scalar())
+        self.assertEquals(xx, b * (a < c) - c * (a < b))
+
 
 if __name__ == '__main__':
 

@@ -7,6 +7,23 @@ from mv import Mv
 
 class TestChapter2(unittest.TestCase):
 
+    def test2_3_2(self):
+        """
+        Introducing the outer product.
+        """
+        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+
+        a = R.mv('a', 'vector')
+        b = R.mv('b', 'vector')
+        c = R.mv('c', 'vector')
+        alpha = Symbol('alpha')
+
+        self.assertEquals(a ^ b, -b ^ a)
+        self.assertEquals(a ^ (alpha * b), alpha * (a ^ b))
+        self.assertEquals(R.mv(alpha, 'scalar') ^ b, alpha * b)
+        self.assertEquals(a ^ (b + c), (a ^ b) + (a ^ c))
+
+
     def test2_9_1(self):
         """
         Blades and grades.
