@@ -3,7 +3,7 @@ import unittest
 from itertools import product
 from sympy import simplify, Symbol, cos, sin, sqrt
 from ga import Ga
-from mv import Mv
+from mv import Mv, cross
 
 
 class TestChapter3(unittest.TestCase):
@@ -210,7 +210,39 @@ class TestChapter3(unittest.TestCase):
         # with the contraction
         for X, B in product(X_blades, B_blades):
             self.assertEquals(X < B, P(X, B) < B)
-            
+
+
+    def test3_7_2(self):
+        """
+        The cross product incorporated.
+        """
+
+        Ga.dual_mode("Iinv+")
+
+        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        a = R.mv('a', 'vector')
+        b = R.mv('b', 'vector')
+
+        A = a < R.I()
+        B = b < R.I()
+
+        # Cross product definition
+        self.assertEquals(R.I_inv(), -R.I())
+        self.assertEquals(cross(a, b), (a ^ b).dual())
+
+        # About velocities
+        self.assertEquals(cross(a, b), (b ^ a) < R.I())
+        self.assertEquals(cross(a, b), (a ^ b) < R.I_inv())
+        self.assertEquals(cross(a, b), -(b ^ a).dual())
+        self.assertEquals(cross(a, b), -b < a.dual())
+        self.assertEquals(cross(a, b), b < A)
+
+        # Intersecting planes
+        self.assertEquals(cross(a, b), ((A < R.I_inv()) ^ (B < R.I_inv())) < R.I_inv())
+        self.assertEquals(cross(a, b), (B < R.I_inv()) < ((A < R.I_inv()) < R.I()))
+        self.assertEquals(cross(a, b), (B < R.I_inv()) < A)
+        self.assertEquals(cross(a, b), B.dual() < A)
+
     
     def test_3_10_1_1(self):
         """
