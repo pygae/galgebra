@@ -145,3 +145,69 @@ class TestChapter3(unittest.TestCase):
             self.assertEquals(A > B, 0 if l > k else (A * B).get_grade(k - l))
             # TODO: scalar product
 
+
+    def test6_6_2_3(self):
+        """
+        The outer product can be defined as the completely antisymmetric summed average of all permutations
+        of the geometric product of its factors, with a sign for each term depending on oddness or evenness of
+        the permutation. Derive x ^ y ^ z = 1/3! * (xyz - yxz + yzx - zyx + zxy - xzy)
+        """
+
+        R = Ga('e*1|2|3')
+
+        x = R.mv('x', 'vector')
+        y = R.mv('y', 'vector')
+        z = R.mv('z', 'vector')
+
+        def hat(M):
+            M_grades = R.grade_decomposition(M).keys()
+            self.assertEquals(len(M_grades), 1)
+            return ((-1) ** M_grades[0]) * M
+        
+        self.assertEquals(x * y * z, ((x < y) + (x ^ y)) * z)
+        self.assertEquals(x * y * z, ((x < y) * z) + ((x ^ y) * z))
+        self.assertEquals(x * y * z, ((x < y) * z) - (z < hat(x ^ y)) + (z ^ hat(x ^ y)))
+        self.assertEquals(hat(x ^ y), x ^ y)
+        self.assertEquals(x * y * z, ((x < y) * z) - (z < (x ^ y)) + (z ^ x ^ y))
+        self.assertEquals(x * y * z, ((x < y) * z) - (z < (x ^ y)) + (x ^ y ^ z))
+
+        self.assertEquals(y * x * z, ((y < x) + (y ^ x)) * z)
+        self.assertEquals(y * x * z, ((y < x) * z) + ((y ^ x) * z))
+        self.assertEquals(y * x * z, ((y < x) * z) - (z < hat(y ^ x)) + (z ^ hat(y ^ x)))
+        self.assertEquals(hat(y ^ x), y ^ x)
+        self.assertEquals(y * x * z, ((y < x) * z) - (z < (y ^ x)) + (z ^ y ^ x))
+        self.assertEquals(y * x * z, ((x < y) * z) + (z < (x ^ y)) - (x ^ y ^ z))
+
+        self.assertEquals(y * z * x, ((y < z) + (y ^ z)) * x)
+        self.assertEquals(y * z * x, ((y < z) * x) - (x < hat(y ^ z)) + (x ^ hat(y ^ z)))
+        self.assertEquals(y * z * x, ((y < z) * x) - (x < (y ^ z)) + (x ^ y ^ z))
+
+        self.assertEquals(z * y * x, ((z < y) + (z ^ y)) * x)
+        self.assertEquals(z * y * x, ((z < y) * x) - (x < hat(z ^ y)) + (x ^ hat(z ^ y)))
+        self.assertEquals(z * y * x, ((z < y) * x) - (x < (z ^ y)) - (x ^ y ^ z))
+        self.assertEquals(z * y * x, ((y < z) * x) + (x < (y ^ z)) - (x ^ y ^ z))
+
+        self.assertEquals(z * x * y, ((z < x) + (z ^ x)) * y)
+        self.assertEquals(z * x * y, ((z < x) * y) + ((z ^ x) * y))
+        self.assertEquals(z * x * y, ((z < x) * y) - (y < hat(z ^ x)) + (y ^ hat(z ^ x)))
+        self.assertEquals(z * x * y, ((z < x) * y) - (y < (z ^ x)) + (y ^ z ^ x))
+        self.assertEquals(z * x * y, ((z < x) * y) - (y < (z ^ x)) + (x ^ y ^ z))
+
+        self.assertEquals(x * z * y, ((x < z) + (x ^ z)) * y)
+        self.assertEquals(x * z * y, ((x < z) * y) + ((x ^ z) * y))
+        self.assertEquals(x * z * y, ((x < z) * y) - (y < hat(x ^ z)) + (y ^ hat(x ^ z)))
+        self.assertEquals(x * z * y, ((x < z) * y) - (y < (x ^ z)) + (y ^ x ^ z))
+        self.assertEquals(x * z * y, ((z < x) * y) + (y < (z ^ x)) - (x ^ y ^ z))
+
+        self.assertEquals(x * y * z - y * x * z, 2 * ((x ^ y ^ z) - (z < (x ^ y))))
+        self.assertEquals(y * z * x - z * y * x, 2 * ((x ^ y ^ z) - (x < (y ^ z))))
+        self.assertEquals(z * x * y - x * z * y, 2 * ((x ^ y ^ z) - (y < (z ^ x))))
+
+        self.assertEquals(z < (x ^ y), ((z < x) ^ y) - (x ^ (z < y)))
+        self.assertEquals(x < (y ^ z), ((x < y) ^ z) - (y ^ (x < z)))
+        self.assertEquals(y < (z ^ x), ((y < z) ^ x) - (z ^ (y < x)))
+
+        self.assertEquals(((z < x) ^ y) - (x ^ (z < y)) + ((x < y) ^ z) - (y ^ (x < z)) + ((y < z) ^ x) - (z ^ (y < x)), 0)
+
+        self.assertEquals(x * y * z - y * x * z + y * z * x - z * y * x + z * x * y - x * z * y, 6 * (x ^ y ^ z))
+
