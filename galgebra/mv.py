@@ -577,6 +577,7 @@ class Mv(object):
         if self.i_grade == 0:
             return str(self.obj)
         self.obj = expand(self.obj)
+        self.char_Mv = False
         self.characterise_Mv()
         self.obj = metric.Simp.apply(self.obj)
         #print '\nself.obj =',self.obj
@@ -1210,10 +1211,7 @@ class Mv(object):
     def norm2(self):
         reverse = self.rev()
         product = self * reverse
-        if product.is_scalar():
-            return product.scalar()
-        else:
-            raise TypeError('"(' + str(product) + ')**2" is not a scalar in norm2.')
+        return product.scalar()
 
     def norm(self, hint='+'):
         """
@@ -1237,23 +1235,19 @@ class Mv(object):
         """
         reverse = self.rev()
         product = self * reverse
-
-        if product.is_scalar():
-            product = product.scalar()
-            if product.is_number:
-                if product >= S(0):
-                    return sqrt(product)
-                else:
-                    return sqrt(-product)
+        product = product.scalar()
+        if product.is_number:
+            if product >= S(0):
+                return sqrt(product)
             else:
-                if hint == '+':
-                    return metric.square_root_of_expr(product)
-                elif hint == '-':
-                    return metric.square_root_of_expr(-product)
-                else:
-                    return sqrt(Abs(product))
+                return sqrt(-product)
         else:
-            raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
+            if hint == '+':
+                return metric.square_root_of_expr(product)
+            elif hint == '-':
+                return metric.square_root_of_expr(-product)
+            else:
+                return sqrt(Abs(product))
 
     def inv(self):
         if self.is_scalar():  # self is a scalar
@@ -1262,10 +1256,8 @@ class Mv(object):
         if self_sq.is_scalar():  # self*self is a scalar
             return (S(1)/self_sq.obj)*self
         self_rev = self.rev()
-        self_self_rev = self * self_rev
-        if(self_self_rev.is_scalar()): # self*self.rev() is a scalar
-            return (S(1)/self_self_rev.obj) * self_rev
-        raise TypeError('In inv() for self =' + str(self) + 'self, or self*self or self*self.rev() is not a scalar')
+        self_self_rev = (self * self_rev).scalar()
+        return (S(1) / self_self_rev) * self_rev
 
     def func(self, fct):  # Apply function, fct, to each coefficient of multivector
         (coefs, bases) = metric.linear_expand(self.obj)

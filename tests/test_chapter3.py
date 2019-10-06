@@ -131,19 +131,21 @@ class TestChapter3(unittest.TestCase):
         The inverse of a blade.
         """
 
-        R = Ga('e*1|2|3')
-        A_blades = [R.mv('A', i, 'grade') for i in range(R.n + 1)]
+        for R in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]:     # , Ga('e*1|2|3|4|5')]:
+            A_grade_and_blades = [(k, R.mv('A', k, 'grade')) for k in range(R.n + 1)]
+            for k, A in A_grade_and_blades:
+                inv_A = A.inv()
+                rev_A = A.rev()
+                rev_sign = ((-1) ** (k * (k - 1) / 2))
+                norm2 = A.norm2()
+                self.assertEquals(rev_A, rev_sign * A)
+                self.assertEquals(inv_A, rev_A / norm2)
+                # We compute the scalar product using the geometric product
+                self.assertEquals(inv_A, rev_A / (A * rev_A).scalar())
+                self.assertEquals(inv_A, rev_sign * (A / norm2))
 
-        for A in A_blades:
-            A_grades = R.grade_decomposition(A).keys()
-            self.assertEquals(len(A_grades), 1)
-            self.assertEquals(A.inv(), ((-1) ** (A_grades[0] * (A_grades[0] - 1) / 2)) * (A / A.norm2()))
-
-        for A in A_blades:
-            self.assertEquals(A < A.inv(), 1)
-
-        A = A_blades[1]
-        self.assertEquals(A.inv(), A / A.norm2())
+            for k, A in A_grade_and_blades:
+                self.assertEquals(A < A.inv(), 1)
 
 
     def test_3_5_3(self):
