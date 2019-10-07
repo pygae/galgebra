@@ -218,8 +218,34 @@ class TestChapter6(unittest.TestCase):
         e1 * (e1 + e2) * (e2 + e3) * (e1 + e4).
         """
         GA, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4', g='1 0 0 0, 0 1 0 0, 0 0 1 0, 0 0 0 1')
-        M = e_1 * (e_1 + e_2) * (e_2 + e_3) * (e_1 + e_4)
-        self.assertFalse(M.get_grade(2).is_blade())
+        R = (e_1 * (e_1 + e_2) * (e_2 + e_3) * (e_1 + e_4)).get_grade(2)
+
+        # A 2-blade
+        a_1 = Symbol('a_1')
+        a_2 = Symbol('a_2')
+        a_3 = Symbol('a_3')
+        a_4 = Symbol('a_4')
+        a = GA.mv((a_1, a_2, a_3, a_4), 'vector')
+
+        b_1 = Symbol('b_1')
+        b_2 = Symbol('b_2')
+        b_3 = Symbol('b_3')
+        b_4 = Symbol('b_4')
+        b = GA.mv((b_1, b_2, b_3, b_4), 'vector')
+        S = a ^ b
+
+        # Try to solve the system and show there is no solution
+        system = [
+            S_coef - R_coef for S_coef, R_coef in zip(S.blade_coefs(), R.blade_coefs())
+        ]
+
+        unknowns = [
+            a_1, a_2, a_3, a_4, b_1, b_2, b_3, b_4
+        ]
+
+        # TODO: use solve if sympy fix it
+        result = solve_poly_system(system, unknowns)
+        self.assertTrue(result is None)
 
 
     def test6_6_2_6(self):
@@ -244,18 +270,19 @@ class TestChapter6(unittest.TestCase):
         In the formula (x < (1/A)) * A, show we can replace the geometric product by a contraction, so that
         it is in fact the projection (x < (1/A)) < A.
         """
-        GA = Ga('e*1|2|3|4', g='1 0 0 0, 0 1 0 0, 0 0 1 0, 0 0 0 1')
-        x = GA.mv('x', 'vector')
-        A_grade_and_blades = [(k, GA.mv('A', 'blade', k)) for k in range(0, GA.n + 1)]
 
-        for k, A in A_grade_and_blades:
-            rev_sign = (-1) ** ((k * (k - 1)) / 2)
-            self.assertEquals(rev_sign * A, A.rev())
-            M = x < A.inv()
-            self.assertEquals(M, x < (A.rev() / (A * A.rev())))
-            self.assertEquals(M, x < ((rev_sign * A) / (A * (rev_sign * A))))
-            self.assertEquals(M, x < (A / (A * A)))
-            self.assertEquals(M, (1 / (A * A).scalar()) * (x < A))
+        GA_list = [
+            Ga('e*1|2', g='1 0, 0 1'),
+            Ga('e*1|2|3', g='1 0 0, 0 1 0, 0 0 1'),
+            Ga('e*1|2|3|4', g='1 0 0 0, 0 1 0 0, 0 0 1 0, 0 0 0 1'),
+            # Ga('e*1|2|3|4|5', g='1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0, 0 0 0 0 1'),
+        ]
+
+        for GA in GA_list:
+            x = GA.mv('x', 'vector')
+            A_grade_and_blades = [(k, GA.mv('A', 'blade', k)) for k in range(GA.n + 1)]
+            for k, A in A_grade_and_blades:
+                self.assertEquals((x < A.inv()) * A, (x < A.inv()) < A)
 
 
     def test6_6_2_9(self):
@@ -291,7 +318,7 @@ class TestChapter6(unittest.TestCase):
 
         # Try to solve the system and show there is no solution
         system = [
-            (S_coef) - (R_coef) for S_coef, R_coef in zip(S.blade_coefs(), R.blade_coefs())
+            S_coef - R_coef for S_coef, R_coef in zip(S.blade_coefs(), R.blade_coefs())
         ]
 
         unknowns = [
