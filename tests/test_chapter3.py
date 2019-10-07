@@ -26,17 +26,13 @@ class TestChapter3(unittest.TestCase):
         """
         Definition of the scalar product.
         """
-        GA = Ga('e*1|2|3')
-        A_blades = [GA.mv('A', 'blade', k) for k in range(GA.n + 1)]
-        B_blades = [GA.mv('B', 'blade', l) for l in range(GA.n + 1)]
+        GA = Ga('e*1|2|3|4')
+        A_blades = [(k, GA.mv('A', 'blade', k)) for k in range(GA.n + 1)]
+        B_blades = [(l, GA.mv('B', 'blade', l)) for l in range(GA.n + 1)]
 
         # GAlgebra doesn't define any scalar product but rely on the geometric product instead
-        for A, B in product(A_blades, B_blades):
-            A_grades = GA.grade_decomposition(A).keys()
-            B_grades = GA.grade_decomposition(B).keys()
-            self.assertEquals(len(A_grades), 1)
-            self.assertEquals(len(B_grades), 1)
-            if A_grades[0] == B_grades[0]:
+        for (k, A), (l, B) in product(A_blades, B_blades):
+            if k == l:
                 self.assertTrue((A * B).scalar() != 0)
             else:
                 self.assertTrue((A * B).scalar() == 0)
@@ -47,51 +43,47 @@ class TestChapter3(unittest.TestCase):
         Computing the contraction explicitly.
         """
         GA = Ga('e*1|2|3')
-        A_blades = [GA.mv('A', 'blade', k) for k in range(GA.n + 1)]
-        B_blades = [GA.mv('B', 'blade', l) for l in range(GA.n + 1)]
-        C_blades = [GA.mv('C', 'blade', m) for m in range(GA.n + 1)]
+        A_blades = [(k, GA.mv('A', 'blade', k)) for k in range(GA.n + 1)]
+        B_blades = [(l, GA.mv('B', 'blade', l)) for l in range(GA.n + 1)]
+        C_blades = [(m, GA.mv('C', 'blade', m)) for m in range(GA.n + 1)]
 
         # scalar and blades of various grades
-        A = A_blades[0]
-        for B in B_blades:
+        k, A = A_blades[0]
+        for l, B in B_blades:
             self.assertEquals(A < B, A * B)
 
-        A = A_blades[0]
-        for B in B_blades:
-            B_grades = GA.grade_decomposition(B).keys()
-            self.assertEquals(len(B_grades), 1)
-            self.assertEquals(B < A, 0 if B_grades[0] else A * B)
+        k, A = A_blades[0]
+        for l, B in B_blades:
+            self.assertEquals(B < A, 0 if l > 0 else (A * B).scalar())
 
         # vectors
-        A = A_blades[1]
-        B = B_blades[1]
-        self.assertEquals(A < B, A | B)
+        k, A = A_blades[1]
+        l, B = B_blades[1]
+        self.assertEquals(A < B, (A * B).scalar())
 
         # vector and the outer product of 2 blades of various grades (scalars, vectors, 2-vectors...)
-        A = A_blades[1]
-        for B, C in product(B_blades, C_blades):
-            B_grades = GA.grade_decomposition(B).keys()
-            self.assertEquals(len(B_grades), 1)
-            self.assertEquals(A < (B ^ C), ((A < B) ^ C) + (-1)**B_grades[0] * (B ^ (A < C)))
+        k, A = A_blades[1]
+        for (l, B), (m, C) in product(B_blades, C_blades):
+            self.assertEquals(A < (B ^ C), ((A < B) ^ C) + (-1)**l * (B ^ (A < C)))
 
         # vector and the outer product of 2 blades of various grades (scalars, vectors, 2-vectors...)
-        for A, B, C in product(A_blades, B_blades, C_blades):
+        for (k, A), (l, B), (m, C) in product(A_blades, B_blades, C_blades):
             self.assertEquals((A ^ B) < C, A < (B < C))
 
         # distributive properties
-        for A, B, C in product(A_blades, B_blades, C_blades):
+        for (k, A), (l, B), (m, C) in product(A_blades, B_blades, C_blades):
             self.assertEquals((A + B) < C, (A < C) + (B < C))
 
-        for A, B, C in product(A_blades, B_blades, C_blades):
+        for (k, A), (l, B), (m, C) in product(A_blades, B_blades, C_blades):
             self.assertEquals(A < (B + C), (A < B) + (A < C))
 
         alpha = Symbol("alpha")
-        for A, B in product(A_blades, B_blades):
+        for (k, A), (l, B) in product(A_blades, B_blades):
             self.assertEquals((alpha * A) < B, alpha * (A < B))
             self.assertEquals((alpha * A) < B, A < (alpha * B))
 
         a = GA.mv('a', 'blade', 1)
-        for A_minus1, B in product(A_blades[:-1], B_blades):
+        for (k, A_minus1), (l, B) in product(A_blades[:-1], B_blades):
             A = A_minus1 ^ a
             self.assertEquals(A < B, (A_minus1 ^ a) < B)
             self.assertEquals(A < B, A_minus1 < (a < B))
@@ -102,31 +94,25 @@ class TestChapter3(unittest.TestCase):
         The other contraction.
         """
         GA = Ga('e*1|2|3')
-        A_blades = [GA.mv('A', 'blade', k) for k in range(GA.n + 1)]
-        B_blades = [GA.mv('B', 'blade', l) for l in range(GA.n + 1)]
+        A_grade_and_blades = [(k, GA.mv('A', 'blade', k)) for k in range(GA.n + 1)]
+        B_grade_and_blades = [(l, GA.mv('B', 'blade', l)) for l in range(GA.n + 1)]
 
-        for A, B in product(A_blades, B_blades):
-            A_grades = GA.grade_decomposition(A).keys()
-            B_grades = GA.grade_decomposition(B).keys()
-            self.assertEquals(len(A_grades), 1)
-            self.assertEquals(len(B_grades), 1)
-            self.assertEquals(B > A, ((-1) ** (A_grades[0] * (B_grades[0] - 1))) * (A < B))
+        for (k, A), (l, B) in product(A_grade_and_blades, B_grade_and_blades):
+            self.assertEquals(B > A, ((-1) ** (k * (l - 1))) * (A < B))
 
-        for A, B in product(A_blades, B_blades):
+        for (k, A), (l, B) in product(A_grade_and_blades, B_grade_and_blades):
             C = B > A
-            A_grades = GA.grade_decomposition(A).keys()
-            B_grades = GA.grade_decomposition(B).keys()
             C_grades = GA.grade_decomposition(C).keys()
-            self.assertEquals(len(A_grades), 1)
-            self.assertEquals(len(B_grades), 1)
             self.assertEquals(len(C_grades), 1)
-            self.assertTrue(C == 0 or C_grades[0] == B_grades[0] - A_grades[0])
+            self.assertTrue(C == 0 or C_grades[0] == l - k)
 
 
     def test_3_5_2(self):
         """
         The inverse of a blade.
         """
+        Ga.dual_mode("Iinv+")
+
         for GA in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]:     # , Ga('e*1|2|3|4|5')]:
             A_grade_and_blades = [(k, GA.mv('A', 'blade', k)) for k in range(GA.n + 1)]
             for k, A in A_grade_and_blades:
@@ -143,6 +129,8 @@ class TestChapter3(unittest.TestCase):
             for k, A in A_grade_and_blades:
                 self.assertEquals(A < A.inv(), 1)
 
+        Ga.dual_mode()
+
 
     def test_3_5_3(self):
         """
@@ -151,10 +139,10 @@ class TestChapter3(unittest.TestCase):
         Ga.dual_mode("Iinv+")
 
         # some blades by grades for each space
-        spaces = [([GA.mv('A', 'blade', k) for k in range(GA.n + 1)], R) for R in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]]
+        spaces = [([GA.mv('A', 'blade', k) for k in range(GA.n + 1)], GA) for GA in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]]
         
         # dualization
-        for blades, R in spaces:
+        for blades, GA in spaces:
             for A in blades:
                 self.assertEquals(A.dual(), A < GA.I_inv())
 
@@ -168,6 +156,8 @@ class TestChapter3(unittest.TestCase):
             for A in blades:
                 self.assertEquals(A, A.dual() < GA.I())
 
+        Ga.dual_mode()
+
 
     def test_3_5_4(self):
         """
@@ -175,7 +165,7 @@ class TestChapter3(unittest.TestCase):
         """
         Ga.dual_mode("Iinv+")
 
-        R = Ga('e*1|2|3')
+        GA = Ga('e*1|2|3')
         A_blades = [GA.mv('A', 'blade', k) for k in range(GA.n + 1)]
         B_blades = [GA.mv('B', 'blade', l) for l in range(GA.n + 1)]
 
@@ -184,6 +174,8 @@ class TestChapter3(unittest.TestCase):
 
         for A, B in product(A_blades, B_blades):
             self.assertEquals((A < B).dual(), A ^ B.dual())
+
+        Ga.dual_mode()
 
 
     def test_3_6(self):
@@ -236,6 +228,8 @@ class TestChapter3(unittest.TestCase):
         self.assertEquals(cross(a, b), (B < GA.I_inv()) < ((A < GA.I_inv()) < GA.I()))
         self.assertEquals(cross(a, b), (B < GA.I_inv()) < A)
         self.assertEquals(cross(a, b), B.dual() < A)
+
+        Ga.dual_mode()
 
     
     def test_3_10_1_1(self):
@@ -308,6 +302,8 @@ class TestChapter3(unittest.TestCase):
         # h
         self.assertEquals(a < (b < GA.I_inv()), (a ^ b) < GA.I_inv())
         self.assertEquals(a < (b < GA.I_inv()), e_3 - e_2 + e_1)
+
+        Ga.dual_mode()
     
     
     def test_3_10_1_2(self):
@@ -381,6 +377,8 @@ class TestChapter3(unittest.TestCase):
         self.assertEquals(num, (e_1 ^ e_2) | (e_4 ^ e_3))
         self.assertEquals(num, 0)        
         self.assertEquals(cosine, 0)
+
+        Ga.dual_mode()
 
 
     def test3_10_2_1(self):
@@ -480,6 +478,8 @@ class TestChapter3(unittest.TestCase):
         self.assertTrue((a < c).is_scalar())
         self.assertTrue((a < b).is_scalar())
         self.assertEquals(xx, b * (a < c) - c * (a < b))
+
+        Ga.dual_mode()
 
 
 if __name__ == '__main__':

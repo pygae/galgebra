@@ -126,21 +126,13 @@ class TestChapter6(unittest.TestCase):
         """
         The subspace products as selected grades.
         """
-
         GA = Ga('e*1|2|3')
 
         # This test should work for blades and other graded multivectors
-        A_grades = [GA.mv('A%d' % k, 'grade', k) for k in range(R.n + 1)]
-        B_grades = [GA.mv('B%d' % l, 'grade', l) for l in range(R.n + 1)]
+        A_grade_and_blades = [(k, GA.mv('A%d' % k, 'grade', k)) for k in range(GA.n + 1)]
+        B_grade_and_blades = [(l, GA.mv('B%d' % l, 'grade', l)) for l in range(GA.n + 1)]
 
-        def grade(M):
-            M_grades = GA.grade_decomposition(M).keys()
-            self.assertEquals(len(M_grades), 1)
-            return M_grades[0]
-
-        for A, B in product(A_grades, B_grades):
-            k = grade(A)
-            l = grade(B)
+        for (k, A), (l, B) in product(A_grade_and_blades, B_grade_and_blades):
             self.assertEquals(A ^ B, (A * B).get_grade(k + l))
             self.assertEquals(A < B, 0 if k > l else (A * B).get_grade(l - k))
             self.assertEquals(A > B, 0 if l > k else (A * B).get_grade(k - l))

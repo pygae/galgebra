@@ -220,17 +220,17 @@ class TestChapter2(unittest.TestCase):
         # Solve x_1
         self.assertTrue((x ^ a) == (x_2 * (b ^ a) + x_3 * (c ^ a)))
         self.assertTrue((x ^ a ^ b) == x_3 * (c ^ a ^ b))
-        self.assertTrue((x ^ a ^ b) * (c ^ a ^ b).inv() == R.mv(x_3, 'scalar'))
+        self.assertTrue((x ^ a ^ b) * (c ^ a ^ b).inv() == GA.mv(x_3, 'scalar'))
 
         # Solve x_2
         self.assertTrue((x ^ b) == (x_1 * (a ^ b) + x_3 * (c ^ b)))
         self.assertTrue((x ^ b ^ c) == x_1 * (a ^ b ^ c))
-        self.assertTrue((x ^ b ^ c) * (a ^ b ^ c).inv() == R.mv(x_1, 'scalar'))
+        self.assertTrue((x ^ b ^ c) * (a ^ b ^ c).inv() == GA.mv(x_1, 'scalar'))
 
         # Solve x_3
         self.assertTrue((x ^ c) == (x_1 * (a ^ c) + x_2 * (b ^ c)))
         self.assertTrue((x ^ c ^ a) == x_2 * (b ^ c ^ a))
-        self.assertTrue((x ^ c ^ a) * (b ^ c ^ a).inv() == R.mv(x_2, 'scalar'))
+        self.assertTrue((x ^ c ^ a) * (b ^ c ^ a).inv() == GA.mv(x_2, 'scalar'))
 
 
     def test2_12_2_5(self):
