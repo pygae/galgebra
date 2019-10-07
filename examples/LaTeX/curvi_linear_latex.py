@@ -15,6 +15,8 @@ def derivatives_in_spherical_coordinates():
     A = sp3d.mv('A','vector',f=True)
     B = sp3d.mv('B','bivector',f=True)
 
+    print('#Derivatives in Spherical Coordinates')
+
     print('f =',f)
     print('A =',A)
     print('B =',B)
@@ -69,6 +71,8 @@ def derivatives_in_elliptic_cylindrical_coordinates():
     A = elip3d.mv('A','vector',f=True)
     B = elip3d.mv('B','bivector',f=True)
 
+    print('#Derivatives in Elliptic Cylindrical Coordinates')
+
     print('f =',f)
     print('A =',A)
     print('B =',B)
@@ -91,6 +95,8 @@ def derivatives_in_prolate_spheroidal_coordinates():
     f = ps3d.mv('f','scalar',f=True)
     A = ps3d.mv('A','vector',f=True)
     B = ps3d.mv('B','bivector',f=True)
+
+    print('#Derivatives in Prolate Spheroidal Coordinates')
 
     print('f =',f)
     print('A =',A)
