@@ -163,6 +163,14 @@ class Mv(object):
         self.char_Mv = True
         return
 
+    def make_blade(self, *kargs, **kwargs):
+        # Called by __init__ to make a k-blade
+
+        if isinstance(kargs[0], str) and isinstance(kargs[1], int):
+            root = kargs[0]
+            self.obj = reduce(Mv.__xor__, [self.Ga.mv('%s%d' % (root, i), 'vector') for i in range(kargs[1])], self.Ga.mv(1, 'scalar')).obj
+
+
     def make_grade(self, *kargs, **kwargs):
     # Called by __init__ to make a pure grade multivector.
 
@@ -268,7 +276,8 @@ class Mv(object):
                  'spinor': make_spinor,
                  'even': make_spinor,
                  'odd': make_odd,
-                 'grade': make_grade}
+                 'grade': make_grade,
+                 'blade': make_blade}
 
     def __init__(self, *kargs, **kwargs):
 
@@ -761,7 +770,7 @@ class Mv(object):
         if isinstance(A, Dop):
             return A.Mul(self, A, op='^')
 
-        if self.is_scalar():
+        if self.is_scalar() or isinstance(A, numbers.Number) or A.is_scalar():
             return self * A
 
         self = self.blade_rep()

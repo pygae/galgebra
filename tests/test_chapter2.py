@@ -11,38 +11,40 @@ class TestChapter2(unittest.TestCase):
         """
         Introducing the outer product.
         """
-        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        GA = Ga('e*1|2|3')
 
-        a = R.mv('a', 'vector')
-        b = R.mv('b', 'vector')
-        c = R.mv('c', 'vector')
+        a = GA.mv('a', 'vector')
+        b = GA.mv('b', 'vector')
+        c = GA.mv('c', 'vector')
         alpha = Symbol('alpha')
 
         self.assertEquals(a ^ b, -b ^ a)
         self.assertEquals(a ^ (alpha * b), alpha * (a ^ b))
-        self.assertEquals(R.mv(alpha, 'scalar') ^ b, alpha * b)
+        self.assertEquals(GA.mv(alpha, 'scalar') ^ b, alpha * b)
         self.assertEquals(a ^ (b + c), (a ^ b) + (a ^ c))
 
 
     def test2_9_1(self):
         """
-        Blades and grades.
+        Blades and grades. Be careful ga.grade_decomposition can't be used to know if a multivector is a blade,
+        but if we know a multivector is a blade we can retrieve its grade (not fast).
+        TODO: add a proper grade method to ga module or fix pure_grade...
         """
-        R, e_1, e_2, e_3, e_4, e_5 = Ga.build('e*1|2|3|4|5')
+        GA = Ga('e*1|2|3|4|5')
 
-        # Check for k in [1, R.n]
-        for k in range(1, R.n + 1):
-            Ak = R.mv('a', k, 'grade')
-            grades = R.grade_decomposition(Ak)
+        # Check for k in [0, R.n]
+        for k in range(GA.n + 1):
+            Ak = GA.mv('A', 'blade', k)
+            grades = GA.grade_decomposition(Ak)
             self.assertEquals(len(grades), 1)
             self.assertEquals(grades.keys()[0], k)
 
-        # Check for k and l in in [1, R.n]
-        for k, l in product(range(1, R.n + 1), range(1, R.n + 1)):
-            Ak = R.mv('a', k, 'grade')
-            Bl = R.mv('b', l, 'grade')
+        # Check for k and l in [0, R.n]
+        for k, l in product(range(GA.n + 1), range(GA.n + 1)):
+            Ak = GA.mv('A', 'blade', k)
+            Bl = GA.mv('B', 'blade', l)
             C = Ak ^ Bl
-            grades = R.grade_decomposition(C)
+            grades = GA.grade_decomposition(C)
             self.assertEquals(len(grades), 1)
             self.assertEquals(grades.keys()[0], 0 if C == 0 else k + l)
 
@@ -51,10 +53,10 @@ class TestChapter2(unittest.TestCase):
         """
         Reversion and grade involution.
         """
-        R, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4')
+        GA = Ga('e*1|2|3|4')
 
-        for k in range(1, R.n + 1):
-            a = [R.mv('a%d' % i, 'vector') for i in range(k)]
+        for k in range(1, GA.n + 1):
+            a = [GA.mv('a%d' % i, 'vector') for i in range(k)]
             A = reduce(Mv.__xor__, a)
             A_rev = reduce(Mv.__xor__, reversed(a))
             self.assertEquals(A_rev, A.rev())
@@ -66,7 +68,7 @@ class TestChapter2(unittest.TestCase):
         Compute the outer products of the following 3-space expressions,
         giving the result relative to the basis {1, e_1, e_2, e_3, e_1^e_2, e_1^e_3, e_2^e_3, e_1^e_2^e_3}.
         """
-        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
         self.assertTrue((e_1 + e_2) ^ (e_1 + e_3) == (-e_1 ^ e_2) + (e_1 ^ e_3) + (e_2 ^ e_3))
         self.assertTrue((e_1 + e_2 + e_3) ^ (2*e_1) == -2*(e_1 ^ e_2) - 2*(e_1 ^ e_3))
         self.assertTrue((e_1 - e_2) ^ (e_1 - e_3) == (e_1 ^ e_2) - (e_1 ^ e_3) + (e_2 ^ e_3))
@@ -80,7 +82,7 @@ class TestChapter2(unittest.TestCase):
         Given the 2-blade B = e_1 ^ (e_2 - e_3) that represents a plane,
         determine if each of the following vectors lies in that plane.
         """
-        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
         B = e_1 ^ (e_2 - e_3)
         self.assertTrue(e_1 ^ B == 0)
         self.assertFalse((e_1 + e_2) ^ B == 0)
@@ -93,7 +95,7 @@ class TestChapter2(unittest.TestCase):
         What is the area of the parallelogram spanned by the vectors a = e_1 + 2*e_2
         and b = -e_1 - e_2 (relative to the area of e_1 ^ e_2) ?
         """
-        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
         a = e_1 + 2*e_2
         b = -e_1 - e_2
         B = a ^ b
@@ -106,7 +108,7 @@ class TestChapter2(unittest.TestCase):
         and direction vector e_2, and the line M with position vector e_2 and direction vector
         (e_1 + e_2), using 2-blades.
         """
-        R, e_1, e_2 = Ga.build('e*1|2')
+        GA, e_1, e_2 = Ga.build('e*1|2')
 
         # x is defined in the basis {e_1, e_2}
         a = Symbol('a')
@@ -130,13 +132,13 @@ class TestChapter2(unittest.TestCase):
         """
         Compute (2 + 3 * e_3) ^ (e_1 + (e_2 ^ e_3) using the grade based defining equations of section 2.9.4.
         """
-        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         A = 2 + 3 * e_3
         B = e_1 + (e_2 ^ e_3)
 
-        C = R.mv(0, 'scalar')
-        for k, l in product(range(R.n + 1), range(R.n + 1)):
+        C = GA.mv(0, 'scalar')
+        for k, l in product(range(GA.n + 1), range(GA.n + 1)):
             C += A.get_grade(k) ^ B.get_grade(l)
 
         self.assertTrue(C == (2 * e_1 + 3 * (e_3 ^ e_1) + 2 * (e_2 ^ e_3)))
@@ -148,7 +150,7 @@ class TestChapter2(unittest.TestCase):
         Write x = a * e_1 and y = b * (cos(t) * e_1 + sin(t) * e_2), whete t is the angle from a to b.
         Evaluate the outer product. What is the geometrical interpretation ?
         """
-        R, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 1')
+        GA, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 1')
 
         # TODO: use alpha, beta and theta instead of a, b and t (it crashes sympy)
         a = Symbol('a')
@@ -171,8 +173,9 @@ class TestChapter2(unittest.TestCase):
 
 
     def test2_12_2_2(self):
-
-        R, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 1')
+        """
+        """
+        GA, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 1')
 
         a = Symbol('a')
         b = Symbol('b')
@@ -194,7 +197,7 @@ class TestChapter2(unittest.TestCase):
         """
         Solve the linear system of equation using the outer product.
         """
-        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         a_1 = Symbol('a_1')
         a_2 = Symbol('a_2')
@@ -235,7 +238,7 @@ class TestChapter2(unittest.TestCase):
         Consider R4 with basis {e_1, e_2, e_3, e_4}. Show that the 2-vector B = (e_1 ^ e_2) + (e_3 ^ e_4)
         is not a 2-blade (i.e., it cannot be written as the outer product of two vectors).
         """
-        R, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4')
+        GA, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4')
 
         # B
         B = (e_1 ^ e_2) + (e_3 ^ e_4)
@@ -281,7 +284,7 @@ class TestChapter2(unittest.TestCase):
         """
         Show that B = e1 ^ e2 + e3 ^ e4 of the previous exercise doesn't contain any other vector than 0.
         """
-        R, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4')
+        GA, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4')
 
         # B
         B = (e_1 ^ e_2) + (e_3 ^ e_4)
@@ -314,15 +317,11 @@ class TestChapter2(unittest.TestCase):
         """
         Prove Ak ^ Bl = (-1**kl) Bl ^ Ak.
         """
-
-        # TODO: don't fix the vector space dimension
-        R, e_1, e_2, e_3, e_4, e_5 = Ga.build('e*1|2|3|4|5')
-
-        # Prove for k in [1, 5] and l in [1, 5]
-        for k, l in product(range(1, R.n + 1), range(1, R.n + 1)):
-            Ak = R.mv('a', k, 'grade')
-            Bl = R.mv('b', l, 'grade')
-            self.assertTrue((Ak ^ Bl) == (-1)**(k*l) * (Bl ^ Ak))
+        for GA in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]:    #, Ga('e*1|2|3|4|5')]:
+            for k, l in product(range(GA.n + 1), range(GA.n + 1)):
+                Ak = GA.mv('A', 'blade', k)
+                Bl = GA.mv('B', 'blade', l)
+                self.assertEquals(Ak ^ Bl, (-1)**(k * l) * (Bl ^ Ak))
 
 
 if __name__ == '__main__':

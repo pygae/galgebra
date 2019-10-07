@@ -26,15 +26,14 @@ class TestChapter3(unittest.TestCase):
         """
         Definition of the scalar product.
         """
-
-        R = Ga('e*1|2|3')
-        A_blades = [R.mv('A', i, 'grade') for i in range(R.n + 1)]
-        B_blades = [R.mv('B', i, 'grade') for i in range(R.n + 1)]
+        GA = Ga('e*1|2|3')
+        A_blades = [GA.mv('A', 'blade', k) for k in range(GA.n + 1)]
+        B_blades = [GA.mv('B', 'blade', l) for l in range(GA.n + 1)]
 
         # GAlgebra doesn't define any scalar product but rely on the geometric product instead
         for A, B in product(A_blades, B_blades):
-            A_grades = R.grade_decomposition(A).keys()
-            B_grades = R.grade_decomposition(B).keys()
+            A_grades = GA.grade_decomposition(A).keys()
+            B_grades = GA.grade_decomposition(B).keys()
             self.assertEquals(len(A_grades), 1)
             self.assertEquals(len(B_grades), 1)
             if A_grades[0] == B_grades[0]:
@@ -47,11 +46,10 @@ class TestChapter3(unittest.TestCase):
         """
         Computing the contraction explicitly.
         """
-
-        R = Ga('e*1|2|3')
-        A_blades = [R.mv('A', i, 'grade') for i in range(R.n + 1)]
-        B_blades = [R.mv('B', i, 'grade') for i in range(R.n + 1)]
-        C_blades = [R.mv('C', i, 'grade') for i in range(R.n + 1)]
+        GA = Ga('e*1|2|3')
+        A_blades = [GA.mv('A', 'blade', k) for k in range(GA.n + 1)]
+        B_blades = [GA.mv('B', 'blade', l) for l in range(GA.n + 1)]
+        C_blades = [GA.mv('C', 'blade', m) for m in range(GA.n + 1)]
 
         # scalar and blades of various grades
         A = A_blades[0]
@@ -60,7 +58,7 @@ class TestChapter3(unittest.TestCase):
 
         A = A_blades[0]
         for B in B_blades:
-            B_grades = R.grade_decomposition(B).keys()
+            B_grades = GA.grade_decomposition(B).keys()
             self.assertEquals(len(B_grades), 1)
             self.assertEquals(B < A, 0 if B_grades[0] else A * B)
 
@@ -72,7 +70,7 @@ class TestChapter3(unittest.TestCase):
         # vector and the outer product of 2 blades of various grades (scalars, vectors, 2-vectors...)
         A = A_blades[1]
         for B, C in product(B_blades, C_blades):
-            B_grades = R.grade_decomposition(B).keys()
+            B_grades = GA.grade_decomposition(B).keys()
             self.assertEquals(len(B_grades), 1)
             self.assertEquals(A < (B ^ C), ((A < B) ^ C) + (-1)**B_grades[0] * (B ^ (A < C)))
 
@@ -92,7 +90,7 @@ class TestChapter3(unittest.TestCase):
             self.assertEquals((alpha * A) < B, alpha * (A < B))
             self.assertEquals((alpha * A) < B, A < (alpha * B))
 
-        a = R.mv('a', 1, 'grade')
+        a = GA.mv('a', 'blade', 1)
         for A_minus1, B in product(A_blades[:-1], B_blades):
             A = A_minus1 ^ a
             self.assertEquals(A < B, (A_minus1 ^ a) < B)
@@ -103,23 +101,22 @@ class TestChapter3(unittest.TestCase):
         """
         The other contraction.
         """
-
-        R = Ga('e*1|2|3')
-        A_blades = [R.mv('A', i, 'grade') for i in range(R.n + 1)]
-        B_blades = [R.mv('B', i, 'grade') for i in range(R.n + 1)]
+        GA = Ga('e*1|2|3')
+        A_blades = [GA.mv('A', 'blade', k) for k in range(GA.n + 1)]
+        B_blades = [GA.mv('B', 'blade', l) for l in range(GA.n + 1)]
 
         for A, B in product(A_blades, B_blades):
-            A_grades = R.grade_decomposition(A).keys()
-            B_grades = R.grade_decomposition(B).keys()
+            A_grades = GA.grade_decomposition(A).keys()
+            B_grades = GA.grade_decomposition(B).keys()
             self.assertEquals(len(A_grades), 1)
             self.assertEquals(len(B_grades), 1)
             self.assertEquals(B > A, ((-1) ** (A_grades[0] * (B_grades[0] - 1))) * (A < B))
 
         for A, B in product(A_blades, B_blades):
             C = B > A
-            A_grades = R.grade_decomposition(A).keys()
-            B_grades = R.grade_decomposition(B).keys()
-            C_grades = R.grade_decomposition(C).keys()
+            A_grades = GA.grade_decomposition(A).keys()
+            B_grades = GA.grade_decomposition(B).keys()
+            C_grades = GA.grade_decomposition(C).keys()
             self.assertEquals(len(A_grades), 1)
             self.assertEquals(len(B_grades), 1)
             self.assertEquals(len(C_grades), 1)
@@ -130,9 +127,8 @@ class TestChapter3(unittest.TestCase):
         """
         The inverse of a blade.
         """
-
-        for R in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]:     # , Ga('e*1|2|3|4|5')]:
-            A_grade_and_blades = [(k, R.mv('A', k, 'grade')) for k in range(R.n + 1)]
+        for GA in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]:     # , Ga('e*1|2|3|4|5')]:
+            A_grade_and_blades = [(k, GA.mv('A', 'blade', k)) for k in range(GA.n + 1)]
             for k, A in A_grade_and_blades:
                 inv_A = A.inv()
                 rev_A = A.rev()
@@ -152,38 +148,36 @@ class TestChapter3(unittest.TestCase):
         """
         Orthogonal complement and duality.
         """
-
         Ga.dual_mode("Iinv+")
 
         # some blades by grades for each space
-        spaces = [([R.mv('A', i, 'grade') for i in range(R.n + 1)], R) for R in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]]
+        spaces = [([GA.mv('A', 'blade', k) for k in range(GA.n + 1)], R) for R in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]]
         
         # dualization
         for blades, R in spaces:
             for A in blades:
-                self.assertEquals(A.dual(), A < R.I_inv())
+                self.assertEquals(A.dual(), A < GA.I_inv())
 
         # dualization sign
         for blades, R in spaces:
             for A in blades:
-                self.assertEquals(A.dual().dual(), ((-1) ** (R.n * (R.n - 1) / 2)) * A)
+                self.assertEquals(A.dual().dual(), ((-1) ** (GA.n * (GA.n - 1) / 2)) * A)
 
         # undualization
         for blades, R in spaces:
             for A in blades:
-                self.assertEquals(A, A.dual() < R.I())
+                self.assertEquals(A, A.dual() < GA.I())
 
 
     def test_3_5_4(self):
         """
         The duality relationships.
         """
-
         Ga.dual_mode("Iinv+")
 
         R = Ga('e*1|2|3')
-        A_blades = [R.mv('A', i, 'grade') for i in range(R.n + 1)]
-        B_blades = [R.mv('B', i, 'grade') for i in range(R.n + 1)]
+        A_blades = [GA.mv('A', 'blade', k) for k in range(GA.n + 1)]
+        B_blades = [GA.mv('B', 'blade', l) for l in range(GA.n + 1)]
 
         for A, B in product(A_blades, B_blades):
             self.assertEquals((A ^ B).dual(), A < B.dual())
@@ -196,10 +190,9 @@ class TestChapter3(unittest.TestCase):
         """
         Orthogonal projection of subspaces.
         """
-
-        R = Ga('e*1|2|3')
-        X_blades = [R.mv('X', i, 'grade') for i in range(R.n + 1)]
-        B_blades = [R.mv('B', i, 'grade') for i in range(R.n + 1)]
+        GA = Ga('e*1|2|3')
+        X_blades = [GA.mv('X', 'blade', k) for k in range(GA.n + 1)]
+        B_blades = [GA.mv('B', 'blade', l) for l in range(GA.n + 1)]
 
         # projection of X on B
         def P(X, B):
@@ -218,31 +211,30 @@ class TestChapter3(unittest.TestCase):
         """
         The cross product incorporated.
         """
-
         Ga.dual_mode("Iinv+")
 
-        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
-        a = R.mv('a', 'vector')
-        b = R.mv('b', 'vector')
+        GA = Ga('e*1|2|3')
+        a = GA.mv('a', 'vector')
+        b = GA.mv('b', 'vector')
 
-        A = a < R.I()
-        B = b < R.I()
+        A = a < GA.I()
+        B = b < GA.I()
 
         # Cross product definition
-        self.assertEquals(R.I_inv(), -R.I())
+        self.assertEquals(GA.I_inv(), -GA.I())
         self.assertEquals(cross(a, b), (a ^ b).dual())
 
         # About velocities
-        self.assertEquals(cross(a, b), (b ^ a) < R.I())
-        self.assertEquals(cross(a, b), (a ^ b) < R.I_inv())
+        self.assertEquals(cross(a, b), (b ^ a) < GA.I())
+        self.assertEquals(cross(a, b), (a ^ b) < GA.I_inv())
         self.assertEquals(cross(a, b), -(b ^ a).dual())
         self.assertEquals(cross(a, b), -b < a.dual())
         self.assertEquals(cross(a, b), b < A)
 
         # Intersecting planes
-        self.assertEquals(cross(a, b), ((A < R.I_inv()) ^ (B < R.I_inv())) < R.I_inv())
-        self.assertEquals(cross(a, b), (B < R.I_inv()) < ((A < R.I_inv()) < R.I()))
-        self.assertEquals(cross(a, b), (B < R.I_inv()) < A)
+        self.assertEquals(cross(a, b), ((A < GA.I_inv()) ^ (B < GA.I_inv())) < GA.I_inv())
+        self.assertEquals(cross(a, b), (B < GA.I_inv()) < ((A < GA.I_inv()) < GA.I()))
+        self.assertEquals(cross(a, b), (B < GA.I_inv()) < A)
         self.assertEquals(cross(a, b), B.dual() < A)
 
     
@@ -252,11 +244,9 @@ class TestChapter3(unittest.TestCase):
         Compute the following expressions, giving the results relative to the basis
         {1, e_1, e_2, e_3, e_1 ^ e_2, e_2 ^ e_3, e_3 ^ e_1, e_1 ^ e_2 ^ e_3}.
         """
-        
         Ga.dual_mode("Iinv+")
 
-        R, e_1, e_2, e_3 = Ga.build('e*1|2|3', g='1 0 0, 0 1 0, 0 0 1')
-        
+        GA, e_1, e_2, e_3 = Ga.build('e*1|2|3', g='1 0 0, 0 1 0, 0 0 1')
         a = e_1 + e_2
         b = e_2 + e_3
         
@@ -299,35 +289,34 @@ class TestChapter3(unittest.TestCase):
         self.assertEquals(a < (e_1 ^ e_2 ^ e_3), (e_2 ^ e_3) + (e_3 ^ e_1))
         
         # f
-        self.assertEquals(a < R.I_inv(), a < (-e_1 ^ e_2 ^ e_3))        # equals because we fixed the metric
-        self.assertEquals(a < R.I_inv(), a < ((e_1 ^ e_2) ^ (-e_3)))    # almost last drill
-        self.assertEquals(a < R.I_inv(), -(e_2 ^ e_3) - (e_3 ^ e_1))
+        self.assertEquals(a < GA.I_inv(), a < (-e_1 ^ e_2 ^ e_3))        # equals because we fixed the metric
+        self.assertEquals(a < GA.I_inv(), a < ((e_1 ^ e_2) ^ (-e_3)))    # almost last drill
+        self.assertEquals(a < GA.I_inv(), -(e_2 ^ e_3) - (e_3 ^ e_1))
         
         # g
-        self.assertEquals((a ^ b) < R.I_inv(), -((b ^ a) < R.I_inv()))
-        self.assertEquals((a ^ b) < R.I_inv(), -(b < (a < R.I_inv())))
-        self.assertEquals((a ^ b) < R.I_inv(), -((e_2 + e_3) < (-(e_2 ^ e_3) + (e_1 ^ e_3))))        
-        self.assertEquals((a ^ b) < R.I_inv(), ((e_2 + e_3) < (e_2 ^ e_3)) - ((e_2 + e_3) < (e_1 ^ e_3)))
-        self.assertEquals((a ^ b) < R.I_inv(), ((e_2 < (e_2 ^ e_3)) + (e_3 < (e_2 ^ e_3)) - (e_2 < (e_1 ^ e_3)) - (e_3 < (e_1 ^ e_3))))
+        self.assertEquals((a ^ b) < GA.I_inv(), -((b ^ a) < GA.I_inv()))
+        self.assertEquals((a ^ b) < GA.I_inv(), -(b < (a < GA.I_inv())))
+        self.assertEquals((a ^ b) < GA.I_inv(), -((e_2 + e_3) < (-(e_2 ^ e_3) + (e_1 ^ e_3))))        
+        self.assertEquals((a ^ b) < GA.I_inv(), ((e_2 + e_3) < (e_2 ^ e_3)) - ((e_2 + e_3) < (e_1 ^ e_3)))
+        self.assertEquals((a ^ b) < GA.I_inv(), ((e_2 < (e_2 ^ e_3)) + (e_3 < (e_2 ^ e_3)) - (e_2 < (e_1 ^ e_3)) - (e_3 < (e_1 ^ e_3))))
         self.assertEquals(e_2 < (e_2 ^ e_3), e_3)
         self.assertEquals(e_3 < (e_2 ^ e_3), -e_2)
         self.assertEquals(e_2 < (e_1 ^ e_3), 0)
         self.assertEquals(e_3 < (e_1 ^ e_3), -e_1)
-        self.assertEquals((a ^ b) < R.I_inv(), e_3 - e_2 + e_1)
+        self.assertEquals((a ^ b) < GA.I_inv(), e_3 - e_2 + e_1)
         
         # h
-        self.assertEquals(a < (b < R.I_inv()), (a ^ b) < R.I_inv())
-        self.assertEquals(a < (b < R.I_inv()), e_3 - e_2 + e_1)
+        self.assertEquals(a < (b < GA.I_inv()), (a ^ b) < GA.I_inv())
+        self.assertEquals(a < (b < GA.I_inv()), e_3 - e_2 + e_1)
     
     
     def test_3_10_1_2(self):
         """
         Compute the cosine of the angle between the following subspaces given on an orthonormal basis of a Euclidean space.        
         """
-                
         Ga.dual_mode("Iinv+")
         
-        R, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4', g='1 0 0 0, 0 1 0 0, 0 0 1 0, 0 0 0 1')
+        GA, e_1, e_2, e_3, e_4 = Ga.build('e*1|2|3|4', g='1 0 0 0, 0 1 0 0, 0 0 1 0, 0 0 0 1')
         alpha = Symbol('alpha', real=True)
         theta = Symbol('theta', real=True)
         
@@ -402,13 +391,11 @@ class TestChapter3(unittest.TestCase):
         coefficient of the corresponding basis element in the final result.
         Show that e1 < (e1 ^ e2) = (0)1 + 0(e1) + 1(e2) + 0(e1 ^ e2).
         """
-
-        R, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 1')
-
+        GA, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 1')
         A = e_1
         B = e_1 ^ e_2
 
-        X = R.mv(1)
+        X = GA.mv(1)
         self.assertEquals(((X ^ A) * B).scalar(), (X * (A < B)).scalar())
         self.assertEquals(((X ^ A) * B).scalar(), 0)
 
@@ -431,8 +418,7 @@ class TestChapter3(unittest.TestCase):
         of e1 < (e1 ^ e2) like the previous exercise. The use the explicit definition of the contraction to show the
         contraction is still well defined, and equal to e1 < (e1 ^ e2) == e2.
         """
-
-        R, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 0')
+        GA, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 0')
 
         # We can't use the scalar product anymore (because of the metric)
         A = e_1
@@ -441,14 +427,14 @@ class TestChapter3(unittest.TestCase):
         self.assertEquals(((X ^ A) * B).scalar(), (X * (A < B)).scalar())
         self.assertEquals(((X ^ A) * B).scalar(), 0)    # Which is false
 
-        e_1_grades = R.grade_decomposition(e_1).keys()
+        e_1_grades = GA.grade_decomposition(e_1).keys()
         self.assertEquals(len(e_1_grades), 1)
         self.assertEquals(e_1_grades[0], 1)
 
         # We use the explicit definition of the contraction instead
         self.assertEquals(e_1 < (e_1 ^ e_2), ((e_1 < e_1) ^ e_2) + ((-1) ** e_1_grades[0]) * (e_1 ^ (e_1 < e_2)))
         # We can't use the definition a < b = a . b using GAlgebra so we solved it ourselves...
-        self.assertEquals(e_1 < (e_1 ^ e_2), (R.mv(1) ^ e_2) + ((-1) ** e_1_grades[0]) * (e_1 ^ R.mv(0)))
+        self.assertEquals(e_1 < (e_1 ^ e_2), (GA.mv(1) ^ e_2) + ((-1) ** e_1_grades[0]) * (e_1 ^ GA.mv(0)))
         self.assertEquals(e_1 < (e_1 ^ e_2), e_2)       # Which is true
 
 
@@ -457,12 +443,11 @@ class TestChapter3(unittest.TestCase):
         Derive the following dualities for right contraction :
         C > (B ^ A) = (C > B) > A and C > (B > A) = (C > B) ^ A when A included in C.
         """
+        GA = Ga('e*1|2|3')
 
-        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
-
-        A_blades = [R.mv('X', k, 'grade') for k in range(R.n + 1)]
-        B_blades = [R.mv('B', l, 'grade') for l in range(R.n + 1)]
-        C_blades = [R.mv('B', m, 'grade') for m in range(R.n + 1)]
+        A_blades = [GA.mv('X', 'blade', k) for k in range(GA.n + 1)]
+        B_blades = [GA.mv('B', 'blade', l) for l in range(GA.n + 1)]
+        C_blades = [GA.mv('B', 'blade', m) for m in range(GA.n + 1)]
 
         for A, B, C in product(A_blades, B_blades, C_blades):
             M = C > (B ^ A)
@@ -481,10 +466,10 @@ class TestChapter3(unittest.TestCase):
         """
         Ga.dual_mode("Iinv+")
 
-        R, e_1, e_2, e_3 = Ga.build('e*1|2|3')
-        a = R.mv('a', 'vector')
-        b = R.mv('b', 'vector')
-        c = R.mv('c', 'vector')
+        GA = Ga('e*1|2|3')
+        a = GA.mv('a', 'vector')
+        b = GA.mv('b', 'vector')
+        c = GA.mv('c', 'vector')
 
         xx = cross(a, cross(b, c))
         self.assertEquals(xx, (a ^ (b ^ c).dual()).dual())
