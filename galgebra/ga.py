@@ -334,6 +334,7 @@ class Ga(metric.Metric):
 
         self.e = mv.Mv(self.iobj, ga=self)  # Pseudo-scalar for geometric algebra
         self.e_sq = simplify(expand((self.e*self.e).scalar()))
+        self.one = mv.Mv(1, ga = self)
 
         if self.coords is not None:
             self.coord_vec = sum([coord * base for (coord, base) in zip(self.coords, self.basis)])
@@ -416,17 +417,22 @@ class Ga(metric.Metric):
     def __str__(self):
         return self.name
 
-    def E(self):  # Unnoromalized pseudo-scalar
+    def E(self):  # Unnormalized pseudo-scalar
         return self.e
 
-    def I(self):  # Noromalized pseudo-scalar
+    def I(self):  # Normalized pseudo-scalar
         return self.i
 
     def X(self):
         return self.mv(sum([coord*base for (coord, base) in zip(self.coords, self.basis)]))
 
-    def sdop(self, coefs, pdiffs=None):
-        return mv.Sdop(coefs, pdiffs, ga=self)
+    def sdop(self, *kargs, **kwargs):
+        kwargs['ga'] = self
+        return mv.Sdop(*kargs, **kwargs)
+
+    def dop(self, *kargs, **kwargs):
+        kwargs['ga'] = self
+        return mv.Dop(*kargs, **kwargs)
 
     def mv(self, root=None, *kargs, **kwargs):
         """
@@ -487,6 +493,7 @@ class Ga(metric.Metric):
         else:
             return tuple(self.r_basis_mv)
     
+    # TODO This is deleted by abrombo, keeping it for now
     def bases_dict(self, prefix=None):
         '''
         returns a dictionary mapping basis element names to their MultiVector
@@ -504,7 +511,19 @@ class Ga(metric.Metric):
 
         return {key:val for key,val in zip(var_names, bl)}
     
+    def blade_key(self,term):
+        if not isinstance(term, tuple):
+            return -1
+        if term[1] in self.blades_lst:
+            return self.blades_lst.index(term[1])
+        return -1
         
+    def base_key(self,term):
+        if not isinstance(term, tuple):
+            return -1
+        if term[1] in self.bases_lst:
+            return self.bases_lst.index(term[1])
+        return -1
 
     def grads(self):
         if not self.is_ortho:
@@ -690,6 +709,8 @@ class Ga(metric.Metric):
                 for base in grade:
                     self.bases_to_grades_dict[base] = igrade
                 igrade += 1
+        else:
+            self.bases_lst = None
 
         if self.coords is None:
             base0 = str(self.basis[0])
@@ -1613,8 +1634,18 @@ class Ga(metric.Metric):
         self.dbases[key] = db
         return db
 
-    def pdop(self,*kargs):
-        return mv.Pdop(kargs,ga=self)
+    def pdop(self,*kargs,**kwargs):
+        kwargs['ga'] = self
+        return mv.Pdop(*kargs, **kwargs)
+
+    def pdops(self):
+        if self.coords is not None:
+            pdops_lst = []
+            for coord in self.coords:
+                pdops_lst.append(self.pdop(coord))
+            return tuple(pdops_lst)
+        else:
+            raise ValueError('In Ga.pdops() no coordinates defined!\n')
 
     def pDiff(self, A, coord):
         """
@@ -1829,7 +1860,8 @@ class Sm(Ga):
                   'root': ('e', 'Root symbol for basis vectors'),
                   'name': (None, 'Name of submanifold'),
                   'norm': (False, 'Normalize basis if True'),
-                  'ga': (None, 'Base Geometric Algebra')}
+                  'ga': (None, 'Base Geometric Algebra'),
+                  'wedge': (True, 'Use ^ symbol to print basis blades')}
 
     def __init__(self, *kargs, **kwargs):
 
@@ -1936,6 +1968,21 @@ class Sm(Ga):
         self.vpd = mv.Dop(r_basis, pdx, ga=self)
         self.rvpd = mv.Dop(r_basis, pdx, ga=self, cmpflg=True)
         return self.vpd, self.rvpd
+
+def CartesianProduct(ga1,ga2):
+    g1 = ga1.g
+    g2 = ga2.g
+    coords1 = ga1.coords
+    coords2 = ga2.coords
+    basis1 = ','.join(map(str, ga1.basis))
+    basis2 = ','.join(map(str, ga1.basis))
+    print('g1 =',g1)
+    print('g2 =',g2)
+    print('coords1 =',coords1)
+    print('coords2 =',coords2)
+    print('basis1 =',basis1)
+    print('basis2 =',basis2)
+    return
 
 
 if __name__ == "__main__":
