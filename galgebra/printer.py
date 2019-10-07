@@ -13,6 +13,7 @@ from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
+import builtins
 from . import utils
 
 try:
@@ -26,34 +27,74 @@ except ImportError:
 
 from inspect import getouterframes, currentframe
 
+#Save original print function
+old_print = builtins.print
+
 ZERO_STR = ' 0 '
 
 Format_cnt = 0
 
 ip_cmds = \
-"""
-$\\DeclareMathOperator{\\Tr}{Tr}
-\\DeclareMathOperator{\\Adj}{Adj}
-\\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
-\\newcommand{\\lp}{\\left (}
-\\newcommand{\\rp}{\\right )}
-\\newcommand{\\paren}[1]{\\lp {#1} \\rp}
-\\newcommand{\\half}{\\frac{1}{2}}
-\\newcommand{\\llt}{\\left <}
-\\newcommand{\\rgt}{\\right >}
-\\newcommand{\\abs}[1]{\\left |{#1}\\right | }
-\\newcommand{\\pdiff}[2]{\\bfrac{\\partial {#1}}{\\partial {#2}}}
-\\newcommand{\\npdiff}[3]{\\bfrac{\\partial^{#3} {#1}}{\\partial {#2}^{#3}}}
-\\newcommand{\\lbrc}{\\left \\{}
-\\newcommand{\\rbrc}{\\right \\}}
-\\newcommand{\\W}{\\wedge}
-\\newcommand{\\prm}[1]{{#1}'}
-\\newcommand{\\ddt}[1]{\\bfrac{d{#1}}{dt}}
-\\newcommand{\\R}{\\dagger}
-\\newcommand{\\deriv}[3]{\\bfrac{d^{#3}#1}{d{#2}^{#3}}}
-\\newcommand{\\grade}[1]{\\left < {#1} \\right >}
-\\newcommand{\\f}[2]{{#1}\\lp {#2} \\rp}
-\\newcommand{\\eval}[2]{\\left . {#1} \\right |_{#2}}$
+r"""
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Adj}{Adj}
+\newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
+\newcommand{\lp}{\left (}
+\newcommand{\rp}{\right )}
+\newcommand{\paren}[1]{\lp {#1} \rp}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\llt}{\left <}
+\newcommand{\rgt}{\right >}
+\newcommand{\abs}[1]{\left |{#1}\right | }
+\newcommand{\pdiff}[2]{\bfrac{\partial {#1}}{\partial {#2}}}
+\newcommand{\npdiff}[3]{\bfrac{\partial^{#3} {#1}}{\partial {#2}^{#3}}}
+\newcommand{\lbrc}{\left \{}
+\newcommand{\rbrc}{\right \}}
+\newcommand{\W}{\wedge}
+\newcommand{\prm}[1]{{#1}'}
+\newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
+\newcommand{\R}{\dagger}
+\newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
+\newcommand{\grd}[1]{\left < {#1} \right >}
+\newcommand{\f}[2]{{#1}\lp {#2} \rp}
+\newcommand{\eval}[2]{\left . {#1} \right |_{#2}}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\newcommand{\es}[1]{\boldsymbol{e}_{#1}}
+\newcommand{\eS}[1]{\boldsymbol{e}^{#1}}
+\newcommand{\grade}[2]{\left < {#1} \right >_{#2}}
+\newcommand{\lc}{\rfloor}
+\newcommand{\rc}{\lfloor}
+\newcommand{\T}[1]{\text{#1}}
+\newcommand{\lop}[1]{\overleftarrow{#1}}
+\newcommand{\rop}[1]{\overrightarrow{#1}}
+\newcommand{\ldot}{\lfloor}
+\newcommand{\rdot}{\rfloor}
+
+%MacDonald LaTeX macros
+
+\newcommand   {\thalf}    {\textstyle \frac{1}{2}}
+\newcommand   {\tthird}   {\textstyle \frac{1}{3}}
+\newcommand   {\tquarter} {\textstyle \frac{1}{4}}
+\newcommand   {\tsixth}   {\textstyle \frac{1}{6}}
+
+\newcommand   {\RE}       {\mathbb{R}}
+\newcommand   {\GA}       {\mathbb{G}}
+\newcommand   {\inner}    {\mathbin{\pmb{\cdot}}}
+\renewcommand {\outer}    {\mathbin{\wedge}}
+\newcommand   {\cross}    {\mathbin{\times}}
+\newcommand   {\meet}     {\mathbin{{\,\vee\;}}}
+\renewcommand {\iff}              {\Leftrightarrow}
+\renewcommand {\impliedby}{\Leftarrow}
+\renewcommand {\implies}  {\Rightarrow}
+\newcommand   {\perpc}    {\perp}  % Orthogonal complement
+\newcommand   {\perpm}    {*}  % Dual of multivector
+\newcommand   {\del}      {\mathbf{\nabla}}  %{\boldsymbol\nabla\!}
+\newcommand   {\mpart}[2]{\left\langle\, #1 \,\right\rangle_{#2}} % AMS has a \part
+\newcommand   {\spart}[1]{\mpart{#1}{0}}
+\newcommand   {\ds}       {\displaystyle}
+\newcommand   {\os}       {\overset}
+\newcommand   {\galgebra} {\mbox{$\mathcal{G\!A}$\hspace{.01in}lgebra}}
+\newcommand   {\latex}    {\LaTeX}
 """
 
 print_replace_old = None
@@ -622,26 +663,21 @@ class GaLatexPrinter(LatexPrinter):
 
     @staticmethod
     def redirect():
+        GaLatexPrinter.latex_str = '' if GaLatexPrinter.latex_str is None else GaLatexPrinter.latex_str
+        GaLatexPrinter.text_printer = print   #Save original print function
+        builtins.print = latex_print  #Redefine original print function
         GaLatexPrinter.latex_flg = True
         GaLatexPrinter.Basic__str__ = Basic.__str__
         GaLatexPrinter.Matrix__str__ = Matrix.__str__
         Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
         Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        if GaLatexPrinter.ipy:
-            pass
-        else:
-            GaLatexPrinter.stdout = sys.stdout
-            sys.stdout = utils.StringIO()
         return
 
     @staticmethod
     def restore():
         if GaLatexPrinter.latex_flg:
-            if not GaLatexPrinter.ipy:
-                GaLatexPrinter.latex_str += sys.stdout.getvalue()
+            builtins.print = GaLatexPrinter.text_printer  #Redefine orginal print function
             GaLatexPrinter.latex_flg = False
-            if not GaLatexPrinter.ipy:
-                sys.stdout = GaLatexPrinter.stdout
             Basic.__str__ = GaLatexPrinter.Basic__str__
             Matrix.__str__ = GaLatexPrinter.Matrix__str__
         return
@@ -964,6 +1000,44 @@ class GaLatexPrinter(LatexPrinter):
 def latex(expr, **settings):
     return GaLatexPrinter(settings).doprint(expr)
 
+def latex_print(*s,**kws):
+
+    s = list(s)
+
+    GaLatexPrinter.fmt_dict = {'t':False, 'h':False}
+
+    if utils.isstr(s[0]):
+
+        if s[0] == 'h':
+            GaLatexPrinter.fmt_dict['h'] = True
+            s = s[1:]
+
+    latex_str = ''
+
+    for arg in s:
+
+        if utils.isstr(arg):
+            if GaLatexPrinter.fmt_dict['t']:
+                latex_str += r'\text{' + arg + '} '
+            else:
+                latex_str += arg + ' '
+        else:
+            if isinstance(arg, tuple):
+                tmp = r'\lp ' + str(arg)[1:-1] + r'\rp '
+                latex_str += tmp + ' '
+            else:
+                latex_str += str(arg) + ' '
+
+    if GaLatexPrinter.fmt_dict['h']:
+        latex_str = r'\begin{array}{c}\hline ' + latex_str + r' \\ \hline \end{array} '
+
+    latex_str = latex_str.replace('$$', '')
+
+    if isinteractive():
+        return display(Latex('$$ ' + latex_str + ' $$'))
+    else:
+        GaLatexPrinter.latex_str += latex_str.strip() + '\n'
+        return
 
 def print_latex(expr, **settings):
     """Prints LaTeX representation of the given expression."""
@@ -999,6 +1073,9 @@ def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
 
         if isinteractive():
             init_printing(use_latex= 'mathjax')
+            from IPython.core.interactiveshell import InteractiveShell
+            InteractiveShell.ast_node_interactivity = "all"
+            return display(Latex('$$ '+ip_cmds+' $$'))
 
     return
 
@@ -1010,7 +1087,7 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     We assume that if tex() is called then Format() has been called at the beginning of the program.
     """
 
-    latex_str = GaLatexPrinter.latex_str + sys.stdout.getvalue()
+    latex_str = GaLatexPrinter.latex_str # + sys.stdout.getvalue()
     GaLatexPrinter.latex_str = ''
     GaLatexPrinter.restore()
     r"""
@@ -1408,7 +1485,6 @@ def parse_line(line):
     line = unparse_paren(level_lst)
     return line
 
-
 def GAeval(s, pstr=False):
     """
     GAeval converts a string to a multivector expression where the
@@ -1424,14 +1500,6 @@ def GAeval(s, pstr=False):
         print(s)
         print(seval)
     return eval(seval, global_dict)
-
-r"""
-\begin{array}{c}
-\left ( \begin{array}{c} F,\\ \end{array} \right . \\
-\begin{array}{c} F, \\ \end{array} \\
-\left .\begin{array}{c}         F \\ \end{array} \right ) \\
-\end{array}
-"""
 
 def Fmt(obj,fmt=0):
     if isinstance(obj,(list,tuple,dict)):
@@ -1501,6 +1569,39 @@ def Fmt(obj,fmt=0):
         return
     else:
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
+
+class Notes(object):
+    """
+    Class for annotating LaTeX output.  Only use with LaTeX
+    """
+    def __init__(self, expr, notes, pos='L'):
+        if pos not in ('L','R','T','B'):
+            pos = 'L'
+        latex_str = r'\begin{array}'
+        if pos == 'L':
+            latex_str += r'{rl} ' + latex(notes) + r'\!\!\!\! & ' + latex(expr)
+        if pos == 'R':
+            latex_str += r'{rl} ' + latex(expr) + r' &\!\!!\!\! ' + latex(notes)
+        if pos == 'B':
+            latex_str += r'{c} ' + latex(expr) + r' \\ ' + latex(notes)
+        if pos == 'T':
+            latex_str += r'{c} ' + latex(notes) + r' \\ ' + latex(expr)
+        latex_str += r' \end{array} '
+        self.latex_str = latex_str
+
+    def __str__(self):
+        if GaLatexPrinter.latex_flg:
+            Printer = GaLatexPrinter
+        else:
+            Printer = GaPrinter
+
+        return Printer().doprint(self)
+
+    def __repr__(self):
+        return str(self)
+
+    def Notes_latex_str(self, raw=False):
+        return self.latex_str
 
 
 if __name__ == "__main__":
