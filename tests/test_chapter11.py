@@ -5,7 +5,7 @@ from ga import Ga
 from mv import Mv
 
 
-class TestChapter7(unittest.TestCase):
+class TestChapter11(unittest.TestCase):
 
     def assertEquals(self, first, second, msg=None):
         """
