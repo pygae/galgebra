@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import sys
 from sympy import symbols,sin,cos
-from galgebra.printer import Format,xpdf,Get_Program,Print_Function
+from galgebra.printer import Format,xtex,Get_Program,Print_Function
 from galgebra.ga import Ga
 
 def Maxwells_Equations_in_Geom_Calculus():
@@ -21,21 +21,21 @@ def Maxwells_Equations_in_Geom_Calculus():
     J = st4d.mv('J','vector',f=True)
     F = E+I*B
 
-    print(r'\text{Pseudo Scalar\;\;}I =',I)
-    print('\\text{Magnetic Field Bi-Vector\\;\\;} B = \\bm{B\\gamma_{t}} =',B)
-    print('\\text{Electric Field Bi-Vector\\;\\;} E = \\bm{E\\gamma_{t}} =',E)
-    print('\\text{Electromagnetic Field Bi-Vector\\;\\;} F = E+IB =',F)
-    print('%\\text{Four Current Density\\;\\;} J =',J)
+    print(r'\T{Pseudo Scalar\;\;}I =',I)
+    print(r'\T{Magnetic Field Bi-Vector\;\;} B = \bs{B\gamma_{t}} =',B)
+    print(r'\T{Electric Field Bi-Vector\;\;} E = \bs{E\gamma_{t}} =',E)
+    print(r'\T{Electromagnetic Field Bi-Vector\;\;} F = E+IB =',F)
+    print(r'\T{Four Current Density\;\;} J =',J)
     gradF = st4d.grad*F
-    print('#Geom Derivative of Electomagnetic Field Bi-Vector')
-    gradF.Fmt(3,'grad*F')
+    print(r'\T{Geom Derivative of Electomagnetic Field Bi-Vector}')
+    print(r'\nabla F =',gradF.Fmt(3))
 
-    print('#Maxwell Equations')
-    print('grad*F = J')
-    print('#Div $E$ and Curl $H$ Equations')
-    print((gradF.get_grade(1)-J).Fmt(3,'%\\grade{\\nabla F}_{1} -J = 0'))
-    print('#Curl $E$ and Div $B$ equations')
-    print((gradF.get_grade(3)).Fmt(3,'%\\grade{\\nabla F}_{3} = 0'))
+    print(r'\T{Maxwell Equations}')
+    print(r'\nabla F = J')
+    print(r'\T{Div $E$ and Curl $H$ Equations}')
+    print(r'\grade{\nabla F}{1} -J = 0 =',(gradF.get_grade(1)-J).Fmt(3))
+    print(r'\T{Curl $E$ and Div $B$ equations}')
+    print(r'\grade{\nabla F}{3} = 0 =',(gradF.get_grade(3)).Fmt(3))
     return
 
 def Dirac_Equation_in_Geom_Calculus():
@@ -50,13 +50,13 @@ def Dirac_Equation_in_Geom_Calculus():
     A = st4d.mv('A','vector',f=True)
     sig_z = g3*g0
 
-    print('\\text{4-Vector Potential\\;\\;}\\bm{A} =',A)
-    print('\\text{8-component real spinor\\;\\;}\\bm{\\psi} =',psi)
+    print(r'\T{4-Vector Potential\;\;}\\bs{A} =',A)
+    print(r'\T{8-component real spinor\;\;}\bs{\psi} =',psi)
 
     dirac_eq = (st4d.grad*psi)*I*sig_z-e*A*psi-m*psi*g0
     dirac_eq = dirac_eq.simplify()
 
-    print(dirac_eq.Fmt(3,r'%\text{Dirac Equation\;\;}\nabla \bm{\psi} I \sigma_{z}-e\bm{A}\bm{\psi}-m\bm{\psi}\gamma_{t} = 0'))
+    print(r'\T{Dirac Equation\;\;}\nabla \bs{\psi} I \sigma_{z}-e\bs{A}\bs{\psi}-m\bs{\psi}\gamma_{t} = 0 =',dirac_eq.Fmt(3))
 
     return
 
@@ -73,18 +73,18 @@ def Lorentz_Tranformation_in_Geog_Algebra():
     Xp = tp*g0+xp*g1
     print('R =',R)
 
-    print(r"#%t\bm{\gamma_{t}}+x\bm{\gamma_{x}} = t'\bm{\gamma'_{t}}+x'\bm{\gamma'_{x}} = R\lp t'\bm{\gamma_{t}}+x'\bm{\gamma_{x}}\rp R^{\dagger}")
+    print(r"t\bm{\gamma_{t}}+x\bm{\gamma_{x}} = t'\bm{\gamma'_{t}}+x'\bm{\gamma'_{x}} = R\lp t'\bm{\gamma_{t}}+x'\bm{\gamma_{x}}\rp R^{\dagger}")
 
     Xpp = R*Xp*R.rev()
     Xpp = Xpp.collect()
     Xpp = Xpp.trigsimp()
-    print(r"%t\bm{\gamma_{t}}+x\bm{\gamma_{x}} =",Xpp)
+    print(r't\bm{\gamma_{t}}+x\bm{\gamma_{x}} =',Xpp)
     Xpp = Xpp.subs({sinh(alpha):gamma*beta,cosh(alpha):gamma})
 
-    print(r'%\f{\sinh}{\alpha} = \gamma\beta')
-    print(r'%\f{\cosh}{\alpha} = \gamma')
+    print(r'\f{\sinh}{\alpha} = \gamma\beta')
+    print(r'\f{\cosh}{\alpha} = \gamma')
 
-    print(r"%t\bm{\gamma_{t}}+x\bm{\gamma_{x}} =",Xpp.collect())
+    print(r't\bm{\gamma_{t}}+x\bm{\gamma_{x}} =',Xpp.collect())
     return
 
 def General_Lorentz_Tranformation():
@@ -108,9 +108,9 @@ def Lie_Group():
     B = st4d.mv('B','bivector')
     print('a =',a)
     print('B =',B)
-    print('a|B =', a|B)
-    print(((a|B)|B).simplify().Fmt(3,'(a|B)|B'))
-    print((((a|B)|B)|B).simplify().Fmt(3,'((a|B)|B)|B'))
+    print(r'a\cdot B =', a|B)
+    print(r'(a\cdot B)\cdot B =',((a|B)|B).simplify().Fmt(3))
+    print(r'((a\cdot B)\cdot B)\cdot B =',(((a|B)|B)|B).simplify().Fmt(3))
 
     return
 
@@ -121,14 +121,13 @@ def main():
     Get_Program()
     Format()
 
-    #Maxwells_Equations_in_Geom_Calculus()
-    #Dirac_Equation_in_Geom_Calculus()
-    #Lorentz_Tranformation_in_Geog_Algebra()
+    Maxwells_Equations_in_Geom_Calculus()
+    Dirac_Equation_in_Geom_Calculus()
+    Lorentz_Tranformation_in_Geog_Algebra()
     General_Lorentz_Tranformation()
-    #Lie_Group()
+    Lie_Group()
 
-    # xpdf()
-    xpdf(pdfprog=None)
+    xtex()
     return
 
 if __name__ == "__main__":

@@ -486,7 +486,7 @@ class Ga(metric.Metric):
             return tuple([self.r_basis_mv[i] / self.e_sq for i in self.n_range])
         else:
             return tuple(self.r_basis_mv)
-    
+
     def bases_dict(self, prefix=None):
         '''
         returns a dictionary mapping basis element names to their MultiVector
@@ -494,7 +494,7 @@ class Ga(metric.Metric):
 
         if you are lazy,  you might do this to populate your namespace
         with the variables of a given layout.
-        
+
         >>> locals().update(ga.bases())
         '''
         if prefix is None:
@@ -503,8 +503,8 @@ class Ga(metric.Metric):
         var_names = [prefix+''.join([k for k in str(b) if k.isdigit()]) for b in bl]
 
         return {key:val for key,val in zip(var_names, bl)}
-    
-        
+
+
 
     def grads(self):
         if not self.is_ortho:
@@ -1479,7 +1479,12 @@ class Ga(metric.Metric):
                 dual_base_rep = self.blade_to_base_rep(dual)
                 # {E_n}^{-1} = \frac{E_n}{{E_n}^{2}}
                 # r_basis_j = sgn * duals[j] * E_n so it's not normalized, missing a factor of {E_n}^{-2}
-                r_basis_j = collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))), self.blades_lst)
+                """
+                print('blades list =',self.blades_lst)
+                print('debug =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))))
+                print('collect arg =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))))
+                """
+                r_basis_j = metric.Collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))), self.blades_lst)
                 self.r_basis.append(r_basis_j)
                 # sgn = (-1)**{j-1}
                 sgn = -sgn

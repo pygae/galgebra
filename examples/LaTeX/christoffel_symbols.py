@@ -1,6 +1,6 @@
 from __future__ import print_function
 import sys
-from galgebra.printer import  Format, xpdf
+from galgebra.printer import  Format, xtex
 Format()
 from sympy import symbols, sin, pi, latex, Array, permutedims
 from galgebra.ga import Ga
@@ -52,10 +52,10 @@ print(r'\Gamma^{1}_{\phantom{1,}\alpha, \beta} = ', latex(Cf2[0, :, :]), r'\quad
 
 F = sp2.mv('F','vector',f=True) #scalar function)
 f = sp2.mv('f','scalar',f=True) #vector function)
-print('grad = ', sp2grad)
-print('grad f =',sp2.grad * f)
+print(r'\nabla = ', sp2grad)
+print(r'\nabla f =',sp2.grad * f)
 print('F =',F)
-print('grad F = ',sp2.grad * F)
+print(r'\nabla F = ',sp2.grad * F)
 print('\\')
 
 print(r'\mbox{One dimensioanal submanifold}')
@@ -77,11 +77,10 @@ h = cir1d.mv('h','scalar',f= True)
 
 H = cir1d.mv('H','vector',f= True)
 
-print('grad = ', cir1dgrad)
+print(r'\nabla = ', cir1dgrad)
 print(r'\nabla h = ', (cir1d.grad * h).simplify())
 print('H =', H)
 print(r'\nabla H = ', (cir1d.grad * H).simplify())
 print('\\' )
 
-# xpdf(paper=(9,10))
-xpdf(paper=(9,10),pdfprog=None)
+xtex()

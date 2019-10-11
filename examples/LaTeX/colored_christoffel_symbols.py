@@ -1,14 +1,14 @@
 from __future__ import print_function
 import sys
-from galgebra.printer import  Format, xpdf
+from galgebra.printer import  Format, xpdf, xtex
 Format()
 from sympy import symbols, sin, pi, latex, Array, permutedims
 from galgebra.ga import Ga
 
 # From http://latexcolor.com/
-print(r'#\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}')
-print(r'#\definecolor{applegreen}{rgb}{0.55, 0.71, 0.0}')
-print(r'#\definecolor{atomictangerine}{rgb}{1.0, 0.6, 0.4}')
+print(r'\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}')
+print(r'\definecolor{applegreen}{rgb}{0.55, 0.71, 0.0}')
+print(r'\definecolor{atomictangerine}{rgb}{1.0, 0.6, 0.4}')
 
 print(r'\bm{\mbox{Base manifold (three dimensional)}}')
 print(r'\bm{\mbox{Metric tensor (cartesian coordinates - norm = False)}}')
@@ -23,7 +23,7 @@ print('\\')
 print(r'\bm{\mbox{Two dimensioanal submanifold - Unit sphere}}')
 print(r'\text{Basis not normalised}')
 
-sp2coords = (theta, phi) = symbols(r'{\color{airforceblue}\theta} {\color{applegreen}\phi}', real = True)
+sp2coords = (theta, phi) = symbols(r'theta phi', real = True)
 sp2param = [sin(theta)*cos(phi), sin(theta)*sin(phi), cos(theta)]
 
 sp2 = g3.sm(sp2param, sp2coords, norm = False) # submanifold
@@ -57,16 +57,17 @@ print(r'\Gamma^{1}_{\phantom{1,}\alpha, \beta} = ', latex(Cf2[0, :, :]), r'\quad
 
 F = sp2.mv('F','vector',f=True) #scalar function)
 f = sp2.mv('f','scalar',f=True) #vector function)
-print('grad = ', sp2grad)
-print('grad f =',sp2.grad * f)
+print(r'\nabla = ', sp2grad)
+print(r'\nabla f =',sp2.grad * f)
 print('F =',F)
-print('grad F = ',sp2.grad * F)
+print(r'\nabla F = ',sp2.grad * F)
 print('\\')
 
 print(r'\mbox{One dimensioanal submanifold}')
 print(r'\mbox{Basis not normalised}')
 
-cir_th = phi = symbols(r'{\color{atomictangerine}\phi}',real = True)
+#cir_th = phi = symbols(r'{\color{atomictangerine}\phi}',real = True)
+cir_th = phi = symbols('phi',real = True)
 cir_map = [pi/8, phi]
 print(r'(\phi)\rightarrow (\theta,\phi) = ', latex(cir_map))
 
@@ -82,11 +83,13 @@ h = cir1d.mv('h','scalar',f= True)
 
 H = cir1d.mv('H','vector',f= True)
 
-print('grad = ', cir1dgrad)
+print(r'\nabla = ', cir1dgrad)
 print(r'\nabla h = ', (cir1d.grad * h).simplify())
 print('H =', H)
 print(r'\nabla H = ', (cir1d.grad * H).simplify())
 print('\\' )
 
 # xpdf(paper=(9,10))
-xpdf(paper=(9,10),pdfprog=None)
+#xpdf(paper=(9,10),pdfprog=None)
+xtex()
+

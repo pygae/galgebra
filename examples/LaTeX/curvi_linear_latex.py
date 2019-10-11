@@ -3,8 +3,7 @@ import sys
 
 from sympy import symbols,sin,cos,sinh,cosh
 from galgebra.ga import Ga
-from galgebra.printer import Format, xpdf, Get_Program, Print_Function, Eprint
-
+from galgebra.printer import Format, xpdf, Get_Program, Print_Function, Eprint, xtex
 def derivatives_in_spherical_coordinates():
     #Print_Function()
     coords = (r,th,phi) = symbols('r theta phi', real=True)
@@ -19,11 +18,11 @@ def derivatives_in_spherical_coordinates():
     print('A =',A)
     print('B =',B)
 
-    print('grad*f =',grad*f)
-    print('grad|A =',grad|A)
-    print('grad\\times A = -I*(grad^A) =',-sp3d.i*(grad^A))
-    print('%\\nabla^{2}f =',grad|(grad*f))
-    print('grad^B =',grad^B)
+    print(r'\nabla f =',grad*f)
+    print(r'\nabla \cdot A =',grad|A)
+    print(r'\nabla\times A = -I\nabla\W A =',-sp3d.i*(grad^A))
+    print(r'\nabla^{2} f =',grad|(grad*f))
+    print(r'\nabla\W B =',grad^B)
 
     """
     print '( \\nabla\\W\\nabla )\\bm{e}_{r} =',((grad^grad)*er).trigsimp()
@@ -44,16 +43,17 @@ def derivatives_in_paraboloidal_coordinates():
     A = par3d.mv('A','vector',f=True)
     B = par3d.mv('B','bivector',f=True)
 
-    print('#Derivatives in Paraboloidal Coordinates')
+    print(r'\T{Derivatives in Paraboloidal Coordinates}')
 
     print('f =',f)
     print('A =',A)
     print('B =',B)
 
-    print('grad*f =',grad*f)
-    print('grad|A =',grad|A)
-    (-par3d.i*(grad^A)).Fmt(3,'grad\\times A = -I*(grad^A)')
-    print('grad^B =',grad^B)
+    print(r'\nabla f =',grad*f)
+    print(r'\nabla\cdot A =',grad|A)
+
+    print(r'\nabla\times A = -I\nabla\W A =',(-par3d.i*(grad^A)).Fmt(3))
+    print(r'\nabla\W B =',grad^B)
 
     return
 
@@ -96,10 +96,10 @@ def derivatives_in_prolate_spheroidal_coordinates():
     print('A =',A)
     print('B =',B)
 
-    print('grad*f =',grad*f)
-    print('grad|A =',grad|A)
-    (-ps3d.i*(grad^A)).Fmt(3,'-I*(grad^A)')
-    (grad^B).Fmt(3,'grad^B')
+    print(r'\nabla f =',grad*f)
+    print(r'\nabla\cdot A =',grad|A)
+    print(r'-I\nabla\W A =',(-ps3d.i*(grad^A)).Fmt(3))
+    print(r'\nabla\W B =',(grad^B).Fmt(3))
     return
 
 
@@ -189,8 +189,7 @@ def main():
     #derivatives_in_bipolar_coordinates()
     #derivatives_in_toroidal_coordinates()
 
-    # xpdf()
-    xpdf(pdfprog=None)
+    xtex()
     return
 
 if __name__ == "__main__":

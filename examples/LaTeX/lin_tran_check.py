@@ -1,7 +1,7 @@
 from __future__ import print_function
 from sympy import symbols, sin, cos, simplify
 from galgebra.ga import Ga
-from galgebra.printer import Format, xpdf, Eprint, Print_Function, Get_Program, latex
+from galgebra.printer import Format, xtex, Eprint, Print_Function, Get_Program, latex
 from galgebra.lt import Symbolic_Matrix
 
 
@@ -20,69 +20,67 @@ def main():
     A_xyz = o3d.mv('A','vector',f=True)
     A_uv = g2d.mv('A','vector',f=True)
 
-    print('#3d orthogonal ($A$ is vector function)')
+    print(r'\T{3d orthogonal ($A$ is vector function)}')
     print('A =', A_xyz)
-    print('%A^{2} =', A_xyz * A_xyz)
-    print('grad|A =', grad | A_xyz)
-    print('grad*A =', grad * A_xyz)
+    print('A^{2} =', A_xyz * A_xyz)
+    print(r'\nabla \cdot A =', grad | A_xyz)
+    print(r'\nabla A =', grad * A_xyz)
 
-    print('v|(grad*A) =',v_xyz|(grad*A_xyz))
+    print(r'v\cdot(\nabla A) =',v_xyz|(grad*A_xyz))
 
-    print('#2d general ($A$ is vector function)')
+    print(r'\T{2d general ($A$ is vector function)}')
     print('A =', A_uv)
-    print('%A^{2} =', A_uv * A_uv)
-    print('grad|A =', grad_uv | A_uv)
-    print('grad*A =', grad_uv * A_uv)
+    print('A^{2} =', A_uv * A_uv)
+    print(r'\nabla\cdot A =', grad_uv | A_uv)
+    print(r'\nabla A =', grad_uv * A_uv)
 
     A = o3d.lt('A')
 
-    print('#3d orthogonal ($A,\\;B$ are linear transformations)')
+    print(r'\T{3d orthogonal ($A,\;B$ are linear transformations)}')
     print('A =', A)
     print(r'\f{mat}{A} =', A.matrix())
-    print('\\f{\\det}{A} =', A.det())
-    print('\\overline{A} =', A.adj())
-    print('\\f{\\Tr}{A} =', A.tr())
-    print('\\f{A}{e_x^e_y} =', A(ex^ey))
-    print('\\f{A}{e_x}^\\f{A}{e_y} =', A(ex)^A(ey))
+    print(r'\f{\det}{A} =', A.det())
+    print(r'\overline{A} =', A.adj())
+    print(r'\f{\Tr}{A} =', A.tr())
+    print(r'\f{A}{e_x\W e_y} =', A(ex^ey))
+    print(r'\f{A}{e_x}\W\f{A}{e_y} =', A(ex)^A(ey))
 
     B = o3d.lt('B')
 
     print('g =', o3d.g)
-    print('%g^{-1} =', latex(o3d.g_inv))
+    print('g^{-1} =', latex(o3d.g_inv))
 
 
     print('A + B =', A + B)
     print('AB =', A * B)
     print('A - B =', A - B)
 
-    print('General Symmetric Linear Transformation')
+    print(r'\T{General Symmetric Linear Transformation}')
     Asym = o3d.lt('A',mode='s')
     print('A =', Asym)
-    print('General Antisymmetric Linear Transformation')
+    print(r'\T{General Antisymmetric Linear Transformation}')
     Aasym = o3d.lt('A',mode='a')
     print('A =', Aasym)
 
-    print('#2d general ($A,\\;B$ are linear transformations)')
+    print(r'\T{2d general ($A,\;B$ are linear transformations)}')
 
     A2d = g2d.lt('A')
 
     print('g =', g2d.g)
-    print('%g^{-1} =', latex(g2d.g_inv))
-    print('%gg^{-1} =', latex(simplify(g2d.g * g2d.g_inv)))
+    print('g^{-1} =', latex(g2d.g_inv))
+    print('gg^{-1} =', latex(simplify(g2d.g * g2d.g_inv)))
 
     print('A =', A2d)
     print(r'\f{mat}{A} =', A2d.matrix())
-    print('\\f{\\det}{A} =', A2d.det())
+    print(r'\f{\det}{A} =', A2d.det())
     A2d_adj = A2d.adj()
-    print('\\overline{A} =', A2d_adj)
-    print('\\f{mat}{\\overline{A}} =', latex(simplify(A2d_adj.matrix())))
-    print('\\f{\\Tr}{A} =', A2d.tr())
-    print('\\f{A}{e_u^e_v} =', A2d(eu^ev))
-    print('\\f{A}{e_u}^\\f{A}{e_v} =', A2d(eu)^A2d(ev))
+    print(r'\overline{A} =', A2d_adj.Fmt(3))
+    print(r'\f{mat}{\overline{A}} =', latex(simplify(A2d_adj.matrix())))
+    print(r'\f{\Tr}{A} =', A2d.tr())
+    print(r'\f{A}{e_u\W e_v} =', A2d(eu^ev))
+    print(r'\f{A}{e_u}\W\f{A}{e_v} =', A2d(eu)^A2d(ev))
 
     B2d = g2d.lt('B')
-
-
 
     print('B =', B2d)
     print('A + B =', A2d + B2d)
@@ -92,7 +90,7 @@ def main():
     a = g2d.mv('a','vector')
     b = g2d.mv('b','vector')
 
-    print(r'a|\f{\overline{A}}{b}-b|\f{\underline{A}}{a} =',((a|A2d.adj()(b))-(b|A2d(a))).simplify())
+    print(r'a\cdot\f{\overline{A}}{b}-b\cdot\f{\underline{A}}{a} =',((a|A2d.adj()(b))-(b|A2d(a))).simplify())
 
     m4d = Ga('e_t e_x e_y e_z', g=[1, -1, -1, -1],coords=symbols('t,x,y,z',real=True))
 
@@ -109,7 +107,7 @@ def main():
     a = m4d.mv('a','vector')
     b = m4d.mv('b','vector')
 
-    print(r'a|\f{\overline{T}}{b}-b|\f{\underline{T}}{a} =',((a|T.adj()(b))-(b|T(a))).simplify())
+    print(r'a\cdot\f{\overline{T}}{b}-b\cdot\f{\underline{T}}{a} =',((a|T.adj()(b))-(b|T(a))).simplify())
 
     coords = (r, th, phi) = symbols('r,theta,phi', real=True)
 
@@ -128,10 +126,10 @@ def main():
     f = sph2d.mv('f','scalar',f=True)
 
     print('f =',f)
-    print('grad*f =',grad_uv * f)
+    print(r'\nabla f =',grad_uv * f)
 
     print('F =',F)
-    print('grad*F =',grad_uv * F)
+    print(r'\nabla F =',grad_uv * F)
 
     tp = (th,phi) = symbols('theta,phi',real=True)
 
@@ -145,10 +143,10 @@ def main():
     f = sph2dr.mv('f','scalar',f=True)
 
     print('f =',f)
-    print('grad*f =',grad_tp * f)
+    print(r'\nabla f =',grad_tp * f)
 
     print('F =',F)
-    print('grad*F =',grad_tp * F)
+    print(r'\nabla F =',grad_tp * F)
 
     return
 
@@ -161,4 +159,4 @@ if __name__ == "__main__":
     # Get_Program()
     main()
     # xpdf()
-    xpdf(pdfprog=None)
+    xtex(paper=(36,11))

@@ -1,0 +1,28 @@
+[Desktop Entry]
+Name=Transmission
+GenericName=BitTorrent Client
+X-GNOME-FullName=Transmission BitTorrent Client
+Comment=Download and share files over BitTorrent
+Exec=/home/brombo/.local/bin/jupyter-lab
+Icon=/home/brombo/Pictures/jupyterlab.png
+Terminal=false
+TryExec=transmission-gtk
+Type=Application
+StartupNotify=true
+MimeType=application/x-bittorrent;x-scheme-handler/magnet;
+Categories=Network;FileTransfer;P2P;GTK;
+X-Ubuntu-Gettext-Domain=transmission
+X-AppInstall-Keywords=torrent 
+Actions=Pause;Minimize;
+Name[en_US]=Jupyter Lab
+GenericName[en_US]=Jupyter Lab
+Comment[en_US]=Execute python in jupyter
+Comment[en_US.UTF-8]=Execute python in jupyter lab
+
+[Desktop Action Pause]
+Name=Start Transmission with All Torrents Paused
+Exec=transmission-gtk --paused
+
+[Desktop Action Minimize]
+Name=Start Transmission Minimized
+Exec=transmission-gtk --minimized

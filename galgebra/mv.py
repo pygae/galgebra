@@ -591,7 +591,7 @@ class Mv(object):
         get a specified grade of a multivector
         '''
         return self.grade(key)
-    
+
     def Mv_str(self):
         global print_replace_old, print_replace_new
         if self.i_grade == 0:
@@ -760,10 +760,10 @@ class Mv(object):
         if printer.GaLatexPrinter.fmt >= 2:
             if len(lines) == 1:
                 return lines[0]
-            s = ' \\begin{align*} '
+            s = ' \\begin{aligned} '
             for line in lines:
                 s += ' & ' + line + ' \\\\ '
-            s = s[:-3] + ' \\end{align*} \n'
+            s = s[:-3] + ' \\end{aligned} \n'
         return s
 
     def __xor__(self, A):  # wedge (^) product
@@ -1072,9 +1072,9 @@ class Mv(object):
     def rev(self):
         self = self.blade_rep()
         return Mv(self.Ga.reverse(self.obj), ga=self.Ga)
-    
+
     __invert__ = rev # allow `~x` to call x.rev()
-    
+
     def diff(self, coord):
         Dself = Mv(ga=self.Ga)
         if self.Ga.coords is None:
@@ -1294,7 +1294,7 @@ class Mv(object):
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
     __abs__=norm # allow `abs(x)` to call z.norm()
-    
+
     def inv(self):
         if self.is_scalar():  # self is a scalar
             return self.Ga.mv(S(1)/self.obj)
@@ -1392,6 +1392,11 @@ class Mv(object):
         if self.i_grade is not None:
             return self.i_grade
         return -self.grades[-1]
+
+    def odot(self,dot_flg=True):
+        new_self = copy.deepcopy(self)
+        new_self.dot_flg = dot_flg
+        return new_self
 
 def compare(A,B):
     """
@@ -2487,6 +2492,11 @@ class Dop(object):
             else:
                 return s
         return
+
+    def odot(self,dot_flg=True):
+        new_self = copy.deepcopy(self)
+        new_self.dot_flg = dot_flg
+        return new_self
 
     @staticmethod
     def basic(ga):

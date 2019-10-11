@@ -10,6 +10,7 @@ from sympy import diff, trigsimp, Matrix, Rational, \
     Add, simplify, together, ratsimp, Expr, latex, \
     Function
 
+from . import mv
 from . import printer
 from . import utils
 
@@ -40,10 +41,19 @@ def str_to_lst(s):
 
 
 def linear_expand(expr, mode=True):
+    """
+    linear_expand takes an expression that is the sum of a scalar
+    expression and a linear combination of noncommutative terms with
+    scalar coefficients and generates lists of coefficients and
+    noncommutative symbols the coefficients multiply.  The list of
+    noncommutatives symbols contains the scalar 1 if there is a scalar
+    term in the sum and also does not contain any repeated noncommutative
+    symbols.
+    """
 
     if isinstance(expr, Expr):
         expr = expand(expr)
-    if expr == 0:
+    if expr == 0: #expr is the scalar 0
         coefs = [expr]
         bases = [S(1)]
         return (coefs, bases)
@@ -77,6 +87,22 @@ def linear_expand(expr, mode=True):
         return (coefs, bases)
     else:
         return list(zip(coefs, bases))
+
+def Collect(A, nc_lst):
+    """
+    A is a linear combination of noncommutative symbols with scalar
+    expressions as coefficients.  Collect takes the terms containing
+    the noncommutative symbols in nc_list and sums them so no elements
+    of nc_list appear more than once in the sum.  Collect combines all
+    coefficients of a given element of nc_lst into a single coefficient.
+    """
+    (coefs,bases) = linear_expand(A)
+    C = S(0)
+    for x in nc_lst:
+        if x in bases:
+            i = bases.index(x)
+            C += coefs[i]*x
+    return C
 
 
 def square_root_of_expr(expr):
@@ -432,7 +458,7 @@ class Metric(object):
 
         # dg[i][j][k] = \partial_{x_{k}}g_{ij}
         dg = self.dg
-            
+
         if mode == 1:
 
             dG = []  # dG[i][j][k] = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])

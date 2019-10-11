@@ -6,6 +6,7 @@ import os
 import sys
 import io
 import re
+import subprocess
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
 from itertools import islice
 from sympy.printing.str import StrPrinter
@@ -13,6 +14,8 @@ from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
+import builtins
+from . import printer
 from . import utils
 
 try:
@@ -26,35 +29,103 @@ except ImportError:
 
 from inspect import getouterframes, currentframe
 
+#Save original print function
+old_print = builtins.print
+
 ZERO_STR = ' 0 '
 
 Format_cnt = 0
 
+latex_str = ''
+
 ip_cmds = \
+r"""
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Adj}{Adj}
+\newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
+\newcommand{\lp}{\left (}
+\newcommand{\rp}{\right )}
+\newcommand{\paren}[1]{\lp {#1} \rp}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\llt}{\left <}
+\newcommand{\rgt}{\right >}
+\newcommand{\abs}[1]{\left |{#1}\right | }
+\newcommand{\pdiff}[2]{\bfrac{\partial {#1}}{\partial {#2}}}
+\newcommand{\npdiff}[3]{\bfrac{\partial^{#3} {#1}}{\partial {#2}^{#3}}}
+\newcommand{\lbrc}{\left \{}
+\newcommand{\rbrc}{\right \]}
+\newcommand{\lbrk}{\left \[}
+\newcommand{\rbrk}{\right \}}
+\newcommand{\W}{\wedge}
+\newcommand{\prm}[1]{{#1}'}
+\newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
+\newcommand{\R}{\dagger}
+\newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
+\newcommand{\grd}[1]{\left < {#1} \right >}
+\newcommand{\f}[2]{{#1}\lp {#2} \rp}
+\newcommand{\eval}[2]{\left . {#1} \right |_{#2}}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\newcommand{\es}[1]{\boldsymbol{e}_{#1}}
+\newcommand{\eS}[1]{\boldsymbol{e}^{#1}}
+\newcommand{\grade}[2]{\left < {#1} \right >_{#2}}
+\newcommand{\lc}{\rfloor}
+\newcommand{\rc}{\lfloor}
+\newcommand{\T}[1]{\text{#1}}
+\newcommand{\lop}[1]{\overleftarrow{#1}}
+\newcommand{\rop}[1]{\overrightarrow{#1}}
+\newcommand{\ldot}{\lfloor}
+\newcommand{\rdot}{\rfloor}
+
+%MacDonald LaTeX macros
+
+\newcommand   {\thalf}    {\textstyle \frac{1}{2}}
+\newcommand   {\tthird}   {\textstyle \frac{1}{3}}
+\newcommand   {\tquarter} {\textstyle \frac{1}{4}}
+\newcommand   {\tsixth}   {\textstyle \frac{1}{6}}
+
+\newcommand   {\RE}       {\mathbb{R}}
+\newcommand   {\GA}       {\mathbb{G}}
+\newcommand   {\inner}    {\mathbin{\pmb{\cdot}}}
+\renewcommand {\outer}    {\mathbin{\wedge}}
+\newcommand   {\cross}    {\mathbin{\times}}
+\newcommand   {\meet}     {\mathbin{{\,\vee\;}}}
+\renewcommand {\iff}              {\Leftrightarrow}
+\renewcommand {\impliedby}{\Leftarrow}
+\renewcommand {\implies}  {\Rightarrow}
+\newcommand   {\perpc}    {\perp}  % Orthogonal complement
+\newcommand   {\perpm}    {*}  % Dual of multivector
+\newcommand   {\del}      {\mathbf{\nabla}}  %{\boldsymbol\nabla\!}
+\newcommand   {\mpart}[2]{\left\langle\, #1 \,\right\rangle_{#2}} % AMS has a \part
+\newcommand   {\spart}[1]{\mpart{#1}{0}}
+\newcommand   {\ds}       {\displaystyle}
+\newcommand   {\os}       {\overset}
+\newcommand   {\galgebra} {\mbox{$\mathcal{G\!A}$\hspace{.01in}lgebra}}
+\newcommand   {\latex}    {\LaTeX}
 """
-$\\DeclareMathOperator{\\Tr}{Tr}
-\\DeclareMathOperator{\\Adj}{Adj}
-\\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
-\\newcommand{\\lp}{\\left (}
-\\newcommand{\\rp}{\\right )}
-\\newcommand{\\paren}[1]{\\lp {#1} \\rp}
-\\newcommand{\\half}{\\frac{1}{2}}
-\\newcommand{\\llt}{\\left <}
-\\newcommand{\\rgt}{\\right >}
-\\newcommand{\\abs}[1]{\\left |{#1}\\right | }
-\\newcommand{\\pdiff}[2]{\\bfrac{\\partial {#1}}{\\partial {#2}}}
-\\newcommand{\\npdiff}[3]{\\bfrac{\\partial^{#3} {#1}}{\\partial {#2}^{#3}}}
-\\newcommand{\\lbrc}{\\left \\{}
-\\newcommand{\\rbrc}{\\right \\}}
-\\newcommand{\\W}{\\wedge}
-\\newcommand{\\prm}[1]{{#1}'}
-\\newcommand{\\ddt}[1]{\\bfrac{d{#1}}{dt}}
-\\newcommand{\\R}{\\dagger}
-\\newcommand{\\deriv}[3]{\\bfrac{d^{#3}#1}{d{#2}^{#3}}}
-\\newcommand{\\grade}[1]{\\left < {#1} \\right >}
-\\newcommand{\\f}[2]{{#1}\\lp {#2} \\rp}
-\\newcommand{\\eval}[2]{\\left . {#1} \\right |_{#2}}$
+
+preamble = \
 """
+\\pagestyle{empty}
+\\usepackage[latin1]{inputenc}
+\\usepackage{amsmath}
+\\usepackage{amsfonts}
+\\usepackage{amssymb}
+\\usepackage{amsbsy}
+\\usepackage{tensor}
+\\usepackage{listings}
+\\usepackage{color}
+\\usepackage{xcolor}
+\\usepackage{bm}
+\\usepackage{breqn}
+\\definecolor{gray}{rgb}{0.95,0.95,0.95}
+\\setlength{\\parindent}{0pt}
+\\newcommand{\\eb}{\\boldsymbol{e}}
+\\usepackage{float}
+\\floatstyle{plain} % optionally change the style of the new float
+\\newfloat{Code}{H}{myc}
+\\lstloadlanguages{Python}
+"""
+
 
 print_replace_old = None
 print_replace_new = None
@@ -245,6 +316,9 @@ def oprint(*args, **kwargs):
             print(ostr(arg, dict_mode))
     return
 
+def hline():
+    print('\n\\noindent\\rule{\\textwidth}{1pt}')
+    return
 
 class Eprint:
 
@@ -348,7 +422,7 @@ class GaPrinter(StrPrinter):
         # function, *diff_args = expr.args
         function = expr.args[0]
         diff_args = expr.args[1:]
-        
+
         xi = []
         ni = []
         for x, n in diff_args:
@@ -541,6 +615,27 @@ class GaLatexPrinter(LatexPrinter):
     special_alphabet = list(reversed(sorted(list(greek) + list(other), key=len)))
 
     @staticmethod
+    def redirect():
+        GaLatexPrinter.latex_str = ''
+        GaLatexPrinter.text_printer = print   #Save original print function
+        builtins.print = printer.latex_print  #Redefine original print function
+        GaLatexPrinter.latex_flg = True
+        GaLatexPrinter.Basic__str__ = Basic.__str__
+        GaLatexPrinter.Matrix__str__ = Matrix.__str__
+        Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
+        Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
+        return
+
+    @staticmethod
+    def restore():
+        if GaLatexPrinter.latex_flg:
+            builtins.print = GaLatexPrinter.text_printer  #Redefine orginal print function
+            GaLatexPrinter.latex_flg = False
+            Basic.__str__ = GaLatexPrinter.Basic__str__
+            Matrix.__str__ = GaLatexPrinter.Matrix__str__
+        return
+
+    @staticmethod
     def split_super_sub(text):
         """Split a symbol name into a name, superscripts and subscripts
 
@@ -619,32 +714,6 @@ class GaLatexPrinter(LatexPrinter):
             subs_lst.append(subs)
 
         return split_flg, name_lst, supers_lst, subs_lst
-
-    @staticmethod
-    def redirect():
-        GaLatexPrinter.latex_flg = True
-        GaLatexPrinter.Basic__str__ = Basic.__str__
-        GaLatexPrinter.Matrix__str__ = Matrix.__str__
-        Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        if GaLatexPrinter.ipy:
-            pass
-        else:
-            GaLatexPrinter.stdout = sys.stdout
-            sys.stdout = utils.StringIO()
-        return
-
-    @staticmethod
-    def restore():
-        if GaLatexPrinter.latex_flg:
-            if not GaLatexPrinter.ipy:
-                GaLatexPrinter.latex_str += sys.stdout.getvalue()
-            GaLatexPrinter.latex_flg = False
-            if not GaLatexPrinter.ipy:
-                sys.stdout = GaLatexPrinter.stdout
-            Basic.__str__ = GaLatexPrinter.Basic__str__
-            Matrix.__str__ = GaLatexPrinter.Matrix__str__
-        return
 
     def _print_Pow(self, expr):
         base = self._print(expr.base)
@@ -964,6 +1033,53 @@ class GaLatexPrinter(LatexPrinter):
 def latex(expr, **settings):
     return GaLatexPrinter(settings).doprint(expr)
 
+def latex_print(*s,**kws):
+
+    s = list(s)
+
+    GaLatexPrinter.fmt_dict = {'t':False, 'h':False}
+
+    if isinstance(s[0],str):
+
+        if s[0] == 'h':
+            GaLatexPrinter.fmt_dict['h'] = True
+            s = s[1:]
+
+    latex_str = ''
+
+    for arg in s:
+
+        if isinstance(arg, str):
+            if GaLatexPrinter.fmt_dict['t']:
+                latex_str += r'\text{' + arg + '} '
+            else:
+                latex_str += arg + ' '
+        else:
+            if isinstance(arg, tuple):
+                tmp = r'\lp ' + str(arg)[1:-1] + r'\rp '
+                latex_str += tmp + ' '
+            else:
+                latex_str += str(arg) + ' '
+
+    if GaLatexPrinter.fmt_dict['h']:
+        latex_str = r'\begin{array}{c}\hline ' + latex_str + r' \\ \hline \end{array} '
+
+    latex_str = latex_str.replace('$$', '')
+
+    #latex_str = latex_str.lstrip()
+
+    if isinteractive():
+        return display(Latex('$$ ' + latex_str + ' $$'))
+    else:
+        if 'Print_Function()' and 'lstlisting' in latex_str:
+
+            latex_str = latex_str.replace(r'\begin{equation}','')
+
+            printer.latex_str += latex_str + '\n'
+        else:
+            printer.latex_str += r'\begin{equation} ' +latex_str + r'\nonumber\end{equation}' + '\n'
+            #GaLatexPrinter.text_printer('latex string length =',len(printer.latex_str))
+        return
 
 def print_latex(expr, **settings):
     """Prints LaTeX representation of the given expression."""
@@ -999,6 +1115,9 @@ def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
 
         if isinteractive():
             init_printing(use_latex= 'mathjax')
+            from IPython.core.interactiveshell import InteractiveShell
+            InteractiveShell.ast_node_interactivity = "all"
+            return display(Latex('$$ '+ip_cmds+' $$'))
 
     return
 
@@ -1187,6 +1306,110 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
             os.system('Pdf2Png ' + filename[:-4])
     return
 
+def xtex(tex='pdflatex',filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug=False, pt='10pt'):
+
+    """
+    Post processes LaTeX output (see comments below), adds preamble and
+    postscript, generates tex file, inputs file to prodgram tex, if
+    tex = 'pdflatex' then displays resulting pdf file. If tex is set to a
+    LaTeX editor program such as tex='texmaker' then texmaker on user
+    control can compile and display the tex file.  This is useful if the
+    tex file is not correct and you need to debug it.
+
+    Arg    Value    Result
+    crop   True     Use "pdfcrop" to crop output file (pdfcrop must be installed, linux only)
+    png    True     Use "convert" to produce png output (imagemagick must be installed, linux only)
+
+    We assume that if xtex() is called then Format() has been called at the beginning of the program.
+    """
+
+    sys_cmd = SYS_CMD[sys.platform]
+
+    #GaLatexPrinter.text_printer(GaLatexPrinter.latex_str)
+
+    GaLatexPrinter.restore()
+
+    """
+    Each line in the latex_str is interpreted to be an equation or align
+    environment.  If the line does not begin with '\begin{align*}' then
+    'begin{equation*}' will be added to the beginning of the line and
+    '\end{equation*}' to the end of the line.
+    The latex strings generated by galgebra and sympy expressions for
+    printing must not contain '\n' except as the final character.  Thus
+    all '\n' must be removed from a compound (not a simple type) expression
+    and a '\n' added to the end of the string to delimit it when the string
+    is generated.
+    """
+
+    """
+    if GaLatexPrinter.err is not None:
+       GaLatexPrinter.err.close()
+       os.system('geany err.txt')
+    """
+
+    latex_lst = printer.latex_str.split('\n')
+    latex_str = ''
+
+    lhs = ''
+    code_flg = True
+    #code_flg = False
+
+    if paper == 'letter':
+        paper_size = \
+"""
+\\documentclass[@10pt@,fleqn]{report}
+"""
+    else:
+        paper_size = \
+"""
+\\documentclass[@10pt@,fleqn]{report}
+\\usepackage[vcentering]{geometry}
+"""
+        if paper == 'landscape':
+            paper = [11,8.5]
+        paper_size += '\\geometry{papersize={' + str(paper[0]) + \
+                      'in,' + str(paper[1]) + 'in},total={' + str(paper[0] - 1) + \
+                      'in,' + str(paper[1] - 1) + 'in}}\n'
+
+    paper_size = paper_size.replace('@10pt@',pt)
+    latex_str = paper_size + printer.preamble + printer.ip_cmds + r'\begin{document}' + printer.latex_str + GaLatexPrinter.postscript
+
+    """
+    print('paper_size:',paper_size)
+    print('printer.preamble:', printer.preamble)
+    print('printer.ip_cmds:', printer.ip_cmds)
+    print('printer.latex_str:', printer.latex_str)
+    print('GaLatexPrinter.postscript:', GaLatexPrinter.postscript)
+    """
+
+    if filename is None:
+        pyfilename = sys.argv[0]
+        rootfilename = pyfilename.replace('.py', '')
+        filename = rootfilename + '.tex'
+
+    print('latex file =', filename)
+
+    latex_file = open(filename, 'w')
+    latex_file.write(latex_str)
+    latex_file.close()
+
+    latex_prog = find_executable(tex)
+
+    print('latex program path =', latex_prog)
+
+    if latex_prog is None or latex_str is None:
+        return
+
+    if tex == 'pdflatex':
+        subprocess.run(["pdflatex", "-file-line-error",filename])
+        subprocess.run(["evince", filename[:-3] + "pdf"])
+    else:
+        subprocess.run([latex_prog,filename])
+
+    return
+
+
+
 def xdvi(filename=None, debug=False, paper=(14, 11)):
     xpdf(filename=filename, paper=paper, crop=False, png=False, prog=False, debug=debug, pt='10pt')
     return
@@ -1201,7 +1424,6 @@ def LatexFormat(Fmode=True, Dmode=True, ipy=False):
 prog_str = ''
 off_mode = False
 
-
 def Get_Program(off=False):
     global prog_str, off_mode
     off_mode = off
@@ -1212,7 +1434,28 @@ def Get_Program(off=False):
     prog_file.close()
     return
 
+def Print_Function():
+    global prog_str, off_mode
+    if off_mode or isinteractive():
+        return
+    fct_name = str(sys._getframe(1).f_code.co_name)
+    ifct = prog_str.find('def ' + fct_name)
+    iend = prog_str.find('def ', ifct + 4)
+    tmp_str = prog_str[ifct:iend - 1]
+    fct_name = fct_name.replace('_', ' ')
+    if GaLatexPrinter.latex_flg:
+        printer.latex_str += '\\begin{lstlisting}[language=Python,showspaces=false,' + \
+              'showstringspaces=false,backgroundcolor=\color{gray},frame=single]'+'\n'
+        printer.latex_str += tmp_str+'\n'
+        printer.latex_str += '\\end{lstlisting}'+'\n'
+        printer.latex_str += r'\T{Code Output:}'+'\n'
+    else:
+        print('\n' + 80 * '*')
+        print(tmp_str)
+        print('Code output:\n')
+    return
 
+"""
 def Print_Function():
     global prog_str, off_mode
     if off_mode:
@@ -1224,18 +1467,19 @@ def Print_Function():
     fct_name = fct_name.replace('_', ' ')
     if GaLatexPrinter.latex_flg:
         #print '#Code for '+fct_name
-        print(r'##\\begin{lstlisting}[language=Python,showspaces=false,' + \
+        print(r'\begin{lstlisting}[language=Python,showspaces=false,' + \
               r'showstringspaces=false,backgroundcolor=\color{gray},frame=single]')
+        #print('CODE')
         print(tmp_str)
-        print('##\\end{lstlisting}')
-        print('#Code Output:')
+        print(r'\end{lstlisting}')
+        print('Code Output:')
     else:
         print('\n' + 80 * '*')
         #print '\nCode for '+fct_name
         print(tmp_str)
         print('Code output:\n')
     return
-
+"""
 
 import re as regrep
 
@@ -1408,7 +1652,6 @@ def parse_line(line):
     line = unparse_paren(level_lst)
     return line
 
-
 def GAeval(s, pstr=False):
     """
     GAeval converts a string to a multivector expression where the
@@ -1424,14 +1667,6 @@ def GAeval(s, pstr=False):
         print(s)
         print(seval)
     return eval(seval, global_dict)
-
-r"""
-\begin{array}{c}
-\left ( \begin{array}{c} F,\\ \end{array} \right . \\
-\begin{array}{c} F, \\ \end{array} \\
-\left .\begin{array}{c}         F \\ \end{array} \right ) \\
-\end{array}
-"""
 
 def Fmt(obj,fmt=0):
     if isinstance(obj,(list,tuple,dict)):
@@ -1501,6 +1736,49 @@ def Fmt(obj,fmt=0):
         return
     else:
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
+
+def tprint(s):
+    """
+    Print a text string, s, in LaTeX mode.  Inline equations are allowed
+    using $ delimiters.  This only meaningful for LaTeX output.  This is
+    not for printing galgebra expression, only for annotations.
+    """
+    print(r'\T{' + s + '}')
+    return
+
+
+class Notes(object):
+    """
+    Class for annotating LaTeX output.  Only use with LaTeX
+    """
+    def __init__(self, expr, notes, pos='L'):
+        if pos not in ('L','R','T','B'):
+            pos = 'L'
+        latex_str = r'\begin{array}'
+        if pos == 'L':
+            latex_str += r'{rl} ' + latex(notes) + r'\!\!\!\! & ' + latex(expr)
+        if pos == 'R':
+            latex_str += r'{rl} ' + latex(expr) + r' &\!\!!\!\! ' + latex(notes)
+        if pos == 'B':
+            latex_str += r'{c} ' + latex(expr) + r' \\ ' + latex(notes)
+        if pos == 'T':
+            latex_str += r'{c} ' + latex(notes) + r' \\ ' + latex(expr)
+        latex_str += r' \end{array} '
+        self.latex_str = latex_str
+
+    def __str__(self):
+        if printer.GaLatexPrinter.latex_flg:
+            Printer = printer.GaLatexPrinter
+        else:
+            Printer = printer.GaPrinter
+
+        return Printer().doprint(self)
+
+    def __repr__(self):
+        return str(self)
+
+    def Notes_latex_str(self, raw=False):
+        return self.latex_str
 
 
 if __name__ == "__main__":

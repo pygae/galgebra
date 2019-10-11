@@ -3,7 +3,7 @@ from __future__ import print_function
 import sys
 from sympy import symbols,sin,cos,exp,I,Matrix,simplify,Eq,S
 from sympy.solvers import solve
-from galgebra.printer import Format,xpdf,Get_Program,Print_Function,Fmt
+from galgebra.printer import Format,xtex,Get_Program,Print_Function,Fmt
 from galgebra.ga import Ga
 from galgebra.metric import linear_expand
 
@@ -31,16 +31,16 @@ def EM_Waves_in_Geom_Calculus():
 
     F = F*exp(I*KX)
 
-    print(r'\text{Pseudo Scalar\;\;}I =',i)
-    print(r'%I_{xyz} =',Ixyz)
-    print(F.Fmt(3,'\\text{Electromagnetic Field Bi-Vector\\;\\;} F'))
+    print(r'\T{Pseudo Scalar\;\;}I =',i)
+    print(r'I_{xyz} =',Ixyz)
+    print(r'\T{Electromagnetic Field Bi-Vector\;\;} F =',F.Fmt(3))
     gradF = st4d.grad*F
 
-    print('#Geom Derivative of Electomagnetic Field Bi-Vector')
-    print(gradF.Fmt(3,'grad*F = 0'))
+    print(r'\T{Geom Derivative of Electomagnetic Field Bi-Vector}')
+    print(r'\nabla F = 0 =',gradF.Fmt(3))
 
     gradF = gradF / (I * exp(I*KX))
-    print(gradF.Fmt(3,r'%\lp\bm{\nabla}F\rp /\lp i e^{iK\cdot X}\rp = 0'))
+    print(r'\lp\bs{\nabla}F\rp /\lp i e^{iK\cdot X}\rp = 0 =',gradF.Fmt(3))
 
     g = '-1 # 0 0,# -1 0 0,0 0 -1 0,0 0 0 1'
     X = (xE,xB,xk,t) = symbols('x_E x_B x_k t',real=True)
@@ -59,23 +59,23 @@ def EM_Waves_in_Geom_Calculus():
     KX = (kv|xv).scalar()
     F = F*exp(I*KX)
 
-    print(r'%\mbox{set } e_{E}\cdot e_{k} = e_{B}\cdot e_{k} = 0'+\
+    print(r'\mbox{set } e_{E}\cdot e_{k} = e_{B}\cdot e_{k} = 0'+\
            r'\mbox{ and } e_{E}\cdot e_{E} = e_{B}\cdot e_{B} = e_{k}\cdot e_{k} = -e_{t}\cdot e_{t} = 1')
 
     print('g =', EBkst.g)
 
     print('K|X =',KX)
     print('F =',F)
-    (EBkst.grad*F).Fmt(3,'grad*F = 0')
+    print(r'\nabla F = 0 =',(EBkst.grad*F).Fmt(3))
 
     gradF_reduced = (EBkst.grad*F)/(I*exp(I*KX))
 
-    print(gradF_reduced.Fmt(3,r'%\lp\bm{\nabla}F\rp/\lp ie^{iK\cdot X} \rp = 0'))
+    print(r'\lp\bs{\nabla}F\rp/\lp ie^{iK\cdot X} \rp = 0 =',gradF_reduced.Fmt(3))
 
-    print(r'%\mbox{Previous equation requires that: }e_{E}\cdot e_{B} = 0\mbox{ if }B\ne 0\mbox{ and }k\ne 0')
+    print(r'\mbox{Previous equation requires that: }e_{E}\cdot e_{B} = 0\mbox{ if }B\ne 0\mbox{ and }k\ne 0')
 
     gradF_reduced = gradF_reduced.subs({EBkst.g[0,1]:0}).expand()
-    print(gradF_reduced.Fmt(3,r'%\lp\bm{\nabla}F\rp/\lp ie^{iK\cdot X} \rp = 0'))
+    print(r'\lp\bs{\nabla}F\rp/\lp ie^{iK\cdot X} \rp = 0 =',gradF_reduced.Fmt(3))
 
     (coefs,bases) = linear_expand(gradF_reduced.obj)
 
@@ -108,7 +108,7 @@ def main():
     EM_Waves_in_Geom_Calculus()
 
     # xpdf()
-    xpdf(pdfprog=None)
+    xtex()
     return
 
 if __name__ == "__main__":
