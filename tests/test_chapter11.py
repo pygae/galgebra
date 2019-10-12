@@ -22,6 +22,33 @@ class TestChapter11(unittest.TestCase):
 
         self.assertTrue(diff == 0, "\n%s\n==\n%s\n%s" % (first, second, diff))
 
+    def test11_4(self):
+        """
+        All planes are 3-blades.
+        """
+        GA, e_0, e_1, e_2, e_3 = Ga.build("e*0|1|2|3", g='-1 0 0 0, 0 1 0 0, 0 0 1 0, 0 0 0 1')
+
+        p0 = Symbol('p0')
+        q0 = Symbol('q0')
+        r0 = Symbol('r0')
+
+        p = GA.mv((p0, Symbol('p1'), Symbol('p2'), Symbol('p3')), 'vector')
+        q = GA.mv((q0, Symbol('q1'), Symbol('q2'), Symbol('q3')), 'vector')
+        r = GA.mv((r0, Symbol('r1'), Symbol('r2'), Symbol('r3')), 'vector')
+
+        p_inf = p.subs({p0: 0})
+        q_inf = q.subs({q0: 0})
+        r_inf = r.subs({r0: 0})
+
+        p = p.subs({p0: 1})
+        q = q.subs({q0: 1})
+        r = r.subs({r0: 1})
+
+        self.assertEquals(p ^ q ^ r, p ^ (q - p) ^ (r - p))
+        self.assertEquals(p ^ q ^ r, p ^ (q_inf - p_inf) ^ (r_inf - p_inf))
+        self.assertEquals(p ^ q ^ r, ((p + q + r) / 3) ^ ((p ^ q) + (q ^ r) + (r ^ p)))
+
+
     def test_11_12_1(self):
         """
         Compute the 2-blades corresponding to the lines gives by the data below. Which of
