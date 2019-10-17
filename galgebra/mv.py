@@ -591,7 +591,7 @@ class Mv(object):
         get a specified grade of a multivector
         '''
         return self.grade(key)
-    
+
     def Mv_str(self):
         global print_replace_old, print_replace_new
         if self.i_grade == 0:
@@ -1072,9 +1072,9 @@ class Mv(object):
     def rev(self):
         self = self.blade_rep()
         return Mv(self.Ga.reverse(self.obj), ga=self.Ga)
-    
+
     __invert__ = rev # allow `~x` to call x.rev()
-    
+
     def diff(self, coord):
         Dself = Mv(ga=self.Ga)
         if self.Ga.coords is None:
@@ -1294,7 +1294,7 @@ class Mv(object):
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
     __abs__=norm # allow `abs(x)` to call z.norm()
-    
+
     def inv(self):
         if self.is_scalar():  # self is a scalar
             return self.Ga.mv(S(1)/self.obj)
