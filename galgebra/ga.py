@@ -1484,7 +1484,7 @@ class Ga(metric.Metric):
                 print('debug =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))))
                 print('collect arg =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))))
                 """
-                r_basis_j = metric.Collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))), self.blades_lst)
+                r_basis_j = metric.collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))), self.blades_lst)
                 self.r_basis.append(r_basis_j)
                 # sgn = (-1)**{j-1}
                 sgn = -sgn

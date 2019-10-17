@@ -78,12 +78,12 @@ def linear_expand(expr, mode=True):
     else:
         return list(zip(coefs, bases))
 
-def Collect(A, nc_lst):
+def collect(A, nc_lst):
     """
     A is a linear combination of noncommutative symbols with scalar
-    expressions as coefficients.  Collect takes the terms containing
+    expressions as coefficients.  collect() takes the terms containing
     the noncommutative symbols in nc_list and sums them so no elements
-    of nc_list appear more than once in the sum.  Collect combines all
+    of nc_list appear more than once in the sum.  collect() combines all
     coefficients of a given element of nc_lst into a single coefficient.
     """
     (coefs,bases) = linear_expand(A)
