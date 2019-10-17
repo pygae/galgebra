@@ -78,6 +78,22 @@ def linear_expand(expr, mode=True):
     else:
         return list(zip(coefs, bases))
 
+def Collect(A, nc_lst):
+    """
+    A is a linear combination of noncommutative symbols with scalar
+    expressions as coefficients.  Collect takes the terms containing
+    the noncommutative symbols in nc_list and sums them so no elements
+    of nc_list appear more than once in the sum.  Collect combines all
+    coefficients of a given element of nc_lst into a single coefficient.
+    """
+    (coefs,bases) = linear_expand(A)
+    C = S(0)
+    for x in nc_lst:
+        if x in bases:
+            i = bases.index(x)
+            C += coefs[i]*x
+    return C
+
 
 def square_root_of_expr(expr):
     """

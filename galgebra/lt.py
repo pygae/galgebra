@@ -281,7 +281,7 @@ class Lt(object):
         self_add_LT = copy(self.lt_dict)
         for key in list(LT.lt_dict.keys()):
             if key in self_add_LT:
-                self_add_LT[key] = collect(self_add_LT[key] + LT.lt_dict[key], self.Ga.basis)
+                self_add_LT[key] = metric.Collect(self_add_LT[key] + LT.lt_dict[key], self.Ga.basis)
             else:
                 self_add_LT[key] = LT.lt_dict[key]
         return(Lt(self_add_LT, ga=self.Ga))
@@ -294,7 +294,7 @@ class Lt(object):
         self_add_LT = copy(self.lt_dict)
         for key in list(LT.lt_dict.keys()):
             if key in self_add_LT:
-                self_add_LT[key] = collect(self_add_LT[key] - LT.lt_dict[key], self.Ga.basis)
+                self_add_LT[key] = metric.Collect(self_add_LT[key] - LT.lt_dict[key], self.Ga.basis)
             else:
                 self_add_LT[key] = -LT.lt_dict[key]
         return(Lt(self_add_LT, ga=self.Ga))
@@ -309,7 +309,7 @@ class Lt(object):
             for base in LT.lt_dict:
                 self_mul_LT[base] = self(LT(base, obj=True), obj=True)
             for key in self_mul_LT:
-                self_mul_LT[key] = expand(self_mul_LT[key]).collect(self.Ga.basis)
+                self_mul_LT[key] = metric.Collect(expand(self_mul_LT[key]),self.Ga.basis)
             return(Lt(self_mul_LT, ga=self.Ga))
         else:
             self_mul_LT = {}
