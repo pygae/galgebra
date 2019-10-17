@@ -78,17 +78,26 @@ def linear_expand(expr, mode=True):
     else:
         return list(zip(coefs, bases))
 
-def collect(A, nc_lst):
+def collect(A, nc_list):
     """
-    A is a linear combination of noncommutative symbols with scalar
-    expressions as coefficients.  collect() takes the terms containing
-    the noncommutative symbols in nc_list and sums them so no elements
-    of nc_list appear more than once in the sum.  collect() combines all
-    coefficients of a given element of nc_lst into a single coefficient.
+    Parameters
+    -----------
+    A :
+        a linear combination of noncommutative symbols with scalar
+        expressions as coefficients
+    nc_list :
+        noncommutative symbols in A to combine
+
+    Returns
+    -------
+    sympy.Basic
+        A sum of the terms containing the noncommutative symbols in `nc_list` such that no elements
+        of `nc_list` appear more than once in the sum. All coefficients of a given element of `nc_list`
+        are combined into a single coefficient.
     """
     (coefs,bases) = linear_expand(A)
     C = S(0)
-    for x in nc_lst:
+    for x in nc_list:
         if x in bases:
             i = bases.index(x)
             C += coefs[i]*x
