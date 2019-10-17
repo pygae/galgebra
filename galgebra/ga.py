@@ -486,7 +486,7 @@ class Ga(metric.Metric):
             return tuple([self.r_basis_mv[i] / self.e_sq for i in self.n_range])
         else:
             return tuple(self.r_basis_mv)
-    
+
     def bases_dict(self, prefix=None):
         '''
         returns a dictionary mapping basis element names to their MultiVector
@@ -494,7 +494,7 @@ class Ga(metric.Metric):
 
         if you are lazy,  you might do this to populate your namespace
         with the variables of a given layout.
-        
+
         >>> locals().update(ga.bases())
         '''
         if prefix is None:
@@ -503,8 +503,8 @@ class Ga(metric.Metric):
         var_names = [prefix+''.join([k for k in str(b) if k.isdigit()]) for b in bl]
 
         return {key:val for key,val in zip(var_names, bl)}
-    
-        
+
+
 
     def grads(self):
         if not self.is_ortho:

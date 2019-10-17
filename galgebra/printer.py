@@ -348,7 +348,7 @@ class GaPrinter(StrPrinter):
         # function, *diff_args = expr.args
         function = expr.args[0]
         diff_args = expr.args[1:]
-        
+
         xi = []
         ni = []
         for x, n in diff_args:

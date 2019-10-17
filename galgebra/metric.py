@@ -432,7 +432,7 @@ class Metric(object):
 
         # dg[i][j][k] = \partial_{x_{k}}g_{ij}
         dg = self.dg
-            
+
         if mode == 1:
 
             dG = []  # dG[i][j][k] = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
