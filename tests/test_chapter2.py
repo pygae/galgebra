@@ -24,17 +24,49 @@ class TestChapter2(unittest.TestCase):
         self.assertEquals(a ^ (b + c), (a ^ b) + (a ^ c))
 
 
+    def test_2_4_2(self):
+        """
+        Associativity of the outer product and calculating determinants.
+        """
+        GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+
+        a_1 = Symbol('a_1')
+        a_2 = Symbol('a_2')
+        a_3 = Symbol('a_3')
+        b_1 = Symbol('b_1')
+        b_2 = Symbol('b_2')
+        b_3 = Symbol('b_3')
+        c_1 = Symbol('c_1')
+        c_2 = Symbol('c_2')
+        c_3 = Symbol('c_3')
+
+        a = GA.mv((a_1, a_2, a_3), 'vector')
+        b = GA.mv((b_1, b_2, b_3), 'vector')
+        c = GA.mv((c_1, c_2, c_3), 'vector')
+
+        self.assertEquals(a ^ b ^ c, a ^ (b ^ c))
+        self.assertEquals(a ^ b ^ c, (a ^ b) ^ c)
+
+        m = Matrix([
+            [a_1, b_1, c_1],
+            [a_2, b_2, c_2],
+            [a_3, b_3, c_3]
+        ])
+
+        self.assertEquals(a ^ b ^ c, m.det() * (e_1 ^ e_2 ^ e_3))
+
+
     def test2_9_1(self):
         """
-        Blades and grades. Be careful ga.grade_decomposition can't be used to know if a multivector is a blade,
-        but if we know a multivector is a blade we can retrieve its grade (not fast).
-        TODO: add a proper grade method to ga module or fix pure_grade...
+        Blades and grades. Be careful ga.grade_decomposition and Mv.pure_grade can't tell if a multivector is a blade,
+        but if we know a multivector is a blade we can retrieve its grade.
         """
         GA = Ga('e*1|2|3|4|5')
 
         # Check for k in [0, R.n]
         for k in range(GA.n + 1):
             Ak = GA.mv('A', 'blade', k)
+            self.assertEquals(Ak.pure_grade(), k)
             grades = GA.grade_decomposition(Ak)
             self.assertEquals(len(grades), 1)
             self.assertEquals(grades.keys()[0], k)
@@ -44,6 +76,7 @@ class TestChapter2(unittest.TestCase):
             Ak = GA.mv('A', 'blade', k)
             Bl = GA.mv('B', 'blade', l)
             C = Ak ^ Bl
+            self.assertEquals(C.pure_grade(), 0 if C == 0 else k + l)
             grades = GA.grade_decomposition(C)
             self.assertEquals(len(grades), 1)
             self.assertEquals(grades.keys()[0], 0 if C == 0 else k + l)
