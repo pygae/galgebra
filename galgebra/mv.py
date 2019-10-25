@@ -991,6 +991,20 @@ class Mv(object):
         (coefs, bases) = zip(*cb)
         return coefs
 
+    def J(self):
+        # TODO: If we pick our basis smartly, we can probably use J in place of Jinv...
+        obj = 0
+        for coef, coblade in zip(self.blade_coefs(), self.Ga.coblades_lst0):
+            obj += coef * coblade
+        return Mv(obj, ga=self.Ga)
+
+    def Jinv(self):
+        # TODO: If we pick our basis smartly, we can probably use J in place of Jinv...
+        obj = 0
+        for coef, coblade_inv in zip(self.blade_coefs(), self.Ga.coblades_inv_lst0):
+            obj += coef * coblade_inv
+        return Mv(obj, ga=self.Ga)
+
     def blade_coefs(self, blade_lst=None):
         """
         For a multivector, A, and a list of basis blades, blade_lst return
@@ -1001,7 +1015,7 @@ class Mv(object):
             blade_lst = [self.Ga.mv(ONE)] + self.Ga.mv_blades_lst
         else:
             for blade in blade_lst:
-                if not blade.is_base() or not blade.is_blade():
+                if not blade.is_base():     # or not blade.is_blade(): can't be used with degenerate metrics
                     raise ValueError("%s expression isn't a basis blade" % blade)
         blade_lst = [x.obj for x in blade_lst]
         (coefs, bases) = metric.linear_expand(self.obj)
@@ -2490,6 +2504,20 @@ def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors 
         ulocal[i] -= uave
         vlocal[i] -= vave
     return ulocal.dot(vlocal) / (ulocal.norm() * vlocal.norm()). evalf(dec)
+
+
+def J(A):
+    if isinstance(A, Mv):
+        return A.J()
+    else:
+        raise ValueError('A not a multivector in J(A)')
+
+
+def Jinv(A):
+    if isinstance(A, Mv):
+        return A.Jinv()
+    else:
+        raise ValueError('A not a multivector in J(A)')
 
 
 def cross(v1, v2):

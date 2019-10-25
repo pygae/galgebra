@@ -7,6 +7,7 @@ from sympy import diff, Rational, Symbol, S, Mul, Pow, Add, \
     symbols, sqrt, Abs, numbers
 from collections import OrderedDict
 #from sympy.core.compatibility import combinations
+from sympy.combinatorics.permutations import Permutation
 from itertools import combinations
 import printer
 import metric
@@ -526,6 +527,46 @@ class Ga(metric.Metric):
 
     def basis_vectors(self):
         return tuple(self.basis)
+
+    def build_cobases(self):
+        """
+        Cobases for building Poincare duality, this is useful for defining wedge and vee without using I nor any metric.
+        """
+        basis_indexes = tuple(self.n_range)
+        self.coindexes = []
+        self.coindexes_lst = []
+        for i in reversed(basis_indexes):
+            base_tuple = tuple(reversed(tuple(combinations(basis_indexes, i + 1))))
+            self.coindexes.append(base_tuple)
+            self.coindexes_lst += list(base_tuple)
+        self.coindexes.append(())
+        self.coindexes = tuple(self.coindexes)
+
+        self.coblades_lst = []
+        self.coblades_inv_lst = []
+
+        def format_symbol_name(symbol_index):
+            return (''.join([str(self.basis[i]) + '^' for i in symbol_index]))[:-1]
+
+        assert self.indexes[0] == () and len(self.coindexes[0]) == 1
+        cobase_index = self.coindexes[0][0]
+        coblade = Symbol(format_symbol_name(cobase_index), commutative=False)
+        coblade_inv = S(1)
+        self.coblades_lst.append(coblade)
+        self.coblades_inv_lst.append(coblade_inv)
+
+        for grade_index, cograde_index in zip(self.indexes[1:], self.coindexes[1:]):
+            for base_index, cobase_index in zip(grade_index, cograde_index):
+                coblade_sign = 1 if Permutation(base_index + cobase_index).is_even else -1
+                coblade = coblade_sign * Symbol(format_symbol_name(cobase_index), commutative=False)
+                coblade_inv = coblade_sign * Symbol(format_symbol_name(base_index), commutative=False)
+                self.coblades_lst.append(coblade)
+                self.coblades_inv_lst.append(coblade_inv)
+
+        self.coblades_inv_lst = list(reversed(self.coblades_inv_lst))
+
+        self.coblades_lst0 = self.coblades_lst + [S(1),]
+        self.coblades_inv_lst0 = [Symbol(format_symbol_name(self.indexes[-1][0]), commutative=False)] + self.coblades_inv_lst
 
     def build_bases(self):
         """
