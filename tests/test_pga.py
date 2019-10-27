@@ -1,12 +1,12 @@
 import unittest
 
-from sympy import simplify, Rational, symbols, Symbol, S
+from sympy import Abs, asin, pi, Rational, S, simplify, sqrt, Symbol, symbols
 
 from ga import Ga
 from mv import Mv, J, Jinv
 
 
-class TestChapter11(unittest.TestCase):
+class TestPGA(unittest.TestCase):
 
     def assertEquals(self, first, second, msg=None):
         """
@@ -36,11 +36,19 @@ class TestChapter11(unittest.TestCase):
         self.e_1 = e_1
         self.e_2 = e_2
         self.e_3 = e_3
+        self.e_01 = e_0 ^ e_1
+        self.e_02 = e_0 ^ e_2
+        self.e_03 = e_0 ^ e_3
+        self.e_12 = e_1 ^ e_2
+        self.e_31 = e_3 ^ e_1
+        self.e_23 = e_2 ^ e_3
         self.e_032 = e_0 ^ e_3 ^ e_2
         self.e_013 = e_0 ^ e_1 ^ e_3
         self.e_021 = e_0 ^ e_2 ^ e_1
         self.e_123 = e_1 ^ e_2 ^ e_3
         self.e_0123 = e_0 ^ e_1 ^ e_2 ^ e_3
+
+        self.e_13 = e_1 ^ e_3
 
     def homogenize(self, P):
         """
@@ -65,6 +73,15 @@ class TestChapter11(unittest.TestCase):
         Make a plane.
         """
         return a * self.e_1 + b * self.e_2 + c * self.e_3 + d * self.e_0
+
+    def line_norm(self, l, hint=None):
+        assert hint == 'euclidean' or hint == 'ideal'
+        if hint == 'euclidean':
+            d, e, f = l.blade_coefs([self.e_12, self.e_13, self.e_23])
+            return sqrt(d * d + e * e + f * f)
+        elif hint == 'ideal':
+            a, b, c = l.blade_coefs([self.e_01, self.e_02, self.e_03])
+            return sqrt(a * a + b * b + c * c)
 
     def test_J(self):
 
@@ -132,21 +149,24 @@ class TestChapter11(unittest.TestCase):
         pm = Jinv(J(P1) ^ J(P3) ^ J(P2))
         self.assertEquals(pp, -pm)
 
-        px = Symbol('px')
-        py = Symbol('py')
-        pz = Symbol('pz')
+        print pp
+        print pm
+
+        a = Symbol('a')
+        b = Symbol('b')
+        c = Symbol('c')
 
         coefs = pp.blade_coefs([self.e_0, self.e_1, self.e_2, self.e_3])
-        p = coefs[0] + px * coefs[1] + py * coefs[2] + pz * coefs[3]
-        self.assertEquals(p.subs({px: x1, py: y1, pz: z1}), S.Zero)
-        self.assertEquals(p.subs({px: x2, py: y2, pz: z2}), S.Zero)
-        self.assertEquals(p.subs({px: x3, py: y3, pz: z3}), S.Zero)
+        p = coefs[0] + a * coefs[1] + b * coefs[2] + c * coefs[3]
+        self.assertEquals(p.subs({a: x1, b: y1, c: z1}), S.Zero)
+        self.assertEquals(p.subs({a: x2, b: y2, c: z2}), S.Zero)
+        self.assertEquals(p.subs({a: x3, b: y3, c: z3}), S.Zero)
 
         coefs = pm.blade_coefs([self.e_0, self.e_1, self.e_2, self.e_3])
-        p = coefs[0] + px * coefs[1] + py * coefs[2] + pz * coefs[3]
-        self.assertEquals(p.subs({px: x1, py: y1, pz: z1}), S.Zero)
-        self.assertEquals(p.subs({px: x2, py: y2, pz: z2}), S.Zero)
-        self.assertEquals(p.subs({px: x3, py: y3, pz: z3}), S.Zero)
+        p = coefs[0] + a * coefs[1] + b * coefs[2] + c * coefs[3]
+        self.assertEquals(p.subs({a: x1, b: y1, c: z1}), S.Zero)
+        self.assertEquals(p.subs({a: x2, b: y2, c: z2}), S.Zero)
+        self.assertEquals(p.subs({a: x3, b: y3, c: z3}), S.Zero)
 
     def test_geometry_incidence_join_and_plane_side(self):
         """
@@ -165,3 +185,89 @@ class TestChapter11(unittest.TestCase):
 
         self.assertTrue(p.subs({px: Rational(1, 3) - 0.01, py: Rational(1, 3) - 0.01, pz: Rational(1, 3) - 0.01}) < 0.0)
         self.assertTrue(p.subs({px: Rational(1, 3) + 0.01, py: Rational(1, 3) + 0.01, pz: Rational(1, 3) + 0.01}) > 0.0)
+
+    def test_geometry_incidence_points_join_into_lines(self):
+        """
+        Points join into lines, planes meet into lines.
+        """
+        PGA = self.PGA
+
+        x0, y0, z0 = symbols('x0 y0 z0')
+        P0 = self.point(x0, y0, z0)
+
+        x1, y1, z1 = symbols('x1 y1 z1')
+        P1 = self.point(x1, y1, z1)
+
+        x2, y2, z2 = symbols('x2 y2 z2')
+        P2 = self.point(x2, y2, z2)
+
+        x3, y3, z3 = symbols('x3 y3 z3')
+        P3 = self.point(x3, y3, z3)
+
+        lp = Jinv(J(P1) ^ J(P2))
+        lm = Jinv(J(P2) ^ J(P1))
+        self.assertEquals(lp, -lm)
+
+        p012 = Jinv(J(P0) ^ J(P1) ^ J(P2))
+        p123 = Jinv(J(P1) ^ J(P2) ^ J(P3))
+        l = p012 ^ p123
+
+        print l / self.line_norm(l)
+
+    def test_metric_distance_of_points(self):
+        """
+        We can measure distance between normalized points using the joining line norm.
+        """
+        x0, y0, z0 = symbols('x0 y0 z0')
+        P0 = self.point(x0, y0, z0)
+
+        x1, y1, z1 = symbols('x1 y1 z1')
+        P1 = self.point(x1, y1, z1)
+
+        d = sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2 + (z1 - z0) ** 2)
+
+        lp = Jinv(J(P0) ^ J(P1))
+        self.assertEquals(self.line_norm(lp, 'euclidean'), d)
+
+        lm = Jinv(J(P1) ^ J(P0))
+        self.assertEquals(self.line_norm(lm, 'euclidean'), d)
+
+    def test_metric_angle_of_intersecting_planes(self):
+        """
+        We can measure the angle between normalized planes using the meeting line norm.
+        """
+        x = Symbol('x')
+        y = Symbol('y')
+        p1 = self.plane(1, 0, 0, -x)
+        p2 = self.plane(0, 1, 0, -y)
+
+        self.assertEquals(asin(self.line_norm(p1 ^ p2, 'euclidean')), pi / 2)
+
+    def test_metric_distance_between_parallel_planes(self):
+        """
+        We can measure the distance between two parallel and normalized planes using the meeting line norm.
+        """
+        nx, ny, nz, x, y = symbols('nx ny nz x y')
+
+        n_norm = sqrt(nx * nx + ny * ny + nz * nz)
+        p1 = self.plane(nx / n_norm, ny / n_norm, nz / n_norm, -x)
+        p2 = self.plane(nx / n_norm, ny / n_norm, nz / n_norm, -y)
+
+        self.assertEquals(self.line_norm(p1 ^ p2, 'ideal'), sqrt((x - y)**2))
+
+    def test_metric_oriented_distance_between_point_and_plane(self):
+        """
+        We can measure the distance between a normalized point and a normalized plane.
+        """
+
+        x0, y0, z0 = symbols('x0 y0 z0')
+        P0 = self.point(x0, y0, z0)
+
+        d0 = Symbol('d0')
+        p0 = self.plane(1, 0, 0, -d0)
+
+        self.assertEquals(Jinv(J(P0) ^ J(p0)), d0 - x0)
+        self.assertEquals(Jinv(J(p0) ^ J(P0)), x0 - d0)
+
+        self.assertEquals(P0 ^ p0, (d0 - x0) * self.e_0123)     # TODO: how can we use inf norm here ?
+        self.assertEquals(p0 ^ P0, (x0 - d0) * self.e_0123)     #
