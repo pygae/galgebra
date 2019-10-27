@@ -3,6 +3,7 @@
 from sympy import Symbol
 
 from ga import Ga
+from mv import J, Jinv
 
 
 def create_multivector(GA, name):
@@ -34,9 +35,18 @@ _BINARY_OPERATOR_TEMPLATE = '''
         ])
 '''
 
-_METHOD_TEMPLATE='''
+_UNARY_METHOD_TEMPLATE = '''
     def {method_name}(self):
         x = self.coefs
+        return FlatMv([
+            {method_list}
+        ])
+'''
+
+_BINARY_METHOD_TEMPLATE = '''
+    def {method_name}(self, other):
+        x = self.coefs
+        y = other.coefs
         return FlatMv([
             {method_list}
         ])
@@ -67,8 +77,12 @@ def format_method_list(mv):
     return ',\n            '.join(str(blade_coef) for blade_coef in mv.blade_coefs())
 
 
-def format_method(name, mv):
-    return _METHOD_TEMPLATE.format(method_name=format_method_name(name), method_list=format_method_list(mv))
+def format_unary_method(name, mv):
+    return _UNARY_METHOD_TEMPLATE.format(method_name=format_method_name(name), method_list=format_method_list(mv))
+
+
+def format_binary_method(name, mv):
+    return _BINARY_METHOD_TEMPLATE.format(method_name=format_method_name(name), method_list=format_method_list(mv))
 
 
 def format_geometric_algebra(GA):
@@ -80,11 +94,13 @@ def format_geometric_algebra(GA):
     flat_geometric_algebra += format_binary_operator('add', X + Y)
     flat_geometric_algebra += format_binary_operator('sub', X - Y)
     flat_geometric_algebra += format_binary_operator('mul', X * Y)
+    flat_geometric_algebra += format_binary_operator('and', Jinv(J(X) ^ J(Y)))
     flat_geometric_algebra += format_binary_operator('xor', X ^ Y)
     flat_geometric_algebra += format_binary_operator('lshift', X << Y)
     flat_geometric_algebra += format_binary_operator('rshift', X >> Y)
-    flat_geometric_algebra += format_method('dual', X.dual())
-    flat_geometric_algebra += format_method('rev', X.rev())
+    flat_geometric_algebra += format_binary_method('meet', Jinv(J(X) ^ J(Y)))
+    flat_geometric_algebra += format_binary_method('join', X ^ Y)
+    flat_geometric_algebra += format_unary_method('rev', X.rev())
 
     return flat_geometric_algebra
 

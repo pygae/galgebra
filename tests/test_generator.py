@@ -4,7 +4,7 @@ import importlib
 from sympy import simplify
 
 from ga import Ga
-from mv import Mv
+from mv import Mv, J, Jinv
 from generator import format_geometric_algebra, flatten, expand
 
 
@@ -28,7 +28,8 @@ class TestGenerator(unittest.TestCase):
     def setUp(self):
 
         Ga.dual_mode("Iinv+")
-        GA = Ga('e*1|2|3', g=[1, 1, 1])
+        GA = Ga('e*1|2|3|4', g=[0, 1, 1, 1])
+        GA.build_cobases()
         with open('flat_ga.py', 'wt') as flat_GA_file:
             flat_GA_file.write(format_geometric_algebra(GA))
         self.GA = GA
@@ -63,6 +64,15 @@ class TestGenerator(unittest.TestCase):
 
         self.assertEquals(X * Y, expand(GA, flatten(flat_GA, X) * flatten(flat_GA, Y)))
 
+    def test_and(self):
+
+        GA = self.GA
+        flat_GA = self.flat_GA
+        X = GA.mv('x', 'mv')
+        Y = GA.mv('y', 'mv')
+
+        self.assertEquals(Jinv(J(X) ^ J(Y)), expand(GA, flatten(flat_GA, X) & flatten(flat_GA, Y)))
+
     def test_xor(self):
 
         GA = self.GA
@@ -90,13 +100,15 @@ class TestGenerator(unittest.TestCase):
 
         self.assertEquals(X >> Y, expand(GA, flatten(flat_GA, X) >> flatten(flat_GA, Y)))
 
-    def test_dual(self):
+    def test_meet_and_join(self):
 
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')
+        Y = GA.mv('y', 'mv')
 
-        self.assertEquals(X.dual(), expand(GA, flatten(flat_GA, X).dual()))
+        self.assertEquals(Jinv(J(X) ^ J(Y)), expand(GA, flatten(flat_GA, X).meet(flatten(flat_GA, Y))))
+        self.assertEquals(X ^ Y, expand(GA, flatten(flat_GA, X).join(flatten(flat_GA, Y))))
 
     def test_rev(self):
 
