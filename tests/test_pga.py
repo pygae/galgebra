@@ -22,6 +22,23 @@ class TestPGA(unittest.TestCase):
 
         self.assertTrue(diff == 0, "\n%s\n==\n%s\n%s" % (first, second, diff))
 
+    def assertProjEquals(self, X, Y):
+        """
+        Compare two points, two planes or two lines up to a scalar.
+        """
+        assert isinstance(X, Mv)
+        assert isinstance(Y, Mv)
+
+        X /= self.norm(X)
+        Y /= self.norm(Y)
+
+        # We can't easily retrieve the sign, so we test both
+        diff = simplify(X.obj - Y.obj)
+        if diff != S.Zero:
+            diff = simplify(X.obj + Y.obj)
+
+        self.assertTrue(diff == S.Zero, "\n%s\n==\n%s" % (X, Y))
+
     def setUp(self):
         """
         Setup 3D Projective Geometric Algebra aka PGA.
@@ -50,12 +67,6 @@ class TestPGA(unittest.TestCase):
 
         self.e_13 = e_1 ^ e_3
 
-    def homogenize(self, P):
-        """
-        For testing equality.
-        """
-        return P / (P.blade_coefs([self.e_123])[0])
-
     def point(self, x, y, z):
         """
         Make a point.
@@ -83,6 +94,14 @@ class TestPGA(unittest.TestCase):
         if squared_norm == S.Zero:
             raise ValueError("X k-vector is null")
         return sqrt(abs(squared_norm))
+
+    def norm2(self, X):
+        assert len(self.PGA.grade_decomposition(X)) == 1
+        squared_norm = X | X
+        if not squared_norm.is_scalar():
+            raise ValueError("X | X isn't a scalar")
+        squared_norm = squared_norm.scalar()
+        return squared_norm
 
     def ideal_norm(self, X):
         assert len(self.PGA.grade_decomposition(X)) == 1
@@ -115,13 +134,13 @@ class TestPGA(unittest.TestCase):
         p2 = self.plane(0, 1, 0, -y)
         p3 = self.plane(0, 0, 1, -z)
 
-        P = self.homogenize(p1 ^ p2 ^ p3)
-        self.assertEquals(P, self.point(x, y, z))
-        self.assertEquals(P, self.homogenize(p1 ^ p3 ^ p2))
-        self.assertEquals(P, self.homogenize(p2 ^ p1 ^ p3))
-        self.assertEquals(P, self.homogenize(p2 ^ p3 ^ p1))
-        self.assertEquals(P, self.homogenize(p3 ^ p1 ^ p2))
-        self.assertEquals(P, self.homogenize(p3 ^ p2 ^ p1))
+        P = p1 ^ p2 ^ p3
+        self.assertProjEquals(P, self.point(x, y, z))
+        self.assertProjEquals(P, p1 ^ p3 ^ p2)
+        self.assertProjEquals(P, p2 ^ p1 ^ p3)
+        self.assertProjEquals(P, p2 ^ p3 ^ p1)
+        self.assertProjEquals(P, p3 ^ p1 ^ p2)
+        self.assertProjEquals(P, p3 ^ p2 ^ p1)
 
     def test_geometry_incidence_planes_meet_into_points_2(self):
         """
@@ -137,10 +156,10 @@ class TestPGA(unittest.TestCase):
         p314 = Jinv(J(P3) ^ J(P1) ^ J(P4))
 
         # TODO: find a way to meet planes faster...
-        #self.assertEquals(self.homogenize(p123 ^ p124 ^ p314), P1)
-        #self.assertEquals(self.homogenize(p123 ^ p124 ^ p234), P2)
-        #self.assertEquals(self.homogenize(p123 ^ p234 ^ p314), P3)
-        #self.assertEquals(self.homogenize(p124 ^ p234 ^ p314), P4)
+        #self.assertProjEquals(p123 ^ p124 ^ p314, P1)
+        #self.assertProjEquals(p123 ^ p124 ^ p234, P2)
+        #self.assertProjEquals(p123 ^ p234 ^ p314, P3)
+        #self.assertProjEquals(p124 ^ p234 ^ p314, P4)
 
     def test_geometry_incidence_points_join_into_planes(self):
         """
@@ -281,12 +300,12 @@ class TestPGA(unittest.TestCase):
 
         l0 = Jinv(J(P1) ^ J(P2))
 
-        print Jinv(J(P0) ^ J(l0))
+        d = self.norm(Jinv(J(P0) ^ J(l0)))
 
-        print self.norm(Jinv(J(P0) ^ J(l0)))
-
-        #self.assertEquals(self.line_norm(Jinv(J(P0) ^ J(l0)), 'euclidean'), d0 - x0)
-        #self.assertEquals(self.line_norm(Jinv(J(P0) ^ J(l0)), 'euclidean'), x0 - d0)
+        self.assertEquals(d.subs({x0: 2, y0: 0, z0: 0, x1: 0, y1: 2, z1: 0, x2: 1, y2: 2, z2: 0}), 2)
+        self.assertEquals(d.subs({x0: 3, y0: 0, z0: 0, x1: 0, y1: 2, z1: 0, x2: 1, y2: 2, z2: 0}), 2)
+        self.assertEquals(d.subs({x0: 2, y0: 0, z0: 0, x1: 0, y1: 1, z1: 0, x2: 1, y2: 1, z2: 0}), 1)
+        self.assertEquals(d.subs({x0: 2, y0: 0, z0: 0, x1: 0, y1: 2, z1: 0, x2: 2, y2: 0, z2: 0}), 0)
 
     def test_metric_common_normal_line(self):
         """
@@ -314,3 +333,20 @@ class TestPGA(unittest.TestCase):
 
         self.assertEquals(acos(l0 | ln), S.Half * pi)
         self.assertEquals(acos(l1 | ln), S.Half * pi)
+
+    def test_metric_angle_between_lines(self):
+        """
+        We can measure the angle between to normalized lines.
+        """
+        x1, y1 = symbols('x1 y1', real=True)
+        P0 = self.point(0, 0, 0)
+        P1 = self.point(x1, y1, 0)
+        P2 = self.point(-y1, x1, 0)
+
+        l0 = Jinv(J(P0) ^ J(P1))    # TODO: this feels weird... but ganja does the same
+        l1 = Jinv(J(P2) ^ J(P0))    #
+
+        l0 /= self.norm(l0)
+        l1 /= self.norm(l1)
+
+        self.assertEquals(acos(l0 | l1), pi / 2)
