@@ -1,6 +1,6 @@
 import unittest
 
-from sympy import acos, asin, pi, Rational, S, simplify, sqrt, Symbol, symbols
+from sympy import acos, asin, cos, sin, pi, Rational, S, simplify, sqrt, Symbol, symbols
 
 from ga import Ga
 from mv import Mv, J, Jinv, com
@@ -20,7 +20,7 @@ class TestPGA(unittest.TestCase):
 
         diff = simplify(first - second)
 
-        self.assertTrue(diff == 0, "\n%s\n==\n%s\n%s" % (first, second, diff))
+        self.assertTrue(diff == 0, "\n%s\n%s\n==\n%s\n%s" % (msg, first, second, diff))
 
     def assertProjEquals(self, X, Y):
         """
@@ -43,10 +43,36 @@ class TestPGA(unittest.TestCase):
         """
         Setup 3D Projective Geometric Algebra aka PGA.
         """
-        PGA, e_0, e_1, e_2, e_3 = Ga.build('e*0|1|2|3', g=[0, 1, 1, 1])
+        indexes = (
+            (),
+            ((0,), (1,), (2,), (3,)),
+            ((0, 1), (0, 2), (0, 3), (1, 2), (3, 1), (2, 3)),
+            ((0, 2, 1), (0, 1, 3), (0, 3, 2), (1, 2, 3)),
+            ((0, 1, 2, 3),)
+        )
+
+        # Internal products use lexical ordering for computing expressions
+        signs = (
+            (),
+            (1, 1, 1, 1),
+            (1, 1, 1, 1, -1, 1),
+            (-1, 1, -1, 1),
+            (1,)
+        )
+
+        # TODO: build this from indexes...
+        coindexes = (
+            ((0, 1, 2, 3),),
+            ((1, 2, 3), (0, 3, 2), (0, 1, 3), (0, 2, 1)),
+            ((2, 3), (3, 1), (1, 2), (0, 3), (0, 2), (0, 1)),
+            ((3,), (2,), (1,), (0,)),
+            (),
+        )
+
+        PGA, e_0, e_1, e_2, e_3 = Ga.build('e*0|1|2|3', g=[0, 1, 1, 1], sign_and_indexes=(signs, indexes))
 
         # TODO: move this somewhere useful...
-        PGA.build_cobases()
+        PGA.build_cobases(coindexes=coindexes)
 
         self.PGA = PGA
         self.e_0 = e_0
@@ -112,6 +138,282 @@ class TestPGA(unittest.TestCase):
             raise ValueError("X k-vector is null")
         return sqrt(squared_norm)
 
+    def test_multiplication_table(self):
+        """
+        Reproduce multiplication table.
+        """
+        # 1
+        self.assertEquals(S.One * self.e_0, self.e_0)
+        self.assertEquals(S.One * self.e_1, self.e_1)
+        self.assertEquals(S.One * self.e_2, self.e_2)
+        self.assertEquals(S.One * self.e_3, self.e_3)
+        self.assertEquals(S.One * self.e_01, self.e_01)
+        self.assertEquals(S.One * self.e_02, self.e_02)
+        self.assertEquals(S.One * self.e_03, self.e_03)
+        self.assertEquals(S.One * self.e_12, self.e_12)
+        self.assertEquals(S.One * self.e_31, self.e_31)
+        self.assertEquals(S.One * self.e_23, self.e_23)
+        self.assertEquals(S.One * self.e_021, self.e_021)
+        self.assertEquals(S.One * self.e_013, self.e_013)
+        self.assertEquals(S.One * self.e_032, self.e_032)
+        self.assertEquals(S.One * self.e_123, self.e_123)
+        self.assertEquals(S.One * self.e_0123, self.e_0123)
+
+        # e0
+        self.assertEquals(self.e_0 * self.e_0, S.Zero)
+        self.assertEquals(self.e_0 * self.e_1, self.e_01)
+        self.assertEquals(self.e_0 * self.e_2, self.e_02)
+        self.assertEquals(self.e_0 * self.e_3, self.e_03)
+        self.assertEquals(self.e_0 * self.e_01, S.Zero)
+        self.assertEquals(self.e_0 * self.e_02, S.Zero)
+        self.assertEquals(self.e_0 * self.e_03, S.Zero)
+        self.assertEquals(self.e_0 * self.e_12, -self.e_021)
+        self.assertEquals(self.e_0 * self.e_31, -self.e_013)
+        self.assertEquals(self.e_0 * self.e_23, -self.e_032)
+        self.assertEquals(self.e_0 * self.e_021, S.Zero)
+        self.assertEquals(self.e_0 * self.e_013, S.Zero)
+        self.assertEquals(self.e_0 * self.e_032, S.Zero)
+        self.assertEquals(self.e_0 * self.e_123, self.e_0123)
+        self.assertEquals(self.e_0 * self.e_0123, S.Zero)
+
+        # e1
+        self.assertEquals(self.e_1 * self.e_0, -self.e_01)
+        self.assertEquals(self.e_1 * self.e_1, S.One)
+        self.assertEquals(self.e_1 * self.e_2, self.e_12)
+        self.assertEquals(self.e_1 * self.e_3, -self.e_31)
+        self.assertEquals(self.e_1 * self.e_01, -self.e_0)
+        self.assertEquals(self.e_1 * self.e_02, self.e_021)
+        self.assertEquals(self.e_1 * self.e_03, -self.e_013)
+        self.assertEquals(self.e_1 * self.e_12, self.e_2)
+        self.assertEquals(self.e_1 * self.e_31, -self.e_3)
+        self.assertEquals(self.e_1 * self.e_23, self.e_123)
+        self.assertEquals(self.e_1 * self.e_021, self.e_02)
+        self.assertEquals(self.e_1 * self.e_013, -self.e_03)
+        self.assertEquals(self.e_1 * self.e_032, self.e_0123)
+        self.assertEquals(self.e_1 * self.e_123, self.e_23)
+        self.assertEquals(self.e_1 * self.e_0123, self.e_032)
+
+        # e2
+        self.assertEquals(self.e_2 * self.e_0, -self.e_02)
+        self.assertEquals(self.e_2 * self.e_1, -self.e_12)
+        self.assertEquals(self.e_2 * self.e_2, S.One)
+        self.assertEquals(self.e_2 * self.e_3, self.e_23)
+        self.assertEquals(self.e_2 * self.e_01, -self.e_021)
+        self.assertEquals(self.e_2 * self.e_02, -self.e_0)
+        self.assertEquals(self.e_2 * self.e_03, self.e_032)
+        self.assertEquals(self.e_2 * self.e_12, -self.e_1)
+        self.assertEquals(self.e_2 * self.e_31, self.e_123)
+        self.assertEquals(self.e_2 * self.e_23, self.e_3)
+        self.assertEquals(self.e_2 * self.e_021, -self.e_01)
+        self.assertEquals(self.e_2 * self.e_013, self.e_0123)
+        self.assertEquals(self.e_2 * self.e_032, self.e_03)
+        self.assertEquals(self.e_2 * self.e_123, self.e_31)
+        self.assertEquals(self.e_2 * self.e_0123, self.e_013)
+
+        # e3
+        self.assertEquals(self.e_3 * self.e_0, -self.e_03)
+        self.assertEquals(self.e_3 * self.e_1, self.e_31)
+        self.assertEquals(self.e_3 * self.e_2, -self.e_23)
+        self.assertEquals(self.e_3 * self.e_3, S.One)
+        self.assertEquals(self.e_3 * self.e_01, self.e_013)
+        self.assertEquals(self.e_3 * self.e_02, -self.e_032)
+        self.assertEquals(self.e_3 * self.e_03, -self.e_0)
+        self.assertEquals(self.e_3 * self.e_12, self.e_123)
+        self.assertEquals(self.e_3 * self.e_31, self.e_1)
+        self.assertEquals(self.e_3 * self.e_23, -self.e_2)
+        self.assertEquals(self.e_3 * self.e_021, self.e_0123)
+        self.assertEquals(self.e_3 * self.e_013, self.e_01)
+        self.assertEquals(self.e_3 * self.e_032, -self.e_02)
+        self.assertEquals(self.e_3 * self.e_123, self.e_12)
+        self.assertEquals(self.e_3 * self.e_0123, self.e_021)
+
+        # e01        
+        self.assertEquals(self.e_01 * self.e_0, S.Zero)
+        self.assertEquals(self.e_01 * self.e_1, self.e_0)
+        self.assertEquals(self.e_01 * self.e_2, -self.e_021)
+        self.assertEquals(self.e_01 * self.e_3, self.e_013)
+        self.assertEquals(self.e_01 * self.e_01, S.Zero)
+        self.assertEquals(self.e_01 * self.e_02, S.Zero)
+        self.assertEquals(self.e_01 * self.e_03, S.Zero)
+        self.assertEquals(self.e_01 * self.e_12, self.e_02)
+        self.assertEquals(self.e_01 * self.e_31, -self.e_03)
+        self.assertEquals(self.e_01 * self.e_23, self.e_0123)
+        self.assertEquals(self.e_01 * self.e_021, S.Zero)
+        self.assertEquals(self.e_01 * self.e_013, S.Zero)
+        self.assertEquals(self.e_01 * self.e_032, S.Zero)
+        self.assertEquals(self.e_01 * self.e_123, -self.e_032)
+        self.assertEquals(self.e_01 * self.e_0123, S.Zero)
+
+        # e02
+        self.assertEquals(self.e_02 * self.e_0, S.Zero)
+        self.assertEquals(self.e_02 * self.e_1, self.e_021)
+        self.assertEquals(self.e_02 * self.e_2, self.e_0)
+        self.assertEquals(self.e_02 * self.e_3, -self.e_032)
+        self.assertEquals(self.e_02 * self.e_01, S.Zero)
+        self.assertEquals(self.e_02 * self.e_02, S.Zero)
+        self.assertEquals(self.e_02 * self.e_03, S.Zero)
+        self.assertEquals(self.e_02 * self.e_12, -self.e_01)
+        self.assertEquals(self.e_02 * self.e_31, self.e_0123)
+        self.assertEquals(self.e_02 * self.e_23, self.e_03)
+        self.assertEquals(self.e_02 * self.e_021, S.Zero)
+        self.assertEquals(self.e_02 * self.e_013, S.Zero)
+        self.assertEquals(self.e_02 * self.e_032, S.Zero)
+        self.assertEquals(self.e_02 * self.e_123, -self.e_013)
+        self.assertEquals(self.e_02 * self.e_0123, S.Zero)
+
+        # e03
+        self.assertEquals(self.e_03 * self.e_0, S.Zero)
+        self.assertEquals(self.e_03 * self.e_1, -self.e_013)
+        self.assertEquals(self.e_03 * self.e_2, self.e_032)
+        self.assertEquals(self.e_03 * self.e_3, self.e_0)
+        self.assertEquals(self.e_03 * self.e_01, S.Zero)
+        self.assertEquals(self.e_03 * self.e_02, S.Zero)
+        self.assertEquals(self.e_03 * self.e_03, S.Zero)
+        self.assertEquals(self.e_03 * self.e_12, self.e_0123)
+        self.assertEquals(self.e_03 * self.e_31, self.e_01)
+        self.assertEquals(self.e_03 * self.e_23, -self.e_02)
+        self.assertEquals(self.e_03 * self.e_021, S.Zero)
+        self.assertEquals(self.e_03 * self.e_013, S.Zero)
+        self.assertEquals(self.e_03 * self.e_032, S.Zero)
+        self.assertEquals(self.e_03 * self.e_123, -self.e_021)
+        self.assertEquals(self.e_03 * self.e_0123, S.Zero)
+
+        # e12
+        self.assertEquals(self.e_12 * self.e_0, -self.e_021)
+        self.assertEquals(self.e_12 * self.e_1, -self.e_2)
+        self.assertEquals(self.e_12 * self.e_2, self.e_1)
+        self.assertEquals(self.e_12 * self.e_3, self.e_123)
+        self.assertEquals(self.e_12 * self.e_01, -self.e_02)
+        self.assertEquals(self.e_12 * self.e_02, self.e_01)
+        self.assertEquals(self.e_12 * self.e_03, self.e_0123)
+        self.assertEquals(self.e_12 * self.e_12, -S.One)
+        self.assertEquals(self.e_12 * self.e_31, self.e_23)
+        self.assertEquals(self.e_12 * self.e_23, -self.e_31)
+        self.assertEquals(self.e_12 * self.e_021, self.e_0)
+        self.assertEquals(self.e_12 * self.e_013, self.e_032)
+        self.assertEquals(self.e_12 * self.e_032, -self.e_013)
+        self.assertEquals(self.e_12 * self.e_123, -self.e_3)
+        self.assertEquals(self.e_12 * self.e_0123, -self.e_03)
+
+        # e31
+        self.assertEquals(self.e_31 * self.e_0, -self.e_013)
+        self.assertEquals(self.e_31 * self.e_1, self.e_3)
+        self.assertEquals(self.e_31 * self.e_2, self.e_123)
+        self.assertEquals(self.e_31 * self.e_3, -self.e_1)
+        self.assertEquals(self.e_31 * self.e_01, self.e_03)
+        self.assertEquals(self.e_31 * self.e_02, self.e_0123)
+        self.assertEquals(self.e_31 * self.e_03, -self.e_01)
+        self.assertEquals(self.e_31 * self.e_12, -self.e_23)
+        self.assertEquals(self.e_31 * self.e_31, -S.One)
+        self.assertEquals(self.e_31 * self.e_23, self.e_12)
+        self.assertEquals(self.e_31 * self.e_021, -self.e_032)
+        self.assertEquals(self.e_31 * self.e_013, self.e_0)
+        self.assertEquals(self.e_31 * self.e_032, self.e_021)
+        self.assertEquals(self.e_31 * self.e_123, -self.e_2)
+        self.assertEquals(self.e_31 * self.e_0123, -self.e_02)
+
+        # e23
+        self.assertEquals(self.e_23 * self.e_0, -self.e_032)
+        self.assertEquals(self.e_23 * self.e_1, self.e_123)
+        self.assertEquals(self.e_23 * self.e_2, -self.e_3)
+        self.assertEquals(self.e_23 * self.e_3, self.e_2)
+        self.assertEquals(self.e_23 * self.e_01, self.e_0123)
+        self.assertEquals(self.e_23 * self.e_02, -self.e_03)
+        self.assertEquals(self.e_23 * self.e_03, self.e_02)
+        self.assertEquals(self.e_23 * self.e_12, self.e_31)
+        self.assertEquals(self.e_23 * self.e_31, -self.e_12)
+        self.assertEquals(self.e_23 * self.e_23, -S.One)
+        self.assertEquals(self.e_23 * self.e_021, self.e_013)
+        self.assertEquals(self.e_23 * self.e_013, -self.e_021)
+        self.assertEquals(self.e_23 * self.e_032, self.e_0)
+        self.assertEquals(self.e_23 * self.e_123, -self.e_1)
+        self.assertEquals(self.e_23 * self.e_0123, -self.e_01)
+
+        # e021
+        self.assertEquals(self.e_021 * self.e_0, S.Zero)
+        self.assertEquals(self.e_021 * self.e_1, self.e_02)
+        self.assertEquals(self.e_021 * self.e_2, -self.e_01)
+        self.assertEquals(self.e_021 * self.e_3, -self.e_0123)
+        self.assertEquals(self.e_021 * self.e_01, S.Zero)
+        self.assertEquals(self.e_021 * self.e_02, S.Zero)
+        self.assertEquals(self.e_021 * self.e_03, S.Zero)
+        self.assertEquals(self.e_021 * self.e_12, self.e_0)
+        self.assertEquals(self.e_021 * self.e_31, self.e_032)
+        self.assertEquals(self.e_021 * self.e_23, -self.e_013)
+        self.assertEquals(self.e_021 * self.e_021, S.Zero)
+        self.assertEquals(self.e_021 * self.e_013, S.Zero)
+        self.assertEquals(self.e_021 * self.e_032, S.Zero)
+        self.assertEquals(self.e_021 * self.e_123, self.e_03)
+        self.assertEquals(self.e_021 * self.e_0123, S.Zero)
+
+        # e013
+        self.assertEquals(self.e_013 * self.e_0, S.Zero)
+        self.assertEquals(self.e_013 * self.e_1, -self.e_03)
+        self.assertEquals(self.e_013 * self.e_2, -self.e_0123)
+        self.assertEquals(self.e_013 * self.e_3, self.e_01)
+        self.assertEquals(self.e_013 * self.e_01, S.Zero)
+        self.assertEquals(self.e_013 * self.e_02, S.Zero)
+        self.assertEquals(self.e_013 * self.e_03, S.Zero)
+        self.assertEquals(self.e_013 * self.e_12, -self.e_032)
+        self.assertEquals(self.e_013 * self.e_31, self.e_0)
+        self.assertEquals(self.e_013 * self.e_23, self.e_021)
+        self.assertEquals(self.e_013 * self.e_021, S.Zero)
+        self.assertEquals(self.e_013 * self.e_013, S.Zero)
+        self.assertEquals(self.e_013 * self.e_032, S.Zero)
+        self.assertEquals(self.e_013 * self.e_123, self.e_02)
+        self.assertEquals(self.e_013 * self.e_0123, S.Zero)
+
+        # e032
+        self.assertEquals(self.e_032 * self.e_0, S.Zero)
+        self.assertEquals(self.e_032 * self.e_1, -self.e_0123)
+        self.assertEquals(self.e_032 * self.e_2, self.e_03)
+        self.assertEquals(self.e_032 * self.e_3, -self.e_02)
+        self.assertEquals(self.e_032 * self.e_01, S.Zero)
+        self.assertEquals(self.e_032 * self.e_02, S.Zero)
+        self.assertEquals(self.e_032 * self.e_03, S.Zero)
+        self.assertEquals(self.e_032 * self.e_12, self.e_013)
+        self.assertEquals(self.e_032 * self.e_31, -self.e_021)
+        self.assertEquals(self.e_032 * self.e_23, self.e_0)
+        self.assertEquals(self.e_032 * self.e_021, S.Zero)
+        self.assertEquals(self.e_032 * self.e_013, S.Zero)
+        self.assertEquals(self.e_032 * self.e_032, S.Zero)
+        self.assertEquals(self.e_032 * self.e_123, self.e_01)
+        self.assertEquals(self.e_032 * self.e_0123, S.Zero)
+
+        # e123
+        self.assertEquals(self.e_123 * self.e_0, -self.e_0123)
+        self.assertEquals(self.e_123 * self.e_1, self.e_23)
+        self.assertEquals(self.e_123 * self.e_2, self.e_31)
+        self.assertEquals(self.e_123 * self.e_3, self.e_12)
+        self.assertEquals(self.e_123 * self.e_01, self.e_032)
+        self.assertEquals(self.e_123 * self.e_02, self.e_013)
+        self.assertEquals(self.e_123 * self.e_03, self.e_021)
+        self.assertEquals(self.e_123 * self.e_12, -self.e_3)
+        self.assertEquals(self.e_123 * self.e_31, -self.e_2)
+        self.assertEquals(self.e_123 * self.e_23, -self.e_1)
+        self.assertEquals(self.e_123 * self.e_021, -self.e_03)
+        self.assertEquals(self.e_123 * self.e_013, -self.e_02)
+        self.assertEquals(self.e_123 * self.e_032, -self.e_01)
+        self.assertEquals(self.e_123 * self.e_123, -S.One)
+        self.assertEquals(self.e_123 * self.e_0123, self.e_0)
+
+        # e0123
+        self.assertEquals(self.e_0123 * self.e_0, S.Zero)
+        self.assertEquals(self.e_0123 * self.e_1, -self.e_032)
+        self.assertEquals(self.e_0123 * self.e_2, -self.e_013)
+        self.assertEquals(self.e_0123 * self.e_3, -self.e_021)
+        self.assertEquals(self.e_0123 * self.e_01, S.Zero)
+        self.assertEquals(self.e_0123 * self.e_02, S.Zero)
+        self.assertEquals(self.e_0123 * self.e_03, S.Zero)
+        self.assertEquals(self.e_0123 * self.e_12, -self.e_03)
+        self.assertEquals(self.e_0123 * self.e_31, -self.e_02)
+        self.assertEquals(self.e_0123 * self.e_23, -self.e_01)
+        self.assertEquals(self.e_0123 * self.e_021, S.Zero)
+        self.assertEquals(self.e_0123 * self.e_013, S.Zero)
+        self.assertEquals(self.e_0123 * self.e_032, S.Zero)
+        self.assertEquals(self.e_0123 * self.e_123, -self.e_0)
+        self.assertEquals(self.e_0123 * self.e_0123, S.Zero)
+
     def test_J(self):
         """
         Check we can join and meet using J and Jinv.
@@ -119,7 +421,7 @@ class TestPGA(unittest.TestCase):
         PGA = self.PGA
         for k in range(PGA.n + 1):
             X = PGA.mv('x', k, 'grade')
-            self.assertEquals(X, Jinv(J(X)))
+            self.assertEquals(X, Jinv(J(X)), "grade is {}".format(k))
         X = PGA.mv('x', 'mv')
         self.assertEquals(X, Jinv(J(X)))
 
@@ -352,11 +654,11 @@ class TestPGA(unittest.TestCase):
 
     @staticmethod
     def rotor_cs(alpha, l):
-        return cos(alpha / 2) + sin(alpha / 2) * l
+        return cos(-alpha / 2) + sin(-alpha / 2) * l    # TODO: this feels weird...
 
     @staticmethod
     def rotor_exp(alpha, l):
-        return (alpha / 2 * l).exp()
+        return (-alpha / 2 * l).exp()                   # TODO: this feels weird...
 
     def test_motors_rotator(self):
         """
@@ -515,4 +817,4 @@ class TestPGA(unittest.TestCase):
 
         d = Symbol('d')
         T = self.translator(d, l)
-        self.assertProjEquals(T * Px * T.rev(), self.point(x0 - d, y0, z0))     # TODO : like ganja.js but weird...
+        self.assertProjEquals(T * Px * T.rev(), self.point(x0 + d, y0, z0))     # TODO : like ganja.js but weird...

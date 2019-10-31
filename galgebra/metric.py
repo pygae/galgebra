@@ -256,7 +256,8 @@ class Metric(object):
                   'norm': (False, 'True to normalize basis vectors'),
                   'debug': (False, 'True to print out debugging information'),
                   'gsym': (None, 'String s to use "det("+s+")" function in reciprocal basis'),
-                  'sig': ('e', 'Signature of metric, default is (n,0) a Euclidean metric')}
+                  'sig': ('e', 'Signature of metric, default is (n,0) a Euclidean metric'),
+                  'sign_and_indexes': (None, 'bases indexes')}
 
     @staticmethod
     def dot_orthogonal(V1, V2, g=None):
