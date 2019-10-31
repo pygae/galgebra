@@ -994,14 +994,14 @@ class Mv(object):
     def J(self):
         # TODO: If we pick our basis smartly, we can probably use J in place of Jinv...
         obj = 0
-        for coef, coblade in zip(self.blade_coefs(), self.Ga.coblades_lst0):
+        for coef, coblade in zip(self.blade_coefs(self.Ga.mv_blades_lst0), self.Ga.coblades_lst0):
             obj += coef * coblade
         return Mv(obj, ga=self.Ga)
 
     def Jinv(self):
         # TODO: If we pick our basis smartly, we can probably use J in place of Jinv...
         obj = 0
-        for coef, coblade_inv in zip(self.blade_coefs(), self.Ga.coblades_inv_lst0):
+        for coef, coblade_inv in zip(self.blade_coefs(self.Ga.mv_blades_lst0), self.Ga.coblades_inv_lst0):
             obj += coef * coblade_inv
         return Mv(obj, ga=self.Ga)
 
