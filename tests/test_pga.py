@@ -133,14 +133,13 @@ class TestPGA(unittest.TestCase):
         p1 = self.plane(1, 0, 0, -x)
         p2 = self.plane(0, 1, 0, -y)
         p3 = self.plane(0, 0, 1, -z)
-
-        P = p1 ^ p2 ^ p3
-        self.assertProjEquals(P, self.point(x, y, z))
-        self.assertProjEquals(P, p1 ^ p3 ^ p2)
-        self.assertProjEquals(P, p2 ^ p1 ^ p3)
-        self.assertProjEquals(P, p2 ^ p3 ^ p1)
-        self.assertProjEquals(P, p3 ^ p1 ^ p2)
-        self.assertProjEquals(P, p3 ^ p2 ^ p1)
+        R = self.point(x, y, z)
+        self.assertProjEquals(R, p1 ^ p2 ^ p3)
+        self.assertProjEquals(R, p1 ^ p3 ^ p2)
+        self.assertProjEquals(R, p2 ^ p1 ^ p3)
+        self.assertProjEquals(R, p2 ^ p3 ^ p1)
+        self.assertProjEquals(R, p3 ^ p1 ^ p2)
+        self.assertProjEquals(R, p3 ^ p2 ^ p1)
 
     def test_geometry_incidence_planes_meet_into_points_2(self):
         """
@@ -350,3 +349,170 @@ class TestPGA(unittest.TestCase):
         l1 /= self.norm(l1)
 
         self.assertEquals(acos(l0 | l1), pi / 2)
+
+    @staticmethod
+    def rotor_cs(alpha, l):
+        return cos(alpha / 2) + sin(alpha / 2) * l
+
+    @staticmethod
+    def rotor_exp(alpha, l):
+        return (alpha / 2 * l).exp()
+
+    def test_motors_rotator(self):
+        """
+        Rotate anything around a normalized line.
+        """
+        Or = self.point(+0, +0, +0)
+        Xp = self.point(+1, +0, +0)
+        Yp = self.point(+0, +1, +0)
+        Zp = self.point(+0, +0, +1)
+        Xm = self.point(-1, +0, +0)
+        Ym = self.point(+0, -1, +0)
+        Zm = self.point(+0, +0, -1)
+
+        lXp = Jinv(J(Or) ^ J(Xp))
+        lXm = Jinv(J(Or) ^ J(Xm))
+        lYp = Jinv(J(Or) ^ J(Yp))
+        lYm = Jinv(J(Or) ^ J(Ym))
+        lZp = Jinv(J(Or) ^ J(Zp))
+        lZm = Jinv(J(Or) ^ J(Zm))
+
+        d = Symbol('d')
+        pXp = self.plane(+1, 0, 0, d)
+        pXm = self.plane(-1, 0, 0, d)
+        pYp = self.plane(0, +1, 0, d)
+        pYm = self.plane(0, -1, 0, d)
+        pZp = self.plane(0, 0, +1, d)
+        pZm = self.plane(0, 0, -1, d)
+
+        # Around X+
+        RXp = self.rotor_cs(pi / 2, lXp)
+        self.assertEquals(RXp, self.rotor_exp(pi / 2, lXp))
+        # Points
+        self.assertProjEquals(RXp * Yp * RXp.rev(), Zp)
+        self.assertProjEquals(RXp * Zp * RXp.rev(), Ym)
+        self.assertProjEquals(RXp * Ym * RXp.rev(), Zm)
+        self.assertProjEquals(RXp * Zm * RXp.rev(), Yp)
+        # Lines
+        self.assertProjEquals(RXp * lYp * RXp.rev(), lZp)
+        self.assertProjEquals(RXp * lZp * RXp.rev(), lYm)
+        self.assertProjEquals(RXp * lYm * RXp.rev(), lZm)
+        self.assertProjEquals(RXp * lZm * RXp.rev(), lYp)
+        # Planes
+        self.assertProjEquals(RXp * pYp * RXp.rev(), pZp)
+        self.assertProjEquals(RXp * pZp * RXp.rev(), pYm)
+        self.assertProjEquals(RXp * pYm * RXp.rev(), pZm)
+        self.assertProjEquals(RXp * pZm * RXp.rev(), pYp)
+
+        # Around X-
+        RXm = self.rotor_cs(pi / 2, lXm)
+        self.assertEquals(RXm, self.rotor_exp(pi / 2, lXm))
+        # Points
+        self.assertProjEquals(RXm * Yp * RXm.rev(), Zm)
+        self.assertProjEquals(RXm * Zm * RXm.rev(), Ym)
+        self.assertProjEquals(RXm * Ym * RXm.rev(), Zp)
+        self.assertProjEquals(RXm * Zp * RXm.rev(), Yp)
+        # Lines
+        self.assertProjEquals(RXm * lYp * RXm.rev(), lZm)
+        self.assertProjEquals(RXm * lZm * RXm.rev(), lYm)
+        self.assertProjEquals(RXm * lYm * RXm.rev(), lZp)
+        self.assertProjEquals(RXm * lZp * RXm.rev(), lYp)
+        # Planes
+        self.assertProjEquals(RXm * pYp * RXm.rev(), pZm)
+        self.assertProjEquals(RXm * pZm * RXm.rev(), pYm)
+        self.assertProjEquals(RXm * pYm * RXm.rev(), pZp)
+        self.assertProjEquals(RXm * pZp * RXm.rev(), pYp)
+
+        # Around Y+
+        RYp = self.rotor_cs(pi / 2, lYp)
+        self.assertEquals(RYp, self.rotor_exp(pi / 2, lYp))
+        # Points
+        self.assertProjEquals(RYp * Xp * RYp.rev(), Zm)
+        self.assertProjEquals(RYp * Zm * RYp.rev(), Xm)
+        self.assertProjEquals(RYp * Xm * RYp.rev(), Zp)
+        self.assertProjEquals(RYp * Zp * RYp.rev(), Xp)
+        # Lines
+        self.assertProjEquals(RYp * lXp * RYp.rev(), lZm)
+        self.assertProjEquals(RYp * lZm * RYp.rev(), lXm)
+        self.assertProjEquals(RYp * lXm * RYp.rev(), lZp)
+        self.assertProjEquals(RYp * lZp * RYp.rev(), lXp)
+        # Planes
+        self.assertProjEquals(RYp * pXp * RYp.rev(), pZm)
+        self.assertProjEquals(RYp * pZm * RYp.rev(), pXm)
+        self.assertProjEquals(RYp * pXm * RYp.rev(), pZp)
+        self.assertProjEquals(RYp * pZp * RYp.rev(), pXp)
+
+        # Around Y-
+        RYm = self.rotor_cs(pi / 2, lYm)
+        self.assertEquals(RYm, self.rotor_exp(pi / 2, lYm))
+        # Points
+        self.assertProjEquals(RYm * Xp * RYm.rev(), Zp)
+        self.assertProjEquals(RYm * Zp * RYm.rev(), Xm)
+        self.assertProjEquals(RYm * Xm * RYm.rev(), Zm)
+        self.assertProjEquals(RYm * Zm * RYm.rev(), Xp)
+        # Lines
+        self.assertProjEquals(RYm * lXp * RYm.rev(), lZp)
+        self.assertProjEquals(RYm * lZp * RYm.rev(), lXm)
+        self.assertProjEquals(RYm * lXm * RYm.rev(), lZm)
+        self.assertProjEquals(RYm * lZm * RYm.rev(), lXp)
+        # Planes
+        self.assertProjEquals(RYm * pXp * RYm.rev(), pZp)
+        self.assertProjEquals(RYm * pZp * RYm.rev(), pXm)
+        self.assertProjEquals(RYm * pXm * RYm.rev(), pZm)
+        self.assertProjEquals(RYm * pZm * RYm.rev(), pXp)
+
+        # Around Z+
+        RZp = self.rotor_cs(pi / 2, lZp)
+        self.assertEquals(RZp, self.rotor_exp(pi / 2, lZp))
+        # Points
+        self.assertProjEquals(RZp * Xp * RZp.rev(), Yp)
+        self.assertProjEquals(RZp * Yp * RZp.rev(), Xm)
+        self.assertProjEquals(RZp * Xm * RZp.rev(), Ym)
+        self.assertProjEquals(RZp * Ym * RZp.rev(), Xp)
+        # Lines
+        self.assertProjEquals(RZp * lXp * RZp.rev(), lYp)
+        self.assertProjEquals(RZp * lYp * RZp.rev(), lXm)
+        self.assertProjEquals(RZp * lXm * RZp.rev(), lYm)
+        self.assertProjEquals(RZp * lYm * RZp.rev(), lXp)
+        # Planes
+        self.assertProjEquals(RZp * pXp * RZp.rev(), pYp)
+        self.assertProjEquals(RZp * pYp * RZp.rev(), pXm)
+        self.assertProjEquals(RZp * pXm * RZp.rev(), pYm)
+        self.assertProjEquals(RZp * pYm * RZp.rev(), pXp)
+
+        # Around Z-
+        RZm = self.rotor_cs(pi / 2, lZm)
+        self.assertEquals(RZm, self.rotor_exp(pi / 2, lZm))
+        # Points
+        self.assertProjEquals(RZm * Xp * RZm.rev(), Ym)
+        self.assertProjEquals(RZm * Ym * RZm.rev(), Xm)
+        self.assertProjEquals(RZm * Xm * RZm.rev(), Yp)
+        self.assertProjEquals(RZm * Yp * RZm.rev(), Xp)
+        # Lines
+        self.assertProjEquals(RZm * lXp * RZm.rev(), lYm)
+        self.assertProjEquals(RZm * lYm * RZm.rev(), lXm)
+        self.assertProjEquals(RZm * lXm * RZm.rev(), lYp)
+        self.assertProjEquals(RZm * lYp * RZm.rev(), lXp)
+        # Planes
+        self.assertProjEquals(RZm * pXp * RZm.rev(), pYm)
+        self.assertProjEquals(RZm * pYm * RZm.rev(), pXm)
+        self.assertProjEquals(RZm * pXm * RZm.rev(), pYp)
+        self.assertProjEquals(RZm * pYp * RZm.rev(), pXp)
+
+    def translator(self, d, l):
+        return 1 + (d / 2) * (l * self.e_0123)
+
+    def test_motors_translator(self):
+        """
+        Translate anything by a normalized line.
+        """
+        x0, y0, z0 = symbols('x0 y0 z0')
+        Px = self.point(x0, y0, z0)
+
+        P0 = self.point(0, 0, 0)
+        P1 = self.point(1, 0, 0)
+        l = Jinv(J(P0) ^ J(P1))
+
+        d = Symbol('d')
+        T = self.translator(d, l)
+        self.assertProjEquals(T * Px * T.rev(), self.point(x0 - d, y0, z0))     # TODO : like ganja.js but weird...
