@@ -16,12 +16,13 @@ print('b =',b)
 print('c =',c)
 
 print('I =',GA.i)
-e123 = e1^e2^e3
-print(r'(e_\W e_2\W e_3)^2 =',e123*e123)
-
-bc = e123*(b^c)
-print(r'(e_\W e_2\W e_3)(b\W c) =',bc.Fmt(3))
+E = e1^e2^e3
+print(r'(e_1\W e_2\W e_3)^2 =',E*E)
+bc = E*(b^c)
+print(r'(e_1\W e_2\W e_3)(b\W c) =',bc.Fmt(3))
 abc = a^bc
-print(r'a\W ((e_\W e_2\W e_3)(b\W c)) =',abc.Fmt(3))
+print(r'a\W ((e_1\W e_2\W e_3)(b\W c)) =',abc.Fmt(3))
+Eabc = E*(abc)
+print(r'(e_1\W e_2\W e_3)(a\W ((e_1\W e_2\W e_3)(b\W c))) =',Eabc.Fmt(3))
 
-xtex(paper=(40,11))
+xtex(paper=(30,11))

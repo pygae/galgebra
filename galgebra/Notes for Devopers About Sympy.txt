@@ -1,0 +1,7 @@
+Notes for Devopers About Sympy
+
+galgebra uses the python computer algebra library sympy for
+implementation:
+
+    www.sympy.org
+

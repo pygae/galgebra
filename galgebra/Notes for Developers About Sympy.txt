@@ -1,0 +1,10 @@
+Notes for Developers About Sympy
+
+galgebra uses the python computer algebra library sympy for
+implementation:
+
+    www.sympy.org
+
+sympy is used to do scalar algebraic operations on the coefficients of a
+multivector.  It is very frequently use to simplify scalar expressions.
+

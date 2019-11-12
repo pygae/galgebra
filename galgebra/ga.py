@@ -1,5 +1,17 @@
 """
 Geometric Algebra (inherits Metric)
+
+    If s is a sympy expression then s.args_cnc is used as follows:
+
+    args_cnc(cset=False, warn=True)[source]
+    Return [commutative factors, non-commutative factors] of self.
+    self is treated as a Mul and the ordering of the factors is
+    maintained. If cset is True the commutative factors will be returned
+    in a set. If there were repeated factors (as may happen with an
+    unevaluated Mul) then an error will be raised unless it is
+    explicitly supressed by setting warn to False.
+
+    Note: -1 is always separated from a Number.
 """
 
 import operator
@@ -102,7 +114,7 @@ def update_and_substitute(expr1, expr2, func, mul_dict):
 
 def nc_subs(expr, base_keys, base_values=None):
     """
-    See if expr contains nc keys in base_keys and substitute corresponding
+    See if expr contains nc (non-commutative) keys in base_keys and substitute corresponding
     value in base_values for nc key.  This was written since standard
     sympy subs was very slow in performing this operation for non-commutative
     keys for long lists of keys.
@@ -825,9 +837,28 @@ class Ga(metric.Metric):
 
     def reduce_basis(self, blst):
         """
-        Repetitively applies reduce_basis_loop to blst
+        Repetitively applies reduce_basis_loop to basis
         product representation until normal form is
         realized for non-orthogonal basis
+
+        If the basis vectors are represented by the non-
+        commutative symbols e_1,...,e_n then a grade r base
+        is the geometric product e_i_1*e_i_2*...*e_i_r where
+        i_1<i_2<...<i_r (normal form).  Then in galgebra this
+        base is represented by a single indexed non-commutative
+        symbol with indexes [i_1,i_2,...,i_r].  The total number
+        of these bases in an n-dimensional vector space is 2**n.
+        reduce basis takes the geometric products of basis vectors that
+        are not in normal form (out of order) and reduces them to a sum
+        of bases that are in normal form (in order).  It does this by
+        recursively applying the geometric algebra formula -
+
+            e_i*e_j = 2*(e_i|e_j) - e_j*e_i
+
+        where the scalar product (e_i|e_j) is obtained from the metric
+        tensor of the vector space.  This also allows one to calculate
+        the geometric product of any two bases of and grade of the
+        geometric algebra, the multiplication table.
         """
         blst = list(blst)
         if blst == []:  # blst represents scalar
@@ -884,6 +915,13 @@ class Ga(metric.Metric):
         Case 2: If i_{j} > i_{j+1}, return a_{i_{j}}.a_{i_{j+1}},
                 [i_{1},..,~i_{j},~i_{j+1},...,i_{r}], and
                 [i_{1},..,i_{j+1},i_{j},...,i_{r}]
+
+        This is an implementation of the formula:
+
+            e_i*e_j = 2(e_i|e_j) - e_j*e_i
+
+        Where e_i and e_j are basis vectors, * the geometric product, and
+        | the dot product.
         """
         nblst = len(blst)  # number of basis vectors
         if nblst <= 1:
@@ -918,6 +956,14 @@ class Ga(metric.Metric):
 
     @staticmethod
     def blade_reduce(lst):
+        """
+        Reduce wedge product of basis vectors to normal order.  lst is
+        list of indicies of basis vectors.  blade_reduce sorts the list
+        and determines if overall number of exchanges in list is odd or
+        even and returns sign changes (sgn) and sorted list.  If any two
+        indicies in list are equal (wedge product is zero) sgn = 0 and
+        lst = None are returned.
+        """
         sgn = 1
         for i in range(1, len(lst)):
             save = lst[i]

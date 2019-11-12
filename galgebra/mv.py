@@ -1328,6 +1328,12 @@ class Mv(object):
         return self.func(trigsimp)
 
     def simplify(self, modes=simplify):
+        """
+        Simplfy a multivector by applying a scalar (sympy) simplification
+        operation or list or tuple of simplification operations to the
+        coefficients of a multivector expansion.  The default is
+        modes = simplify.
+        """
         (coefs, bases) = metric.linear_expand(self.obj)
         obj = S(0)
         if isinstance(modes, list) or isinstance(modes, tuple):
@@ -1341,6 +1347,15 @@ class Mv(object):
         self.obj = obj
         return self
 
+    def subs(self,subs_in,subs_out):
+        if isinstance(subs_in,(list,tuple)) and isinstance(subs_out,(list,tuple)):
+            for (sub_in,sub_out) in zip(subs_in,subs_out):
+                self.obj = self.obj.subs(sub_in,sub_out)
+        else:
+            self.obj = self.obj.subs(subs_in,subs_out)
+        return self
+
+    """
     def subs(self, d):
         # For each scalar coef of the multivector apply substitution argument d
         (coefs, bases) = metric.linear_expand(self.obj)
@@ -1350,7 +1365,7 @@ class Mv(object):
         #self.obj = obj
         #return self
         return self.Ga.mv(obj)
-
+    """
     def expand(self):
         coefs,bases = metric.linear_expand(self.obj)
         new_coefs = []
