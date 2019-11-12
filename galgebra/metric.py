@@ -226,33 +226,56 @@ class Simp:
 
 
 class Metric(object):
-
     """
-    Data Variables -
+    Metric specification
 
-        g[,]: metric tensor (sympy matrix)
-        g_inv[,]: inverse of metric tensor (sympy matirx)
-        norm: normalized diagonal metric tensor (list of sympy numbers)
-        coords[]: coordinate variables (list of sympy symbols)
-        is_ortho: True if basis is orthogonal (bool)
-        connect_flg: True if connection is non-zero (bool)
-        basis[]: basis vector symbols (list of non-commutative sympy variables)
-        r_symbols[]: reciprocal basis vector symbols (list of non-commutative sympy variables)
-        n: dimension of vector space/manifold (integer)
-        n_range: list of basis indices
-        de[][]: derivatives of basis functions.  Two dimensional list. First
-                entry is differentiating coordiate. Second entry is basis
-                vector.  Quantities are linear combinations of basis vector
-                symbols.
-        sig: Signature of metric (p,q) where n = p+q.  If metric tensor
-             is numerical and orthogonal it is calculated.  Otherwise the
-             following inputs are used -
+    Attributes
+    ----------
 
-             input   signature                Type
-              "e"      (n,0)    Euclidean
-              "m+"     (n-1,1)  Minkowski (One negative square)
-              "m-"     (1,n-1)  Minkowski (One positive square)
-               p       (p,n-p)  General (integer not string input)
+    g : sympy matrix[,]
+        metric tensor
+    g_inv : sympy matrix[,]
+        inverse of metric tensor
+    norm : list of sympy numbers
+        normalized diagonal metric tensor
+    coords : list[] of sympy symbols
+        coordinate variables
+    is_ortho : bool
+        True if basis is orthogonal
+    connect_flg : bool
+        True if connection is non-zero
+    basis : list[] of non-commutative sympy variables
+        basis vector symbols
+    r_symbols : list[] of non-commutative sympy variables
+        reciprocal basis vector symbols
+    n : integer
+        dimension of vector space/manifold
+    n_range :
+        list of basis indices
+    de : list[][]
+        derivatives of basis functions.  Two dimensional list. First
+        entry is differentiating coordiate. Second entry is basis
+        vector.  Quantities are linear combinations of basis vector
+        symbols.
+    sig : Tuple[int, int]
+        Signature of metric ``(p,q)`` where ``n = p+q``.  If metric tensor
+        is numerical and orthogonal it is calculated.  Otherwise the
+        following inputs are used:
+
+        =========   ===========  ==================================
+        Input       Signature     Type
+        =========   ===========  ==================================
+        ``"e"``     ``(n,0)``    Euclidean
+        ``"m+"``    ``(n-1,1)``  Minkowski (One negative square)
+        ``"m-"``    ``(1,n-1)``  Minkowski (One positive square)
+        ``p``       ``(p,n-p)``  General (integer not string input)
+        =========   ===========  ==================================
+
+    gsym : str
+        String for symbolic metric determinant.  If self.gsym = 'g'
+        then det(g) is sympy scalar function of coordinates with
+        name 'det(g)'.  Useful for complex non-orthogonal coordinate
+        systems or for calculations with general metric.
     """
 
     count = 1
@@ -585,14 +608,8 @@ class Metric(object):
         coords = kwargs['coords']  # Manifold coordinates (sympy symbols)
         norm = kwargs['norm']  # Normalize basis vectors
         self.sig = kwargs['sig']  # Hint for metric signature
-        """
-        String for symbolic metric determinant.  If self.gsym = 'g'
-        then det(g) is sympy scalar function of coordinates with
-        name 'det(g)'.  Useful for complex non-orthogonal coordinate
-        systems or for calculations with general metric.
-        """
         self.gsym = kwargs['gsym']
-        self.Isq = kwargs['Isq']  # Sign of I**2, only needed if I**2 not a number
+        self.Isq = kwargs['Isq']  #: Sign of I**2, only needed if I**2 not a number
 
         self.debug = debug
         self.is_ortho = False  # Is basis othogonal
@@ -602,9 +619,9 @@ class Metric(object):
         else:
             self.connect_flg = True  # Connection needed for postion dependent metric
         self.norm = norm  # True to normalize basis vectors
-        self.detg = None  # Determinant of g
-        self.g_adj = None  # Adjugate of g
-        self.g_inv = None  # Inverse of g
+        self.detg = None  #: Determinant of g
+        self.g_adj = None  #: Adjugate of g
+        self.g_inv = None  #: Inverse of g
         # Generate list of basis vectors and reciprocal basis vectors
         # as non-commutative symbols
 
