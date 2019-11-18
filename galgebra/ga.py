@@ -624,8 +624,8 @@ class Ga(metric.Metric):
 
     def sm(self, *kargs, **kwargs):
         """
-        Instanciate and return a submanifold for this, 'self',
-        geometric algebra.  See 'Sm' class for instantiation inputs.
+        Instanciate and return a submanifold for this
+        geometric algebra.  See :class:`Sm` for instantiation inputs.
         """
         kwargs['ga'] = self
         SM = Sm(*kargs, **kwargs)
@@ -1368,7 +1368,7 @@ class Ga(metric.Metric):
 
     def remove_scalar_part(self, A):
         """
-        Return non-commutative part (sympy object) of A.obj.
+        Return non-commutative part (sympy object) of ``A.obj``.
         """
         if isinstance(A, mv.Mv):
             return self.remove_scalar_part(A.obj)
