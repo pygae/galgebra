@@ -351,12 +351,12 @@ class Ga(metric.Metric):
         return half * (A * B - B * A)
 
     @staticmethod
-    def build(*kargs, **kwargs):
+    def build(*args, **kwargs):
         """
         Static method to instantiate geometric algebra and return geometric
         algebra, basis vectors, and grad operator as a tuple.
         """
-        GA = Ga(*kargs, **kwargs)
+        GA = Ga(*args, **kwargs)
         basis = list(GA.mv())
         return tuple([GA] + basis)
 
@@ -369,7 +369,7 @@ class Ga(metric.Metric):
         X = symbols(set_lst[0], real=True)
         g = eval(set_lst[1])
         simps = eval(set_lst[2])
-        kargs = [root]
+        args = [root]
         kwargs = {'g': g, 'coords': X, 'debug': debug, 'I': True, 'gsym': False}
 
         if len(set_lst) > 3:
@@ -379,7 +379,7 @@ class Ga(metric.Metric):
                 kwargs[name] = eval(value)
 
         Ga.set_simp(*simps)
-        return Ga(*kargs, **kwargs)
+        return Ga(*args, **kwargs)
 
     def __eq__(self, ga):
         if self.name == ga.name:
@@ -466,7 +466,7 @@ class Ga(metric.Metric):
 
         self.a = []  # List of dummy vectors for Mlt calculations
         self.agrads = {}  # Gradient operator with respect to vector a
-        self.dslot = -1  # kargs slot for dervative, -1 for coordinates
+        self.dslot = -1  # args slot for dervative, -1 for coordinates
         self.XOX = self.mv('XOX','vector')  # Versor test vector
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
@@ -507,7 +507,7 @@ class Ga(metric.Metric):
     def sdop(self, coefs, pdiffs=None):
         return mv.Sdop(coefs, pdiffs, ga=self)
 
-    def mv(self, root=None, *kargs, **kwargs):
+    def mv(self, root=None, *args, **kwargs):
         """
         Instanciate and return a multivector for this, 'self',
         geometric algebra.
@@ -522,18 +522,18 @@ class Ga(metric.Metric):
         kwargs['ga'] = self
 
         if not utils.isstr(root):
-            return mv.Mv(root, *kargs, **kwargs)
+            return mv.Mv(root, *args, **kwargs)
 
-        if ' ' in root and ' ' not in kargs[0]:
+        if ' ' in root and ' ' not in args[0]:
             root_lst = root.split(' ')
             mv_lst = []
             for root in root_lst:
-                mv_lst.append(mv.Mv(root, *kargs, **kwargs))
+                mv_lst.append(mv.Mv(root, *args, **kwargs))
             return tuple(mv_lst)
 
-        if ' ' in root and ' ' in kargs[0]:
+        if ' ' in root and ' ' in args[0]:
             root_lst = root.split(' ')
-            mvtype_lst = kargs[0].split(' ')
+            mvtype_lst = args[0].split(' ')
             if len(root_lst) != len(mvtype_lst):
                 raise ValueError('In Ga.mv() for multiple multivectors and ' +
                                   'multivector types incompatible args ' +
@@ -541,13 +541,13 @@ class Ga(metric.Metric):
 
             mv_lst = []
             for (root, mv_type) in zip(root_lst, mvtype_lst):
-                kargs = list(kargs)
-                kargs[0] = mv_type
-                kargs = tuple(kargs)
-                mv_lst.append(mv.Mv(root, *kargs, **kwargs))
+                args = list(args)
+                args[0] = mv_type
+                args = tuple(args)
+                mv_lst.append(mv.Mv(root, *args, **kwargs))
             return tuple(mv_lst)
 
-        return mv.Mv(root, *kargs, **kwargs)
+        return mv.Mv(root, *args, **kwargs)
 
     def mvr(self,norm=True):
         r"""
@@ -602,15 +602,15 @@ class Ga(metric.Metric):
         self.rgrad = mv.Dop(r_basis, pdx, ga=self, cmpflg=True)
         return self.grad, self.rgrad
 
-    def dop(self, *kargs, **kwargs):
+    def dop(self, *args, **kwargs):
         """
         Instanciate and return a multivector differential operator for
         this, 'self', geometric algebra.
         """
         kwargs['ga'] = self
-        return mv.Dop(*kargs, **kwargs)
+        return mv.Dop(*args, **kwargs)
 
-    def lt(self, *kargs, **kwargs):
+    def lt(self, *args, **kwargs):
         """
         Instanciate and return a linear transformation for this, 'self',
         geometric algebra.
@@ -620,15 +620,15 @@ class Ga(metric.Metric):
             (self.lt_coords, self.lt_x) = lt.Lt.setup(ga=self)
 
         kwargs['ga'] = self
-        return lt.Lt(*kargs, **kwargs)
+        return lt.Lt(*args, **kwargs)
 
-    def sm(self, *kargs, **kwargs):
+    def sm(self, *args, **kwargs):
         """
         Instanciate and return a submanifold for this
         geometric algebra.  See :class:`Sm` for instantiation inputs.
         """
         kwargs['ga'] = self
-        SM = Sm(*kargs, **kwargs)
+        SM = Sm(*args, **kwargs)
         return SM
 
     def parametric(self, coords):
@@ -1717,8 +1717,8 @@ class Ga(metric.Metric):
         self.dbases[key] = db
         return db
 
-    def pdop(self,*kargs):
-        return mv.Pdop(kargs,ga=self)
+    def pdop(self,*args):
+        return mv.Pdop(args,ga=self)
 
     def pDiff(self, A, coord):
         """
@@ -1891,8 +1891,8 @@ class Ga(metric.Metric):
 
         return tuple(rbasis)
 
-    def Mlt(self,*kargs,**kwargs):
-        return lt.Mlt(kargs[0], self, *kargs[1:], **kwargs)
+    def Mlt(self,*args,**kwargs):
+        return lt.Mlt(args[0], self, *args[1:], **kwargs)
 
 class Sm(Ga):
     """
@@ -1905,22 +1905,22 @@ class Sm(Ga):
     Parameters
     ----------
     u :
-        (``kargs[0]``) The coordinate map defining the submanifold
+        (``args[0]``) The coordinate map defining the submanifold
         which is a list of functions of coordinates of the base
         manifold in terms of the coordinates of the submanifold.
         for example if the manifold is a unit sphere then -
         ``u = [sin(u)*cos(v),sin(u)*sin(v),cos(u)]``.
 
-        Alternatively (``kargs[0]``) is a parametric vector function
+        Alternatively (``args[0]``) is a parametric vector function
         of the basis vectors of the base manifold.  The
         coefficients of the bases are functions of the coordinates
-        (``kargs[1]``).  In this case we would call the submanifold
+        (``args[1]``).  In this case we would call the submanifold
         a "vector" manifold and additional characteristics of the
         manifold can be calculated since we have given an explicit
         embedding of the manifold in the base manifold.
 
     coords :
-        (``kargs[1]``) The coordinate list for the submanifold, for
+        (``args[1]``) The coordinate list for the submanifold, for
         example ``[u, v]``.
 
     Notes
@@ -1942,7 +1942,7 @@ class Sm(Ga):
                   'norm': (False, 'Normalize basis if True'),
                   'ga': (None, 'Base Geometric Algebra')}
 
-    def __init__(self, *kargs, **kwargs):
+    def __init__(self, *args, **kwargs):
 
         #print '!!!Enter Sm!!!'
 
@@ -1951,8 +1951,8 @@ class Sm(Ga):
             Ga.restore = True
 
         kwargs = metric.test_init_slots(Sm.init_slots, **kwargs)
-        u = kargs[0]  # Coordinate map or vector embedding to define submanifold
-        coords = kargs[1]  # List of cordinates
+        u = args[0]  # Coordinate map or vector embedding to define submanifold
+        coords = args[1]  # List of cordinates
         ga = kwargs['ga']  # base geometric algebra
         if ga is None:
             raise ValueError('Base geometric algebra must be specified for submanifold.')
