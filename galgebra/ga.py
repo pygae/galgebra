@@ -255,7 +255,7 @@ class Ga(metric.Metric):
     .. attribute:: r_basis_dict
 
         Dictionary to map reciprocal basis symbols to reciprocal basis expanded in terms of basis symbols
-        {reciprocal basis symbol: linear combination of basis symbols,...}
+        ``{reciprocal basis symbol: linear combination of basis symbols, ...}``
 
     .. attribute:: r_basis_mv
 
@@ -272,9 +272,10 @@ class Ga(metric.Metric):
 
     .. attribute:: dbases
 
-        Dictionary of derivatives of basis blades with respect to coordinate {(coordinate index, basis blade):
-        derivative of basis blade with respect to coordinate,...} (Note that values in dictionary are not
-        multivectors, but linear combinations of basis blade symbols).
+        Dictionary of derivatives of basis blades with respect to coordinate ,
+        ``{(coordinate index, basis blade): derivative of basis blade with respect to coordinate, ...}``.
+
+        Note that values in dictionary are not multivectors, but linear combinations of basis blade symbols.
 
     .. attribute:: Pdop_identity
 
@@ -283,23 +284,22 @@ class Ga(metric.Metric):
     .. attribute:: Pdiffs
 
         Dictionary of partial differential operators (operates on multivector functions) for each coordinate
-        :math:`{x: \partial_{x}, ...}`
+        :math:`\{x: \partial_{x}, ...\}`
 
     .. attribute:: sPds
 
         Dictionary of scalar partial differential operators (operates on scalar functions) for each coordinate
-        :math:`{x: \partial_{x}, ...}`
+        :math:`\{x: \partial_{x}, ...\}`
 
     .. attribute:: grad
 
-        Geometric derivative operator from left. grad*F returns multivector derivative, F*grad returns differential
-        operator.
+        Geometric derivative operator from left. ``grad*F`` returns multivector
+        derivative, ``F*grad`` returns differential operator.
 
     .. attribute:: rgrad
 
-        Geometric derivative operator from right. grad*F returns differential operator, F*grad returns multivector
-        derivative.
-
+        Geometric derivative operator from right. ``rgrad*F`` returns differential
+        operator, ``F*rgrad`` returns multivector derivative.
 
     .. Sphinx adds all the other members below this docstring
 
@@ -325,7 +325,7 @@ class Ga(metric.Metric):
         Sets mode of multivector dual function for all geometric algebras
         in users program.
 
-        If Ga.dual_mode(mode) not called the default mode is 'I+'.
+        If Ga.dual_mode(mode) not called the default mode is ``'I+'``.
 
         =====  ============
         mode   return value
@@ -1263,16 +1263,22 @@ class Ga(metric.Metric):
             return 0
         return update_and_substitute(A, B, self.wedge_product_basis_blades, self.wedge_table_dict)
 
-    def dot(self, A, B):  # inner products |, <, and >
-        """
-        Let A = a + A' and B = b + B' where a and b are the scalar parts of
-        A and B and A' and B' are the remaining parts of A and B.  Then
-        we have:
+    def dot(self, A, B):
+        r"""
+        Inner product ``|``, ``<``, or ``>``
 
-            (a+A')<(b+B') = a(b+B') + A'<B'
-            (a+A')>(b+B') = b(a+A') + A'>B'
+        Let :math:`A = a + A'` and :math:`B = b + B'` where :math:`a` and
+        :math:`b` are the scalar parts of :math:`A` and :math:`B`, and
+        :math:`A'` and :math:`B'` are the remaining parts of :math:`A` and
+        :math:`B`. Then we have:
 
-        We use these relations to reduce A<B and A>B.
+        .. math::
+
+            (a+A') \rfloor (b+B') &= a(b+B') + A' \rfloor B' \\
+            (a+A') \lfloor (b+B') &= b(a+A') + A' \lfloor B'
+
+        We use these relations to reduce :math:`A \rfloor B` (``A<B``) and 
+        :math:`A \lfloor B` (``A>B``).
         """
         if A == 0 or B == 0:
             return 0
@@ -1343,8 +1349,8 @@ class Ga(metric.Metric):
 
     def split_multivector(self, A):
         """
-        Split multivector A into commutative part a and non-commutative
-        part A' so that A = a+A'
+        Split multivector :math:`A` into commutative part :math:`a` and
+        non-commutative part :math:`A'` so that :math:`A = a+A'`
         """
         if isinstance(A, mv.Mv):
             return self.split_multivector(A.obj)
@@ -1822,9 +1828,9 @@ class Ga(metric.Metric):
         """
         Compute required multivector connections of the form
         (Einstein summation convention) :math:`e^{j}*(D_{j}e_{i_{1}...i_{r}})`
-        and :math:`(D_{j}e_{i_{1}...i_{r}})*e^{j}` where ``*`` could be ``*``, ``^``, ``|``,
-        ``<``, or ``>`` depending upon the mode and :math:`e^{j}` are reciprocal
-        basis vectors.
+        and :math:`(D_{j}e_{i_{1}...i_{r}})*e^{j}` where :math:`*` could be
+        ``*``, ``^``, ``|``, ``<``, or ``>`` depending upon the mode, and
+        :math:`e^{j}` are reciprocal basis vectors.
         """
         mode_key = (mode, left)
         keys = [i for i, j in self.connect[mode_key]]
@@ -1899,23 +1905,23 @@ class Sm(Ga):
     Parameters
     ----------
     u :
-        {kargs[0]} The coordinate map defining the submanifold
+        (``kargs[0]``) The coordinate map defining the submanifold
         which is a list of functions of coordinates of the base
         manifold in terms of the coordinates of the submanifold.
         for example if the manifold is a unit sphere then -
         ``u = [sin(u)*cos(v),sin(u)*sin(v),cos(u)]``.
 
-        Alternatively {kargs[0]} is a parametric vector function
+        Alternatively (``kargs[0]``) is a parametric vector function
         of the basis vectors of the base manifold.  The
         coefficients of the bases are functions of the coordinates
-        {kargs[1]}.  In this case we would call the submanifold
+        (``kargs[1]``).  In this case we would call the submanifold
         a "vector" manifold and additional characteristics of the
         manifold can be calculated since we have given an explicit
         embedding of the manifold in the base manifold.
 
     coords :
-        {kargs[1]} The coordinate list for the submanifold, for
-        example '[u,v]'.
+        (``kargs[1]``) The coordinate list for the submanifold, for
+        example ``[u, v]``.
 
     Notes
     -----
