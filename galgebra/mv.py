@@ -224,19 +224,19 @@ class Mv(object):
     def make_vector(self, *args, **kwargs):
     # Called by __init__ to make a vector multivector
 
-        self.make_grade(*(args[0], 1), **kwargs)
+        self.make_grade(args[0], 1, **kwargs)
         return
 
     def make_bivector(self, *args, **kwargs):
     # Called by __init__ to make a bivector multivector
 
-        self.make_grade(*(args[0], 2), **kwargs)
+        self.make_grade(args[0], 2, **kwargs)
         return
 
     def make_pseudo_scalar(self, *args, **kwargs):
     # Called by __init__ to make a pseudo scalar multivector
 
-        self.make_grade(*(args[0], self.Ga.n), **kwargs)
+        self.make_grade(args[0], self.Ga.n, **kwargs)
         return
 
     def make_multivector(self, *args, **kwargs):
@@ -245,7 +245,7 @@ class Mv(object):
         self.make_scalar(args[0], **kwargs)
         tmp = self.obj
         for grade in self.Ga.n_range:
-            self.make_grade(*(args[0], grade + 1), **kwargs)
+            self.make_grade(args[0], grade + 1, **kwargs)
             tmp += self.obj
         self.obj = tmp
         return
@@ -257,7 +257,7 @@ class Mv(object):
         tmp = self.obj
         for grade in self.Ga.n_range:
             if (grade + 1) % 2 == 0:
-                self.make_grade(*(args[0], grade + 1), **kwargs)
+                self.make_grade(args[0], grade + 1, **kwargs)
                 tmp += self.obj
         self.obj = tmp
         return
@@ -268,7 +268,7 @@ class Mv(object):
         tmp = S(0)
         for grade in self.Ga.n_range:
             if (grade + 1) % 2 == 1:
-                self.make_grade(*(args[0], grade + 1), **kwargs)
+                self.make_grade(args[0], grade + 1, **kwargs)
                 tmp += self.obj
         self.obj = tmp
         return
