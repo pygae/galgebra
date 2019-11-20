@@ -177,8 +177,7 @@ class Mv(object):
         return
 
     def make_grade(self, *args, **kwargs):
-    # Called by __init__ to make a pure grade multivector.
-
+        # Called by __init__ to make a pure grade multivector.
         grade = args[1]
         self.i_grade = grade
         if utils.isstr(args[0]):
@@ -203,11 +202,9 @@ class Mv(object):
                     pass
             else:
                 pass
-        return
 
     def make_scalar(self, *args, **kwargs):
-    # Called by __init__ to make a scalar multivector
-
+        # Called by __init__ to make a scalar multivector
         if utils.isstr(args[0]):
             if 'f' in kwargs and isinstance(kwargs['f'],bool):
                 if kwargs['f']:
@@ -219,59 +216,47 @@ class Mv(object):
                     self.obj = Function(args[0])(*kwargs['f'])
         else:
             self.obj = args[0]
-        return
 
     def make_vector(self, *args, **kwargs):
-    # Called by __init__ to make a vector multivector
-
-        self.make_grade(*(args[0], 1), **kwargs)
-        return
+        # Called by __init__ to make a vector multivector
+        self.make_grade(args[0], 1, **kwargs)
 
     def make_bivector(self, *args, **kwargs):
-    # Called by __init__ to make a bivector multivector
-
-        self.make_grade(*(args[0], 2), **kwargs)
-        return
+        # Called by __init__ to make a bivector multivector
+        self.make_grade(args[0], 2, **kwargs)
 
     def make_pseudo_scalar(self, *args, **kwargs):
-    # Called by __init__ to make a pseudo scalar multivector
-
-        self.make_grade(*(args[0], self.Ga.n), **kwargs)
-        return
+        # Called by __init__ to make a pseudo scalar multivector
+        self.make_grade(args[0], self.Ga.n, **kwargs)
 
     def make_multivector(self, *args, **kwargs):
-    # Called by __init__ to make a general (2**n components) multivector
-
+        # Called by __init__ to make a general (2**n components) multivector
         self.make_scalar(args[0], **kwargs)
         tmp = self.obj
         for grade in self.Ga.n_range:
-            self.make_grade(*(args[0], grade + 1), **kwargs)
+            self.make_grade(args[0], grade + 1, **kwargs)
             tmp += self.obj
         self.obj = tmp
-        return
 
     def make_spinor(self, *args, **kwargs):
-    # Called by __init__ to make a general even (spinor) multivector
-
+        # Called by __init__ to make a general even (spinor) multivector
         self.make_scalar(args[0], **kwargs)
         tmp = self.obj
         for grade in self.Ga.n_range:
             if (grade + 1) % 2 == 0:
-                self.make_grade(*(args[0], grade + 1), **kwargs)
+                self.make_grade(args[0], grade + 1, **kwargs)
                 tmp += self.obj
         self.obj = tmp
-        return
 
     def make_odd(self, *args, **kwargs):
-    # Called by __init__ to make a general odd multivector
+        # Called by __init__ to make a general odd multivector
         self.make_scalar(args[0], **kwargs)
         tmp = S(0)
         for grade in self.Ga.n_range:
             if (grade + 1) % 2 == 1:
-                self.make_grade(*(args[0], grade + 1), **kwargs)
+                self.make_grade(args[0], grade + 1, **kwargs)
                 tmp += self.obj
         self.obj = tmp
-        return
 
     init_dict = {'scalar': make_scalar,
                  'vector': make_vector,
