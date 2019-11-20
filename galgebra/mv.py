@@ -43,26 +43,29 @@ from lt import Lt
 
 class Mv(object):
     """
-    Wrapper class for multivector objects (self.obj) so that it is easy
-    to overload operators (*,^,|,<,>) for the various multivector
-    products and for printing.  Also provides an __init__ fuction to
-    easily instanciate multivector objects.  Additionally, the functionality
+    Wrapper class for multivector objects (``self.obj``) so that it is easy
+    to overload operators (``*``, ``^``, ``|``, ``<``, ``>``)  for the various
+    multivector products and for printing.
+
+    Also provides a constructor to easily instantiate multivector objects.
+
+    Additionally, the functionality
     of the multivector derivative have been added via the special vector
-    'grad' so that one can take the geometric derivative of a multivector
-    function 'A' by applying 'grad' from the left, 'grad*A', or the
-    right 'A*grad' for both the left and right derivatives.  The operator
-    between the 'grad' and the 'A' can be any of the multivector product
+    ``grad`` so that one can take the geometric derivative of a multivector
+    function ``A`` by applying ``grad`` from the left, ``grad*A``, or the
+    right ``A*grad`` for both the left and right derivatives.  The operator
+    between the ``grad`` and the 'A' can be any of the multivector product
     operators.
 
-    If 'f' is a scalar function 'grad*f' is the usual gradient of a function.
-    If 'A' is a vector function 'grad|f' is the divergence of 'A' and
-    '-I*(grad^A)' is the curl of 'A' (I is the pseudo scalar for the geometric
+    If ``f`` is a scalar function ``grad*f`` is the usual gradient of a function.
+    If ``A`` is a vector function ``grad|f`` is the divergence of ``A`` and
+    ``-I*(grad^A)`` is the curl of ``A`` (I is the pseudo scalar for the geometric
     algebra)
 
-    Data Variables -
-
-
-
+    Attributes
+    ----------
+    obj : sympy.core.Expr
+        The underlying sympy expression for this multivector
     """
 
     ################### Multivector initialization #####################
@@ -79,8 +82,8 @@ class Mv(object):
     @staticmethod
     def setup(ga):
         """
-        Set up constant mutilvectors reqired for multivector class for
-        a given geometric algebra, 'ga'.
+        Set up constant multivectors required for multivector class for
+        a given geometric algebra, `ga`.
         """
         Mv.fmt = 1
 
@@ -100,7 +103,7 @@ class Mv(object):
     def Mul(A, B, op):
         """
         Function for all types of geometric multiplications called by
-        overloaded operators for *, ^, |, <, and >.
+        overloaded operators for ``*``, ``^``, ``|``, ``<``, and ``>``.
         """
         if not isinstance(A, Mv):
             A = B.Ga.mv(A)
@@ -867,8 +870,10 @@ class Mv(object):
 
     def collect(self,deep=False):
         """
-        # group coeffients of blades of multivector
-        # so there is only one coefficient per grade
+        group coeffients of blades of multivector
+        so there is only one coefficient per grade
+        """
+        """ # dead code
         self.obj = expand(self.obj)
         if self.is_blade_rep or Mv.Ga.is_ortho:
             c = self.Ga.blades_lst
@@ -908,9 +913,11 @@ class Mv(object):
         else:
             return False
 
-    def is_blade(self):  # True is self is blade, otherwise False
-        # sets self.blade_flg and returns value
-
+    def is_blade(self):
+        """
+        True is self is blade, otherwise False
+        sets self.blade_flg and returns value
+        """
         if self.blade_flg is not None:
             return self.blade_flg
         else:
@@ -930,8 +937,10 @@ class Mv(object):
         else:
             return coefs[0] == ONE
 
-    def is_versor(self):  # Test for versor (geometric product of vectors)
+    def is_versor(self):
         """
+        Test for versor (geometric product of vectors)
+
         This follows Leo Dorst's test for a versor.
         Leo Dorst, 'Geometric Algebra for Computer Science,' p.533
         Sets self.versor_flg and returns value
@@ -957,13 +966,11 @@ class Mv(object):
         return False
 
     def scalar(self):
-        # return scalar part of multivector
-        # as sympy expression
+        """ return scalar part of multivector as sympy expression """
         return self.Ga.scalar_part(self.obj)
 
     def get_grade(self, r):
-        # return r-th grade of multivector as
-        # a multivector
+        """ return r-th grade of multivector as a multivector """
         return Mv(self.Ga.get_grade(self.obj, r), ga=self.Ga)
 
     def components(self):
@@ -1037,11 +1044,11 @@ class Mv(object):
             return sign * self * I
 
     def even(self):
-        # return even parts of multivector
+        """ return even parts of multivector """
         return Mv(self.Ga.even_odd(self.obj, True), ga=self.Ga)
 
     def odd(self):
-        # return odd parts of multivector
+        """ return odd parts of multivector """
         return Mv(self.Ga.even_odd(self.obj, False), ga=self.Ga)
 
     def rev(self):
@@ -1083,7 +1090,7 @@ class Mv(object):
         Returns various derivatives (*,^,|,<,>) of multivector functions
         with respect to arbitrary coordinates, 'coords'.  This would be
         used where you have a multivector function of both the basis
-        coordinate set and and auxilliary coordinate set.  Consider for
+        coordinate set and and auxiliary coordinate set.  Consider for
         example a linear transformation in which the matrix coefficients
         depend upon the manifold coordinates, but the vector being
         transformed does not and you wish to take the divergence of the
@@ -1161,17 +1168,17 @@ class Mv(object):
 
     def Fmt(self, fmt=1, title=None):
         """
-        Set format for printing of multivectors -
+        Set format for printing of multivectors
 
-            fmt = 1 - One multivector per line
-            fmt = 2 - One grade per line
-            fmt = 3 - one base per line
+         * `fmt=1` - One multivector per line
+         * `fmt=2` - One grade per line
+         * `fmt=3` - one base per line
 
-        Usage for multivector A example is -
+        Usage for multivector ``A`` example is::
 
             A.Fmt('2','A')
 
-        output is
+        output is::
 
             'A = '+str(A)
 
@@ -1230,21 +1237,24 @@ class Mv(object):
 
     def norm(self, hint='+'):
         """
-        If A is a multivector and A*A.rev() is a scalar then
+        If A is a multivector and A*A.rev() is a scalar then::
 
-            A.norm() = sqrt(Abs(A*A.rev()))
+            A.norm() == sqrt(Abs(A*A.rev()))
 
-        The problem in simplifing the norm is that if A is symbolic
-        you don't know if A*A.rev() is positive or negative. The use
+        The problem in simplifying the norm is that if ``A`` is symbolic
+        you don't know if ``A*A.rev()`` is positive or negative. The use
         of the hint argument is as follows:
 
-            hint    A.norm()
-             '+'    sqrt(A*A.rev())
-             '-'    sqrt(-A*A.rev())
-             '0'    sqrt(Abs(A*A.rev()))
+        =======  ========================
+        hint     ``A.norm()``
+        =======  ========================
+        ``'+'``  ``sqrt(A*A.rev())``
+        ``'-'``  ``sqrt(-A*A.rev())``
+        ``'0'``  ``sqrt(Abs(A*A.rev()))``
+        =======  ========================
 
-        The default hint='+' is correct for vectors in a Euclidean vector
-        space.  For bivectors in a Euclidean vector space use hint='-'. In
+        The default ``hint='+'`` is correct for vectors in a Euclidean vector
+        space.  For bivectors in a Euclidean vector space use ``hint='-'``. In
         a mixed signature space all bets are off for the norms of symbolic
         expressions.
         """
@@ -1268,7 +1278,7 @@ class Mv(object):
         else:
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
-    __abs__=norm # allow `abs(x)` to call z.norm()
+    __abs__ = norm # allow `abs(x)` to call z.norm()
 
     def inv(self):
         if self.is_scalar():  # self is a scalar
@@ -1370,7 +1380,7 @@ class Mv(object):
 
 def compare(A,B):
     """
-    Determine is B = c*A where c is a scalar.  If true return c
+    Determine if ``B = c*A`` where c is a scalar.  If true return c
     otherwise return 0.
     """
     if isinstance(A, Mv) and isinstance(B, Mv):
@@ -1405,10 +1415,15 @@ class Sdop(object):
     """
     Scalar differential operator is of the form (Einstein summation)
 
-        D = c_{i}*D_{i}
+    .. math:: D = c_{i}*D_{i}
 
-    where the c_{i}'s are scalar coefficient (they could be functions)
-    and the D_{i}'s are partial differential operators.
+    where the :math:`c_{i}`'s are scalar coefficient (they could be functions)
+    and the :math:`D_{i}`'s are partial differential operators (:class:`Pdop`).
+
+    Attributes
+    ----------
+    terms : list of tuple
+        the structure :math:`[(c_{1},D_{1}),(c_{2},D_{2}), ...]`
     """
 
     init_slots = {'ga': (None, 'Associated geometric algebra')}
@@ -1545,17 +1560,6 @@ class Sdop(object):
         return str(self)
 
     def __init__(self, *args, **kwargs):
-        """
-        The scalar differential operator structure is of the form
-        (Einstein summation)
-
-            D = c_{i}D_{i}
-
-        where the c_{i}'s are scalar coefficients and the D_{i}'s are
-        partial differential operator (class Pdop).  D is stored in
-        the structure self.terms = [(c_{1},D_{1}),(c_{2},D_{2}),...].
-        """
-
         kwargs = metric.test_init_slots(Sdop.init_slots, **kwargs)
 
         self.Ga = kwargs['ga']  # Associated geometric algebra (coords)
@@ -1729,15 +1733,20 @@ class Pdop(object):
     Partial derivative class for multivectors.  The partial derivatives
     are of the form
 
+    .. math::
         \partial_{i_{1}...i_{n}} =
-            \partial^{i_{1}+...+i_{n}}/\partial{x_{1}^{i_{1}}}...\partial{x_{n}^{i_{n}}}.
+            \frac{\partial^{i_{1}+...+i_{n}}}{\partial{x_{1}^{i_{1}}}...\partial{x_{n}^{i_{n}}}}.
 
-    If i_{j} = 0 then the partial derivative does not contain the x^{i_{j}}
-    coordinate.
+    If :math:`i_{j} = 0` then the partial derivative does not contain the
+    :math:`x^{i_{j}}` coordinate.
 
-    The partial derivative is represented by a dictionary with coordinates
-    for keys and key value are the number of times one differentiates with
-    respect to the key.
+    Attributes
+    ----------
+    pdiffs : dict
+        a dictionary where coordinates are keys and key value are the number of
+        times one differentiates with respect to the key.
+    order : int
+        total number of differentiations
     """
 
     ga = None
@@ -1786,14 +1795,11 @@ class Pdop(object):
         """
         The partial differential operator is a partial derivative with
         respect to a set of real symbols (variables).  The allowed
-        variables are in two lists.  self.Ga.coords is a list of the
-        coordinates associated with the geometric algebra.  self.Ga.auxvars
+        variables are in two lists. ``self.Ga.coords`` is a list of the
+        coordinates associated with the geometric algebra.  ``self.Ga.auxvars``
         is a list of auxiallary symbols that have be added to the geometric
-        algebra using the member function Ga.AddVars(self,auxvars).
+        algebra using the member function ``Ga.AddVars(self,auxvars)``.
 
-        The data structure of a Pdop is the dictionary self.pdiffs where
-        the keys are the variables of differentiation and the values are the
-        order of differentiation of with respect to the variable.
         """
 
         kwargs = metric.test_init_slots(Pdop.init_slots, **kwargs)
@@ -1816,7 +1822,7 @@ class Pdop(object):
         else:
             raise ValueError('In pdop args = ', str(args))
 
-        for x in list(self.pdiffs.keys()):  # self.order is total number of differentiations
+        for x in list(self.pdiffs.keys()):
             self.order += self.pdiffs[x]
 
     def factor(self):
@@ -1824,9 +1830,9 @@ class Pdop(object):
         If partial derivative operator self.order > 1 factor out first
         order differential operator.  Needed for application of partial
         derivative operator to product of sympy expression and partial
-        differential operator.  For example if D = Pdop({x:3}) then
+        differential operator.  For example if ``D = Pdop({x:3})`` then::
 
-            (Pdop({x:2}),Pdop({x:1})) = D.factor()
+            (Pdop({x:2}), Pdop({x:1})) = D.factor()
         """
         if self.order == 1:
             return S(0), self
@@ -1843,7 +1849,7 @@ class Pdop(object):
     def __call__(self, arg):
         """
         Calculate nth order partial derivative (order defined by
-        self) of Mv, Dop, Sdopm or sympy expression
+        self) of :class:`Mv`, :class:`Dop`, :class:`Sdop` or sympy expression
         """
         if self.pdiffs == {}:
             return arg  # result is Pdop identity (1)
@@ -1960,37 +1966,46 @@ class Dop(object):
     Differential operator class for multivectors.  The operators are of
     the form
 
-        D = D^{i_{1}...i_{n}}\partial_{i_{1}...i_{n}}
+    .. math:: D = D^{i_{1}...i_{n}}\partial_{i_{1}...i_{n}}
 
-    where the D^{i_{1}...i_{n}} are multivector functions of the coordinates
-    x_{1},...,x_{n} and \partial_{i_{1}...i_{n}} are partial derivative
+    where the :math:`D^{i_{1}...i_{n}}` are multivector functions of the coordinates
+    :math:`x_{1},...,x_{n}` and :math:`\partial_{i_{1}...i_{n}}` are partial derivative
     operators
 
-        \partial_{i_{1}...i_{n}} =
-             \partial^{i_{1}+...+i_{n}}/\partial{x_{1}^{i_{1}}}...\partial{x_{n}^{i_{n}}}.
+    .. math:: \partial_{i_{1}...i_{n}} =
+            \frac{\partial^{i_{1}+...+i_{n}}}{\partial{x_{1}^{i_{1}}}...\partial{x_{n}^{i_{n}}}}.
 
-    If * is any multivector multiplicative operation then the operator D
-    operates on the multivector function F by the following definitions
+    If :math:`*` is any multivector multiplicative operation then the operator D
+    operates on the multivector function :math:`F` by the following definitions
 
-        D*F = D^{i_{1}...i_{n}}*\partial_{i_{1}...i_{n}}F
+    .. math:: D*F = D^{i_{1}...i_{n}}*\partial_{i_{1}...i_{n}}F
 
     returns a multivector and
 
-        F*D = F*D^{i_{1}...i_{n}}\partial_{i_{1}...i_{n}}
+    .. math:: F*D = F*D^{i_{1}...i_{n}}\partial_{i_{1}...i_{n}}
 
-    returns a differential operator.  If the 'cmpflg' in the operator is
-    set to 'True' the operation returns
+    returns a differential operator.  If the :attr:`cmpflg` in the operator is
+    set to ``True`` the operation returns
 
-        F*D = (\partial_{i_{1}...i_{n}}F)*D^{i_{1}...i_{n}}
+    .. math:: F*D = (\partial_{i_{1}...i_{n}}F)*D^{i_{1}...i_{n}}
 
     a multivector function.  For example the representation of the grad
     operator in 3d would be:
 
-        D^{i_{1}...i_{n}} = [e__x,e__y,e__z]
-        \partial_{i_{1}...i_{n}} = [(1,0,0),(0,1,0),(0,0,1)].
+    .. math::
+        D^{i_{1}...i_{n}} &= [e_x,e_y,e_z] \\
+        \partial_{i_{1}...i_{n}} &= [(1,0,0),(0,1,0),(0,0,1)].
 
     See LaTeX documentation for definitions of operator algebraic
-    operations +, -, *, ^, |, <, and >.
+    operations ``+``, ``-``, ``*``, ``^``, ``|``, ``<``, and ``>``.
+
+    Attributes
+    ----------
+    ga : ~galgebra.ga.Ga
+        Associated geometric algebra
+    cmpflg : bool
+        Complement flag
+    terms : list of tuples
     """
 
     init_slots = {'ga': (None, 'Associated geometric algebra'),
@@ -2016,7 +2031,7 @@ class Dop(object):
         kwargs = metric.test_init_slots(Dop.init_slots, **kwargs)
 
         self.cmpflg = kwargs['cmpflg']  # Complement flag (default False)
-        self.Ga = kwargs['ga']  # Associated geometric algebra
+        self.Ga = kwargs['ga']
 
         if self.Ga is None:
             if Dop.ga is None:
