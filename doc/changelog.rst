@@ -1,6 +1,10 @@
 =========
 Changelog
 =========
+
+- :support:`64` :attr:`galgebra.ga.Ga.indexes_lst`, :attr:`galgebra.ga.Ga.bases_lst`, :attr:`galgebra.ga.Ga.blades_lst`, and :attr:`galgebra.ga.Ga.mv_blades_lst` are deprecated in favor of the new :attr:`~galgebra.ga.GradedTuple.flat` attribute of :attr:`galgebra.ga.Ga.indexes`, :attr:`galgebra.ga.Ga.bases`, :attr:`galgebra.ga.Ga.blades`, and :attr:`galgebra.ga.Ga.mv_blades`.
+  Since the new properties also include the scalar element, so ``ga.blades_lst`` is equivalent to ``ga.blades.flat[1:]`` (and likewise for the other two properties).
+
 - :release:`0.4.5 <2019.12.31>`
 - :support:`83` This is the last release to support Python 2.7.
 - :feature:`195` Deprecate confusing parts of the public API:
