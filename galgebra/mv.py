@@ -358,20 +358,24 @@ class Mv(object):
         return Rm * self * Rp
 
     def base_rep(self):
-        if self.is_blade_rep:
-            self.obj = self.Ga.blade_to_base_rep(self.obj)
-            self.is_blade_rep = False
-            return self
-        else:
+        """ Express as a linear combination of geometric products """
+        if not self.is_blade_rep:
             return self
 
+        b = copy.copy(self)
+        b.obj = self.Ga.blade_to_base_rep(self.obj)
+        b.is_blade_rep = False
+        return b
+
     def blade_rep(self):
+        """ Express as a linear combination of blades """
         if self.is_blade_rep:
             return self
-        else:
-            self.obj = self.Ga.base_to_blade_rep(self.obj)
-            self.is_blade_rep = True
-            return self
+
+        b = copy.copy(self)
+        b.obj = self.Ga.base_to_blade_rep(self.obj)
+        b.is_blade_rep = True
+        return b
 
     def __ne__(self, A):
         if isinstance(A, Mv):
@@ -508,30 +512,24 @@ class Mv(object):
 
             selfxA = Mv(self.Ga.mul(self.obj, A.obj), ga=self.Ga)
             selfxA.is_blade_rep = False
-            selfxA = selfxA.blade_rep()
+            return selfxA.blade_rep()
 
-            self = self.blade_rep()
-            A = A.blade_rep()
         elif self.is_blade_rep:
             self = self.base_rep()
 
             selfxA = Mv(self.Ga.mul(self.obj, A.obj), ga=self.Ga)
             selfxA.is_blade_rep = False
-            selfxA = selfxA.blade_rep()
+            return selfxA.blade_rep()
 
-            self = self.blade_rep()
         elif A.is_blade_rep:
             A = A.base_rep()
 
             selfxA = Mv(self.Ga.mul(self.obj, A.obj), ga=self.Ga)
             selfxA.is_blade_rep = False
-            selfxA = selfxA.blade_rep()
-
-            A = A.blade_rep()
+            return selfxA.blade_rep()
         else:
-            selfxA = Mv(self.Ga.mul(self.obj, A.obj), ga=self.Ga)
+            return Mv(self.Ga.mul(self.obj, A.obj), ga=self.Ga)
 
-        return selfxA
 
     def __rmul__(self, A):
             return Mv(expand(A * self.obj), ga=self.Ga)

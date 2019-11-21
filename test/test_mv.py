@@ -60,3 +60,27 @@ class TestMv(unittest.TestCase):
         self.assertRaises(ValueError, lambda: m1.blade_coefs([e_1, e_2 ^ e_1]))
         self.assertRaises(ValueError, lambda: m1.blade_coefs([a * e_1]))
         self.assertRaises(ValueError, lambda: m1.blade_coefs([3 * e_3]))
+
+    def test_rep_switching(self):
+        # this ga has a non-diagonal metric
+        (_g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+
+        m0 =  2 * e_1 + e_2 - e_3 + 3 * (e_1 ^ e_3) + (e_1 ^ e_3) + (e_2 ^ (3 * e_3))
+        m1 = (-4*(e_1 | e_3)-3*(e_2 | e_3))+2*e_1+e_2-e_3+4*e_1*e_3+3*e_2*e_3
+        # m1 was chosen to make this true
+        self.assertEqual(m0, m1)
+
+        # all objects start off in blade rep
+        self.assertTrue(m0.is_blade_rep)
+
+        # convert to base rep
+        m0_base = m0.base_rep()
+        self.assertTrue(m0.is_blade_rep)  # original should not change
+        self.assertFalse(m0_base.is_blade_rep)
+        self.assertEqual(m0, m0_base)
+
+        # convert back
+        m0_base_blade = m0_base.blade_rep()
+        self.assertFalse(m0_base.is_blade_rep)  # original should not change
+        self.assertTrue(m0_base_blade.is_blade_rep)
+        self.assertEqual(m0, m0_base_blade)
