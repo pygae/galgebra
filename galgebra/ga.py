@@ -304,6 +304,18 @@ class Ga(metric.Metric):
     .. Sphinx adds all the other members below this docstring
 
     .. rubric:: Other members
+
+    .. attribute:: dot_mode
+
+        Controls the behavior of :meth:`dot`
+
+        =======  ======================
+        value    ``dot`` aliases
+        =======  ======================
+        ``'|'``  :meth:`hestenes_dot`
+        ``'<'``  :meth:`left_contract`
+        ``'>'``  :meth:`right_contract`
+        =======  ======================
     """
 
     dual_mode_value = 'I+'
@@ -849,7 +861,6 @@ class Ga(metric.Metric):
         self.right_contract_table = []  # Right contraction (>)
         self.right_contract_table_dict = {}
 
-        self.dot_mode = '|'
         if self.debug:
             print('Exit basis_product_tables.\n')
         return
@@ -1033,7 +1044,7 @@ class Ga(metric.Metric):
 
     #****** Dot (|) product, reft (<) and right (>) contractions ******#
 
-    def dot_product_basis_blades(self, blade12):
+    def dot_product_basis_blades(self, blade12, mode):
         # dot (|), left (<), and right (>) products
         # dot product for orthogonal basis
         (blade1, blade2) = blade12
@@ -1043,13 +1054,13 @@ class Ga(metric.Metric):
         grade1 = len(index1)
         grade2 = len(index2)
 
-        if self.dot_mode == '|':
+        if mode == '|':
             grade = abs(grade1 - grade2)
-        elif self.dot_mode == '<':
+        elif mode == '<':
             grade = grade2 - grade1
             if grade < 0:
                 return 0
-        elif self.dot_mode == '>':
+        elif mode == '>':
             grade = grade1 - grade2
             if grade < 0:
                 return 0
@@ -1088,7 +1099,7 @@ class Ga(metric.Metric):
             else:
                 return sgn * result * self.indexes_to_blades_dict[tuple(index)]
 
-    def non_orthogonal_dot_product_basis_blades(self, blade12):  # blade12 = (blade1,blade2)
+    def non_orthogonal_dot_product_basis_blades(self, blade12, mode):  # blade12 = (blade1,blade2)
         # dot product of basis blades if basis vectors are non-orthogonal
         # inner (|), left (<), and right (>) products of basis blades
         # blade12 is the sympy product of two basis blades
@@ -1105,26 +1116,26 @@ class Ga(metric.Metric):
         # grades of input blades
         grade1 = self.blades_to_grades_dict[blade1]
         grade2 = self.blades_to_grades_dict[blade2]
-        if self.dot_mode == '|':
+        if mode == '|':
             grade_dot = abs(grade2 - grade1)
             if grade_dot in grade_dict:
                 return grade_dict[grade_dot]
             else:
                 return zero
-        elif self.dot_mode == '<':
+        elif mode == '<':
             grade_contract = grade2 - grade1
             if grade_contract in grade_dict:
                 return grade_dict[grade_contract]
             else:
                 return zero
-        elif self.dot_mode == '>':
+        elif mode == '>':
             grade_contract = grade1 - grade2
             if grade_contract in grade_dict:
                 return grade_dict[grade_contract]
             else:
                 return zero
         else:
-            raise ValueError('"' + str(self.dot_mode) + '" not allowed '
+            raise ValueError('"' + str(mode) + '" not allowed '
                              'dot mode in non_orthogonal_dot_basis')
 
     ############# Non-Orthogonal Tables and Dictionaries ###############
@@ -1248,8 +1259,7 @@ class Ga(metric.Metric):
         elif mode == '^':
             return self.wedge(A, B)
         else:
-            self.dot_mode = mode
-            return self.dot(A, B)
+            return self.dot(A, B, mode=mode)
 
     def mul(self, A, B):  # geometric (*) product of blade representations
         if A == 0 or B == 0:
@@ -1263,52 +1273,70 @@ class Ga(metric.Metric):
             return 0
         return update_and_substitute(A, B, self.wedge_product_basis_blades, self.wedge_table_dict)
 
-    def dot(self, A, B):
-        r"""
-        Inner product ``|``, ``<``, or ``>``
 
-        Let :math:`A = a + A'` and :math:`B = b + B'` where :math:`a` and
-        :math:`b` are the scalar parts of :math:`A` and :math:`B`, and
-        :math:`A'` and :math:`B'` are the remaining parts of :math:`A` and
-        :math:`B`. Then we have:
-
-        .. math::
-
-            (a+A') \rfloor (b+B') &= a(b+B') + A' \rfloor B' \\
-            (a+A') \lfloor (b+B') &= b(a+A') + A' \lfloor B'
-
-        We use these relations to reduce :math:`A \rfloor B` (``A<B``) and 
-        :math:`A \lfloor B` (``A>B``).
-        """
+    def _dot(self, A, B, mode):
         if A == 0 or B == 0:
             return 0
         if self.is_ortho:
-            dot_product_basis_blades = self.dot_product_basis_blades
+            dot_product_basis_blades = lambda x: self.dot_product_basis_blades(x, mode=mode)
         else:
-            dot_product_basis_blades = self.non_orthogonal_dot_product_basis_blades
+            dot_product_basis_blades = lambda x: self.non_orthogonal_dot_product_basis_blades(x, mode=mode)
 
-        if self.dot_mode == '|':  # Hestenes dot product
+        if mode == '|':  # Hestenes dot product
             A = self.remove_scalar_part(A)
             B = self.remove_scalar_part(B)
             return update_and_substitute(A, B, dot_product_basis_blades, self.dot_table_dict)
-        elif self.dot_mode == '<' or self.dot_mode == '>':
+        elif mode == '<' or mode == '>':
+            r"""
+            Let :math:`A = a + A'` and :math:`B = b + B'` where :math:`a` and
+            :math:`b` are the scalar parts of :math:`A` and :math:`B`, and
+            :math:`A'` and :math:`B'` are the remaining parts of :math:`A` and
+            :math:`B`. Then we have:
+
+            .. math::
+
+                (a+A') \rfloor (b+B') &= a(b+B') + A' \rfloor B' \\
+                (a+A') \lfloor (b+B') &= b(a+A') + A' \lfloor B'
+
+            We use these relations to reduce :math:`A \rfloor B` (``A<B``) and 
+            :math:`A \lfloor B` (``A>B``).
+            """
             (a, Ap) = self.split_multivector(A)  # Ap = A'
             (b, Bp) = self.split_multivector(B)  # Bp = B'
-            if self.dot_mode == '<':  # Left contraction
+            if mode == '<':  # Left contraction
                 if Ap != 0 and Bp != 0:  # Neither nc part of A or B is zero
                     prod = update_and_substitute(Ap, Bp, dot_product_basis_blades, self.left_contract_table_dict)
                     return prod + a * B
                 else:  # Ap or Bp is zero
                     return a * B
-            elif self.dot_mode == '>':  # Right contraction
+            elif mode == '>':  # Right contraction
                 if Ap != 0 and Bp != 0: # Neither nc part of A or B is zero
                     prod = update_and_substitute(Ap, Bp, dot_product_basis_blades, self.right_contract_table_dict)
                     return prod + b * A
                 else:  # Ap or Bp is zero
                     return b * A
         else:
-            raise ValueError('"' + str(self.dot_mode) + '" not a legal mode in dot')
+            raise ValueError('"' + str(mode) + '" not a legal mode in dot')
 
+    def hestenes_dot(self, A, B):
+        r""" compute the hestenes dot product, :math:`A \bullet B` """
+        return self._dot(A, B, mode='|')
+
+    def left_contract(self, A, B):
+        r""" compute the left contraction, :math:`A \rfloor B`  """
+        return self._dot(A, B, mode='<')
+
+    def right_contract(self, A, B):
+        r""" compute the right contraction, :math:`A \lfloor B` """
+        return self._dot(A, B, mode='>')
+
+    def dot(self, A, B):
+        r"""
+        Inner product ``|``, ``<``, or ``>``.
+
+        The :attr:`dot_mode` attribute determines which of these is used.
+        """
+        return self._dot(A, B, mode=self.dot_mode)
 
     ######################## Helper Functions ##########################
 
@@ -1588,11 +1616,10 @@ class Ga(metric.Metric):
 
             if self.debug:
                 printer.oprint('E', self.iobj, 'E**2', self.e_sq, 'unnormalized reciprocal basis =\n', self.r_basis)
-                self.dot_mode = '|'
                 print('reciprocal basis test =')
                 for ei in self.basis:
                     for ej in self.r_basis:
-                        ei_dot_ej = self.dot(ei, ej)
+                        ei_dot_ej = self.hestenes_dot(ei, ej)
                         if ei_dot_ej == zero:
                             print('e_{i}|e_{j} = ' + str(ei_dot_ej))
                         else:
@@ -1621,7 +1648,6 @@ class Ga(metric.Metric):
                         self.de[x_i][jb] = metric.Simp.apply(self.de[x_i][jb].subs(self.r_basis_dict))
 
         g_inv = eye(self.n)
-        self.dot_mode = '|'
 
         # Calculate inverse of metric tensor, g^{ij}
 
@@ -1630,7 +1656,7 @@ class Ga(metric.Metric):
             for j in self.n_range:
                 rx_j = self.r_symbols[j]
                 if j >= i:
-                    g_inv[i, j] = self.dot(self.r_basis_dict[rx_i], self.r_basis_dict[rx_j])
+                    g_inv[i, j] = self.hestenes_dot(self.r_basis_dict[rx_i], self.r_basis_dict[rx_j])
                     if not self.is_ortho:
                         g_inv[i, j] /= self.e_sq**2
                 else:
@@ -1671,11 +1697,10 @@ class Ga(metric.Metric):
             else:
                 return self.wedge(blade, er)
         else:
-            self.dot_mode = mode
             if left:
-                return self.dot(er, blade)
+                return self._dot(er, blade, mode=mode)
             else:
-                return self.dot(blade, er)
+                return self._dot(blade, er, mode=mode)
 
     def blade_derivation(self, blade, ib):
         """
@@ -1781,7 +1806,6 @@ class Ga(metric.Metric):
 
         print('grad_sqr:A =', A)
 
-        self.dot_mode == '|'
         s = zero
 
         if Sop is False and Bop is False:
