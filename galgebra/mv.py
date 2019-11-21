@@ -780,8 +780,6 @@ class Mv(object):
         if self.Ga.name != A.Ga.name:
             raise ValueError('In | operation Mv arguments are not from same geometric algebra')
 
-        self.Ga.dot_mode = '|'
-
         if isinstance(A, Dop):
             return A.Mul(self, A, op='|')
 
@@ -789,7 +787,7 @@ class Mv(object):
         if self.is_scalar() or A.is_scalar():
             return S(0)
         A = A.blade_rep()
-        self_dot_A = Mv(self.Ga.dot(self.obj, A.obj), ga=self.Ga)
+        self_dot_A = Mv(self.Ga.hestenes_dot(self.obj, A.obj), ga=self.Ga)
         return self_dot_A
 
     def __ror__(self, A):  # dot (|) product
@@ -827,8 +825,6 @@ class Mv(object):
         if self.Ga.name != A.Ga.name:
             raise ValueError('In < operation Mv arguments are not from same geometric algebra')
 
-        self.Ga.dot_mode = '<'
-
         if isinstance(A, Dop):
             return A.Mul(self, A, op='<')
 
@@ -842,7 +838,7 @@ class Mv(object):
                 return S(0)
         """
 
-        self_lc_A = Mv(self.Ga.dot(self.obj, A.obj), ga=self.Ga)
+        self_lc_A = Mv(self.Ga.left_contract(self.obj, A.obj), ga=self.Ga)
         return self_lc_A
 
     def __gt__(self, A):  # right contraction (>)
@@ -852,8 +848,6 @@ class Mv(object):
 
         if self.Ga.name != A.Ga.name:
             raise ValueError('In > operation Mv arguments are not from same geometric algebra')
-
-        self.Ga.dot_mode = '>'
 
         if isinstance(A, Dop):
             return A.Mul(self, A, op='>')
@@ -868,7 +862,7 @@ class Mv(object):
                 return S(0)
         """
 
-        self_rc_A = Mv(self.Ga.dot(self.obj, A.obj), ga=self.Ga)
+        self_rc_A = Mv(self.Ga.right_contract(self.obj, A.obj), ga=self.Ga)
         return self_rc_A
 
     def collect(self,deep=False):

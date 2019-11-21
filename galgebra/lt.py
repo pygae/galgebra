@@ -355,11 +355,10 @@ class Lt(object):
     def adj(self):
 
         self_adj = []
-        self.Ga.dot_mode = '|'
         for e_j in self.Ga.basis:
             s = S(0)
             for (e_i, er_i) in zip(self.Ga.basis, self.Ga.r_basis):
-                s += er_i * self.Ga.dot(e_j, self(e_i, obj=True))
+                s += er_i * self.Ga.hestenes_dot(e_j, self(e_i, obj=True))
             if self.Ga.is_ortho:
                 self_adj.append(expand(s))
             else:
