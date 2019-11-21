@@ -176,13 +176,12 @@ class Mv(object):
         self.char_Mv = True
         return
 
-    def make_grade(self, *kargs, **kwargs):
-    # Called by __init__ to make a pure grade multivector.
-
-        grade = kargs[1]
+    def make_grade(self, *args, **kwargs):
+        # Called by __init__ to make a pure grade multivector.
+        grade = args[1]
         self.i_grade = grade
-        if utils.isstr(kargs[0]):
-            root = kargs[0] + '__'
+        if utils.isstr(args[0]):
+            root = args[0] + '__'
             if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
                 self.obj = sum([Symbol(root + super_script, real=True) * base
                                 for (super_script, base) in zip(self.Ga.blade_super_scripts[grade], self.Ga.blades[grade])])
@@ -195,83 +194,69 @@ class Mv(object):
                     self.obj = sum([Function(root + super_script, real=True)(*kwargs['f']) * base
                         for (super_script, base) in zip(self.Ga.blade_super_scripts[grade], self.Ga.blades[grade])])
         else:
-            if isinstance(kargs[0],(list,tuple)):
-                if len(kargs[0]) <= len(self.Ga.blades[grade]):
+            if isinstance(args[0],(list,tuple)):
+                if len(args[0]) <= len(self.Ga.blades[grade]):
                     self.obj = sum([coef * base
-                        for (coef, base) in zip(kargs[0], self.Ga.blades[grade][:len(kargs[0])])])
+                        for (coef, base) in zip(args[0], self.Ga.blades[grade][:len(args[0])])])
                 else:
                     pass
             else:
                 pass
-        return
 
-    def make_scalar(self, *kargs, **kwargs):
-    # Called by __init__ to make a scalar multivector
-
-        if utils.isstr(kargs[0]):
+    def make_scalar(self, *args, **kwargs):
+        # Called by __init__ to make a scalar multivector
+        if utils.isstr(args[0]):
             if 'f' in kwargs and isinstance(kwargs['f'],bool):
                 if kwargs['f']:
-                    self.obj = Function(kargs[0])(*self.Ga.coords)
+                    self.obj = Function(args[0])(*self.Ga.coords)
                 else:
-                    self.obj = Symbol(kargs[0], real=True)
+                    self.obj = Symbol(args[0], real=True)
             else:
                 if 'f' in kwargs and isinstance(kwargs['f'],tuple):
-                    self.obj = Function(kargs[0])(*kwargs['f'])
+                    self.obj = Function(args[0])(*kwargs['f'])
         else:
-            self.obj = kargs[0]
-        return
+            self.obj = args[0]
 
-    def make_vector(self, *kargs, **kwargs):
-    # Called by __init__ to make a vector multivector
+    def make_vector(self, *args, **kwargs):
+        # Called by __init__ to make a vector multivector
+        self.make_grade(args[0], 1, **kwargs)
 
-        self.make_grade(*(kargs[0], 1), **kwargs)
-        return
+    def make_bivector(self, *args, **kwargs):
+        # Called by __init__ to make a bivector multivector
+        self.make_grade(args[0], 2, **kwargs)
 
-    def make_bivector(self, *kargs, **kwargs):
-    # Called by __init__ to make a bivector multivector
+    def make_pseudo_scalar(self, *args, **kwargs):
+        # Called by __init__ to make a pseudo scalar multivector
+        self.make_grade(args[0], self.Ga.n, **kwargs)
 
-        self.make_grade(*(kargs[0], 2), **kwargs)
-        return
-
-    def make_pseudo_scalar(self, *kargs, **kwargs):
-    # Called by __init__ to make a pseudo scalar multivector
-
-        self.make_grade(*(kargs[0], self.Ga.n), **kwargs)
-        return
-
-    def make_multivector(self, *kargs, **kwargs):
-    # Called by __init__ to make a general (2**n components) multivector
-
-        self.make_scalar(kargs[0], **kwargs)
+    def make_multivector(self, *args, **kwargs):
+        # Called by __init__ to make a general (2**n components) multivector
+        self.make_scalar(args[0], **kwargs)
         tmp = self.obj
         for grade in self.Ga.n_range:
-            self.make_grade(*(kargs[0], grade + 1), **kwargs)
+            self.make_grade(args[0], grade + 1, **kwargs)
             tmp += self.obj
         self.obj = tmp
-        return
 
-    def make_spinor(self, *kargs, **kwargs):
-    # Called by __init__ to make a general even (spinor) multivector
-
-        self.make_scalar(kargs[0], **kwargs)
+    def make_spinor(self, *args, **kwargs):
+        # Called by __init__ to make a general even (spinor) multivector
+        self.make_scalar(args[0], **kwargs)
         tmp = self.obj
         for grade in self.Ga.n_range:
             if (grade + 1) % 2 == 0:
-                self.make_grade(*(kargs[0], grade + 1), **kwargs)
+                self.make_grade(args[0], grade + 1, **kwargs)
                 tmp += self.obj
         self.obj = tmp
-        return
 
-    def make_odd(self, *kargs, **kwargs):
-    # Called by __init__ to make a general odd multivector
-        self.make_scalar(kargs[0], **kwargs)
+    def make_odd(self, *args, **kwargs):
+        # Called by __init__ to make a general odd multivector
+        self.make_scalar(args[0], **kwargs)
         tmp = S(0)
         for grade in self.Ga.n_range:
             if (grade + 1) % 2 == 1:
-                self.make_grade(*(kargs[0], grade + 1), **kwargs)
+                self.make_grade(args[0], grade + 1, **kwargs)
                 tmp += self.obj
         self.obj = tmp
-        return
 
     init_dict = {'scalar': make_scalar,
                  'vector': make_vector,
@@ -284,7 +269,7 @@ class Mv(object):
                  'odd': make_odd,
                  'grade': make_grade}
 
-    def __init__(self, *kargs, **kwargs):
+    def __init__(self, *args, **kwargs):
 
         if 'ga' not in kwargs:
             raise ValueError("Geometric algebra key inplut 'ga' required")
@@ -303,11 +288,11 @@ class Mv(object):
         self.coords = self.Ga.coords
         self.title = None
 
-        if len(kargs) == 0:  # default constructor 0
+        if len(args) == 0:  # default constructor 0
             self.obj = S(0)
             self.i_grade = 0
-        elif len(kargs) == 1 and not utils.isstr(kargs[0]):  # copy constructor
-            x = kargs[0]
+        elif len(args) == 1 and not utils.isstr(args[0]):  # copy constructor
+            x = args[0]
             if isinstance(x, Mv):
                 self.obj = x.obj
                 self.is_blade_rep = x.is_blade_rep
@@ -320,22 +305,22 @@ class Mv(object):
                 self.is_blade_rep = True
                 self.characterise_Mv()
         else:
-            if not isinstance(kargs[1],int):
-                if utils.isstr(kargs[1]) and kargs[1] not in Mv.init_dict:
-                    raise ValueError('"' + str(kargs[1]) + '" not an allowed multivector type.')
+            if not isinstance(args[1],int):
+                if utils.isstr(args[1]) and args[1] not in Mv.init_dict:
+                    raise ValueError('"' + str(args[1]) + '" not an allowed multivector type.')
 
-            if utils.isstr(kargs[1]):
-                mode = kargs[1]
-                kargs = [kargs[0]] + list(kargs[2:])
-                Mv.init_dict[mode](self, *kargs, **kwargs)
-            else:  # kargs[1] = r (integer) Construct grade r multivector
-                if kargs[1] == 0:
-                    Mv.init_dict['scalar'](self, *kargs, **kwargs)
+            if utils.isstr(args[1]):
+                mode = args[1]
+                args = [args[0]] + list(args[2:])
+                Mv.init_dict[mode](self, *args, **kwargs)
+            else:  # args[1] = r (integer) Construct grade r multivector
+                if args[1] == 0:
+                    Mv.init_dict['scalar'](self, *args, **kwargs)
                 else:
-                    Mv.init_dict['grade'](self, *kargs, **kwargs)
+                    Mv.init_dict['grade'](self, *args, **kwargs)
 
-            if utils.isstr(kargs[0]):
-                self.title = kargs[0]
+            if utils.isstr(args[0]):
+                self.title = args[0]
             self.characterise_Mv()
 
     ################# Multivector member functions #####################
@@ -1589,7 +1574,7 @@ class Sdop(object):
     def __repr__(self):
         return str(self)
 
-    def __init__(self, *kargs, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         The scalar differential operator structure is of the form
         (Einstein summation)
@@ -1611,19 +1596,19 @@ class Sdop(object):
             else:
                 self.Ga = Sdop.ga
 
-        if len(kargs[0]) == 0:  # identity Dop
+        if len(args[0]) == 0:  # identity Dop
             self.terms = [(S(1), self.Ga.Pdop_identity)]
-        elif len(kargs[0]) == 1 and isinstance(kargs[0],Symbol):  # Simple Pdop of order 1
-            self.terms = [(S(1), self.Ga.pdop(kargs[0]))]
+        elif len(args[0]) == 1 and isinstance(args[0],Symbol):  # Simple Pdop of order 1
+            self.terms = [(S(1), self.Ga.pdop(args[0]))]
         else:
-            if len(kargs) == 2 and isinstance(kargs[0],list) and isinstance(kargs[1],list):
-                if len(kargs[0]) != len(kargs[1]):
+            if len(args) == 2 and isinstance(args[0],list) and isinstance(args[1],list):
+                if len(args[0]) != len(args[1]):
                     raise ValueError('In Sdop.__init__ coefficent list and Pdop list must be same length.')
-                self.terms = list(zip(kargs[0],kargs[1]))
-            elif len(kargs) == 1 and isinstance(kargs[0],list):
-                self.terms = kargs[0]
+                self.terms = list(zip(args[0],args[1]))
+            elif len(args) == 1 and isinstance(args[0],list):
+                self.terms = args[0]
             else:
-                raise ValueError('In Sdop.__init__ length of kargs must be 1 or 2 kargs = '+str(kargs))
+                raise ValueError('In Sdop.__init__ length of args must be 1 or 2 args = '+str(args))
 
     def __call__(self, arg):
         if isinstance(arg, Sdop):
@@ -1827,7 +1812,7 @@ class Pdop(object):
                 return True
             return False
 
-    def __init__(self, *kargs, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         The partial differential operator is a partial derivative with
         respect to a set of real symbols (variables).  The allowed
@@ -1852,14 +1837,14 @@ class Pdop(object):
             else:
                 self.Ga = Pdop.ga  # use geometric algebra of class Pdop
 
-        if kargs[0] is None:  # Pdop is the identity (1)
+        if args[0] is None:  # Pdop is the identity (1)
             self.pdiffs = {}
-        elif isinstance(kargs[0], dict):  # Pdop defined by dictionary
-            self.pdiffs = kargs[0]
-        elif isinstance(kargs[0],Symbol):  # First order derivative with respect to symbol
-            self.pdiffs = {kargs[0]:1}
+        elif isinstance(args[0], dict):  # Pdop defined by dictionary
+            self.pdiffs = args[0]
+        elif isinstance(args[0],Symbol):  # First order derivative with respect to symbol
+            self.pdiffs = {args[0]:1}
         else:
-            raise ValueError('In pdop kargs = ', str(kargs))
+            raise ValueError('In pdop args = ', str(args))
 
         for x in list(self.pdiffs.keys()):  # self.order is total number of differentiations
             self.order += self.pdiffs[x]
@@ -2056,7 +2041,7 @@ class Dop(object):
     def flatten_one_level(lst):
         return [inner for outer in lst for inner in outer]
 
-    def __init__(self, *kargs, **kwargs):
+    def __init__(self, *args, **kwargs):
 
         kwargs = metric.test_init_slots(Dop.init_slots, **kwargs)
 
@@ -2072,20 +2057,20 @@ class Dop(object):
         self.dop_fmt = kwargs['fmt_dop']  # Partial derivative output format (default 1)
         self.title = None
 
-        if len(kargs[0]) == 0:  # identity Dop
+        if len(args[0]) == 0:  # identity Dop
             self.terms = [(S(1),self.Ga.Pdop_identity)]
         else:
-            if len(kargs) == 2:
-                if len(kargs[0]) != len(kargs[1]):
+            if len(args) == 2:
+                if len(args[0]) != len(args[1]):
                     raise ValueError('In Dop.__init__ coefficent list and Pdop list must be same length.')
-                self.terms = list(zip(kargs[0],kargs[1]))
-            elif len(kargs) == 1:
-                if isinstance(kargs[0][0][0], Mv):  # Mv expansion [(Mv, Pdop)]
-                    self.terms = kargs[0]
-                elif isinstance(kargs[0][0][0], Sdop):  # Sdop expansion [(Sdop, Mv)]
+                self.terms = list(zip(args[0],args[1]))
+            elif len(args) == 1:
+                if isinstance(args[0][0][0], Mv):  # Mv expansion [(Mv, Pdop)]
+                    self.terms = args[0]
+                elif isinstance(args[0][0][0], Sdop):  # Sdop expansion [(Sdop, Mv)]
                     coefs = []
                     pdiffs = []
-                    for (sdop, mv) in kargs[0]:
+                    for (sdop, mv) in args[0]:
                         for (coef, pdiff) in sdop.terms:
                             if pdiff in pdiffs:
                                 index = pdiffs.index(pdiff)
@@ -2095,9 +2080,9 @@ class Dop(object):
                                 coefs.append(coef * mv)
                     self.terms = list(zip(coefs, pdiffs))
                 else:
-                    raise ValueError('In Dop.__init__ kargs[0] form not allowed. kargs = ' + str(kargs))
+                    raise ValueError('In Dop.__init__ args[0] form not allowed. args = ' + str(args))
             else:
-                raise ValueError('In Dop.__init__ length of kargs must be 1 or 2.')
+                raise ValueError('In Dop.__init__ length of args must be 1 or 2.')
 
 
     def simplify(self, modes=simplify):
