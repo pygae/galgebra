@@ -176,98 +176,95 @@ class Mv(object):
         self.char_Mv = True
         return
 
-    def make_grade(self, *args, **kwargs):
-        # Called by __init__ to make a pure grade multivector.
+    # helper methods called by __init__. Note that these names must not change,
+    # as the part of the name after `_make_` is public API via the string
+    # argument passed to __init__.
+
+    @staticmethod
+    def _make_grade(ga, *args, **kwargs):
+        """ Make a pure grade multivector. """
         grade = args[1]
-        self.i_grade = grade
         if utils.isstr(args[0]):
             root = args[0] + '__'
             if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
-                self.obj = sum([Symbol(root + super_script, real=True) * base
-                                for (super_script, base) in zip(self.Ga.blade_super_scripts[grade], self.Ga.blades[grade])])
+                return sum([Symbol(root + super_script, real=True) * base
+                                for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
 
             else:
                 if isinstance(kwargs['f'], bool):  #Is a multivector function of all coordinates
-                    self.obj = sum([Function(root + super_script, real=True)(*self.Ga.coords) * base
-                        for (super_script, base) in zip(self.Ga.blade_super_scripts[grade], self.Ga.blades[grade])])
+                    return sum([Function(root + super_script, real=True)(*ga.coords) * base
+                        for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
                 else: #Is a multivector function of tuple kwargs['f'] variables
-                    self.obj = sum([Function(root + super_script, real=True)(*kwargs['f']) * base
-                        for (super_script, base) in zip(self.Ga.blade_super_scripts[grade], self.Ga.blades[grade])])
-        else:
-            if isinstance(args[0],(list,tuple)):
-                if len(args[0]) <= len(self.Ga.blades[grade]):
-                    self.obj = sum([coef * base
-                        for (coef, base) in zip(args[0], self.Ga.blades[grade][:len(args[0])])])
-                else:
-                    pass
+                    return sum([Function(root + super_script, real=True)(*kwargs['f']) * base
+                        for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
+        elif isinstance(args[0],(list,tuple)):
+            if len(args[0]) <= len(ga.blades[grade]):
+                return sum([coef * base
+                    for (coef, base) in zip(args[0], ga.blades[grade][:len(args[0])])])
             else:
-                pass
+                raise ValueError("Too many coefficients")
+        else:
+            raise TypeError("Expected a string, list, or tuple")
 
-    def make_scalar(self, *args, **kwargs):
-        # Called by __init__ to make a scalar multivector
+    @staticmethod
+    def _make_scalar(ga, *args, **kwargs):
+        """ Make a scalar multivector """
         if utils.isstr(args[0]):
             if 'f' in kwargs and isinstance(kwargs['f'],bool):
                 if kwargs['f']:
-                    self.obj = Function(args[0])(*self.Ga.coords)
+                    return Function(args[0])(*ga.coords)
                 else:
-                    self.obj = Symbol(args[0], real=True)
+                    return Symbol(args[0], real=True)
             else:
                 if 'f' in kwargs and isinstance(kwargs['f'],tuple):
-                    self.obj = Function(args[0])(*kwargs['f'])
+                    return Function(args[0])(*kwargs['f'])
         else:
-            self.obj = args[0]
+            return args[0]
 
-    def make_vector(self, *args, **kwargs):
-        # Called by __init__ to make a vector multivector
-        self.make_grade(args[0], 1, **kwargs)
+    @staticmethod
+    def _make_vector(ga, *args, **kwargs):
+        """ Make a vector multivector """
+        return Mv._make_grade(ga, args[0], 1, **kwargs)
 
-    def make_bivector(self, *args, **kwargs):
-        # Called by __init__ to make a bivector multivector
-        self.make_grade(args[0], 2, **kwargs)
+    @staticmethod
+    def _make_bivector(ga, *args, **kwargs):
+        """ Make a bivector multivector """
+        return Mv._make_grade(ga, args[0], 2, **kwargs)
 
-    def make_pseudo_scalar(self, *args, **kwargs):
-        # Called by __init__ to make a pseudo scalar multivector
-        self.make_grade(args[0], self.Ga.n, **kwargs)
+    @staticmethod
+    def _make_pseudo(ga, *args, **kwargs):
+        """ Make a pseudo scalar multivector """
+        return Mv._make_grade(ga, args[0], ga.n, **kwargs)
 
-    def make_multivector(self, *args, **kwargs):
-        # Called by __init__ to make a general (2**n components) multivector
-        self.make_scalar(args[0], **kwargs)
-        tmp = self.obj
-        for grade in self.Ga.n_range:
-            self.make_grade(args[0], grade + 1, **kwargs)
-            tmp += self.obj
-        self.obj = tmp
+    @staticmethod
+    def _make_mv(ga, *args, **kwargs):
+        """ Make a general (2**n components) multivector """
+        tmp = Mv._make_scalar(ga, args[0], **kwargs)
+        for grade in ga.n_range:
+            tmp += Mv._make_grade(ga, args[0], grade + 1, **kwargs)
+        return tmp
 
-    def make_spinor(self, *args, **kwargs):
-        # Called by __init__ to make a general even (spinor) multivector
-        self.make_scalar(args[0], **kwargs)
-        tmp = self.obj
-        for grade in self.Ga.n_range:
+    @staticmethod
+    def _make_spinor(ga, *args, **kwargs):
+        """ Make a general even (spinor) multivector """
+        tmp = Mv._make_scalar(ga, args[0], **kwargs)
+        for grade in ga.n_range:
             if (grade + 1) % 2 == 0:
-                self.make_grade(args[0], grade + 1, **kwargs)
-                tmp += self.obj
-        self.obj = tmp
+                tmp += Mv._make_grade(ga, args[0], grade + 1, **kwargs)
+        return tmp
 
-    def make_odd(self, *args, **kwargs):
-        # Called by __init__ to make a general odd multivector
-        self.make_scalar(args[0], **kwargs)
+    @staticmethod
+    def _make_odd(ga, *args, **kwargs):
+        """ Make a general odd multivector """
         tmp = S(0)
-        for grade in self.Ga.n_range:
+        for grade in ga.n_range:
             if (grade + 1) % 2 == 1:
-                self.make_grade(args[0], grade + 1, **kwargs)
-                tmp += self.obj
-        self.obj = tmp
+                tmp += Mv._make_grade(args[0], grade + 1, **kwargs)
+        return tmp
 
-    init_dict = {'scalar': make_scalar,
-                 'vector': make_vector,
-                 'bivector': make_bivector,
-                 'grade2': make_bivector,
-                 'pseudo': make_pseudo_scalar,
-                 'mv': make_multivector,
-                 'spinor': make_spinor,
-                 'even': make_spinor,
-                 'odd': make_odd,
-                 'grade': make_grade}
+    # aliases
+    _make_grade2 = _make_bivector
+    _make_even = _make_spinor
 
     def __init__(self, *args, **kwargs):
 
@@ -276,8 +273,8 @@ class Mv(object):
 
         kwargs = metric.test_init_slots(Mv.init_slots, **kwargs)
 
-        self.Ga = kwargs['ga']
-        self.recp = kwargs['recp']  # Normalization for reciprocal vectors
+        self.Ga = kwargs.pop('ga')
+        self.recp = kwargs.pop('recp')  # Normalization for reciprocal vectors
 
         self.char_Mv = False
         self.i_grade = None  # if pure grade mv, grade value
@@ -305,19 +302,20 @@ class Mv(object):
                 self.is_blade_rep = True
                 self.characterise_Mv()
         else:
-            if not isinstance(args[1],int):
-                if utils.isstr(args[1]) and args[1] not in Mv.init_dict:
-                    raise ValueError('"' + str(args[1]) + '" not an allowed multivector type.')
-
             if utils.isstr(args[1]):
-                mode = args[1]
-                args = [args[0]] + list(args[2:])
-                Mv.init_dict[mode](self, *args, **kwargs)
-            else:  # args[1] = r (integer) Construct grade r multivector
+                args = list(args)
+                mode = args.pop(1)
+                make_func = getattr(Mv, '_make_{}'.format(mode), None)
+                if make_func is None:
+                    raise ValueError('{!r} is not an allowed multivector type.'.format(mode))
+                self.obj = make_func(self.Ga, *args, **kwargs)
+            elif isinstance(args[1], int):  # args[1] = r (integer) Construct grade r multivector
                 if args[1] == 0:
-                    Mv.init_dict['scalar'](self, *args, **kwargs)
+                    self.obj = Mv._make_scalar(self.Ga, *args, **kwargs)
                 else:
-                    Mv.init_dict['grade'](self, *args, **kwargs)
+                    self.obj = Mv._make_grade(self.Ga, *args, **kwargs)
+            else:
+                raise TypeError("Expected string or int")
 
             if utils.isstr(args[0]):
                 self.title = args[0]
