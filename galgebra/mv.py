@@ -12,10 +12,11 @@ from sympy import Symbol, Function, S, expand, Add, Mul, Pow, Basic, \
     simplify, diff, Rational, Expr, Abs, collect, combsimp
 from sympy import exp as sympy_exp
 from sympy import N as Nsympy
-import printer
-import metric
-import ga
+from . import printer
+from . import metric
+from . import ga
 import sys
+from functools import reduce
 
 ONE = S(1)
 ZERO = S(0)
@@ -355,7 +356,7 @@ class Mv(object):
             grade_dict = self.Ga.grade_decomposition(self)
             blade_grade = blade.i_grade
             reflect = Mv(0,'scalar',ga=self.Ga)
-            for grade in grade_dict.keys():
+            for grade in list(grade_dict.keys()):
                 if (grade * (blade_grade + 1)) % 2 == 0:
                     reflect += blade * grade_dict[grade] * blade_inv
                 else:
@@ -592,18 +593,20 @@ class Mv(object):
     def __repr__(self):
         return str(self)
 
-    def raw_str(self):
-        return self.Mv_str(raw=True)
-
-    def Mv_str(self,raw=False):
+    def __getitem__(self,key):
+        '''
+        get a specified grade of a multivector
+        '''
+        return self.grade(key)
+    
+    def Mv_str(self):
         global print_replace_old, print_replace_new
         if self.i_grade == 0:
             return str(self.obj)
         self.obj = expand(self.obj)
         self.char_Mv = False
         self.characterise_Mv()
-        if not raw:
-            self.obj = metric.Simp.apply(self.obj)
+        self.obj = metric.Simp.apply(self.obj)
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
@@ -635,7 +638,7 @@ class Mv(object):
                     grade0 += c
             if grade0 != S(0):
                 terms[-1] = (grade0, S(1), -1)
-            terms = terms.items()
+            terms = list(terms.items())
             sorted_terms = sorted(terms, key=itemgetter(0))  # sort via base indexes
 
             s = str(sorted_terms[0][1][0] * sorted_terms[0][1][1])
@@ -665,10 +668,7 @@ class Mv(object):
         else:
             return str(self.obj)
 
-    def raw_latex_str(self):
-        return self.Mv_latex_str(raw=True)
-
-    def Mv_latex_str(self, raw=False):
+    def Mv_latex_str(self):
 
         if self.obj == 0:
             return ' 0 '
@@ -689,8 +689,7 @@ class Mv(object):
         # str representation of multivector
         self.obj = expand(self.obj)
         self.characterise_Mv()
-        if not raw:
-            self.obj = metric.Simp.apply(self.obj)
+        self.obj = metric.Simp.apply(self.obj)
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
@@ -723,7 +722,7 @@ class Mv(object):
                 grade0 += c
         if grade0 != S(0):
             terms[-1] = (grade0, S(1), 0)
-        terms = terms.items()
+        terms = list(terms.items())
 
         sorted_terms = sorted(terms, key=itemgetter(0))  # sort via base indexes
 
@@ -911,12 +910,12 @@ class Mv(object):
         coefs, bases = metric.linear_expand(self.obj)
         obj_dict = {}
         for (coef, base) in zip(coefs, bases):
-            if base in obj_dict.keys():
+            if base in list(obj_dict.keys()):
                 obj_dict[base] += coef
             else:
                 obj_dict[base] = coef
         obj = 0
-        for base in obj_dict.keys():
+        for base in list(obj_dict.keys()):
             if deep:
                 obj += collect(obj_dict[base])*base
             else:
@@ -1000,7 +999,7 @@ class Mv(object):
     def components(self):
         (coefs, bases) = metric.linear_expand(self.obj)
         bases_lst = self.Ga.blades_lst
-        cb = zip(coefs, bases)
+        cb = list(zip(coefs, bases))
         cb = sorted(cb, key=lambda x: self.Ga.blades_lst0.index(x[1]))
         terms = []
         for (coef, base) in cb:
@@ -1010,9 +1009,9 @@ class Mv(object):
     def get_coefs(self, grade):
         (coefs, bases) = metric.linear_expand(self.obj)
         bases_lst = self.Ga.blades_lst
-        cb = zip(coefs, bases)
+        cb = list(zip(coefs, bases))
         cb = sorted(cb, key=lambda x: self.Ga.blades[grade].index(x[1]))
-        (coefs, bases) = zip(*cb)
+        (coefs, bases) = list(zip(*cb))
         return coefs
 
     def J(self):
@@ -1089,7 +1088,9 @@ class Mv(object):
     def rev(self):
         self = self.blade_rep()
         return Mv(self.Ga.reverse(self.obj), ga=self.Ga)
-
+    
+    __invert__ = rev # allow `~x` to call x.rev()
+    
     def diff(self, coord):
         Dself = Mv(ga=self.Ga)
         if self.Ga.coords is None:
@@ -1308,6 +1309,8 @@ class Mv(object):
         else:
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
+    __abs__=norm # allow `abs(x)` to call z.norm()
+    
     def inv(self):
         if self.is_scalar():  # self is a scalar
             return self.Ga.mv(S(1)/self.obj)
@@ -1420,13 +1423,13 @@ def compare(A,B):
             return 0
         if Bcoefs[0] != 0 and Abases[0] == Bbases[0]:
             c = simplify(Acoefs[0]/Bcoefs[0])
-            print 'c =',c
+            print('c =',c)
         else:
             return 0
         for acoef,abase,bcoef,bbase in zip(Acoefs[1:],Abases[1:],Bcoefs[1:],Bbases[1:]):
-            print acoef,'\n',abase,'\n',bcoef,'\n',bbase
+            print(acoef,'\n',abase,'\n',bcoef,'\n',bbase)
             if bcoef != 0 and abase == bbase:
-                print 'c-a/b =',simplify(c-(acoef/bcoef))
+                print('c-a/b =',simplify(c-(acoef/bcoef)))
                 if simplify(acoef/bcoef) != c:
                     return 0
                 else:
@@ -1487,7 +1490,7 @@ class Sdop(object):
                 else:
                     new_coefs.append(coef)
                     new_pdiffs.append(pd)
-        new_terms = zip(new_coefs, new_pdiffs)
+        new_terms = list(zip(new_coefs, new_pdiffs))
 
         if isinstance(sdop, Sdop):
             return Sdop(new_terms, ga=sdop.Ga)
@@ -1495,11 +1498,11 @@ class Sdop(object):
             return new_terms
 
     def simplify(self, modes=simplify):
-        coefs, pdiffs = zip(*self.terms)
+        coefs, pdiffs = list(zip(*self.terms))
         new_coefs = []
         for coef in coefs:
             new_coefs.append(metric.apply_function_list(modes,coef))
-        self.terms = zip(new_coefs,pdiffs)
+        self.terms = list(zip(new_coefs,pdiffs))
         return self
 
     def sort_terms(self):
@@ -1513,7 +1516,8 @@ class Sdop(object):
         self.sort_terms()
         s = ''
         for (coef, pdop) in self.terms:
-            pd_str = str(pdop)
+            coef_str = printer.latex(coef)
+            pd_str = printer.latex(pdop)
 
             if coef == S(1):
                 s += pd_str
@@ -1521,9 +1525,9 @@ class Sdop(object):
                 s += '-' + pd_str
             else:
                 if isinstance(coef, Add):
-                    s += '(' + str(coef) + ')*' + pd_str
+                    s += '(' + coef_str + ')*' + pd_str
                 else:
-                    s += str(coef) + '*' + pd_str
+                    s += coef_str + '*' + pd_str
             s += ' + '
 
         s = s.replace('+ -','- ')
@@ -1541,7 +1545,8 @@ class Sdop(object):
 
         s = ''
         for (coef, pdop) in self.terms:
-            pd_str = str(pdop)
+            coef_str = printer.latex(coef)
+            pd_str = printer.latex(pdop)
             if coef == S(1):
                 if pd_str == '':
                     s += '1'
@@ -1554,9 +1559,9 @@ class Sdop(object):
                     s += '-' + pd_str
             else:
                 if isinstance(coef, Add):
-                    s += r'\left ( ' + str(coef) + r'\right ) ' + pd_str
+                    s += r'\left ( ' + coef_str + r'\right ) ' + pd_str
                 else:
-                    s += str(coef) + ' ' + pd_str
+                    s += coef_str + ' ' + pd_str
             s += ' + '
 
         s = s.replace('+ -','- ')
@@ -1635,8 +1640,8 @@ class Sdop(object):
         if isinstance(sdop1, Sdop) and isinstance(sdop1, Sdop):
             if sdop1.Ga != sdop2.Ga:
                 raise ValueError('In Sdop.Add sdop1.Ga != sdop2.Ga.')
-            coefs1, pdiffs1 = zip(*sdop1.terms)
-            coefs2, pdiffs2 = zip(*sdop2.terms)
+            coefs1, pdiffs1 = list(zip(*sdop1.terms))
+            coefs2, pdiffs2 = list(zip(*sdop2.terms))
 
             pdiffs1 = list(pdiffs1)
             pdiffs2 = list(pdiffs2)
@@ -1656,7 +1661,7 @@ class Sdop(object):
 
             sdop_sum = Sdop(coefs, pdiffs, ga=sdop1.Ga)
         elif isinstance(sdop1, Sdop):
-            coefs, pdiffs = zip(*sdop1.terms)
+            coefs, pdiffs = list(zip(*sdop1.terms))
             if sdop1.Ga.Pdop_identity in pdiffs:
                 index = pdiffs.index(sdop1.Ga.Pdop_identity)
                 coef[index] += sdop2
@@ -1665,7 +1670,7 @@ class Sdop(object):
                 pdiff.append(sdop1.Ga.Pdop_identity)
             return Sdop(coefs, pdiffs, ga=sdop1.Ga)
         else:
-            coefs, pdiffs = zip(*sdop2.terms)
+            coefs, pdiffs = list(zip(*sdop2.terms))
             if sdop2.Ga.Pdop_identity in pdiffs:
                 index = pdiffs.index(sdop2.Ga.Pdop_identity)
                 coef[index] += sdop1
@@ -1701,7 +1706,7 @@ class Sdop(object):
             if self.Ga != sdop.Ga:
                 raise ValueError('In Sdop.__add_ab__ self.Ga != sdop.Ga.')
 
-            coefs, pdiffs = zip(*self.terms)
+            coefs, pdiffs = list(zip(*self.terms))
             pdiffs = list(pdiffs)
             coefs = list(coefs)
 
@@ -1712,7 +1717,7 @@ class Sdop(object):
                 else:
                     pdiffs.append(pdiff)
                     coefs.append(coef)
-            self.term = zip(coefs, pdiffs)
+            self.term = list(zip(coefs, pdiffs))
             self = Sdop.consolidate_coefs(self)
             return
 
@@ -1789,8 +1794,8 @@ class Pdop(object):
         if pdop1.order < pdop2.order:
             return -1
 
-        keys1 = pdop1.pdiffs.keys()
-        keys2 = pdop2.pdiffs.keys()
+        keys1 = list(pdop1.pdiffs.keys())
+        keys2 = list(pdop2.pdiffs.keys())
         lkeys1 = len(keys1)
         lkeys2 = len(keys2)
 
@@ -1849,7 +1854,7 @@ class Pdop(object):
         else:
             raise ValueError('In pdop kargs = ', str(kargs))
 
-        for x in self.pdiffs.keys():  # self.order is total number of differentiations
+        for x in list(self.pdiffs.keys()):  # self.order is total number of differentiations
             self.order += self.pdiffs[x]
 
     def factor(self):
@@ -1864,7 +1869,7 @@ class Pdop(object):
         if self.order == 1:
             return S(0), self
         else:
-            x = self.pdiffs.keys()[0]
+            x = list(self.pdiffs.keys())[0]
             self.order -= 1
             n = self.pdiffs[x]
             if n == 1:
@@ -1960,15 +1965,15 @@ class Pdop(object):
             return ''
         s = r'\frac{\partial'
         if self.order > 1:
-            s += '^{' + str(self.order) + '}'
+            s += '^{' + printer.latex(self.order) + '}'
         s += '}{'
-        keys = self.pdiffs.keys()
+        keys = list(self.pdiffs.keys())
         keys.sort(key=(self.Ga.coords + keys).index)
         for key in keys:
             i = self.pdiffs[key]
-            s += r'\partial ' + str(key)
+            s += r'\partial ' + printer.latex(key)
             if i > 1:
-                s += '^{' + str(i) + '}'
+                s += '^{' + printer.latex(i) + '}'
         s += '}'
         return s
 
@@ -2066,7 +2071,7 @@ class Dop(object):
             if len(kargs) == 2:
                 if len(kargs[0]) != len(kargs[1]):
                     raise ValueError('In Dop.__init__ coefficent list and Pdop list must be same length.')
-                self.terms = zip(kargs[0],kargs[1])
+                self.terms = list(zip(kargs[0],kargs[1]))
             elif len(kargs) == 1:
                 if isinstance(kargs[0][0][0], Mv):  # Mv expansion [(Mv, Pdop)]
                     self.terms = kargs[0]
@@ -2081,7 +2086,7 @@ class Dop(object):
                             else:
                                 pdiffs.append(pdiff)
                                 coefs.append(coef * mv)
-                    self.terms = zip(coefs, pdiffs)
+                    self.terms = list(zip(coefs, pdiffs))
                 else:
                     raise ValueError('In Dop.__init__ kargs[0] form not allowed. kargs = ' + str(kargs))
             else:
@@ -2098,7 +2103,7 @@ class Dop(object):
             tmp = coef.simplify(modes=modes)
             new_coefs.append(tmp)
             new_pd.append(pd)
-        self.terms = zip(new_coefs, new_pd)
+        self.terms = list(zip(new_coefs, new_pd))
         return Dop(new_coefs, new_pd, ga=self.Ga, cmpflg=self.cmpflg)
 
     def consolidate_coefs(self):
@@ -2118,7 +2123,7 @@ class Dop(object):
                     new_coefs.append(coef)
                     new_pdiffs.append(pd)
 
-        self.terms = zip(new_coefs, new_pdiffs)
+        self.terms = list(zip(new_coefs, new_pdiffs))
         return Dop(new_coefs, new_pdiffs, ga=self.Ga, cmpflg=self.cmpflg)
 
 
@@ -2142,8 +2147,8 @@ class Dop(object):
             if dop1.cmpflg != dop2.cmpflg:
                 raise ValueError('In Dop.Add complement flags have different values.')
 
-            coefs1, pdiffs1 = zip(*dop1.terms)
-            coefs2, pdiffs2 = zip(*dop2.terms)
+            coefs1, pdiffs1 = list(zip(*dop1.terms))
+            coefs2, pdiffs2 = list(zip(*dop2.terms))
 
             pdiffs1 = list(pdiffs1)
             pdiffs2 = list(pdiffs2)
@@ -2181,7 +2186,7 @@ class Dop(object):
 
     def __neg__(self):
 
-        coefs, pdiffs = zip(*self.terms)
+        coefs, pdiffs = list(zip(*self.terms))
 
         coefs = [-x for x in coefs]
 
@@ -2348,7 +2353,7 @@ class Dop(object):
                     new_pdiffs.append(pdiff)
                     new_coefs.append(coef * base)
             new_coefs = [Mv(x, ga=self.Ga) for x in new_coefs]
-            terms = zip(new_coefs, new_pdiffs)
+            terms = list(zip(new_coefs, new_pdiffs))
             dop_lst.append(Dop(terms, ga=self.Ga))
         return tuple(dop_lst)
 
@@ -2381,7 +2386,7 @@ class Dop(object):
         if modes is not None:
             for i in range(len(coefs)):
                 coefs[i] = coefs[i].simplify(modes)
-        terms = zip(coefs, bases)
+        terms = list(zip(coefs, bases))
         return sorted(terms, key=lambda x: self.Ga.blades_lst0.index(x[1]))
 
     def Dop_str(self):
@@ -2392,26 +2397,27 @@ class Dop(object):
         s = ''
 
         for (sdop, base) in mv_terms:
-            str_sdop = str(sdop)
+            str_base = printer.latex(base)
+            str_sdop = printer.latex(sdop)
             if base == S(1):
                 s += str_sdop
             else:
                 if len(sdop.terms) > 1:
                     if self.cmpflg:
-                        s += '(' + str_sdop + ')*' + str(base)
+                        s += '(' + str_sdop + ')*' + str_base
                     else:
-                        s += str(base) + '*(' + str_sdop + ')'
+                        s += str_base + '*(' + str_sdop + ')'
                 else:
                     if str_sdop[0] == '-' and not isinstance(sdop.terms[0][0], Add):
                         if self.cmpflg:
-                            s += str_sdop + '*' + str(base)
+                            s += str_sdop + '*' + str_base
                         else:
-                            s += '-' + str(base) + '*' + str_sdop[1:]
+                            s += '-' + str_base + '*' + str_sdop[1:]
                     else:
                         if self.cmpflg:
-                            s += str_dop + '*' + str(base)
+                            s += str_dop + '*' + str_base
                         else:
-                            s += str(base) + '*' + str_sdop
+                            s += str_base + '*' + str_sdop
             s += ' + '
 
         s = s.replace('+ -','-')
@@ -2427,33 +2433,34 @@ class Dop(object):
         s = ''
 
         for (sdop, base) in mv_terms:
-            str_sdop = str(sdop)
+            str_base = printer.latex(base)
+            str_sdop = printer.latex(sdop)
             if base == S(1):
                 s += str_sdop
             else:
                 if str_sdop == '1':
-                    s += str(base)
+                    s += str_base
                 if str_sdop == '-1':
-                    s += '-' + str(base)
+                    s += '-' + str_base
                     if str_sdop[1:] != '1':
                         s += ' ' + str_sdop[1:]
                 else:
                     if len(sdop.terms) > 1:
                         if self.cmpflg:
-                            s += r'\left ( ' + str_sdop + r'\right ) ' + str(base)
+                            s += r'\left ( ' + str_sdop + r'\right ) ' + str_base
                         else:
-                            s += str(base) + ' ' + r'\left ( ' + str_sdop + r'\right ) '
+                            s += str_base + ' ' + r'\left ( ' + str_sdop + r'\right ) '
                     else:
                         if str_sdop[0] == '-' and not isinstance(sdop.terms[0][0], Add):
                             if self.cmpflg:
-                                s += str_sdop + str(base)
+                                s += str_sdop + str_base
                             else:
-                                s += '-' + str(base) + ' ' + str_sdop[1:]
+                                s += '-' + str_base + ' ' + str_sdop[1:]
                         else:
                             if self.cmpflg:
-                                s += str_sdop + ' ' + str(base)
+                                s += str_sdop + ' ' + str_base
                             else:
-                                s += str(base) + ' ' + str_sdop
+                                s += str_base + ' ' + str_sdop
             s += ' + '
 
         s = s.replace('+ -','-')
@@ -2522,7 +2529,7 @@ def Nga(x, prec=5):
 def printeigen(M):    # Print eigenvalues, multiplicities, eigenvectors of M.
     evects = M.eigenvects()
     for i in range(len(evects)):                   # i iterates over eigenvalues
-        print('Eigenvalue =', evects[i][0], '  Multiplicity =', evects[i][1], ' Eigenvectors:')
+        print(('Eigenvalue =', evects[i][0], '  Multiplicity =', evects[i][1], ' Eigenvectors:'))
         for j in range(len(evects[i][2])):         # j iterates over eigenvectors of a given eigenvalue
             result = '['
             for k in range(len(evects[i][2][j])):  # k iterates over coordinates of an eigenvector
@@ -2730,7 +2737,7 @@ class MV(Mv):
         Mv.__init__(self, base, mvtype, f=fct, ga=MV.GA)
 
     def Fmt(self, fmt=1, title=None):
-        print Mv.Fmt(self, fmt=fmt, title=title)
+        print(Mv.Fmt(self, fmt=fmt, title=title))
         return
 
 def ReciprocalFrame(basis, mode='norm'):
