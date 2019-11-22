@@ -1,5 +1,9 @@
 # ga.py
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import operator
 import copy
 from sympy import diff, Rational, Symbol, S, Mul, Pow, Add, \
@@ -131,7 +135,7 @@ def nc_subs(expr, base_keys, base_values=None):
 
 
 class Ga(metric.Metric):
-    """
+    r"""
     The vector space (basis, metric, derivatives of basis vectors) is
     defined by the base class 'Metric'.
 
@@ -301,7 +305,7 @@ class Ga(metric.Metric):
         return Ga(*kargs, **kwargs)
 
     def __eq__(self, ga):
-        if self.name == self.ga:
+        if self.name == ga.name:
             return True
         return False
 
@@ -472,7 +476,7 @@ class Ga(metric.Metric):
         return mv.Mv(root, *kargs, **kwargs)
 
     def mvr(self,norm=True):
-        """
+        r"""
         Returns tumple of reciprocal basis vectors.  If norm=True or
         basis vectors are orthogonal the reciprocal basis is normalized
         in the sense that
@@ -1438,7 +1442,7 @@ class Ga(metric.Metric):
                 else:
                     blades[0] = term
             else:
-                c, nc = term.args_cnc()
+                _c, nc = term.args_cnc()
                 blade = nc[0]
                 grade = self.blades_to_grades_dict[blade]
                 if grade in blades:
@@ -1489,7 +1493,7 @@ class Ga(metric.Metric):
     ##################### Multivector derivatives ######################
 
     def build_reciprocal_basis(self,gsym):
-        """
+        r"""
         Calculate reciprocal basis vectors e^{j} where
                 e^{j}\cdot e_{k} = \delta_{k}^{j}
         and \delta_{k}^{j} is the kronecker delta.  We use the formula
@@ -1692,7 +1696,7 @@ class Ga(metric.Metric):
                 x = self.coords[i]
                 xn = coord[i]
                 if xn > 0:  # Differentiate with respect to coordinate x
-                    for j in range(xn):  # xn > 1 multiple differentiation
+                    for _j in range(xn):  # xn > 1 multiple differentiation
                         dA = self.pDiff(dA, x)
 
             return dA

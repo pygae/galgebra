@@ -1,9 +1,15 @@
 #mv.py
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 import itertools
 import copy
 import numbers
 import operator
+# from compiler.ast import flatten
+# https://stackoverflow.com/questions/16176742/python-3-replacement-for-deprecated-compiler-ast-flatten-function
+from .utils import flatten
 from operator import itemgetter, mul, add
 from itertools import combinations
 from sympy import Symbol, Function, S, expand, Add, Mul, Pow, Basic, \
@@ -13,12 +19,12 @@ from sympy import exp as sympy_exp
 from sympy import N as Nsympy
 from . import printer
 from . import metric
-from . import ga
 import sys
-from functools import reduce
+from functools import reduce, cmp_to_key
 
 ONE = S(1)
 ZERO = S(0)
+HALF = Rational(1, 2)
 
 half = Rational(1, 2)
 
@@ -1063,7 +1069,7 @@ class Mv(object):
         return Mv(obj, ga=self.Ga)
 
     def dual(self):
-        mode = ga.Ga.dual_mode_value
+        mode = self.Ga.dual_mode_value
         sign = S(1)
         if '-' in mode:
             sign = -sign
@@ -1505,7 +1511,10 @@ class Sdop(object):
         return self
 
     def sort_terms(self):
-        self.terms.sort(key=operator.itemgetter(1), cmp=Pdop.compare)
+        # self.terms.sort(key=operator.itemgetter(1), cmp=Pdop.compare)
+        # terms are in the form of (coef, pdiff)
+        # so we need to first extract pdiff and then use Pdop.compare to compare
+        self.terms.sort(key=cmp_to_key(lambda term1, term2 : Pdop.compare(term1[1], term2[1])))
         return
 
     def Sdop_str(self):
@@ -1762,7 +1771,7 @@ class Sdop(object):
 #################### Partial Derivative Operator Class #################
 
 class Pdop(object):
-    """
+    r"""
     Partial derivative class for multivectors.  The partial derivatives
     are of the form
 
@@ -1993,7 +2002,7 @@ class Pdop(object):
 ################# Multivector Differential Operator Class ##############
 
 class Dop(object):
-    """
+    r"""
     Differential operator class for multivectors.  The operators are of
     the form
 

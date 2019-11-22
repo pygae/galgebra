@@ -1,5 +1,9 @@
 #printer.py
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import sys
 import io
@@ -26,7 +30,7 @@ from inspect import getouterframes, currentframe
 Format_cnt = 0
 
 ip_cmds = \
-"""
+r"""
 $\\DeclareMathOperator{\Tr}{Tr}
 \\DeclareMathOperator{\Adj}{Adj}
 \\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
@@ -86,14 +90,14 @@ def find_executable(executable, path=None):
     paths = path.split(os.pathsep)
     extlist = ['']
     if os.name == 'os2':
-        (base, ext) = os.path.splitext(executable)
+        (_base, ext) = os.path.splitext(executable)
         # executable files on OS/2 can have an arbitrary extension, but
         # .exe is automatically appended if no dot is present in the name
         if not ext:
             executable = executable + ".exe"
     elif sys.platform == 'win32':
         pathext = os.environ['PATHEXT'].lower().split(os.pathsep)
-        (base, ext) = os.path.splitext(executable)
+        (_base, ext) = os.path.splitext(executable)
         if ext.lower() not in pathext:
             extlist = pathext
     for ext in extlist:
@@ -338,23 +342,27 @@ class GaPrinter(StrPrinter):
         return Eprint.Fct("%s" % (name,))
 
     def _print_Derivative(self, expr):
-        diff_args = list(map(self._print, expr.args))
+        # Break the following to support both py 2 & 3
+        # function, *diff_args = expr.args
+        function = expr.args[0]
+        diff_args = expr.args[1:]
+        
         xi = []
         ni = []
-        for x in diff_args[1:]:
+        for x, n in diff_args:
             if x in xi:
                 i = xi.index(x)
-                ni[i] += 1
+                ni[i] += n
             else:
-                xi.append(x)
-                ni.append(1)
+                xi.append(self._print(x))
+                ni.append(n)
 
         s = 'D'
-        for (x, n) in zip(xi, ni):
+        for x, n in zip(xi, ni):
             s += '{' + str(x) + '}'
             if n > 1:
                 s += '^' + str(n)
-        s += str(diff_args[0])
+        s += str(self._print(function))
         return Eprint.Deriv(s)
 
     def _print_Matrix(self, expr):
@@ -392,7 +400,7 @@ def enhance_print():
     return
 
 class GaLatexPrinter(LatexPrinter):
-    """
+    r"""
     The latex printer is turned on with the function (in ga.py) -
 
         Format(Fmode=True,Dmode=True,ipy=False)
@@ -463,7 +471,7 @@ class GaLatexPrinter(LatexPrinter):
     inv_trig_style = None
 
     preamble = \
-"""
+r"""
 \\pagestyle{empty}
 \\usepackage[latin1]{inputenc}
 \\usepackage{amsmath}
@@ -673,7 +681,7 @@ class GaLatexPrinter(LatexPrinter):
                 (1, self._print(Pow(expr.base, -expr.exp)))
         else:
             if expr.base.is_Function:
-                return self._print(expr.base, self._print(expr.exp))
+                return r"%s^%s" % (self._print(expr.base), self._print(expr.exp))
             else:
                 if expr.is_commutative and expr.exp == -1:
                     #solves issue 1030
@@ -785,7 +793,7 @@ class GaLatexPrinter(LatexPrinter):
             # How inverse trig functions should be displayed, formats are:
             # abbreviated: asin, full: arcsin, power: sin^-1
             #inv_trig_style = self._settings['inv_trig_style']
-            inv_trig_style = GaLatexPrinter.inv_trig_style
+            _inv_trig_style = GaLatexPrinter.inv_trig_style
             # If we are dealing with a power-style inverse trig function
             inv_trig_power_case = False
             # If it is applicable to fold the argument brackets
@@ -1023,7 +1031,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
     latex_str = GaLatexPrinter.latex_str + sys.stdout.getvalue()
     GaLatexPrinter.latex_str = ''
     GaLatexPrinter.restore()
-    """
+    r"""
     Each line in the latex_str is interpreted to be an equation or align
     environment.  If the line does not begin with '\begin{align*}' then
     'begin{equation*}' will be added to the beginning of the line and
@@ -1162,7 +1170,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
         print(print_cmd)
 
         os.system(print_cmd)
-        input('!!!!Return to continue!!!!\n')
+        eval(input('!!!!Return to continue!!!!\n'))
 
         if debug:
             os.system(sys_cmd['rm'] + ' ' + filename[:-4] + '.aux ' + filename[:-4] + '.log')
@@ -1184,7 +1192,7 @@ def LatexFormat(Fmode=True, Dmode=True, ipy=False):
     GaLatexPrinter.Dmode = Dmode
     GaLatexPrinter.Fmode = Fmode
     GaLatexPrinter.ipy = ipy
-    GaLatexPrinter.redirect(ipy)
+    GaLatexPrinter.redirect()
     return
 
 prog_str = ''
@@ -1213,8 +1221,8 @@ def Print_Function():
     fct_name = fct_name.replace('_', ' ')
     if GaLatexPrinter.latex_flg:
         #print '#Code for '+fct_name
-        print('##\\begin{lstlisting}[language=Python,showspaces=false,' + \
-              'showstringspaces=false,backgroundcolor=\color{gray},frame=single]')
+        print(r'##\\begin{lstlisting}[language=Python,showspaces=false,' + \
+              r'showstringspaces=false,backgroundcolor=\color{gray},frame=single]')
         print(tmp_str)
         print('##\\end{lstlisting}')
         print('#Code Output:')
@@ -1291,7 +1299,7 @@ def parse_paren(line):
         raise ValueError('Mismatched Parenthesis in: ' + line + '\n')
     if max_level > 0:
         level_lst = []
-        for x in range(max_level + 1):
+        for _x in range(max_level + 1):
             level_lst.append([])
         for group in paren_lst:
             level_lst[group[0]].append(group[1:])
@@ -1414,7 +1422,7 @@ def GAeval(s, pstr=False):
         print(seval)
     return eval(seval, global_dict)
 
-"""
+r"""
 \begin{array}{c}
 \left ( \begin{array}{c} F,\\ \end{array} \right . \\
 \begin{array}{c} F, \\ \end{array} \\

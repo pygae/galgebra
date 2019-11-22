@@ -1,39 +1,22 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
 from distutils.core import Extension
-import sys
-import argparse
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--noconflict', dest='noconflict', action='store_true', help='Prefix modules with namespace "galgebra"')
-parser.set_defaults(noconflict=False)
-(args, _) = parser.parse_known_args()
-noconflict = vars(args)['noconflict']
-# prevent setup() to see the option
-try:
-    sys.argv.remove('--noconflict')
-except Exception as e:
-    pass
-ga_namespace = 'galgebra' if noconflict else ''
 
 VERSION = '0.4.1.1'
 LONG_DESCRIPTION = """
-A symbolic geometric algebra module for python. BSD License.
+Symbolic Geometric Algebra/Calculus package for SymPy. BSD License.
 """
 
 setup(name='galgebra',
       version=VERSION,
-      description='Symbolic Geometric Algebra/Calculus modules for sympy',
+      description='Symbolic Geometric Algebra/Calculus package for SymPy.',
       author='Alan Bromborsky',
       author_email='hadfield.hugo@gmail.com',
-      url='https://github.com/hugohadfield/galgebra',
+      url='https://github.com/pygae/galgebra',
       license='BSD',
-      py_modules=['ga','mv','lt','metric','printer'],
-      #packages=find_packages(''),
-      package_dir={ga_namespace:'galgebra'},
-      install_requires = [
-                'sympy',
-                'numpy'],
+      packages=find_packages(),
+      package_dir={'galgebra':'galgebra'},
+      install_requires = ['sympy'],
       long_description=LONG_DESCRIPTION,
       classifiers=[
             'Development Status :: 4 - Beta',

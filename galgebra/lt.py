@@ -1,5 +1,8 @@
 #linear_transformations
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 import sys
 import inspect
 import types
@@ -9,7 +12,6 @@ from copy import copy
 from . import printer
 from . import metric
 from . import mv
-from . import lt
 from functools import reduce
 
 def aprint(a):
@@ -79,16 +81,15 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
 
 def Matrix_to_dictionary(mat_rep,basis):
     # Convert matrix representation of linear transformation to dictionary
-    mat_rep = Transpose(mat_rep)
     dict_rep = {}
     n = len(basis)
     if mat_rep.rows != n or mat_rep.cols != n:
-        raise ValueError('Matrix and Basis dimensions not equal for Matrix = ' + str(mat))
+        raise ValueError('Matrix and Basis dimensions not equal for Matrix = ' + str(mat_rep))
     n_range = list(range(n))
     for row in n_range:
         dict_rep[basis[row]] = S(0)
         for col in n_range:
-            dict_rep[basis[row]] += mat_rep[row,col]*basis[col]
+            dict_rep[basis[row]] += mat_rep[col,row]*basis[col]
     return dict_rep
 
 def Dictionary_to_Matrix(dict_rep, ga):
@@ -326,6 +327,9 @@ class Lt(object):
         else:
             raise TypeError('Cannot have LT as left argument in Lt __rmul__\n')
 
+    def __repr__(self):
+        return str(self)
+
     def _repr_latex_(self):
         latex_str = printer.GaLatexPrinter.latex(self)
         if r'\begin{align*}' not in latex_str:
@@ -411,7 +415,7 @@ class Lt(object):
 
         latex_str = printer.GaLatexPrinter.latex(self)
 
-        """
+        r"""
         if printer.GaLatexPrinter.ipy:
             if title is None:
                 if r'\begin{align*}' not in latex_str:
@@ -651,6 +655,7 @@ class Mlt(object):
         new_lst_expr = []
         previous = (-1,)
         first = True
+        a = None
         for term in lst_expr:
             if previous == term[2]:
                 coef += term[0]
@@ -684,10 +689,10 @@ class Mlt(object):
                 self.fvalue = (f | self.args[0]).obj
                 self.f = None
             else: #  To be inplemented for f a general pure grade mulitvector
-                self.nargs = nargs
+                self.nargs = len(args)
                 self.fvalue = f
                 self.f = None
-        elif isinstance(f, lt.Lt): #  f is linear transformation T = a1 | f(a2)
+        elif isinstance(f, Lt): #  f is linear transformation T = a1 | f(a2)
             if self.nargs != 2:
                 raise ValueError('For mlt nargs != 2 for linear transformation!\n')
             Ga.make_grad(self.args)
@@ -724,14 +729,14 @@ class Mlt(object):
                     self.fvalue += coef * a_prod
         else:
             if isinstance(f, types.FunctionType): #  Tensor defined by general multi-linear function
-                args, kargs, kwargs, defaults = inspect.getargspec(f)
+                args, _kargs, _kwargs, _defaults = inspect.getargspec(f)
                 self.nargs = len(args)
                 self.f = f
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f(*tuple(Ga.a[0:self.nargs]))
             else: # Tensor defined by component expression
                 self.f = None
-                self.nargs = nargs
+                self.nargs = len(args)
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f
 

@@ -1,8 +1,6 @@
-
 import unittest
-
 from sympy import Symbol
-from ga import Ga
+from galgebra.ga import Ga
 
 class TestMv(unittest.TestCase):
 
@@ -20,7 +18,7 @@ class TestMv(unittest.TestCase):
         self.assertTrue((e_1 ^ e_3).is_base())
         self.assertTrue((e_1 ^ e_2 ^ e_3).is_base())
 
-        self.assertFalse((2*e_1).is_base())
+        self.assertFalse((2 * e_1).is_base())
         self.assertFalse((e_1 + e_2).is_base())
         self.assertFalse((e_3 * 4).is_base())
         self.assertFalse(((3 * e_1) ^ e_2).is_base())
@@ -61,9 +59,3 @@ class TestMv(unittest.TestCase):
         self.assertRaises(ValueError, lambda: m1.blade_coefs([e_1, e_2 ^ e_1]))
         self.assertRaises(ValueError, lambda: m1.blade_coefs([a * e_1]))
         self.assertRaises(ValueError, lambda: m1.blade_coefs([3 * e_3]))
-
-
-if __name__ == '__main__':
-
-    unittest.main()
-
