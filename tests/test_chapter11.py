@@ -1,8 +1,9 @@
 import unittest
 
+from functools import reduce
 from sympy import simplify, sqrt, Rational, Symbol
-from ga import Ga
-from mv import Mv
+from galgebra.ga import Ga
+from galgebra.mv import Mv
 
 
 class TestChapter11(unittest.TestCase):

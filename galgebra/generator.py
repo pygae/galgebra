@@ -2,8 +2,8 @@
 
 from sympy import Symbol
 
-from ga import Ga
-from mv import J, Jinv
+from .ga import Ga
+from .mv import J, Jinv
 
 
 def create_multivector(GA, name):
@@ -119,4 +119,4 @@ def expand(GA, flat_mv):
 
 if __name__ == "__main__":
     GA = Ga('e*1|2|3', g=[1, 1, 1])
-    print format_geometric_algebra(GA)
+    print(format_geometric_algebra(GA))

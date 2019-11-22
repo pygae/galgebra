@@ -2,8 +2,8 @@ import unittest
 
 from sympy import acos, asin, cos, sin, pi, Rational, S, simplify, sqrt, Symbol, symbols
 
-from ga import Ga
-from mv import Mv, J, Jinv, com
+from galgebra.ga import Ga
+from galgebra.mv import Mv, J, Jinv, com
 
 
 class TestPGA(unittest.TestCase):

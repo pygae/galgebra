@@ -4,7 +4,6 @@ import itertools
 import copy
 import numbers
 import operator
-from compiler.ast import flatten
 from operator import itemgetter, mul, add
 from itertools import combinations
 from sympy import Symbol, Function, S, expand, Add, Mul, Pow, Basic, \

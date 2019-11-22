@@ -1,9 +1,10 @@
 import unittest
 
+from functools import reduce
 from itertools import product
 from sympy import Symbol, Matrix, solve, solve_poly_system, cos, sin
-from ga import Ga
-from mv import Mv
+from galgebra.ga import Ga
+from galgebra.mv import Mv
 
 class TestChapter2(unittest.TestCase):
 
@@ -69,7 +70,7 @@ class TestChapter2(unittest.TestCase):
             self.assertEquals(Ak.pure_grade(), k)
             grades = GA.grade_decomposition(Ak)
             self.assertEquals(len(grades), 1)
-            self.assertEquals(grades.keys()[0], k)
+            self.assertEquals(list(grades.keys())[0], k)
 
         # Check for k and l in [0, R.n]
         for k, l in product(range(GA.n + 1), range(GA.n + 1)):
@@ -79,7 +80,7 @@ class TestChapter2(unittest.TestCase):
             self.assertEquals(C.pure_grade(), 0 if C == 0 else k + l)
             grades = GA.grade_decomposition(C)
             self.assertEquals(len(grades), 1)
-            self.assertEquals(grades.keys()[0], 0 if C == 0 else k + l)
+            self.assertEquals(list(grades.keys())[0], 0 if C == 0 else k + l)
 
 
     def test2_9_5(self):
@@ -153,7 +154,7 @@ class TestChapter2(unittest.TestCase):
         M = (x ^ (e_1 + e_2)) - (e_2 ^ (e_1 + e_2))
 
         # Solve the linear system
-        R = solve([L, M], a, b)
+        R = solve([L, M], a, b)     # TODO: fix this...
 
         # Replace symbols
         x = x.subs(R)

@@ -2,8 +2,8 @@ import unittest
 
 from itertools import product
 from sympy import simplify, Symbol, cos, sin, sqrt
-from ga import Ga
-from mv import Mv, cross
+from galgebra.ga import Ga
+from galgebra.mv import Mv, cross
 
 
 class TestChapter3(unittest.TestCase):
@@ -425,7 +425,7 @@ class TestChapter3(unittest.TestCase):
         self.assertEquals(((X ^ A) * B).scalar(), (X * (A < B)).scalar())
         self.assertEquals(((X ^ A) * B).scalar(), 0)    # Which is false
 
-        e_1_grades = GA.grade_decomposition(e_1).keys()
+        e_1_grades = list(GA.grade_decomposition(e_1).keys())
         self.assertEquals(len(e_1_grades), 1)
         self.assertEquals(e_1_grades[0], 1)
 

@@ -3,9 +3,9 @@ import importlib
 
 from sympy import simplify
 
-from ga import Ga
-from mv import Mv, J, Jinv
-from generator import format_geometric_algebra, flatten, expand
+from galgebra.ga import Ga
+from galgebra.mv import Mv, J, Jinv
+from galgebra.generator import format_geometric_algebra, flatten, expand
 
 
 class TestGenerator(unittest.TestCase):

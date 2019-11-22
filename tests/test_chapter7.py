@@ -1,8 +1,8 @@
 import unittest
 
 from sympy import simplify, Symbol, pi, cos, sin, solve, sqrt, Rational, Mod
-from ga import Ga
-from mv import Mv
+from galgebra.ga import Ga
+from galgebra.mv import Mv
 
 
 class TestChapter7(unittest.TestCase):

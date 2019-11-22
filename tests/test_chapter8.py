@@ -2,8 +2,8 @@ import unittest
 
 from sympy import simplify, Symbol, S
 
-from ga import Ga
-from mv import Mv, com
+from galgebra.ga import Ga
+from galgebra.mv import Mv, com
 
 
 class TestChapter8(unittest.TestCase):

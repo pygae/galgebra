@@ -2,9 +2,8 @@ import unittest
 
 from itertools import product
 from sympy import simplify, Symbol, solve_poly_system
-from ga import Ga
-from printer import GaLatexPrinter
-from mv import Mv, com
+from galgebra.ga import Ga
+from galgebra.mv import Mv
 
 
 class TestChapter6(unittest.TestCase):
@@ -151,7 +150,7 @@ class TestChapter6(unittest.TestCase):
         z = GA.mv('z', 'vector')
 
         def hat(M):
-            M_grades = GA.grade_decomposition(M).keys()
+            M_grades = list(GA.grade_decomposition(M).keys())
             self.assertEquals(len(M_grades), 1)
             return ((-1) ** M_grades[0]) * M
         
