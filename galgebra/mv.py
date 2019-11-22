@@ -7,9 +7,8 @@ import operator
 from compiler.ast import flatten
 from operator import itemgetter, mul, add
 from itertools import combinations
-#from numpy.linalg import matrix_rank
 from sympy import Symbol, Function, S, expand, Add, Mul, Pow, Basic, \
-    sin, cos, sinh, cosh, sqrt, trigsimp, \
+    sin, cos, sinh, cosh, sqrt, trigsimp, expand, \
     simplify, diff, Rational, Expr, Abs, collect, combsimp
 from sympy import exp as sympy_exp
 from sympy import N as Nsympy
@@ -122,7 +121,7 @@ class Mv(object):
     def characterise_Mv(self):
         if self.char_Mv:
             return
-        obj = self.obj
+        obj = expand(self.obj)
         if isinstance(obj, numbers.Number):
             self.i_grade = 0
             self.is_blade_rep = True
@@ -136,8 +135,18 @@ class Mv(object):
         if isinstance(obj, Add):
             args = obj.args
         else:
-            args = [obj]
+            if obj in self.Ga.blades_lst:
+                self.is_blade_rep = True
+                self.i_grade = self.Ga.blades_to_grades_dict[obj]
+                self.grades = [self.i_grade]
+                self.char_Mv = True
+                self.blade_flg = True
+                return
+            else:
+                args = [obj]
+
         grades = []
+        #print 'args =', args
         self.is_blade_rep = True
         for term in args:
             if term.is_commutative:
@@ -146,6 +155,7 @@ class Mv(object):
             else:
                 c, nc = term.args_cnc(split_1=False)
                 blade = nc[0]
+                #print 'blade =',blade
                 if blade in self.Ga.blades_lst:
                     grade = self.Ga.blades_to_grades_dict[blade]
                     if not grade in grades:
@@ -181,6 +191,7 @@ class Mv(object):
             if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
                 self.obj = sum([Symbol(root + super_script, real=True) * base
                                 for (super_script, base) in zip(self.Ga.blade_super_scripts[grade], self.Ga.blades[grade])])
+
             else:
                 if isinstance(kwargs['f'], bool):  #Is a multivector function of all coordinates
                     self.obj = sum([Function(root + super_script, real=True)(*self.Ga.coords) * base
@@ -581,28 +592,28 @@ class Mv(object):
     def __repr__(self):
         return str(self)
 
-    def Mv_str(self):
-        # str representation of multivector
+    def raw_str(self):
+        return self.Mv_str(raw=True)
+
+    def Mv_str(self,raw=False):
+        global print_replace_old, print_replace_new
         if self.i_grade == 0:
             return str(self.obj)
         self.obj = expand(self.obj)
         self.char_Mv = False
         self.characterise_Mv()
-        self.obj = metric.Simp.apply(self.obj)
-        #print '\nself.obj =',self.obj
+        if not raw:
+            self.obj = metric.Simp.apply(self.obj)
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
         else:
             base_keys = self.Ga.bases_lst
             grade_keys = self.Ga.bases_to_grades_dict
-        #print '\nblade_rep =', self.is_blade_rep
-        #print '\nGa_ortho =', self.Ga.is_ortho
         if isinstance(self.obj, Add):  # collect coefficients of bases
             if self.obj.is_commutative:
                 return self.obj
             args = self.obj.args
-            #print '\nargs =', args
             terms = {}  # dictionary with base indexes as keys
             grade0 = S(0)
             for arg in args:
@@ -611,10 +622,8 @@ class Mv(object):
                     c = reduce(mul, c)
                 else:
                     c = S(1)
-                #print '\n(c,nc) =', (c, nc)
                 if len(nc) > 0:
                     base = nc[0]
-                    #print '\nbase,base_keys =',base,base_keys
                     if base in base_keys:
                         index = base_keys.index(base)
                         if index in terms:
@@ -622,14 +631,11 @@ class Mv(object):
                             terms[index] = (c_tmp + c, base, g_keys)
                         else:
                             terms[index] = (c, base, grade_keys[base])
-                    #print '\nterms =', terms
                 else:
                     grade0 += c
             if grade0 != S(0):
                 terms[-1] = (grade0, S(1), -1)
-
             terms = terms.items()
-
             sorted_terms = sorted(terms, key=itemgetter(0))  # sort via base indexes
 
             s = str(sorted_terms[0][1][0] * sorted_terms[0][1][1])
@@ -653,11 +659,17 @@ class Mv(object):
                     s += term
             if s[-1] == '\n':
                 s = s[:-1]
+            if printer.print_replace_old is not None:
+                s = s.replace(printer.print_replace_old,printer.print_replace_new)
             return s
         else:
             return str(self.obj)
 
-    def Mv_latex_str(self):
+    def raw_latex_str(self):
+        return self.Mv_latex_str(raw=True)
+
+    def Mv_latex_str(self, raw=False):
+
         if self.obj == 0:
             return ' 0 '
 
@@ -677,7 +689,8 @@ class Mv(object):
         # str representation of multivector
         self.obj = expand(self.obj)
         self.characterise_Mv()
-        self.obj = metric.Simp.apply(self.obj)
+        if not raw:
+            self.obj = metric.Simp.apply(self.obj)
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
@@ -810,6 +823,15 @@ class Mv(object):
         else:
             return A | self
 
+    def __pow__(self,n):  # Integer power operator
+        if not isinstance(n,int):
+            raise ValueError('!!!!Multivector power can only be to integer power!!!!')
+
+        result = S(1)
+        for x in range(n):
+            result *= self
+        return result
+
     def __lshift__(self, A): # anti-comutator (<<)
         return half * (self * A + A * self)
 
@@ -919,6 +941,7 @@ class Mv(object):
 
     def is_blade(self):  # True is self is blade, otherwise False
         # sets self.blade_flg and returns value
+
         if self.blade_flg is not None:
             return self.blade_flg
         else:
@@ -944,6 +967,7 @@ class Mv(object):
         Leo Dorst, 'Geometric Algebra for Computer Science,' p.533
         Sets self.versor_flg and returns value
         """
+
         if self.versor_flg is not None:
             return self.versor_flg
         self.characterise_Mv()
@@ -1068,8 +1092,13 @@ class Mv(object):
 
     def diff(self, coord):
         Dself = Mv(ga=self.Ga)
-        if coord not in self.Ga.coords:
+        if self.Ga.coords is None:
+           Dself.obj = diff(self.obj, coord)
+           return Dself
+        elif coord not in self.Ga.coords:
             if self.Ga.par_coords is None:
+                Dself.obj = diff(self.obj, coord)
+            elif coords not in self.Ga.par_coords:
                 Dself.obj = diff(self.obj, coord)
             else:
                 Dself.obj = diff(self.obj, coord)
@@ -1284,10 +1313,18 @@ class Mv(object):
             return self.Ga.mv(S(1)/self.obj)
         self_sq = self * self
         if self_sq.is_scalar():  # self*self is a scalar
+            """
+            if self_sq.scalar() == S(0):
+                raise ValueError('!!!!In multivector inverse, A*A is zero!!!!')
+            """
             return (S(1)/self_sq.obj)*self
         self_rev = self.rev()
         self_self_rev = self * self_rev
         if(self_self_rev.is_scalar()): # self*self.rev() is a scalar
+            """
+            if self_self_rev.scalar() == S(0):
+                raise ValueError('!!!!In multivector inverse A*A.rev() is zero!!!!')
+            """
             return (S(1)/self_self_rev.obj) * self_rev
         raise TypeError('In inv() for self =' + str(self) + 'self, or self*self or self*self.rev() is not a scalar')
 
@@ -1328,7 +1365,14 @@ class Mv(object):
         return self.Ga.mv(obj)
 
     def expand(self):
-        self.obj = expand(self.obj)
+        coefs,bases = metric.linear_expand(self.obj)
+        new_coefs = []
+        for coef in coefs:
+            new_coefs.append(expand(coef))
+        obj = 0
+        for coef,base in zip(new_coefs,bases):
+            obj += coef * base
+        self.obj = obj
         return self
 
     def list(self):
@@ -1362,6 +1406,36 @@ class Mv(object):
             return self.i_grade
         return -self.grades[-1]
 
+def compare(A,B):
+    """
+    Determine is B = c*A where c is a scalar.  If true return c
+    otherwise return 0.
+    """
+    if isinstance(A, Mv) and isinstance(B, Mv):
+        Acoefs, Abases = metric.linear_expand(A.obj)
+        Bcoefs, Bbases = metric.linear_expand(B.obj)
+        if len(Acoefs) != len(Bcoefs):
+            return 0
+        if Abases != Bbases:
+            return 0
+        if Bcoefs[0] != 0 and Abases[0] == Bbases[0]:
+            c = simplify(Acoefs[0]/Bcoefs[0])
+            print 'c =',c
+        else:
+            return 0
+        for acoef,abase,bcoef,bbase in zip(Acoefs[1:],Abases[1:],Bcoefs[1:],Bbases[1:]):
+            print acoef,'\n',abase,'\n',bcoef,'\n',bbase
+            if bcoef != 0 and abase == bbase:
+                print 'c-a/b =',simplify(c-(acoef/bcoef))
+                if simplify(acoef/bcoef) != c:
+                    return 0
+                else:
+                    pass
+            else:
+                return 0
+        return c
+    else:
+        raise TypeError('In compare both arguments are not multivectors\n')
 
 ################ Scalar Partial Differential Operator Class ############
 
@@ -2178,6 +2252,12 @@ class Dop(object):
             new_terms.append((metric.Simp.apply(coef), pdiff))
         self.terms = new_terms
         return
+
+    def __div__(self, a):
+        if isinstance(a, (Mv, Dop)):
+            raise TypeError('!!!!Can only divide Dop by sympy scalar expression!!!!')
+        else:
+            return (1/a) * self
 
     def __mul__(self, dopr):  # * geometric product
         return Dop.Mul(self, dopr, op='*')

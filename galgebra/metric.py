@@ -257,6 +257,8 @@ class Metric(object):
                   'debug': (False, 'True to print out debugging information'),
                   'gsym': (None, 'String s to use "det("+s+")" function in reciprocal basis'),
                   'sig': ('e', 'Signature of metric, default is (n,0) a Euclidean metric'),
+                  'Isq': ('-', "Sign of square of pseudo-scalar, default is '-'"),
+                  'wedge': (True, 'Use ^ symbol to print basis blades'),
                   'sign_and_indexes': (None, 'bases indexes')}
 
     @staticmethod
@@ -595,6 +597,7 @@ class Metric(object):
         systems or for calculations with general metric.
         """
         self.gsym = kwargs['gsym']
+        self.Isq = kwargs['Isq']  # Sign of I**2, only needed if I**2 not a number
 
         self.debug = debug
         self.is_ortho = False  # Is basis othogonal
@@ -699,6 +702,15 @@ class Metric(object):
                         self.is_ortho = False
                         break
 
+        self.g_is_numeric = True
+
+        for i in self.n_range:
+            for j in self.n_range:
+                if i < j:
+                    if not self.g[i, j].is_number:
+                        self.g_is_numeric = False
+                        break
+
         if self.coords is not None:
             self.derivatives_of_basis()  # calculate derivatives of basis
             if self.norm:  # normalize basis, metric, and derivatives of normalized basis
@@ -716,11 +728,12 @@ class Metric(object):
             else:
                 raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
 
-        self.signature()
-        # Sign of square of pseudo scalar
-        self.e_sq_sgn = '+'
-        if ((self.n*(self.n-1))/2+self.sig[1])%2 == 1:
-            self.e_sq_sgn = '-'
+        if not self.g_is_numeric:
+            self.signature()
+            # Sign of square of pseudo scalar
+            self.e_sq_sgn = '+'
+            if ((self.n*(self.n-1))//2+self.sig[1])%2 == 1:
+                self.e_sq_sgn = '-'
 
         if self.debug:
             print 'signature =', self.sig

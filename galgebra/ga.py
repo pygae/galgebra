@@ -4,7 +4,8 @@ import operator
 import copy
 from sympy import diff, Rational, Symbol, S, Mul, Pow, Add, \
     collect, expand, simplify, eye, trigsimp, sin, cos, sinh, cosh, \
-    symbols, sqrt, Abs, numbers
+    symbols, sqrt, Abs, numbers, Integer
+import sympy
 from collections import OrderedDict
 #from sympy.core.compatibility import combinations
 from sympy.combinatorics.permutations import Permutation
@@ -17,6 +18,9 @@ import lt
 half = Rational(1, 2)
 one = S(1)
 zero = S(0)
+
+def all_same(items):
+    return all(x == items[0] for x in items)
 
 
 def is_bases_product(w):
@@ -309,6 +313,8 @@ class Ga(metric.Metric):
 
         kwargs = metric.test_init_slots(metric.Metric.init_slots, **kwargs)
 
+        self.wedge_print = kwargs['wedge']
+
         if printer.GaLatexPrinter.latex_flg:
             printer.GaLatexPrinter.restore()
             Ga.restore = True
@@ -344,14 +350,28 @@ class Ga(metric.Metric):
 
         self.lt_flg = False
 
-
         # Calculate normalized pseudo scalar (I**2 = +/-1)
-        if self.e_sq_sgn == '+': # I**2 = 1
-            self.i = self.e/sqrt(self.e_sq)
-            self.i_inv = self.i
-        else:  # I**2 = -1
-            self.i = self.e/sqrt(-self.e_sq)
-            self.i_inv = -self.i
+
+        self.sing_flg = False
+
+        if self.e_sq.is_number:
+            if self.e_sq == S(0):
+                self.sing_flg = True
+                print '!!!!If I**2 = 0, I cannot be normalized!!!!'
+                #raise ValueError('!!!!If I**2 = 0, I cannot be normalized!!!!')
+            if self.e_sq > S(0):
+                self.i = self.e/sqrt(self.e_sq)
+                self.i_inv = self.i
+            else:  # I**2 = -1
+                self.i = self.e/sqrt(-self.e_sq)
+                self.i_inv = -self.i
+        else:
+            if self.Isq == '+': # I**2 = 1
+                self.i = self.e/sqrt(self.e_sq)
+                self.i_inv = self.i
+            else:  # I**2 = -1
+                self.i = self.e/sqrt(-self.e_sq)
+                self.i_inv = -self.i
 
         if Ga.restore:  # restore printer to appropriate enhanced mode after ga is instantiated
             printer.GaLatexPrinter.redirect()
@@ -393,10 +413,10 @@ class Ga(metric.Metric):
     def __str__(self):
         return self.name
 
-    def E(self):
+    def E(self):  # Unnoromalized pseudo-scalar
         return self.e
 
-    def I(self):
+    def I(self):  # Noromalized pseudo-scalar
         return self.i
     
     def I_inv(self):
@@ -633,7 +653,23 @@ class Ga(metric.Metric):
             blades = []
             super_scripts = []
             for base_index in grade_index:
-                symbol_str = (''.join([str(self.basis[i]) + '^' for i in base_index]))[:-1]
+                if self.wedge_print:
+                    symbol_str = (''.join([str(self.basis[i]) + '^' for i in base_index]))[:-1]
+                else:
+                    sub_str = []
+                    root_str = []
+                    for i in base_index:
+                        basis_vec_str = str(self.basis[i])
+                        split_lst = basis_vec_str.split('_')
+                        if len(split_lst) != 2:
+                            raise ValueError('!!!!Incompatible basis vector '+basis_vec_str+' for wedge_print = False!!!!')
+                        else:
+                            sub_str.append(split_lst[1])
+                            root_str.append(split_lst[0])
+                    if all_same(root_str):
+                            symbol_str = root_str[0] + '_' + ''.join(sub_str)
+                    else:
+                        raise ValueError('!!!!No unique root symbol for wedge_print = False!!!!')
                 blade_symbol = Symbol(symbol_str, commutative=False)
                 blades.append(blade_symbol)
                 self.blades_lst.append(blade_symbol)
@@ -1835,6 +1871,8 @@ class Sm(Ga):
 
     def __init__(self, *kargs, **kwargs):
 
+        #print '!!!Enter Sm!!!'
+
         if printer.GaLatexPrinter.latex_flg:
             printer.GaLatexPrinter.restore()
             Ga.restore = True
@@ -1843,6 +1881,7 @@ class Sm(Ga):
         u = kargs[0]  # Coordinate map or vector embedding to define submanifold
         coords = kargs[1]  # List of cordinates
         ga = kwargs['ga']  # base geometric algebra
+        self.wedge_print = kwargs['wedge']
         if ga is None:
             raise ValueError('Base geometric algebra must be specified for submanifold.')
 
@@ -1859,11 +1898,15 @@ class Sm(Ga):
         basis_str = basis_str[:-1]
         """
 
+        #print 'u =', u
+
         if isinstance(u,mv.Mv):  #Define vector manifold
             self.ebasis = []
             for coord in coords:
                 #Partial derivation of vector function to get basis vectors
                 self.ebasis.append(u.diff(coord))
+
+            #print 'sm ebasis =', self.ebasis
 
             self.g = []
             for b1 in self.ebasis:
@@ -1884,6 +1927,8 @@ class Sm(Ga):
                 for u_j in coords:
                     tmp.append(diff(x_i, u_j))
                 dxdu.append(tmp)
+
+            #print 'dxdu =', dxdu
 
             sub_pairs = zip(ga.coords, u)
 

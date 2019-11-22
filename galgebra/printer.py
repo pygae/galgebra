@@ -22,10 +22,6 @@ except ImportError:
     pass
 
 from inspect import getouterframes, currentframe
-import ga
-import mv
-import lt
-import metric
 
 Format_cnt = 0
 
@@ -55,9 +51,18 @@ $\\DeclareMathOperator{\Tr}{Tr}
 \\newcommand{\\eval}[2]{\\left . {#1} \\right |_{#2}}$
 """
 
+print_replace_old = None
+print_replace_new = None
+
 SYS_CMD = {'linux2': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
            'win32': {'rm': 'del', 'evince': '', 'null': ' > NUL', '&': ''},
            'darwin': {'rm': 'rm', 'evince': 'open', 'null': ' > /dev/null', '&': '&'}}
+
+def print_replace(old='^',new='*'):
+    global print_replace_old, print_replace_new
+    print_replace_old = old
+    print_replace_new = new
+    return
 
 def isinteractive():  #Is ipython running
     """
@@ -181,8 +186,11 @@ def find_functions(expr):
 
 
 def coef_simplify(expr):
+    """
     fcts = find_functions(expr)
     return expr.collect(fcts)
+    """
+    return expr
 
 
 def oprint(*args, **kwargs):
@@ -452,6 +460,8 @@ class GaLatexPrinter(LatexPrinter):
     latex_str = ''
     ipy = False
 
+    inv_trig_style = None
+
     preamble = \
 """
 \\pagestyle{empty}
@@ -515,7 +525,7 @@ class GaLatexPrinter(LatexPrinter):
     greek_translated = {'lamda': 'lambda', 'Lamda': 'Lambda'}
 
     other = set(['aleph', 'beth', 'daleth', 'gimel', 'ell', 'eth',
-                 'hbar', 'hslash', 'mho'])
+                 'hbar', 'hslash', 'mho', 'infty'])
 
     special_alphabet = list(reversed(sorted(list(greek) + list(other), key=len)))
 
@@ -704,6 +714,7 @@ class GaLatexPrinter(LatexPrinter):
                 for glyph in GaLatexPrinter.special_alphabet:
                     if glyph in tmp:
                         parse_sym = '????' + str(i_sub)
+                        i_sub += 1
                         parse_dict[parse_sym] = '\\' + glyph + ' '
                         tmp = tmp.replace(glyph, parse_sym)
 
@@ -772,22 +783,23 @@ class GaLatexPrinter(LatexPrinter):
             args = [str(self._print(arg)) for arg in expr.args]
             # How inverse trig functions should be displayed, formats are:
             # abbreviated: asin, full: arcsin, power: sin^-1
-            inv_trig_style = self._settings['inv_trig_style']
+            #inv_trig_style = self._settings['inv_trig_style']
+            inv_trig_style = GaLatexPrinter.inv_trig_style
             # If we are dealing with a power-style inverse trig function
             inv_trig_power_case = False
             # If it is applicable to fold the argument brackets
             can_fold_brackets = self._settings['fold_func_brackets'] and \
                 len(args) == 1 and not self._needs_function_brackets(expr.args[0])
 
-            inv_trig_table = ["asin", "acos", "atan", "acot"]
+            inv_trig_table = ["asin", "acos", "atan", "acot","acosh","asinh","atanh"]
 
             # If the function is an inverse trig function, handle the style
             if func in inv_trig_table:
-                if inv_trig_style == "abbreviated":
+                if GaLatexPrinter.inv_trig_style == "abbreviated":
                     func = func
-                elif inv_trig_style == "full":
+                elif GaLatexPrinter.inv_trig_style == "full":
                     func = "arc" + func[1:]
-                elif inv_trig_style == "power":
+                elif GaLatexPrinter.inv_trig_style == "power":
                     func = func[1:]
                     inv_trig_power_case = True
 
@@ -946,7 +958,7 @@ def print_latex(expr, **settings):
     print latex(expr, **settings)
 
 
-def Format(Fmode=True, Dmode=True, dop=1):
+def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
     """
     Set modes for latex printer -
 
@@ -959,6 +971,7 @@ def Format(Fmode=True, Dmode=True, dop=1):
 
     GaLatexPrinter.Dmode = Dmode
     GaLatexPrinter.Fmode = Fmode
+    GaLatexPrinter.inv_trig_style = inverse
 
     if Format_cnt == 0:
         Format_cnt += 1
