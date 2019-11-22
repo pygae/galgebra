@@ -2582,7 +2582,7 @@ def printrref(matrix, vars="xyzuvwrs"):   # Print rref of matrix with variables.
         print(result)
 
 def com(A, B):
-    return ga.Ga.com(A, B)
+    return A.Ga.com(A, B)
 
 def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors u and v.
     rows, cols = u.shape
