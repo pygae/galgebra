@@ -1,17 +1,17 @@
-#metric.py
+"""
+Metric Tensor and Derivatives of Basis Vectors.
+"""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 import sys
 import copy
 import itertools
 from sympy import diff, trigsimp, Matrix, Rational, \
     sqf_list, Symbol, sqrt, eye, zeros, S, expand, Mul, \
     Add, simplify, together, ratsimp, Expr, latex, \
-    numbers, Function
+    Function
 
 from . import printer
+from . import utils
 
 half = Rational(1, 2)
 
@@ -23,17 +23,6 @@ def apply_function_list(f,x):
         return fx
     else:
         return f(x)
-
-def in_ipynb():  # Is Ipython notebook or qtconsole running program
-    try:
-        cfg = get_ipython().config
-        if cfg['IPKernelApp']['parent_appname'] == 'ipython-notebook' or \
-           cfg['IPKernelApp']['parent_appname'] == 'ipython-qtconsole':
-            return True
-        else:
-            return False
-    except NameError:
-        return False
 
 def str_to_lst(s):
     if '[' in s:
@@ -184,7 +173,7 @@ def test_init_slots(init_slots, **kwargs):
 
 
 class Simp:
-    modes = (simplify, trigsimp)
+    modes = [simplify]
 
     @staticmethod
     def profile(s):
@@ -202,22 +191,12 @@ class Simp:
                 obj += coef * base
         else:
             for (coef, base) in zip(coefs, bases):
-                obj += modes(coef) * base
+                obj += Simp.modes(coef) * base
         return obj
 
     @staticmethod
     def applymv(mv):
-        (coefs, bases) = linear_expand(mv.obj)
-        obj = S(0)
-        if isinstance(Simp.modes, list) or isinstance(Simp.modes, tuple):
-            for (coef, base) in zip(coefs, bases):
-                for mode in Simp.modes:
-                    coef = mode(coef)
-                obj += coef * base
-        else:
-            for (coef, base) in zip(coefs, bases):
-                obj += modes(coef) * base
-        mv.obj = obj
+        mv.obj = Simp.apply(mv.obj)
         return mv
 
 
@@ -307,7 +286,7 @@ class Metric(object):
             s = self.n * (s[:-1] + ',')
             s = s[:-1]
 
-        if isinstance(s, str):
+        if utils.isstr(s):
             rows = s.split(',')
             n_rows = len(rows)
 
@@ -370,17 +349,18 @@ class Metric(object):
                 m = Matrix(m)
                 return m
 
+    def derivatives_of_g(self):
+        # dg[i][j][k] = \partial_{x_{k}}g_{ij}
 
-    def derivatives_of_basis(self):  # Derivatives of basis vectors from Christ-Awful symbols
+        dg = [[[
+            diff(self.g[i, j], x_k)
+            for x_k in self.coords]
+            for j in self.n_range]
+            for i in self.n_range]
 
-        dg = []  # dg[i][j][k] = \partial_{x_{k}}g_{ij}
+        return dg
 
-        for i in self.n_range:
-            dg_row = []
-            for j in self.n_range:
-                dg_row.append([diff(self.g[i, j], coord) for coord in self.coords])
-            dg.append(dg_row)
-
+    def init_connect_flg(self):
         # See if metric is flat
 
         self.connect_flg = False
@@ -388,29 +368,34 @@ class Metric(object):
         for i in self.n_range:
             for j in self.n_range:
                 for k in self.n_range:
-                    if dg[i][j][k] != 0:
+                    if self.dg[i][j][k] != 0:
                         self.connect_flg = True
                         break
+
+    def derivatives_of_basis(self):  # Derivatives of basis vectors from Christoffel symbols
+
+        n_range = self.n_range
+
+        self.dg = dg = self.derivatives_of_g()
+
+        self.init_connect_flg()
 
         if not self.connect_flg:
             self.de = None
             return
 
-        n_range = list(range(len(self.basis)))
-
         de = []  # de[i][j] = \partial_{x_{i}}e^{x_{j}}
 
         # Christoffel symbols of the first kind, \Gamma_{ijk}
+        # TODO handle None
+        dG = self.Christoffel_symbols(mode=1)
 
-        for i in n_range:
-            de_row = []
-            for j in n_range:
-                Gamma = []
-                for k in n_range:
-                    gamma = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
-                    Gamma.append(Simp.apply(gamma))
-                de_row.append(sum([gamma * base for (gamma, base) in zip(Gamma, self.r_symbols)]))
-            de.append(de_row)
+        # \frac{\partial e_{j}}{\partial x^{i}} = \Gamma_{ijk} e^{k}
+        de = [[
+            sum([Gamma_ijk * e__k for (Gamma_ijk, e__k) in zip(dG[i][j], self.r_symbols)])
+            for j in n_range]
+        for i in n_range]
+
         if self.debug:
             printer.oprint('D_{i}e^{j}', de)
         self.de = de
@@ -440,73 +425,56 @@ class Metric(object):
         mode = 2  Christoffel symbols of the second kind
         """
 
+        # See if connection is zero
+        if not self.connect_flg:
+            return
+
+        n_range = self.n_range
+
+        # dg[i][j][k] = \partial_{x_{k}}g_{ij}
+        dg = self.dg
+            
         if mode == 1:
-            dg = []  # dg[i][j][k] = \partial_{x_{k}}g_{ij}
-
-            for i in self.n_range:
-                dg_row = []
-                for j in self.n_range:
-                    dg_row.append([diff(self.g[i, j], coord) for coord in self.coords])
-                dg.append(dg_row)
-
-            # See if connection is zero
-
-            self.connect_flg = False
-
-            for i in self.n_range:
-                for j in self.n_range:
-                    for k in self.n_range:
-                        if dg[i][j][k] != 0:
-                            self.connect_flg = True
-                            break
-
-            if not self.connect_flg:
-                self.de = None
-                return
-
-            n_range = list(range(len(self.basis)))
 
             dG = []  # dG[i][j][k] = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
 
             # Christoffel symbols of the first kind, \Gamma_{ijk}
             # \partial_{x^{i}}e_{j} = \Gamma_{ijk}e^{k}
 
-            for i in n_range:
-                dG_j = []
-                for j in n_range:
-                    dG_k = []
-                    for k in n_range:
-                        gamma = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
-                        dG_k.append(Simp.apply(gamma))
-                    dG_j.append(dG_k)
-                dG.append(dG_j)
+            def Gamma_ijk(i, j, k):
+                return half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
+
+            dG = [[[
+                Simp.apply(Gamma_ijk(i, j, k))
+                for k in n_range]
+                for j in n_range]
+                for i in n_range]
+
             if self.debug:
                 printer.oprint('Gamma_{ijk}', dG)
             return dG
 
         elif mode == 2:
+            # TODO handle None
             Gamma1 = self.Christoffel_symbols(mode=1)
-            if self.connect_flg:  # Connection is not zero
-                self.inverse_metric()
 
-                # Christoffel symbols of the second kind, \Gamma_{ij}^{k} = \Gamma_{ijl}g^{lk}
-                # \partial_{x^{i}}e_{j} = \Gamma_{ij}^{k}e_{k}
+            self.inverse_metric()
 
-                Gamma = []
-                for Gi in Gamma1:
-                    Gamma_i = []
-                    for Gij in Gi:
-                        Gamma_ij = []
-                        Gamma_ijk = S(0)
-                        l = 0
-                        for Gijl in Gij:
-                            Gamma_ijk += Gijl * g(l,)
+            # Christoffel symbols of the second kind, \Gamma_{ij}^{k} = \Gamma_{ijl}g^{lk}
+            # \partial_{x^{i}}e_{j} = \Gamma_{ij}^{k}e_{k}
 
-            else:
-                return
+            def Gamma2_ijk(i, j, k):
+                return sum([Gamma_ijl * self.g_inv[l, k] for l, Gamma_ijl in enumerate(Gamma1[i][j])])
 
+            Gamma2 = [[[
+                Simp.apply(Gamma2_ijk(i, j, k))
+                for k in n_range]
+                for j in n_range]
+                for i in n_range]
+
+            return Gamma2
         else:
-            raise ValueError('In Christoffle_symobols mode = ' +str(mode) +' is not allowed\n')
+            raise ValueError('In Christoffle_symobols mode = ' + str(mode) +' is not allowed\n')
 
     def normalize_metric(self):
 
@@ -564,7 +532,7 @@ class Metric(object):
                 return
             else:
                 raise ValueError('self.sig = ' + str(self.sig) + ' > self.n, not an allowed hint')
-        if isinstance(self.sig,str):
+        if utils.isstr(self.sig):
             if self.sig == 'e':  # Euclidean metric signature
                 self.sig = (self.n, 0)
             elif self.sig == 'm+':  # Minkowski metric signature (n-1,1)
@@ -584,7 +552,7 @@ class Metric(object):
         self.name = 'GA' + str(Metric.count)
         Metric.count += 1
 
-        if not isinstance(basis, str):
+        if not utils.isstr(basis):
             raise TypeError('"' + str(basis) + '" must be string')
 
         X = kwargs['X']  # Vector manifold
@@ -659,12 +627,12 @@ class Metric(object):
                         printer.oprint('X_{i}', X, 'D_{i}X_{j}', dX)
 
         else:  # metric is symbolic or list of lists of functions of coordinates
-            if isinstance(g, str):  # metric elements are symbols or constants
+            if utils.isstr(g):  # metric elements are symbols or constants
                 if g == 'g':  # general symbolic metric tensor (g_ij functions of position)
                     g_lst = []
                     g_inv_lst = []
-                    for coord1 in self.coords:
-                        i1 = str(coord2)
+                    for coord in self.coords:
+                        i1 = str(coord)
                         tmp = []
                         tmp_inv = []
                         for coord2 in self.coords:
@@ -717,6 +685,8 @@ class Metric(object):
         if self.coords is not None:
             self.derivatives_of_basis()  # calculate derivatives of basis
             if self.norm:  # normalize basis, metric, and derivatives of normalized basis
+                if not self.is_ortho:
+                    raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
                 self.e_norm = []
                 for i in self.n_range:
                     self.e_norm.append(square_root_of_expr(self.g[i, i]))

@@ -1,12 +1,13 @@
 import sys
 import unittest
 from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
-from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter
+from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter, ZERO_STR
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Mv, Nga
 # for backward compatibility
-from galgebra.mv import MV, ONE, ZERO, HALF
+from galgebra.mv import ONE, ZERO, HALF
 from galgebra import ga
+from galgebra import utils
 
 def F(x):
     global n, nbar
@@ -14,7 +15,7 @@ def F(x):
     return(Fx)
 
 def make_vector(a, n=3, ga=None):
-    if isinstance(a,str):
+    if utils.isstr(a):
         v = zero
         for i in range(n):
             a_i = Symbol(a+str(i+1))
@@ -97,7 +98,7 @@ class TestTest(unittest.TestCase):
         assert str(a|(b^c^d)) == '(a.d)*b^c - (a.c)*b^d + (a.b)*c^d'
 
         expr = (a|(b^c))+(c|(a^b))+(b|(c^a)) # = (a.b)*c - (b.c)*a - ((a.b)*c - (b.c)*a)
-        assert str(expr.simplify()) == '0'
+        assert str(expr.simplify()) == ZERO_STR
 
         assert str(a*(b^c)-b*(a^c)+c*(a^b)) == '3*a^b^c'
         assert str(a*(b^c^d)-b*(a^c^d)+c*(a^b^d)-d*(a^b^c)) == '4*a^b^c^d'
@@ -137,7 +138,7 @@ class TestTest(unittest.TestCase):
         assert str(grad<A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
         assert str(grad>A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
         assert str(grad<B) == '(-D{y}B__xy - D{z}B__xz)*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z'
-        assert str(grad>B) == '0'
+        assert str(grad>B) == ZERO_STR
         assert str(grad<C) == 'D{x}C__x + D{y}C__y + D{z}C__z + (-D{y}C__xy - D{z}C__xz)*e_x + (D{x}C__xy - D{z}C__yz)*e_y + (D{x}C__xz + D{y}C__yz)*e_z + D{z}C__xyz*e_x^e_y - D{y}C__xyz*e_x^e_z + D{x}C__xyz*e_y^e_z'
         assert str(grad>C) == 'D{x}C__x + D{y}C__y + D{z}C__z + D{x}C*e_x + D{y}C*e_y + D{z}C*e_z'
 
@@ -372,8 +373,8 @@ class TestTest(unittest.TestCase):
         assert str(Ap) == '-2*(P2.a)*P1'
         assert str(Am) == '-2*(P1.a)*P2'
 
-        assert str(Ap*Ap) == '0'
-        assert str(Am*Am) == '0'
+        assert str(Ap*Ap) == ZERO_STR
+        assert str(Am*Am) == ZERO_STR
 
         aB = a|B
         assert str(aB) == '-(P2.a)*P1 + (P1.a)*P2'
@@ -406,27 +407,27 @@ class TestTest(unittest.TestCase):
 
         w = (E1|e2)
         w = w.expand()
-        assert str(w) == '0'
+        assert str(w) == ZERO_STR
 
         w = (E1|e3)
         w = w.expand()
-        assert str(w) == '0'
+        assert str(w) == ZERO_STR
 
         w = (E2|e1)
         w = w.expand()
-        assert str(w) == '0'
+        assert str(w) == ZERO_STR
 
         w = (E2|e3)
         w = w.expand()
-        assert str(w) == '0'
+        assert str(w) == ZERO_STR
 
         w = (E3|e1)
         w = w.expand()
-        assert str(w) == '0'
+        assert str(w) == ZERO_STR
 
         w = (E3|e2)
         w = w.expand()
-        assert str(w) == '0'
+        assert str(w) == ZERO_STR
 
         w = (E1|e1)
         w = (w.expand()).scalar()

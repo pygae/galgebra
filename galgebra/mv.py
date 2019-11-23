@@ -1,8 +1,7 @@
-#mv.py
+"""
+Multivector and Linear Multivector Differential Operator
+"""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 import itertools
 import copy
 import numbers
@@ -19,6 +18,8 @@ from sympy import exp as sympy_exp
 from sympy import N as Nsympy
 from . import printer
 from . import metric
+from . import utils
+from .printer import ZERO_STR
 import sys
 from functools import reduce, cmp_to_key
 
@@ -90,10 +91,6 @@ class Mv(object):
         return I, basis, x
 
     @staticmethod
-    def get_Ga(name):
-        return(Mv.ga[name])
-
-    @staticmethod
     def Format(mode=1):
         Mv.latex_flg = True
         Mv.fmt = mode
@@ -121,7 +118,7 @@ class Mv(object):
         elif op == '>':
             return A > B
         else:
-            raise ValeError('Operation ' + op + 'not allowed in Mv.Mul!')
+            raise ValueError('Operation ' + op + 'not allowed in Mv.Mul!')
         return
 
     def characterise_Mv(self):
@@ -192,7 +189,7 @@ class Mv(object):
 
         grade = kargs[1]
         self.i_grade = grade
-        if isinstance(kargs[0],str):
+        if utils.isstr(kargs[0]):
             root = kargs[0] + '__'
             if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
                 self.obj = sum([Symbol(root + super_script, real=True) * base
@@ -219,7 +216,7 @@ class Mv(object):
     def make_scalar(self, *kargs, **kwargs):
     # Called by __init__ to make a scalar multivector
 
-        if isinstance(kargs[0],str):
+        if utils.isstr(kargs[0]):
             if 'f' in kwargs and isinstance(kwargs['f'],bool):
                 if kwargs['f']:
                     self.obj = Function(kargs[0])(*self.Ga.coords)
@@ -318,7 +315,7 @@ class Mv(object):
         if len(kargs) == 0:  # default constructor 0
             self.obj = S(0)
             self.i_grade = 0
-        elif len(kargs) == 1 and not isinstance(kargs[0], str):  # copy constructor
+        elif len(kargs) == 1 and not utils.isstr(kargs[0]):  # copy constructor
             x = kargs[0]
             if isinstance(x, Mv):
                 self.obj = x.obj
@@ -333,10 +330,10 @@ class Mv(object):
                 self.characterise_Mv()
         else:
             if not isinstance(kargs[1],int):
-                if isinstance(kargs[1],str) and kargs[1] not in Mv.init_dict:
+                if utils.isstr(kargs[1]) and kargs[1] not in Mv.init_dict:
                     raise ValueError('"' + str(kargs[1]) + '" not an allowed multivector type.')
 
-            if isinstance(kargs[1],str):
+            if utils.isstr(kargs[1]):
                 mode = kargs[1]
                 kargs = [kargs[0]] + list(kargs[2:])
                 Mv.init_dict[mode](self, *kargs, **kwargs)
@@ -346,7 +343,7 @@ class Mv(object):
                 else:
                     Mv.init_dict['grade'](self, *kargs, **kwargs)
 
-            if isinstance(kargs[0],str):
+            if utils.isstr(kargs[0]):
                 self.title = kargs[0]
             self.characterise_Mv()
 
@@ -676,7 +673,7 @@ class Mv(object):
     def Mv_latex_str(self):
 
         if self.obj == 0:
-            return ' 0 '
+            return ZERO_STR
 
         self.first_line = True
 
@@ -695,6 +692,9 @@ class Mv(object):
         self.obj = expand(self.obj)
         self.characterise_Mv()
         self.obj = metric.Simp.apply(self.obj)
+
+        if self.obj == S(0):
+            return ZERO_STR
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades_lst
@@ -1104,7 +1104,7 @@ class Mv(object):
         elif coord not in self.Ga.coords:
             if self.Ga.par_coords is None:
                 Dself.obj = diff(self.obj, coord)
-            elif coords not in self.Ga.par_coords:
+            elif coord not in self.Ga.par_coords:
                 Dself.obj = diff(self.obj, coord)
             else:
                 Dself.obj = diff(self.obj, coord)
@@ -1471,7 +1471,7 @@ class Sdop(object):
     def TSimplify(self):
         new_terms = []
         for (coef, pdiff) in self.terms:
-            new_terms.append((Simp.apply(coef), pdiff))
+            new_terms.append((metric.Simp.apply(coef), pdiff))
         self.terms = new_terms
         return
 
@@ -1519,7 +1519,7 @@ class Sdop(object):
 
     def Sdop_str(self):
         if len(self.terms) == 0:
-            return '0'
+            return ZERO_STR
 
         self.sort_terms()
         s = ''
@@ -1547,7 +1547,7 @@ class Sdop(object):
 
     def Sdop_latex_str(self):
         if len(self.terms) == 0:
-            return '0'
+            return ZERO_STR
 
         self.sort_terms()
 
@@ -1731,9 +1731,8 @@ class Sdop(object):
 
         elif isinstance(sdop, tuple):
             self.term.append(sdop)
-            self = Dfop.consolidate_coefs(self)
+            self = Sdop.consolidate_coefs(self)
             return
-
         else:
             self.terms.append((sdop, self.Ga.Pdop_identity))
             self = Sdop.consolidate_coefs(self)
@@ -1745,7 +1744,8 @@ class Sdop(object):
     def __rsub__(self, sdop):
         return Sdop.Add(-self, sdop)
 
-    def __mul__(sdopl, sdopr):
+    def __mul__(self, sdopr):
+        sdopl = self
         if isinstance(sdopl, Sdop) and isinstance(sdopr, Sdop):
             if sdopl.Ga != sdopr.Ga:
                 raise ValueError('In Sdop.__mul__ Sdop arguments are not from same geometric algebra')
@@ -2153,7 +2153,7 @@ class Dop(object):
                 raise ValueError('In Dop.Add Dop arguments are not from same geometric algebra')
 
             if dop1.cmpflg != dop2.cmpflg:
-                raise ValueError('In Dop.Add complement flags have different values.')
+                raise ValueError('In Dop.Add complement flags have different values: %s vs. %s' % (dop1.cmpflg, dop2.cmpflg))
 
             coefs1, pdiffs1 = list(zip(*dop1.terms))
             coefs2, pdiffs2 = list(zip(*dop2.terms))
@@ -2399,7 +2399,7 @@ class Dop(object):
 
     def Dop_str(self):
         if len(self.terms) == 0:
-            return ' 0 '
+            return ZERO_STR
 
         mv_terms = self.Dop_mv_expand(modes=simplify)
         s = ''
@@ -2423,7 +2423,7 @@ class Dop(object):
                             s += '-' + str_base + '*' + str_sdop[1:]
                     else:
                         if self.cmpflg:
-                            s += str_dop + '*' + str_base
+                            s += str_sdop + '*' + str_base
                         else:
                             s += str_base + '*' + str_sdop
             s += ' + '
@@ -2433,7 +2433,7 @@ class Dop(object):
 
     def Dop_latex_str(self):
         if len(self.terms) == 0:
-            return ' 0 '
+            return ZERO_STR
 
         self.consolidate_coefs()
 
@@ -2581,8 +2581,11 @@ def printrref(matrix, vars="xyzuvwrs"):   # Print rref of matrix with variables.
         result += ' = ' + str(rrefmatrix[i, cols - 1])
         print(result)
 
+
 def com(A, B):
-    return A.Ga.com(A, B)
+    raise ImportError(
+        """mv.com is removed, please use galgebra.ga.Ga.com(A, B) instead.""")
+
 
 def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors u and v.
     rows, cols = u.shape
@@ -2707,89 +2710,6 @@ def scalar(A):
     if not isinstance(A,Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.scalar()
-
-################################# MV class for backward compatibility ###################
-
-class MV(Mv):
-
-    @staticmethod
-    def convert_metric(gstr):
-        if gstr[0] is '[' and gstr[-1] is ']':
-            gstr_lst = gstr[1:-1].split(',')
-            g = []
-            for x in gstr_lst:
-                g.append(int(x))
-            return g
-        else:
-            return gstr
-
-    @staticmethod
-    def setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None)):
-
-        if isinstance(metric,str):
-            metric = MV.convert_metric(metric)
-        if curv != (None,None):
-            MV.GA = ga.Ga(basis, g=None, coords=coords, X=curv[0], debug=debug)
-        else:
-            MV.GA = ga.Ga(basis, g=metric, coords=coords, X=curv[0], debug=debug)
-        MV.I = MV.GA.i
-        MV.metric = MV.GA.g
-        if coords is not None:
-            (MV.grad,MV.rgrad) = MV.GA.grads()
-            return list(MV.GA.mv()) + [MV.grad]
-        else:
-            return list(MV.GA.mv())
-
-
-    def __init__(self, base, mvtype, fct=False, blade_rep=True):
-        Mv.__init__(self, base, mvtype, f=fct, ga=MV.GA)
-
-    def Fmt(self, fmt=1, title=None):
-        print(Mv.Fmt(self, fmt=fmt, title=title))
-        return
-
-def ReciprocalFrame(basis, mode='norm'):
-
-    GA = basis[0].Ga
-    dim = len(basis)
-    indexes = tuple(range(dim))
-    index = [()]
-
-    for i in indexes[-2:]:
-        index.append(tuple(combinations(indexes, i + 1)))
-
-    MFbasis = []
-
-    for igrade in index[-2:]:
-        grade = []
-        for iblade in igrade:
-            blade = Mv(1, 'scalar', ga=GA)
-            for ibasis in iblade:
-                blade ^= basis[ibasis]
-            blade = blade.trigsimp()
-            grade.append(blade)
-        MFbasis.append(grade)
-    E = MFbasis[-1][0]
-    E_sq = trigsimp((E * E).scalar(),)
-
-    duals = copy.copy(MFbasis[-2])
-
-    duals.reverse()
-    sgn = 1
-    rbasis = []
-    for dual in duals:
-        recpv = (sgn * dual * E).trigsimp()
-        rbasis.append(recpv)
-        sgn = -sgn
-
-    if mode != 'norm':
-        rbasis.append(E_sq)
-    else:
-        for i in range(dim):
-            rbasis[i] = rbasis[i] / E_sq
-
-    return tuple(rbasis)
-
 
 if __name__ == "__main__":
     pass

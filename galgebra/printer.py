@@ -1,8 +1,6 @@
-#printer.py
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+r"""
+ANSI Enhanced Text Printing, Text Printer and LaTeX Printer for all Geometric Algebra classes
+"""
 
 import os
 import sys
@@ -15,6 +13,7 @@ from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
+from . import utils
 
 try:
     from IPython.display import display, Latex, Math, display_latex
@@ -27,12 +26,14 @@ except ImportError:
 
 from inspect import getouterframes, currentframe
 
+ZERO_STR = ' 0 '
+
 Format_cnt = 0
 
 ip_cmds = \
-r"""
-$\\DeclareMathOperator{\Tr}{Tr}
-\\DeclareMathOperator{\Adj}{Adj}
+"""
+$\\DeclareMathOperator{\\Tr}{Tr}
+\\DeclareMathOperator{\\Adj}{Adj}
 \\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
 \\newcommand{\\lp}{\\left (}
 \\newcommand{\\rp}{\\right )}
@@ -59,7 +60,8 @@ print_replace_old = None
 print_replace_new = None
 
 SYS_CMD = {'linux2': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
-           'win32': {'rm': 'del', 'evince': '', 'null': ' > NUL', '&': ''},
+           'linux': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
+           'win32': {'rm': 'del', 'evince': 'start', 'null': ' > NUL', '&': ''},
            'darwin': {'rm': 'rm', 'evince': 'open', 'null': ' > /dev/null', '&': '&'}}
 
 def print_replace(old='^',new='*'):
@@ -214,7 +216,7 @@ def oprint(*args, **kwargs):
     else:
         dict_mode = False
 
-    if isinstance(args[0], str) or args[0] is None:
+    if utils.isstr(args[0]) or args[0] is None:
         titles = list(islice(args, None, None, 2))
         objs = tuple(islice(args, 1, None, 2))
         if len(args) > 2:
@@ -264,14 +266,14 @@ class Eprint:
     deriv = ''
     bold = ''
 
-    defaults = {('win', 'base'): 'blue', ('unix', 'base'): 'dark gray',
+    defaults = {('win', 'base'): 'blue', ('unix', 'base'): 'blue',
                 ('win', 'fct'): 'red', ('unix', 'fct'): 'red',
                 ('win', 'deriv'): 'cyan', ('unix', 'deriv'): 'cyan'}
 
     def __init__(self, base=None, fct=None, deriv=None, on=True, debug=False):
         if on:
             OS = 'unix'
-            if 'win' in sys.platform:
+            if 'win' in sys.platform and 'darwin' not in sys.platform:
                 OS = 'win'
 
             if base is None:
@@ -371,7 +373,7 @@ class GaPrinter(StrPrinter):
 
     def _print_Mv(self, expr):
         if expr.obj == S(0):
-            return '0'
+            return ZERO_STR
         else:
             return expr.Mv_str()
 
@@ -393,7 +395,8 @@ class GaPrinter(StrPrinter):
 
 Basic.__str__ = lambda self: GaPrinter().doprint(self)
 Matrix.__str__ = lambda self: GaPrinter().doprint(self)
-Basic.__repr_ = lambda self: GaPrinter().doprint(self)
+Basic.__repr__ = lambda self: GaPrinter().doprint(self)
+Matrix.__repr__ = lambda self: GaPrinter().doprint(self)
 
 def enhance_print():
     Eprint()
@@ -471,7 +474,7 @@ class GaLatexPrinter(LatexPrinter):
     inv_trig_style = None
 
     preamble = \
-r"""
+"""
 \\pagestyle{empty}
 \\usepackage[latin1]{inputenc}
 \\usepackage{amsmath}
@@ -486,8 +489,8 @@ r"""
 \\usepackage{breqn}
 \\definecolor{gray}{rgb}{0.95,0.95,0.95}
 \\setlength{\\parindent}{0pt}
-\\DeclareMathOperator{\Tr}{Tr}
-\\DeclareMathOperator{\Adj}{Adj}
+\\DeclareMathOperator{\\Tr}{Tr}
+\\DeclareMathOperator{\\Adj}{Adj}
 \\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
 \\newcommand{\\lp}{\\left (}
 \\newcommand{\\rp}{\\right )}
@@ -628,7 +631,7 @@ r"""
             pass
         else:
             GaLatexPrinter.stdout = sys.stdout
-            sys.stdout = io.StringIO()
+            sys.stdout = utils.StringIO()
         return
 
     @staticmethod
@@ -681,7 +684,7 @@ r"""
                 (1, self._print(Pow(expr.base, -expr.exp)))
         else:
             if expr.base.is_Function:
-                return r"%s^%s" % (self._print(expr.base), self._print(expr.exp))
+                return r"{%s}^{%s}" % (self._print(expr.base), self._print(expr.exp))
             else:
                 if expr.is_commutative and expr.exp == -1:
                     #solves issue 1030
@@ -720,10 +723,13 @@ r"""
                 i_sub = 1
 
                 for glyph in GaLatexPrinter.special_alphabet:
+                    escaped_glyph = '\\' + glyph
                     if glyph in tmp:
                         parse_sym = '????' + str(i_sub)
                         i_sub += 1
-                        parse_dict[parse_sym] = '\\' + glyph + ' '
+                        # If this glyph is already escaped, avoid escaping again
+                        translated_glyph = (escaped_glyph + ' ') if escaped_glyph not in tmp else glyph
+                        parse_dict[parse_sym] = translated_glyph
                         tmp = tmp.replace(glyph, parse_sym)
 
                 for parse_sym in parse_dict:
@@ -911,7 +917,7 @@ r"""
 
     def _print_Mv(self, expr):
         if expr.obj == S(0):
-            return('0 \n')
+            return ZERO_STR
         else:
             return expr.Mv_latex_str()
 
@@ -941,10 +947,7 @@ r"""
             out_str = out_str[:-2] + ' \\\\ '
         out_str = out_str[:-4] + ' \\end{array}\\right ] '
 
-        if isinteractive():
-            return display(out_str)
-        else:
-            return out_str
+        return out_str
 
     @staticmethod
     def latex(expr, **settings):
@@ -985,25 +988,13 @@ def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
     if Format_cnt == 0:
         Format_cnt += 1
 
-        """
-        if metric.in_ipynb():
-            GaLatexPrinter.ipy = True
-        else:
-            GaLatexPrinter.ipy = False
-
-        GaLatexPrinter.dop = dop
-        GaLatexPrinter.latex_flg = True
-
-        if not GaLatexPrinter.ipy:
-            GaLatexPrinter.redirect()
-        """
         GaLatexPrinter.dop = dop
         GaLatexPrinter.latex_flg = True
         GaLatexPrinter.redirect()
 
         Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
         Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        Basic.__repr_ = lambda self: GaLatexPrinter().doprint(self)
+        Basic.__repr__ = lambda self: GaLatexPrinter().doprint(self)
         Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
 
         if isinteractive():
@@ -1011,22 +1002,13 @@ def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
 
     return
 
-
-def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug=False, pt='10pt'):
-
+def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     """
     Post processes LaTeX output (see comments below), adds preamble and
-    postscript, generates tex file, inputs file to latex, displays resulting
-    pdf file.
+    postscript.
 
-    Arg    Value    Result
-    crop   True     Use "pdfcrop" to crop output file (pdfcrop must be installed, linux only)
-    png    True     Use "convert" to produce png output (imagemagick must be installed, linux only)
-
-    We assume that if xpdf() is called then Format() has been called at the beginning of the program.
+    We assume that if tex() is called then Format() has been called at the beginning of the program.
     """
-
-    sys_cmd = SYS_CMD[sys.platform]
 
     latex_str = GaLatexPrinter.latex_str + sys.stdout.getvalue()
     GaLatexPrinter.latex_str = ''
@@ -1138,12 +1120,34 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
     paper_size = paper_size.replace('@10pt@',pt)
     latex_str = paper_size + GaLatexPrinter.preamble + latex_str + GaLatexPrinter.postscript
 
+    return latex_str
+
+def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug=False, pt='10pt', pdfprog='pdflatex'):
+
+    """
+    Post processes LaTeX output (see comments below), adds preamble and
+    postscript, generates tex file, inputs file to latex, displays resulting
+    pdf file.
+
+    Arg         Value       Result
+    pdfprog    'pdflatex'   Use pdfprog to generate pdf output, only generate tex if pdfprog is None
+    crop        True        Use "pdfcrop" to crop output file (pdfcrop must be installed, linux only)
+    png         True        Use "convert" to produce png output (imagemagick must be installed, linux only)
+
+    We assume that if xpdf() is called then Format() has been called at the beginning of the program.
+    """
+
+    sys_cmd = SYS_CMD[sys.platform]
+
+    latex_str = tex(paper=paper, debug=debug, prog=prog, pt=pt)
+
     if filename is None:
         pyfilename = sys.argv[0]
         rootfilename = pyfilename.replace('.py', '')
         filename = rootfilename + '.tex'
 
-    print('latex file =', filename)
+    if debug:
+        print('latex file =', filename)
 
     latex_file = open(filename, 'w')
     latex_file.write(latex_str)
@@ -1151,20 +1155,19 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
 
     latex_str = None
 
-    pdflatex = find_executable('pdflatex')
-
-    print('pdflatex path =', pdflatex)
-
-    if pdflatex is not None:
-        latex_str = 'pdflatex'
-    else:
+    if pdfprog is None:
         return
 
-    if latex_str is not None:
+    pdflatex = find_executable(pdfprog)
+
+    if debug:
+        print('pdflatex path =', pdflatex)
+
+    if pdfprog is not None:
         if debug:  # Display latex excution output for debugging purposes
-            os.system(latex_str + ' ' + filename[:-4])
+            os.system(pdfprog + ' ' + filename[:-4])
         else:  # Works for Linux don't know about Windows
-            os.system(latex_str + ' ' + filename[:-4] + sys_cmd['null'])
+            os.system(pdfprog + ' ' + filename[:-4] + sys_cmd['null'])
 
         print_cmd = sys_cmd['evince'] + ' ' + filename[:-4] + '.pdf ' + sys_cmd['&']
         print(print_cmd)

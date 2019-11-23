@@ -1,8 +1,7 @@
-#linear_transformations
+"""
+Multivector Linear Transformation
+"""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 import sys
 import inspect
 import types
@@ -12,6 +11,7 @@ from copy import copy
 from . import printer
 from . import metric
 from . import mv
+from . import utils
 from functools import reduce
 
 def aprint(a):
@@ -105,7 +105,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
         if e_row in basis:  # If not in basis row all zeros
             (coefs,bases) = metric.linear_expand(dict_rep[e_row])
             for (coef,base) in zip(coefs,bases):
-                index = basis.index(base)
+                index = ga.basis.index(base)
                 lst_mat_row[index] = coef
 
         lst_mat.append(lst_mat_row)
@@ -210,7 +210,7 @@ class Lt(object):
             else:
                 raise ValueError('In Spinor input for Lt, S*S.rev() not a scalar!\n')
 
-        elif isinstance(mat_rep, str):  # String input
+        elif utils.isstr(mat_rep):  # String input
              Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords,mode=self.mode,f=self.fct_flg)
              self.__init__(Amat, ga=self.Ga)
 
@@ -410,7 +410,7 @@ class Lt(object):
 
     def Fmt(self, fmt=1, title=None):
 
-        if metric.in_ipynb():
+        if printer.isinteractive():
             return self
 
         latex_str = printer.GaLatexPrinter.latex(self)
@@ -698,7 +698,7 @@ class Mlt(object):
             Ga.make_grad(self.args)
             self.fvalue = (self.args[0] | f(self.args[1])).obj
             self.f = None
-        elif isinstance(f, str) and args is not None:
+        elif utils.isstr(f) and args is not None:
             self.f = None
             if isinstance(args,(list,tuple)):
                 self.args = args

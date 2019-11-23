@@ -1,10 +1,12 @@
+from __future__ import print_function
 
 from sympy import Symbol, symbols, sin, cos, Rational, expand, simplify, collect
 from sympy import Rational as Rat
-from printer import Format, Eprint, Get_Program, Print_Function,xpdf
-from ga import Ga, one, zero
-from mv import com, Nga
+from galgebra.printer import Format, Eprint, Get_Program
+from galgebra.ga import Ga
 from math import sqrt
+
+global n,nbar,I
 
 def radius(T):
     '''
@@ -22,10 +24,10 @@ def center(T):
 def split_bivector(B):
     global ebar
     '''Implements the algorithm described in Doran and Lasenby to recover null vectors wedging to B'''
-    print 'B =',B
-    print 'B**2 =',B*B
+    print('B =',B)
+    print('B**2 =',B*B)
     NB = B.norm()
-    print 'NB =',NB
+    print('NB =',NB)
     Bh = B/NB
     ap = ebar - ((ebar^Bh)*Bh)
     a1 = ap + (ap*Bh)
@@ -48,8 +50,6 @@ g='1 0 0 0, \
 
 c2d = Ga('e_1 e_2 n \\bar{n}',g=g)
 (e1,e2,n,nbar) = c2d.mv()
-
-global n,nbar,I
 
 def F(x):
     global n,nbar
@@ -74,30 +74,30 @@ B=F(2*e1)
 C=F(Rat(4,5)*e1+Rat(3,5)*e2)
 D=F(Rat(4,5)*e1-Rat(3,5)*e2)
 
-print 'A =',A
-print 'B =',B
-print 'C =',C
-print 'D =',D
+print('A =',A)
+print('B =',B)
+print('C =',C)
+print('D =',D)
 
 T=A^B^C
-print 'T =',T
+print('T =',T)
 U=F(e1)^(F(e2))^F(-1*e1)
-print 'U =',U
+print('U =',U)
 inter=intersect_lines(U,T)
-print 'inter =',inter
+print('inter =',inter)
 
 x,y = split_bivector(inter)
 
 bases = (e1,e2)
-print x.proj(bases)
-print y.proj(bases)
+print(x.proj(bases))
+print(y.proj(bases))
 
 
-print 'One intersection point x = ',x
-print 'The other intersection point y = ',y
-print 'x**2 = ',x*x
-print 'y**2 = ',y*y
-print 'T^x = ',T^x
-print 'T^y = ',T^y
-print 'U^x = ',U^x
-print 'U^y = ',U^y
+print('One intersection point x = ',x)
+print('The other intersection point y = ',y)
+print('x**2 = ',x*x)
+print('y**2 = ',y*y)
+print('T^x = ',T^x)
+print('T^y = ',T^y)
+print('U^x = ',U^x)
+print('U^y = ',U^y)

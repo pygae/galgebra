@@ -1,12 +1,13 @@
-from printer import xdvi,Get_Program,Print_Function,Format
-from mv import MV
+from __future__ import print_function
+from galgebra.printer import xpdf,Get_Program,Print_Function,Format
+from galgebra.deprecated import MV
 
 def basic_multivector_operations_3D():
     Print_Function()
 
     (ex,ey,ez) = MV.setup('e*x|y|z')
 
-    print 'g_{ij} =',MV.metric
+    print('g_{ij} =',MV.metric)
 
     A = MV('A','mv')
 
@@ -33,7 +34,7 @@ def basic_multivector_operations_2D():
 
     (ex,ey) = MV.setup('e*x|y')
 
-    print 'g_{ij} =',MV.metric
+    print('g_{ij} =',MV.metric)
 
     X = MV('X','vector')
     A = MV('A','spinor')
@@ -56,7 +57,8 @@ def main():
     basic_multivector_operations_3D()
     basic_multivector_operations_2D()
 
-    xdvi('simple_test_latex.tex')
+    # xpdf()
+    xpdf(pdfprog=None)
     return
 
 if __name__ == "__main__":

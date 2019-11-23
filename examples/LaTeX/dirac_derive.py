@@ -1,8 +1,9 @@
+from __future__ import print_function
 import sys
 
 from sympy import symbols,sin,cos,latex
-from ga import Ga
-from printer import Format, xpdf
+from galgebra.ga import Ga
+from galgebra.printer import Format, xpdf
 
 g = '# 0 0 0,0 # 0 0,0 0 # 0,0 0 0 #'
 
@@ -11,12 +12,13 @@ Format()
 
 psi = sp4d.mv('psi','even')
 
-print psi
+print(psi)
 
 B = sp4d.mv('B','bivector')
 
-print B
+print(B)
 
-print B*psi-psi*B
+print(B*psi-psi*B)
 
-xpdf()
+# xpdf()
+xpdf(pdfprog=None)
