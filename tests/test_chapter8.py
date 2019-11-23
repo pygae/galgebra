@@ -3,7 +3,12 @@ import unittest
 from sympy import simplify, Symbol, S
 
 from galgebra.ga import Ga
-from galgebra.mv import Mv, com
+from galgebra.mv import Mv
+
+
+def com(A, B):
+    """I like free functions..."""
+    return Ga.com(A, B)
 
 
 class TestChapter8(unittest.TestCase):

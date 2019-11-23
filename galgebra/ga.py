@@ -10,7 +10,6 @@ from sympy import diff, Rational, Symbol, S, Mul, Pow, Add, \
 import sympy
 from collections import OrderedDict
 #from sympy.core.compatibility import combinations
-from sympy.combinatorics.permutations import Permutation
 from itertools import combinations
 from . import printer
 from . import metric
@@ -66,15 +65,20 @@ class auto_update_dict(dict):
 
 def update_and_substitute(expr1, expr2, func, mul_dict):
     """
-    Linear expand expr1 and expr2 to get (summation convention)
+    Linear expand expr1 and expr2 to get (summation convention)::
+
         expr1 = coefs1[i]*bases1[i]
         expr2 = coefs2[j]*bases2[j]
-    where coefs1 and coefs2 are lists of are commutative expressions and
-    bases1 and bases2 are lists of bases for the geometric algebra.
-    Then evaluate
+
+    where ``coefs1`` and ``coefs2`` are lists of are commutative expressions and
+    ``bases1`` and ``bases2`` are lists of bases for the geometric algebra.
+
+    Then evaluate::
+
         expr = coefs1[i]*coefs2[j]*F(bases1[i],bases2[j])
-    where F(bases1[i],bases2[j]) is a function that returns the appropriate
-    product of bases1[i]*bases2[j] as a linear combination of scalars and
+
+    where ``F(bases1[i],bases2[j])`` is a function that returns the appropriate
+    product of ``bases1[i]*bases2[j]`` as a linear combination of scalars and
     bases of the geometric algebra.
     """
     if (isinstance(expr1, numbers.Number) or expr1.is_commutative) \
@@ -136,14 +140,14 @@ def nc_subs(expr, base_keys, base_values=None):
 class Ga(metric.Metric):
     r"""
     The vector space (basis, metric, derivatives of basis vectors) is
-    defined by the base class 'Metric'.
+    defined by the base class :class:`~galgebra.metric.Metric`.
 
-    The instanciating the class 'Ga' constructs the geometric algebra of
+    The instanciating the class :class:`Ga` constructs the geometric algebra of
     the vector space defined by the metric.
 
     The construction includes the multivector bases, multiplication
-    tables or functions for the geometric (*), inner (|), outer (^)
-    products, plus the left (<) and right (>) contractions.  The
+    tables or functions for the geometric (``*``), inner (``|``), outer (``^``)
+    products, plus the left (``<``) and right (``>``) contractions.  The
     geometric derivative operator and any required connections for the
     derivative are also calculated.
 
@@ -155,80 +159,163 @@ class Ga(metric.Metric):
     the products of multivector bases and connection are not calculated
     unless they are actually needed in the current calculation.
 
-    Only instantiate the Ga class via the Mv class or any use of enhanced
-    printing (text or latex) will cause the bases and multiplication
+    Only instantiate the :class:`Ga` class via the :class:`~galgebra.mv.Mv` class or any use
+    of enhanced printing (text or latex) will cause the bases and multiplication
     table entries to be incorrectly labeled .
 
-    Data Variables -
+    .. rubric:: Inherited from Metric class
 
-        Inherited from Metric class -
+    .. autosummary::
 
-            g[,]: Metric tensor (sympy matrix)
-            g_inv[,]: Inverse of metric tensor (sympy matirx)
-            norm: Normalized diagonal metric tensor (list of sympy numbers)
-            coords[]: Coordinate variables (list of sympy symbols)
-            is_ortho: True if basis is orthogonal (bool)
-            connect_flg: True if connection is non-zero (bool)
-            basis[]: Basis vector symbols (list of non-commutative sympy variables)
-            r_symbols[]: Reciprocal basis vector symbols (list of non-commutative sympy variables)
-            n: Dimension of vector space/manifold (integer)
-            n_range: List of basis indices
-            de[][]: Derivatives of basis functions.  Two dimensional list. First
-                    entry is differentiating coordiate. Second entry is basis
-                    vector.  Quantities are linear combinations of basis vector
-                    symbols.
+        ~galgebra.metric.Metric.g
+        ~galgebra.metric.Metric.g_inv
+        ~galgebra.metric.Metric.norm
+        ~galgebra.metric.Metric.coords
+        ~galgebra.metric.Metric.is_ortho
+        ~galgebra.metric.Metric.connect_flg
+        ~galgebra.metric.Metric.basis
+        ~galgebra.metric.Metric.r_symbols
+        ~galgebra.metric.Metric.n
+        ~galgebra.metric.Metric.n_range
+        ~galgebra.metric.Metric.de
 
-        Basis, basis bases, and basis blades data structures -
+    .. rubric:: Basis, basis bases, and basis blades data structures
 
-            indexes[]: Index list for multivector bases and blades by grade (tuple of tuples).  Tuple
-                       so that indexes can be used to index dictionaries.
-            bases[]: List of bases (non-commutative sympy symbols).  Only created for
-                     non-orthogonal basis vectors.
-            blades[]: List of basis blades (non-commutative sympy symbols).  For
-                      orthogonal basis vectors the same as bases.
-            coord_vec: Linear combination of coordinates and basis vectors.  For
-                       example in orthogonal 3D x*e_x+y*e_y+z*e_z.
-            blades_to_indexes_dict{}: Map basis blades to index tuples (dictionary).
-            indexes_to_blades_dict{}: Map index tuples to basis blades (dictionary).
-            bases_to_indexes_dict{}: Map basis bases to index tuples (dictionary).
-            indexes_to_bases_dict{}: Map index tuples to basis bases (dictionary).
-            pseudoI: Symbol for pseudo scalar (non-commutative sympy symbol).
+    .. attribute:: indexes
 
-        Multiplication tables data structures -
+        Index list for multivector bases and blades by grade (tuple of tuples).  Tuple
+        so that indexes can be used to index dictionaries.
 
-            Keys in all multiplication tables (*,^,|,<,>) are always symbol1*symbol2.  The correct operation is known
-            by the context (name) of the relevant list or dictionary)
+    .. attribute:: bases
 
-            mul_table[]: Geometric products of basis blades as list of [(base1*base2, Expansion of base1*base2),...]
-            mul_table_dict{}: Geometric products of basis blades as dicitionary {base1*base2: Expansion of base1*base2,...}
-            wedge_table[]: Outer products of basis blades as list of [(base1*base2, Expansion of base1^base2),...]
-            wedge_table_dict{}: Outer products of basis blades as dicitionary {base1*base2: Expansion of base1^base2,...}
+        List of bases (non-commutative sympy symbols).  Only created for
+        non-orthogonal basis vectors.
 
-        Reciprocal basis data structures -
+    .. attribute:: blades
 
-            r_symbols[]: Reciprocal basis vector symbols (list of non-commutative sympy variables)
-            r_basis[]: List of reciprocal basis vectors expanded as linear combination of basis vector symbols.
-            r_basis_dict{}: Dictionary to map reciprocal basis symbols to reciprocal basis expanded in terms of basis symbols
-                          {reciprocal basis symbol: linear combination of basis symbols,...}
-            r_basis_mv[]: List of reciprocal basis vectors in terms of basis multivectors (elements of list can be used in
-                        multivector expressions.)
+        List of basis blades (non-commutative sympy symbols).  For
+        orthogonal basis vectors the same as bases.
 
-        Derivative data structures -
+    .. attribute:: coord_vec
 
-            de[][]: Derivatives of basis functions.  Two dimensional list. First entry is differentiating coordinate index.
-                    Second entry is basis vector index.  Quantities are linear combinations of basis vector symbols.
-            dbases{}: Dictionary of derivatives of basis blades with respect to coordinate {(coordinate index, basis blade):
-                      derivative of basis blade with respect to coordinate,...} (Note that values in dictionary are not
-                      multivectors, but linear combinations of basis blade symbols).
-            Pdop_identity: Partial differential operator identity (operates on multivector function to return function).
-            Pdiffs{}: Dictionary of partial differential operators (operates on multivector functions) for each coordinate
-                      {x: \partial_{x}, ...}
-            sPds{}: Dictionary of scalar partial differential operators (operates on scalar functions) for each coordinate
-                    {x: \partial_{x}, ...}
-            grad: Geometric derivative operator from left. grad*F returns multivector derivative, F*grad returns differential
-                  operator.
-            rgrad: Geometric derivative operator from right. grad*F returns differential operator, F*grad returns multivector
-                   derivative.
+        Linear combination of coordinates and basis vectors.  For
+        example in orthogonal 3D :math:`x*e_x+y*e_y+z*e_z`.
+
+    .. attribute:: blades_to_indexes_dict
+
+        Map basis blades to index tuples (dictionary).
+
+    .. attribute:: indexes_to_blades_dict
+
+        Map index tuples to basis blades (dictionary).
+
+    .. attribute:: bases_to_indexes_dict
+
+        Map basis bases to index tuples (dictionary).
+
+    .. attribute:: indexes_to_bases_dict
+
+        Map index tuples to basis bases (dictionary).
+
+    .. attribute:: pseudoI
+
+        Symbol for pseudo scalar (non-commutative sympy symbol).
+
+    .. rubric:: Multiplication tables data structures
+
+    Keys in all multiplication tables (``*``, ``^``, ``|``, ``<``, ``>``) are always ``symbol1*symbol2``.
+    The correct operation is known by the context (name) of the relevant list or dictionary)
+
+    .. attribute:: mul_table
+
+        Geometric products of basis blades as list of ``[(base1*base2, Expansion of base1*base2),...]``
+
+    .. attribute:: mul_table_dict
+
+        Geometric products of basis blades as dicitionary ``{base1*base2: Expansion of base1*base2,...}``
+
+    .. attribute:: wedge_table
+
+        Outer products of basis blades as list of ``[(base1*base2, Expansion of base1^base2),...]``
+
+    .. attribute:: wedge_table_dict
+
+        Outer products of basis blades as dicitionary ``{base1*base2: Expansion of base1^base2,...}``
+
+    .. rubric:: Reciprocal basis data structures
+
+    .. attribute:: r_symbols
+
+        Reciprocal basis vector symbols (list of non-commutative sympy variables)
+
+    .. attribute:: r_basis
+
+        List of reciprocal basis vectors expanded as linear combination of basis vector symbols.
+
+    .. attribute:: r_basis_dict
+
+        Dictionary to map reciprocal basis symbols to reciprocal basis expanded in terms of basis symbols
+        ``{reciprocal basis symbol: linear combination of basis symbols, ...}``
+
+    .. attribute:: r_basis_mv
+
+        List of reciprocal basis vectors in terms of basis multivectors (elements of list can be used in
+        multivector expressions.)
+
+
+    .. rubric:: Derivative data structures
+
+    .. attribute:: de
+
+        Derivatives of basis functions.  Two dimensional list. First entry is differentiating coordinate index.
+        Second entry is basis vector index.  Quantities are linear combinations of basis vector symbols.
+
+    .. attribute:: dbases
+
+        Dictionary of derivatives of basis blades with respect to coordinate ,
+        ``{(coordinate index, basis blade): derivative of basis blade with respect to coordinate, ...}``.
+
+        Note that values in dictionary are not multivectors, but linear combinations of basis blade symbols.
+
+    .. attribute:: Pdop_identity
+
+        Partial differential operator identity (operates on multivector function to return function).
+
+    .. attribute:: Pdiffs
+
+        Dictionary of partial differential operators (operates on multivector functions) for each coordinate
+        :math:`\{x: \partial_{x}, ...\}`
+
+    .. attribute:: sPds
+
+        Dictionary of scalar partial differential operators (operates on scalar functions) for each coordinate
+        :math:`\{x: \partial_{x}, ...\}`
+
+    .. attribute:: grad
+
+        Geometric derivative operator from left. ``grad*F`` returns multivector
+        derivative, ``F*grad`` returns differential operator.
+
+    .. attribute:: rgrad
+
+        Geometric derivative operator from right. ``rgrad*F`` returns differential
+        operator, ``F*rgrad`` returns multivector derivative.
+
+    .. Sphinx adds all the other members below this docstring
+
+    .. rubric:: Other members
+
+    .. attribute:: dot_mode
+
+        Controls the behavior of :meth:`dot`
+
+        =======  ======================
+        value    ``dot`` aliases
+        =======  ======================
+        ``'|'``  :meth:`hestenes_dot`
+        ``'<'``  :meth:`left_contract`
+        ``'>'``  :meth:`right_contract`
+        =======  ======================
     """
 
     dual_mode_value = 'I+'
@@ -250,17 +337,20 @@ class Ga(metric.Metric):
         Sets mode of multivector dual function for all geometric algebras
         in users program.
 
-        If Ga.dual_mode(mode) not called the default mode is 'I+'.
+        If Ga.dual_mode(mode) not called the default mode is ``'I+'``.
 
+        =====  ============
         mode   return value
-        +I       I*self
-        -I      -I*self
-        I+       self*I
-        I-      -self*I
-        +Iinv    Iinv*self
-        -Iinv   -Iinv*self
-        Iinv+    self*Iinv
-        Iinv-   -self*Iinv
+        =====  ============
+        +I      I*self
+        -I     -I*self
+        I+      self*I
+        I-     -self*I
+        +Iinv   Iinv*self
+        -Iinv  -Iinv*self
+        Iinv+   self*Iinv
+        Iinv-  -self*Iinv
+        =====  ============
         """
         if mode not in Ga.dual_mode_lst:
             raise ValueError('mode = ' + mode + ' not allowed for Ga.dual_mode.')
@@ -273,12 +363,12 @@ class Ga(metric.Metric):
         return half * (A * B - B * A)
 
     @staticmethod
-    def build(*kargs, **kwargs):
+    def build(*args, **kwargs):
         """
         Static method to instantiate geometric algebra and return geometric
         algebra, basis vectors, and grad operator as a tuple.
         """
-        GA = Ga(*kargs, **kwargs)
+        GA = Ga(*args, **kwargs)
         basis = list(GA.mv())
         return tuple([GA] + basis)
 
@@ -291,7 +381,7 @@ class Ga(metric.Metric):
         X = symbols(set_lst[0], real=True)
         g = eval(set_lst[1])
         simps = eval(set_lst[2])
-        kargs = [root]
+        args = [root]
         kwargs = {'g': g, 'coords': X, 'debug': debug, 'I': True, 'gsym': False}
 
         if len(set_lst) > 3:
@@ -301,7 +391,7 @@ class Ga(metric.Metric):
                 kwargs[name] = eval(value)
 
         Ga.set_simp(*simps)
-        return Ga(*kargs, **kwargs)
+        return Ga(*args, **kwargs)
 
     def __eq__(self, ga):
         if self.name == ga.name:
@@ -388,7 +478,7 @@ class Ga(metric.Metric):
 
         self.a = []  # List of dummy vectors for Mlt calculations
         self.agrads = {}  # Gradient operator with respect to vector a
-        self.dslot = -1  # kargs slot for dervative, -1 for coordinates
+        self.dslot = -1  # args slot for dervative, -1 for coordinates
         self.XOX = self.mv('XOX','vector')  # Versor test vector
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
@@ -422,7 +512,7 @@ class Ga(metric.Metric):
 
     def I(self):  # Noromalized pseudo-scalar
         return self.i
-    
+
     def I_inv(self):
         return self.i_inv
 
@@ -432,7 +522,7 @@ class Ga(metric.Metric):
     def sdop(self, coefs, pdiffs=None):
         return mv.Sdop(coefs, pdiffs, ga=self)
 
-    def mv(self, root=None, *kargs, **kwargs):
+    def mv(self, root=None, *args, **kwargs):
         """
         Instanciate and return a multivector for this, 'self',
         geometric algebra.
@@ -447,18 +537,18 @@ class Ga(metric.Metric):
         kwargs['ga'] = self
 
         if not utils.isstr(root):
-            return mv.Mv(root, *kargs, **kwargs)
+            return mv.Mv(root, *args, **kwargs)
 
-        if ' ' in root and ' ' not in kargs[0]:
+        if ' ' in root and ' ' not in args[0]:
             root_lst = root.split(' ')
             mv_lst = []
             for root in root_lst:
-                mv_lst.append(mv.Mv(root, *kargs, **kwargs))
+                mv_lst.append(mv.Mv(root, *args, **kwargs))
             return tuple(mv_lst)
 
-        if ' ' in root and ' ' in kargs[0]:
+        if ' ' in root and ' ' in args[0]:
             root_lst = root.split(' ')
-            mvtype_lst = kargs[0].split(' ')
+            mvtype_lst = args[0].split(' ')
             if len(root_lst) != len(mvtype_lst):
                 raise ValueError('In Ga.mv() for multiple multivectors and ' +
                                   'multivector types incompatible args ' +
@@ -466,22 +556,25 @@ class Ga(metric.Metric):
 
             mv_lst = []
             for (root, mv_type) in zip(root_lst, mvtype_lst):
-                kargs = list(kargs)
-                kargs[0] = mv_type
-                kargs = tuple(kargs)
-                mv_lst.append(mv.Mv(root, *kargs, **kwargs))
+                args = list(args)
+                args[0] = mv_type
+                args = tuple(args)
+                mv_lst.append(mv.Mv(root, *args, **kwargs))
             return tuple(mv_lst)
 
-        return mv.Mv(root, *kargs, **kwargs)
+        return mv.Mv(root, *args, **kwargs)
 
     def mvr(self,norm=True):
         r"""
         Returns tumple of reciprocal basis vectors.  If norm=True or
         basis vectors are orthogonal the reciprocal basis is normalized
         in the sense that
-            e_{i}\cdot e^{j} = \delta_{i}^{j}.
+
+        .. math:: {i}\cdot e^{j} = \delta_{i}^{j}.
+
         If the basis is not orthogonal and norm=False then
-        e_{i}\cdot e^{j} = I^{2}\delta_{i}^{j}.
+
+        .. math:: e_{i}\cdot e^{j} = I^{2}\delta_{i}^{j}.
         """
 
         if self.r_basis_mv is None:
@@ -490,7 +583,7 @@ class Ga(metric.Metric):
             return tuple([self.r_basis_mv[i] / self.e_sq for i in self.n_range])
         else:
             return tuple(self.r_basis_mv)
-    
+
     def bases_dict(self, prefix=None):
         '''
         returns a dictionary mapping basis element names to their MultiVector
@@ -498,7 +591,7 @@ class Ga(metric.Metric):
 
         if you are lazy,  you might do this to populate your namespace
         with the variables of a given layout.
-        
+
         >>> locals().update(ga.bases())
         '''
         if prefix is None:
@@ -507,8 +600,8 @@ class Ga(metric.Metric):
         var_names = [prefix+''.join([k for k in str(b) if k.isdigit()]) for b in bl]
 
         return {key:val for key,val in zip(var_names, bl)}
-    
-        
+
+
 
     def grads(self):
         if not self.is_ortho:
@@ -524,15 +617,15 @@ class Ga(metric.Metric):
         self.rgrad = mv.Dop(r_basis, pdx, ga=self, cmpflg=True)
         return self.grad, self.rgrad
 
-    def dop(self, *kargs, **kwargs):
+    def dop(self, *args, **kwargs):
         """
         Instanciate and return a multivector differential operator for
         this, 'self', geometric algebra.
         """
         kwargs['ga'] = self
-        return mv.Dop(*kargs, **kwargs)
+        return mv.Dop(*args, **kwargs)
 
-    def lt(self, *kargs, **kwargs):
+    def lt(self, *args, **kwargs):
         """
         Instanciate and return a linear transformation for this, 'self',
         geometric algebra.
@@ -542,15 +635,15 @@ class Ga(metric.Metric):
             (self.lt_coords, self.lt_x) = lt.Lt.setup(ga=self)
 
         kwargs['ga'] = self
-        return lt.Lt(*kargs, **kwargs)
+        return lt.Lt(*args, **kwargs)
 
-    def sm(self, *kargs, **kwargs):
+    def sm(self, *args, **kwargs):
         """
-        Instanciate and return a submanifold for this, 'self',
-        geometric algebra.  See 'Sm' class for instantiation inputs.
+        Instanciate and return a submanifold for this
+        geometric algebra.  See :class:`Sm` for instantiation inputs.
         """
         kwargs['ga'] = self
-        SM = Sm(*kargs, **kwargs)
+        SM = Sm(*args, **kwargs)
         return SM
 
     def parametric(self, coords):
@@ -618,24 +711,24 @@ class Ga(metric.Metric):
             self.mv_blades_lst0.append(self.mv(obj))
 
     def build_bases(self, sign_and_indexes=None):
-        """
+        r"""
         The bases for the multivector (geometric) algebra are formed from
         all combinations of the bases of the vector space and the scalars.
 
-        Each base is represented as a non-commutative symbol of the form -
+        Each base is represented as a non-commutative symbol of the form
 
-                    e_{i_{1}}e_{i_{2}}...e_{i_{r}}
+        .. math:: e_{i_{1}}e_{i_{2}}...e_{i_{r}}
 
-        where 0 < i_{1} < i_{2} < ... < i_{r} and 0 < r <= n the
-        dimension of the vector space and 0 < i_{j} <= n. The total
-        number of all symbols of this form plus the scalars is 2^{n}.
+        where :math:`0 < i_{1} < i_{2} < ... < i_{r}` and :math:`0 < r \le n` the
+        dimension of the vector space and :math:`0 < i_{j} \le n`. The total
+        number of all symbols of this form plus the scalars is :math:`2^{n}`.
         Any multivector can be represented as a linear combination
         of these bases and the scalars.
 
         If the basis vectors are not orthogonal a second set of symbols
         is required given by -
 
-                    e_{i_{1}}^e_{i_{2}}^...^e_{i_{r}}.
+        .. math:: e_{i_{1}}\wedge e_{i_{2}}\wedge ...\wedge e_{i_{r}}.
 
         These are called the blade basis for the geometric algebra and
         and multivector can also be represented by a linears combination
@@ -807,9 +900,9 @@ class Ga(metric.Metric):
         product) are calulated on the fly and updated and are for blade
         pairs.
 
-        All tables are of the form
+        All tables are of the form::
 
-            [ (blade1*blade2,f(blade1,blade1)),... ]
+            [(blade1*blade2, f(blade1, blade1)), ...]
         """
 
         self.mul_table = []  # Geometric product (*) of blades
@@ -833,7 +926,6 @@ class Ga(metric.Metric):
         self.right_contract_table = []  # Right contraction (>)
         self.right_contract_table_dict = {}
 
-        self.dot_mode = '|'
         if self.debug:
             print('Exit basis_product_tables.\n')
         return
@@ -937,19 +1029,21 @@ class Ga(metric.Metric):
 
     @staticmethod
     def reduce_basis_loop(g, blst):
-        """
-        blst is a list of integers [i_{1},...,i_{r}] representing the geometric
-        product of r basis vectors a_{{i_1}}*...*a_{{i_r}}.  reduce_basis_loop
-        searches along the list [i_{1},...,i_{r}] untill it finds i_{j} == i_{j+1}
-        and in this case contracts the list, or if i_{j} > i_{j+1} it revises
-        the list (~i_{j} means remove i_{j} from the list)
+        r"""
+        blst is a list of integers :math:`[i_{1},...,i_{r}]` representing the geometric
+        product of r basis vectors :math:`a_{{i_1}}*...*a_{{i_r}}`. :meth:`reduce_basis_loop`
+        searches along the list :math:`[i_{1},...,i_{r}]` untill it finds :math:`i_{j} = i_{j+1}`
+        and in this case contracts the list, or if :math:`i_{j} > i_{j+1}` it revises
+        the list (:math:`\sim i_{j}` means remove :math:`i_{j}` from the list)
 
-        Case 1: If i_{j} == i_{j+1}, return a_{i_{j}}**2 and
-                [i_{1},..,~i_{j},~i_{j+1},...,i_{r}]
+        * Case 1: If :math:`i_{j} = i_{j+1}`, return
+          :math:`a_{i_{j}}^2` and
+          :math:`[i_{1},..,\sim i_{j},\sim i_{j+1},...,i_{r}]`
 
-        Case 2: If i_{j} > i_{j+1}, return a_{i_{j}}.a_{i_{j+1}},
-                [i_{1},..,~i_{j},~i_{j+1},...,i_{r}], and
-                [i_{1},..,i_{j+1},i_{j},...,i_{r}]
+        * Case 2: If :math:`i_{j} > i_{j+1}`, return
+          :math:`a_{i_{j}}.a_{i_{j+1}}`,
+          :math:`[i_{1},..,\sim i_{j},\sim i_{j+1},...,i_{r}]`, and
+          :math:`[i_{1},..,i_{j+1},i_{j},...,i_{r}]`
         """
         nblst = len(blst)  # number of basis vectors
         if nblst <= 1:
@@ -1015,7 +1109,7 @@ class Ga(metric.Metric):
 
     #****** Dot (|) product, reft (<) and right (>) contractions ******#
 
-    def dot_product_basis_blades(self, blade12):
+    def dot_product_basis_blades(self, blade12, mode):
         # dot (|), left (<), and right (>) products
         # dot product for orthogonal basis
         (blade1, blade2) = blade12
@@ -1025,13 +1119,13 @@ class Ga(metric.Metric):
         grade1 = len(index1)
         grade2 = len(index2)
 
-        if self.dot_mode == '|':
+        if mode == '|':
             grade = abs(grade1 - grade2)
-        elif self.dot_mode == '<':
+        elif mode == '<':
             grade = grade2 - grade1
             if grade < 0:
                 return 0
-        elif self.dot_mode == '>':
+        elif mode == '>':
             grade = grade1 - grade2
             if grade < 0:
                 return 0
@@ -1070,7 +1164,7 @@ class Ga(metric.Metric):
             else:
                 return sgn * result * self.indexes_to_blades_dict[tuple(index)]
 
-    def non_orthogonal_dot_product_basis_blades(self, blade12):  # blade12 = (blade1,blade2)
+    def non_orthogonal_dot_product_basis_blades(self, blade12, mode):  # blade12 = (blade1,blade2)
         # dot product of basis blades if basis vectors are non-orthogonal
         # inner (|), left (<), and right (>) products of basis blades
         # blade12 is the sympy product of two basis blades
@@ -1087,26 +1181,26 @@ class Ga(metric.Metric):
         # grades of input blades
         grade1 = self.blades_to_grades_dict[blade1]
         grade2 = self.blades_to_grades_dict[blade2]
-        if self.dot_mode == '|':
+        if mode == '|':
             grade_dot = abs(grade2 - grade1)
             if grade_dot in grade_dict:
                 return grade_dict[grade_dot]
             else:
                 return zero
-        elif self.dot_mode == '<':
+        elif mode == '<':
             grade_contract = grade2 - grade1
             if grade_contract in grade_dict:
                 return grade_dict[grade_contract]
             else:
                 return zero
-        elif self.dot_mode == '>':
+        elif mode == '>':
             grade_contract = grade1 - grade2
             if grade_contract in grade_dict:
                 return grade_dict[grade_contract]
             else:
                 return zero
         else:
-            raise ValueError('"' + str(self.dot_mode) + '" not allowed '
+            raise ValueError('"' + str(mode) + '" not allowed '
                              'dot mode in non_orthogonal_dot_basis')
 
     ############# Non-Orthogonal Tables and Dictionaries ###############
@@ -1230,8 +1324,7 @@ class Ga(metric.Metric):
         elif mode == '^':
             return self.wedge(A, B)
         else:
-            self.dot_mode = mode
-            return self.dot(A, B)
+            return self.dot(A, B, mode=mode)
 
     def mul(self, A, B):  # geometric (*) product of blade representations
         if A == 0 or B == 0:
@@ -1245,44 +1338,70 @@ class Ga(metric.Metric):
             return 0
         return update_and_substitute(A, B, self.wedge_product_basis_blades, self.wedge_table_dict)
 
-    def dot(self, A, B):  # inner products |, <, and >
-        """
-        Let A = a + A' and B = b + B' where a and b are the scalar parts of
-        A and B and A' and B' are the remaining parts of A and B.  Then
-        we have:
-            (a+A')<(b+B') = a(b+B') + A'<B'
-            (a+A')>(b+B') = b(a+A') + A'>B'
-        We use these relations to reduce A<B and A>B.
-        """
+
+    def _dot(self, A, B, mode):
         if A == 0 or B == 0:
             return 0
         if self.is_ortho:
-            dot_product_basis_blades = self.dot_product_basis_blades
+            dot_product_basis_blades = lambda x: self.dot_product_basis_blades(x, mode=mode)
         else:
-            dot_product_basis_blades = self.non_orthogonal_dot_product_basis_blades
+            dot_product_basis_blades = lambda x: self.non_orthogonal_dot_product_basis_blades(x, mode=mode)
 
-        if self.dot_mode == '|':  # Hestenes dot product
+        if mode == '|':  # Hestenes dot product
             A = self.remove_scalar_part(A)
             B = self.remove_scalar_part(B)
             return update_and_substitute(A, B, dot_product_basis_blades, self.dot_table_dict)
-        elif self.dot_mode == '<' or self.dot_mode == '>':
+        elif mode == '<' or mode == '>':
+            r"""
+            Let :math:`A = a + A'` and :math:`B = b + B'` where :math:`a` and
+            :math:`b` are the scalar parts of :math:`A` and :math:`B`, and
+            :math:`A'` and :math:`B'` are the remaining parts of :math:`A` and
+            :math:`B`. Then we have:
+
+            .. math::
+
+                (a+A') \rfloor (b+B') &= a(b+B') + A' \rfloor B' \\
+                (a+A') \lfloor (b+B') &= b(a+A') + A' \lfloor B'
+
+            We use these relations to reduce :math:`A \rfloor B` (``A<B``) and 
+            :math:`A \lfloor B` (``A>B``).
+            """
             (a, Ap) = self.split_multivector(A)  # Ap = A'
             (b, Bp) = self.split_multivector(B)  # Bp = B'
-            if self.dot_mode == '<':  # Left contraction
+            if mode == '<':  # Left contraction
                 if Ap != 0 and Bp != 0:  # Neither nc part of A or B is zero
                     prod = update_and_substitute(Ap, Bp, dot_product_basis_blades, self.left_contract_table_dict)
                     return prod + a * B
                 else:  # Ap or Bp is zero
                     return a * B
-            elif self.dot_mode == '>':  # Right contraction
+            elif mode == '>':  # Right contraction
                 if Ap != 0 and Bp != 0: # Neither nc part of A or B is zero
                     prod = update_and_substitute(Ap, Bp, dot_product_basis_blades, self.right_contract_table_dict)
                     return prod + b * A
                 else:  # Ap or Bp is zero
                     return b * A
         else:
-            raise ValueError('"' + str(self.dot_mode) + '" not a legal mode in dot')
+            raise ValueError('"' + str(mode) + '" not a legal mode in dot')
 
+    def hestenes_dot(self, A, B):
+        r""" compute the hestenes dot product, :math:`A \bullet B` """
+        return self._dot(A, B, mode='|')
+
+    def left_contract(self, A, B):
+        r""" compute the left contraction, :math:`A \rfloor B`  """
+        return self._dot(A, B, mode='<')
+
+    def right_contract(self, A, B):
+        r""" compute the right contraction, :math:`A \lfloor B` """
+        return self._dot(A, B, mode='>')
+
+    def dot(self, A, B):
+        r"""
+        Inner product ``|``, ``<``, or ``>``.
+
+        The :attr:`dot_mode` attribute determines which of these is used.
+        """
+        return self._dot(A, B, mode=self.dot_mode)
 
     ######################## Helper Functions ##########################
 
@@ -1323,8 +1442,8 @@ class Ga(metric.Metric):
 
     def split_multivector(self, A):
         """
-        Split multivector A into commutative part a and non-commutative
-        part A' so that A = a+A'
+        Split multivector :math:`A` into commutative part :math:`a` and
+        non-commutative part :math:`A'` so that :math:`A = a+A'`
         """
         if isinstance(A, mv.Mv):
             return self.split_multivector(A.obj)
@@ -1348,7 +1467,7 @@ class Ga(metric.Metric):
 
     def remove_scalar_part(self, A):
         """
-        Return non-commutative part (sympy object) of A.obj.
+        Return non-commutative part (sympy object) of ``A.obj``.
         """
         if isinstance(A, mv.Mv):
             return self.remove_scalar_part(A.obj)
@@ -1493,18 +1612,23 @@ class Ga(metric.Metric):
 
     def build_reciprocal_basis(self,gsym):
         r"""
-        Calculate reciprocal basis vectors e^{j} where
-                e^{j}\cdot e_{k} = \delta_{k}^{j}
-        and \delta_{k}^{j} is the kronecker delta.  We use the formula
-        from Doran and Lasenby 4.94 -
-            e^{j} = (-1)**{j-1}e_{1}^...e_{j-1}^e_{j+1}^...^e_{n}*E_{n}**{-1}
-        where E_{n} = e_{1}^...^e_{n}.
+        Calculate reciprocal basis vectors :math:`e^{j}` where
 
-        For non-orthogonal basis e^{j} is not normalized and must be
-        divided by E_{n}**2 (self.e_sq) in any relevant calculations.
+        .. math:: e^{j}\cdot e_{k} = \delta_{k}^{j}
 
-        If gsym = True then (E_{n})**2 is not evaluated, but is represented
-        as (E_{n})**2 = (-1)**(n*(n-1)/2)*det(g) where det(g) the determinant
+        and :math:`\delta_{k}^{j}` is the kronecker delta.  We use the formula
+        from Doran and Lasenby 4.94:
+
+        .. math:: e^{j} = (-1)^{j-1}e_{1} \wedge ...e_{j-1} \wedge e_{j+1} \wedge ... \wedge e_{n}*E_{n}^{-1}
+
+        where :math:`E_{n} = e_{1}\wedge ...\wedge e_{n}`.
+
+        For non-orthogonal basis :math:`e^{j}` is not normalized and must be
+        divided by :math:`E_{n}^2` (``self.e_sq``) in any relevant calculations.
+
+        If ``gsym = True`` then :math:`E_{n}^2` is not evaluated, but is represented
+        as :math:`E_{n}^2 = (-1)^{n*(n-1)/2}\operatorname{det}(g)` where
+        :math:`\operatorname{det}(g)` the determinant
         of the metric tensor can be general scalar function of the coordinates.
         """
 
@@ -1545,18 +1669,22 @@ class Ga(metric.Metric):
                 dual_base_rep = self.blade_to_base_rep(dual)
                 # {E_n}^{-1} = \frac{E_n}{{E_n}^{2}}
                 # r_basis_j = sgn * duals[j] * E_n so it's not normalized, missing a factor of {E_n}^{-2}
-                r_basis_j = collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))), self.blades_lst)
+                """
+                print('blades list =',self.blades_lst)
+                print('debug =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))))
+                print('collect arg =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))))
+                """
+                r_basis_j = metric.collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))), self.blades_lst)
                 self.r_basis.append(r_basis_j)
                 # sgn = (-1)**{j-1}
                 sgn = -sgn
 
             if self.debug:
                 printer.oprint('E', self.iobj, 'E**2', self.e_sq, 'unnormalized reciprocal basis =\n', self.r_basis)
-                self.dot_mode = '|'
                 print('reciprocal basis test =')
                 for ei in self.basis:
                     for ej in self.r_basis:
-                        ei_dot_ej = self.dot(ei, ej)
+                        ei_dot_ej = self.hestenes_dot(ei, ej)
                         if ei_dot_ej == zero:
                             print('e_{i}|e_{j} = ' + str(ei_dot_ej))
                         else:
@@ -1585,7 +1713,6 @@ class Ga(metric.Metric):
                         self.de[x_i][jb] = metric.Simp.apply(self.de[x_i][jb].subs(self.r_basis_dict))
 
         g_inv = eye(self.n)
-        self.dot_mode = '|'
 
         # Calculate inverse of metric tensor, g^{ij}
 
@@ -1594,7 +1721,7 @@ class Ga(metric.Metric):
             for j in self.n_range:
                 rx_j = self.r_symbols[j]
                 if j >= i:
-                    g_inv[i, j] = self.dot(self.r_basis_dict[rx_i], self.r_basis_dict[rx_j])
+                    g_inv[i, j] = self.hestenes_dot(self.r_basis_dict[rx_i], self.r_basis_dict[rx_j])
                     if not self.is_ortho:
                         g_inv[i, j] /= self.e_sq**2
                 else:
@@ -1613,13 +1740,15 @@ class Ga(metric.Metric):
         return
 
     def er_blade(self, er, blade, mode='*', left=True):
-        """
-        Product (*,^,|,<,>) of reciprocal basis vector 'er' and basis
+        r"""
+        Product (``*``, ``^``, ``|``, ``<``, ``>``) of reciprocal basis vector
+        'er' and basis
         blade 'blade' needed for application of derivatives to
         multivectors.  left is 'True' means 'er' is multiplying 'blade'
         on the left, 'False' is for 'er' multiplying 'blade' on the
-        right.  Symbolically for left geometric product -
-            e^{j}*(e_{i_{1}}^...^e_{i_{r}})
+        right.  Symbolically for left geometric product:
+
+        .. math:: e^{j}*(e_{i_{1}}\wedge ...\wedge e_{i_{r}})
         """
         if mode == '*':
             base = self.blade_to_base_rep(blade)
@@ -1633,11 +1762,10 @@ class Ga(metric.Metric):
             else:
                 return self.wedge(blade, er)
         else:
-            self.dot_mode = mode
             if left:
-                return self.dot(er, blade)
+                return self._dot(er, blade, mode=mode)
             else:
-                return self.dot(blade, er)
+                return self._dot(blade, er, mode=mode)
 
     def blade_derivation(self, blade, ib):
         """
@@ -1679,8 +1807,8 @@ class Ga(metric.Metric):
         self.dbases[key] = db
         return db
 
-    def pdop(self,*kargs):
-        return mv.Pdop(kargs,ga=self)
+    def pdop(self,*args):
+        return mv.Pdop(args,ga=self)
 
     def pDiff(self, A, coord):
         """
@@ -1733,17 +1861,16 @@ class Ga(metric.Metric):
         return dA
 
     def grad_sqr(self, A, grad_sqr_mode, mode, left):
-        """
-        Caclulate '(grad *_{1} grad) *_{2} A' or 'A *_{2} (grad *_{1} grad)'
-        where grad_sqr_mode = *_{1} = *, ^, or | and
-        mode = *_{2} = *, ^, or |.
+        r"""
+        Calculate :math:`(grad *_{1} grad) *_{2} A` or :math:`A *_{2} (grad *_{1} grad)`
+        where ``grad_sqr_mode`` = :math:`*_{1}` = ``*``, ``^``, or ``|`` and
+        ``mode`` = :math:`*_{2}` = ``*``, ``^``, or ``|``.
         """
         (Sop, Bop) = Ga.DopFop[(grad_sqr_mode, mode)]
         print('(Sop, Bop) =', Sop, Bop)
 
         print('grad_sqr:A =', A)
 
-        self.dot_mode == '|'
         s = zero
 
         if Sop is False and Bop is False:
@@ -1789,10 +1916,10 @@ class Ga(metric.Metric):
     def connection(self, rbase, key_base, mode, left):
         """
         Compute required multivector connections of the form
-        (Einstein summation convention) e^{j}*(D_{j}e_{i_{1}...i_{r}})
-        and (D_{j}e_{i_{1}...i_{r}})*e^{j} where * could be *, ^, |,
-        <, or > depending upon the mode and e^{j} are reciprocal
-        basis vectors
+        (Einstein summation convention) :math:`e^{j}*(D_{j}e_{i_{1}...i_{r}})`
+        and :math:`(D_{j}e_{i_{1}...i_{r}})*e^{j}` where :math:`*` could be
+        ``*``, ``^``, ``|``, ``<``, or ``>`` depending upon the mode, and
+        :math:`e^{j}` are reciprocal basis vectors.
         """
         mode_key = (mode, left)
         keys = [i for i, j in self.connect[mode_key]]
@@ -1853,8 +1980,8 @@ class Ga(metric.Metric):
 
         return tuple(rbasis)
 
-    def Mlt(self,*kargs,**kwargs):
-        return lt.Mlt(kargs[0], self, *kargs[1:], **kwargs)
+    def Mlt(self,*args,**kwargs):
+        return lt.Mlt(args[0], self, *args[1:], **kwargs)
 
 class Sm(Ga):
     """
@@ -1864,26 +1991,33 @@ class Sm(Ga):
     the coordinates of the submanifold. The inputs required to define
     the submanifold are:
 
-        u      {kargs[0]} The coordinate map defining the submanifold
-               which is a list of functions of coordinates of the base
-               manifold in terms of the coordinates of the submanifold.
-               for example if the manifold is a unit sphere then -
-               'u = [sin(u)*cos(v),sin(u)*sin(v),cos(u)]'.
+    Parameters
+    ----------
+    u :
+        (``args[0]``) The coordinate map defining the submanifold
+        which is a list of functions of coordinates of the base
+        manifold in terms of the coordinates of the submanifold.
+        for example if the manifold is a unit sphere then -
+        ``u = [sin(u)*cos(v),sin(u)*sin(v),cos(u)]``.
 
-               Alternatively {kargs[0]} is a parametric vector function
-               of the basis vectors of the base manifold.  The
-               coefficients of the bases are functions of the coordinates
-               {kargs[1]}.  In this case we would call the submanifold
-               a "vector" manifold and additional characteristics of the
-               manifold can be calculated since we have given an explicit
-               embedding of the manifold in the base manifold.
+        Alternatively (``args[0]``) is a parametric vector function
+        of the basis vectors of the base manifold.  The
+        coefficients of the bases are functions of the coordinates
+        (``args[1]``).  In this case we would call the submanifold
+        a "vector" manifold and additional characteristics of the
+        manifold can be calculated since we have given an explicit
+        embedding of the manifold in the base manifold.
 
-        coords {kargs[1]} The coordinate list for the submanifold, for
-               example '[u,v]'.
+    coords :
+        (``args[1]``) The coordinate list for the submanifold, for
+        example ``[u, v]``.
+
+    Notes
+    -----
 
     See 'init_slots' for possible other inputs.  The 'Ga' member function
     'sm' can be used to instantiate the submanifold via (o3d is the base
-    manifold)
+    manifold)::
 
         coords = (u,v) = symbols(',v',real=True)
         sm_example = o3d.sm([sin(u)*cos(v),sin(u)*sin(v),cos(u)],coords)
@@ -1897,7 +2031,7 @@ class Sm(Ga):
                   'norm': (False, 'Normalize basis if True'),
                   'ga': (None, 'Base Geometric Algebra')}
 
-    def __init__(self, *kargs, **kwargs):
+    def __init__(self, *args, **kwargs):
 
         #print '!!!Enter Sm!!!'
 
@@ -1906,8 +2040,8 @@ class Sm(Ga):
             Ga.restore = True
 
         kwargs = metric.test_init_slots(Sm.init_slots, **kwargs)
-        u = kargs[0]  # Coordinate map or vector embedding to define submanifold
-        coords = kargs[1]  # List of cordinates
+        u = args[0]  # Coordinate map or vector embedding to define submanifold
+        coords = args[1]  # List of cordinates
         ga = kwargs['ga']  # base geometric algebra
         if ga is None:
             raise ValueError('Base geometric algebra must be specified for submanifold.')

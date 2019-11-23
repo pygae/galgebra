@@ -130,7 +130,7 @@ class Lt(object):
         Lt.mat_fmt = mat_fmt
         return
 
-    def __init__(self, *kargs, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Except for the spinor representation the linear transformation
         is stored as a dictionary with basis vector keys and vector
@@ -157,7 +157,7 @@ class Lt(object):
 
         kwargs = metric.test_init_slots(Lt.init_slots, **kwargs)
 
-        mat_rep = kargs[0]
+        mat_rep = args[0]
         ga = kwargs['ga']
         self.fct_flg = kwargs['f']
         self.mode = kwargs['mode']  # General g, s, or a transformation
@@ -281,7 +281,7 @@ class Lt(object):
         self_add_LT = copy(self.lt_dict)
         for key in list(LT.lt_dict.keys()):
             if key in self_add_LT:
-                self_add_LT[key] = collect(self_add_LT[key] + LT.lt_dict[key], self.Ga.basis)
+                self_add_LT[key] = metric.collect(self_add_LT[key] + LT.lt_dict[key], self.Ga.basis)
             else:
                 self_add_LT[key] = LT.lt_dict[key]
         return(Lt(self_add_LT, ga=self.Ga))
@@ -294,7 +294,7 @@ class Lt(object):
         self_add_LT = copy(self.lt_dict)
         for key in list(LT.lt_dict.keys()):
             if key in self_add_LT:
-                self_add_LT[key] = collect(self_add_LT[key] - LT.lt_dict[key], self.Ga.basis)
+                self_add_LT[key] = metric.collect(self_add_LT[key] - LT.lt_dict[key], self.Ga.basis)
             else:
                 self_add_LT[key] = -LT.lt_dict[key]
         return(Lt(self_add_LT, ga=self.Ga))
@@ -309,7 +309,7 @@ class Lt(object):
             for base in LT.lt_dict:
                 self_mul_LT[base] = self(LT(base, obj=True), obj=True)
             for key in self_mul_LT:
-                self_mul_LT[key] = expand(self_mul_LT[key]).collect(self.Ga.basis)
+                self_mul_LT[key] = metric.collect(expand(self_mul_LT[key]),self.Ga.basis)
             return(Lt(self_mul_LT, ga=self.Ga))
         else:
             self_mul_LT = {}
@@ -355,11 +355,10 @@ class Lt(object):
     def adj(self):
 
         self_adj = []
-        self.Ga.dot_mode = '|'
         for e_j in self.Ga.basis:
             s = S(0)
             for (e_i, er_i) in zip(self.Ga.basis, self.Ga.r_basis):
-                s += er_i * self.Ga.dot(e_j, self(e_i, obj=True))
+                s += er_i * self.Ga.hestenes_dot(e_j, self(e_i, obj=True))
             if self.Ga.is_ortho:
                 self_adj.append(expand(s))
             else:
@@ -488,7 +487,7 @@ class Lt(object):
 class Mlt(object):
     """
     A multilinear transformation (mlt) is a multilinear multivector function of
-    a list of vectors (*kargs) F(v_1,...,v_r) where for any argument slot
+    a list of vectors (*args) F(v_1,...,v_r) where for any argument slot
     j we have (a is a scalar and u_j a vector)
           F(v_1,...,a*v_j,...,v_r) = a*F(v_1,...,v_j,...,v_r)
           F(v_1,...,v_j+u_j,...,v_r) = F(v_1,...,v_j,...,v_r) + F(v_1,...,u_j,...,v_r).
@@ -729,7 +728,7 @@ class Mlt(object):
                     self.fvalue += coef * a_prod
         else:
             if isinstance(f, types.FunctionType): #  Tensor defined by general multi-linear function
-                args, _kargs, _kwargs, _defaults = inspect.getargspec(f)
+                args, _varargs, _kwargs, _defaults = inspect.getargspec(f)
                 self.nargs = len(args)
                 self.f = f
                 Mlt.increment_slots(self.nargs, Ga)
@@ -747,14 +746,14 @@ class Mlt(object):
             Printer = printer.GaPrinter
         return Printer().doprint(self)
 
-    def __call__(self, *kargs):
-        if len(kargs) == 0:
+    def __call__(self, *args):
+        if len(args) == 0:
             return self.fvalue
         if self.f is not None:
-            return self.f(*kargs)
+            return self.f(*args)
         else:
             sub_lst = []
-            for (x, ai) in zip(kargs, self.Ga.pdiffs):
+            for (x, ai) in zip(args, self.Ga.pdiffs):
                 for (r_base, aij) in zip(self.Ga.r_basis_mv, ai):
                     sub_lst.append((aij, (r_base | x).scalar()))
             return self.fvalue.subs(sub_lst,simultaneous=True)
