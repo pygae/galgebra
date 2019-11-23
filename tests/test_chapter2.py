@@ -154,12 +154,13 @@ class TestChapter2(unittest.TestCase):
         M = (x ^ (e_1 + e_2)) - (e_2 ^ (e_1 + e_2))
 
         # Solve the linear system
-        R = solve([L, M], a, b)     # TODO: fix this...
+        R = solve([L.obj, M.obj], a, b, dict=True)     # TODO: fix this...
+        self.assertTrue(len(R), 1)
 
         # Replace symbols
-        x = x.subs(R)
+        x = x.subs(R[0])
 
-        self.assertTrue(x == e_1 + 2*e_2)
+        self.assertEquals(x, e_1 + 2 * e_2)
 
 
     def test2_12_1_5(self):
