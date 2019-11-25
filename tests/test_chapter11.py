@@ -72,9 +72,10 @@ class TestChapter11(TestCase):
                 X = (p ^ A)
                 self.assertNotEquals(X, 0)
                 M = e_0_inv < (e_0 ^ X)
+
                 # Very slow
-                #d = (e_0_inv < (e_0 ^ X)) / (e_0_inv < X)
-                #d_inv = d.inv()
+                # d = (e_0_inv < (e_0 ^ X)) / (e_0_inv < X)
+                # d_inv = d.inv()
 
                 def hat(A):
                     return ((-1) ** A.pure_grade()) * A
@@ -87,8 +88,8 @@ class TestChapter11(TestCase):
                 self.assertEquals(Xd, p < ((A < Ir_inv) * e_0_inv))
                 self.assertEquals(Xd, hat(A < Ir_inv) - e_0_inv * (p < hat(A < Ir_inv)))
                 # Very slow
-                #self.assertEquals(Xd, hat(A < Ir_inv) + e_0_inv * hat(M < Ir_inv))
-                #self.assertEquals(Xd, (e_0_inv - d_inv) * hat(M < Ir_inv))
+                # self.assertEquals(Xd, hat(A < Ir_inv) + e_0_inv * hat(M < Ir_inv))
+                # self.assertEquals(Xd, (e_0_inv - d_inv) * hat(M < Ir_inv))
 
         Ga.dual_mode()
 

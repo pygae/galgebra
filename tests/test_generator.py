@@ -9,7 +9,6 @@ from galgebra.generator import format_geometric_algebra, flatten, expand
 class TestGenerator(TestCase):
 
     def setUp(self):
-
         Ga.dual_mode("Iinv+")
         GA = Ga('e*1|2|3|4', g=[0, 1, 1, 1])
         GA.build_cobases()
@@ -21,7 +20,6 @@ class TestGenerator(TestCase):
         self.flat_GA = flat_GA
 
     def test_add(self):
-
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')
@@ -30,7 +28,6 @@ class TestGenerator(TestCase):
         self.assertEquals(X + Y, expand(GA, flatten(flat_GA, X) + flatten(flat_GA, Y)))
 
     def test_sub(self):
-
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')
@@ -39,7 +36,6 @@ class TestGenerator(TestCase):
         self.assertEquals(X - Y, expand(GA, flatten(flat_GA, X) - flatten(flat_GA, Y)))
 
     def test_mul(self):
-
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')
@@ -48,7 +44,6 @@ class TestGenerator(TestCase):
         self.assertEquals(X * Y, expand(GA, flatten(flat_GA, X) * flatten(flat_GA, Y)))
 
     def test_and(self):
-
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')
@@ -57,7 +52,6 @@ class TestGenerator(TestCase):
         self.assertEquals(Jinv(J(X) ^ J(Y)), expand(GA, flatten(flat_GA, X) & flatten(flat_GA, Y)))
 
     def test_xor(self):
-
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')
@@ -66,7 +60,6 @@ class TestGenerator(TestCase):
         self.assertEquals(X ^ Y, expand(GA, flatten(flat_GA, X) ^ flatten(flat_GA, Y)))
 
     def test_lshift(self):
-
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')
@@ -75,7 +68,6 @@ class TestGenerator(TestCase):
         self.assertEquals(X << Y, expand(GA, flatten(flat_GA, X) << flatten(flat_GA, Y)))
 
     def test_rshift(self):
-
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')
@@ -84,7 +76,6 @@ class TestGenerator(TestCase):
         self.assertEquals(X >> Y, expand(GA, flatten(flat_GA, X) >> flatten(flat_GA, Y)))
 
     def test_meet_and_join(self):
-
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')
@@ -94,7 +85,6 @@ class TestGenerator(TestCase):
         self.assertEquals(X ^ Y, expand(GA, flatten(flat_GA, X).join(flatten(flat_GA, Y))))
 
     def test_rev(self):
-
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')

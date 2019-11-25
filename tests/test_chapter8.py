@@ -22,7 +22,7 @@ class TestChapter8(TestCase):
         B = GA.mv('B', 2, 'blade')
         X = GA.mv('A', 'mv')
         self.assertEquals(B.pure_grade(), 2)
-        self.assertEquals(com(X, B).pure_grade(), -2)   # Not pure
+        self.assertEquals(com(X, B).pure_grade(), -2)  # Not pure
 
         E = com(X, B).rev()
         self.assertEquals(E, (B.rev() * X.rev() - X.rev() * B.rev()) / 2)

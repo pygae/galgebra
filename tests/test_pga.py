@@ -425,10 +425,10 @@ class TestPGA(TestCase):
         p314 = Jinv(J(P3) ^ J(P1) ^ J(P4))
 
         # TODO: find a way to meet planes faster...
-        #self.assertProjEquals(p123 ^ p124 ^ p314, P1)
-        #self.assertProjEquals(p123 ^ p124 ^ p234, P2)
-        #self.assertProjEquals(p123 ^ p234 ^ p314, P3)
-        #self.assertProjEquals(p124 ^ p234 ^ p314, P4)
+        # self.assertProjEquals(p123 ^ p124 ^ p314, P1)
+        # self.assertProjEquals(p123 ^ p124 ^ p234, P2)
+        # self.assertProjEquals(p123 ^ p234 ^ p314, P3)
+        # self.assertProjEquals(p124 ^ p234 ^ p314, P4)
 
     def test_geometry_incidence_points_join_into_planes(self):
         """
@@ -536,7 +536,7 @@ class TestPGA(TestCase):
         p1 = self.plane(nx / n_norm, ny / n_norm, nz / n_norm, -x)
         p2 = self.plane(nx / n_norm, ny / n_norm, nz / n_norm, -y)
 
-        self.assertEquals(self.ideal_norm(p1 ^ p2), sqrt((x - y)**2))
+        self.assertEquals(self.ideal_norm(p1 ^ p2), sqrt((x - y) ** 2))
 
     def test_metric_oriented_distance_between_point_and_plane(self):
         """
@@ -552,7 +552,7 @@ class TestPGA(TestCase):
         self.assertEquals(Jinv(J(p0) ^ J(P0)), x0 - d0)
 
         # TODO: We could assume d0 - x0 is not null for simplifying further
-        self.assertEquals(self.ideal_norm(P0 ^ p0), sqrt((d0 - x0)**2))
+        self.assertEquals(self.ideal_norm(P0 ^ p0), sqrt((d0 - x0) ** 2))
 
     def test_metric_oriented_distance_between_point_and_line(self):
         """
@@ -617,8 +617,8 @@ class TestPGA(TestCase):
         P1 = self.point(x1, y1, 0)
         P2 = self.point(-y1, x1, 0)
 
-        l0 = Jinv(J(P0) ^ J(P1))    # TODO: this feels weird... but ganja does the same
-        l1 = Jinv(J(P2) ^ J(P0))    #
+        l0 = Jinv(J(P0) ^ J(P1))  # TODO: this feels weird... but ganja does the same
+        l1 = Jinv(J(P2) ^ J(P0))  #
 
         l0 /= self.norm(l0)
         l1 /= self.norm(l1)
@@ -630,11 +630,11 @@ class TestPGA(TestCase):
 
     @staticmethod
     def rotor_cs(alpha, l):
-        return cos(-alpha / 2) + sin(-alpha / 2) * l    # TODO: this feels weird...
+        return cos(-alpha / 2) + sin(-alpha / 2) * l  # TODO: this feels weird...
 
     @staticmethod
     def rotor_exp(alpha, l):
-        return (-alpha / 2 * l).exp()                   # TODO: this feels weird...
+        return (-alpha / 2 * l).exp()  # TODO: this feels weird...
 
     def test_motors_rotator(self):
         """
@@ -793,4 +793,4 @@ class TestPGA(TestCase):
 
         d = Symbol('d')
         T = self.translator(d, l)
-        self.assertProjEquals(T * Px * T.rev(), self.point(x0 + d, y0, z0))     # TODO : like ganja.js but weird...
+        self.assertProjEquals(T * Px * T.rev(), self.point(x0 + d, y0, z0))  # TODO : like ganja.js but weird...

@@ -6,7 +6,9 @@ from galgebra.mv import Mv
 
 
 def com(A, B):
-    """I like free functions..."""
+    """
+    I like free functions...
+    """
     return Ga.com(A, B)
 
 
@@ -56,4 +58,3 @@ class TestCase(unittest.TestCase):
         diff = simplify(first - second)
 
         self.assertTrue(diff != 0, "\n%s\n!=\n%s\n%s" % (first, second, diff))
-

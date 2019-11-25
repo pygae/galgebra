@@ -25,7 +25,6 @@ class TestChapter2(TestCase):
         self.assertEquals(GA.mv(alpha, 'scalar') ^ b, alpha * b)
         self.assertEquals(a ^ (b + c), (a ^ b) + (a ^ c))
 
-
     def test_2_4_2(self):
         """
         Associativity of the outer product and calculating determinants.
@@ -57,7 +56,6 @@ class TestChapter2(TestCase):
 
         self.assertEquals(a ^ b ^ c, m.det() * (e_1 ^ e_2 ^ e_3))
 
-
     def test2_9_1(self):
         """
         Blades and grades. Be careful ga.grade_decomposition and Mv.pure_grade can't tell if a multivector is a blade,
@@ -83,7 +81,6 @@ class TestChapter2(TestCase):
             self.assertEquals(len(grades), 1)
             self.assertEquals(list(grades.keys())[0], 0 if C == 0 else k + l)
 
-
     def test2_9_5(self):
         """
         Reversion and grade involution.
@@ -97,7 +94,6 @@ class TestChapter2(TestCase):
             self.assertEquals(A_rev, A.rev())
             self.assertEquals(A_rev, ((-1) ** ((k * (k - 1)) / 2)) * A)
 
-
     def test2_12_1_1(self):
         """
         Compute the outer products of the following 3-space expressions,
@@ -105,12 +101,12 @@ class TestChapter2(TestCase):
         """
         GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
         self.assertTrue((e_1 + e_2) ^ (e_1 + e_3) == (-e_1 ^ e_2) + (e_1 ^ e_3) + (e_2 ^ e_3))
-        self.assertTrue((e_1 + e_2 + e_3) ^ (2*e_1) == -2*(e_1 ^ e_2) - 2*(e_1 ^ e_3))
+        self.assertTrue((e_1 + e_2 + e_3) ^ (2 * e_1) == -2 * (e_1 ^ e_2) - 2 * (e_1 ^ e_3))
         self.assertTrue((e_1 - e_2) ^ (e_1 - e_3) == (e_1 ^ e_2) - (e_1 ^ e_3) + (e_2 ^ e_3))
-        self.assertTrue((e_1 + e_2) ^ (0.5*e_1 + 2*e_2 + 3*e_3) == 1.5*(e_1 ^ e_2) + 3*(e_1 ^ e_3) + 3*(e_2 ^ e_3))
+        self.assertTrue(
+            (e_1 + e_2) ^ (0.5 * e_1 + 2 * e_2 + 3 * e_3) == 1.5 * (e_1 ^ e_2) + 3 * (e_1 ^ e_3) + 3 * (e_2 ^ e_3))
         self.assertTrue((e_1 ^ e_2) ^ (e_1 + e_3) == (e_1 ^ e_2 ^ e_3))
         self.assertTrue((e_1 + e_2) ^ ((e_1 ^ e_2) + (e_2 ^ e_3)) == (e_1 ^ e_2 ^ e_3))
-
 
     def test2_12_1_2(self):
         """
@@ -122,8 +118,7 @@ class TestChapter2(TestCase):
         self.assertTrue(e_1 ^ B == 0)
         self.assertFalse((e_1 + e_2) ^ B == 0)
         self.assertFalse((e_1 + e_2 + e_3) ^ B == 0)
-        self.assertTrue((2*e_1 - e_2 + e_3) ^ B == 0)
-
+        self.assertTrue((2 * e_1 - e_2 + e_3) ^ B == 0)
 
     def test2_12_1_3(self):
         """
@@ -131,11 +126,10 @@ class TestChapter2(TestCase):
         and b = -e_1 - e_2 (relative to the area of e_1 ^ e_2) ?
         """
         GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
-        a = e_1 + 2*e_2
+        a = e_1 + 2 * e_2
         b = -e_1 - e_2
         B = a ^ b
         self.assertTrue(B == 1 * (e_1 ^ e_2))
-
 
     def test2_12_1_4(self):
         """
@@ -155,14 +149,13 @@ class TestChapter2(TestCase):
         M = (x ^ (e_1 + e_2)) - (e_2 ^ (e_1 + e_2))
 
         # Solve the linear system
-        R = solve([L.obj, M.obj], a, b, dict=True)     # TODO: fix this...
+        R = solve([L.obj, M.obj], a, b, dict=True)  # TODO: fix this...
         self.assertTrue(len(R), 1)
 
         # Replace symbols
         x = x.subs(R[0])
 
         self.assertEquals(x, e_1 + 2 * e_2)
-
 
     def test2_12_1_5(self):
         """
@@ -178,7 +171,6 @@ class TestChapter2(TestCase):
             C += A.get_grade(k) ^ B.get_grade(l)
 
         self.assertTrue(C == (2 * e_1 + 3 * (e_3 ^ e_1) + 2 * (e_2 ^ e_3)))
-
 
     def test2_12_2_1(self):
         """
@@ -207,7 +199,6 @@ class TestChapter2(TestCase):
         area = Matrix([x, y]).det()
         self.assertTrue(area == (a * b * sin(t)))
 
-
     def test2_12_2_2(self):
         """
         """
@@ -227,7 +218,6 @@ class TestChapter2(TestCase):
         cross = x_1 * y_2 - y_1 * x_2
 
         self.assertTrue(cross == (a * b * sin(t)))
-
 
     def test2_12_2_4(self):
         """
@@ -267,7 +257,6 @@ class TestChapter2(TestCase):
         self.assertTrue((x ^ c) == (x_1 * (a ^ c) + x_2 * (b ^ c)))
         self.assertTrue((x ^ c ^ a) == x_2 * (b ^ c ^ a))
         self.assertTrue((x ^ c ^ a) * (b ^ c ^ a).inv() == GA.mv(x_2, 'scalar'))
-
 
     def test2_12_2_5(self):
         """
@@ -315,7 +304,6 @@ class TestChapter2(TestCase):
         result = solve_poly_system(system, unknowns)
         self.assertTrue(result is None)
 
-
     def test2_12_2_6(self):
         """
         Show that B = e1 ^ e2 + e3 ^ e4 of the previous exercise doesn't contain any other vector than 0.
@@ -348,13 +336,12 @@ class TestChapter2(TestCase):
         self.assertTrue(result[2] == 0)
         self.assertTrue(result[3] == 0)
 
-
     def test2_12_2_9(self):
         """
         Prove Ak ^ Bl = (-1**kl) Bl ^ Ak.
         """
-        for GA in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]:    #, Ga('e*1|2|3|4|5')]:
+        for GA in [Ga('e*1|2'), Ga('e*1|2|3'), Ga('e*1|2|3|4')]:  # , Ga('e*1|2|3|4|5')]:
             for k, l in product(range(GA.n + 1), range(GA.n + 1)):
                 Ak = GA.mv('A', 'blade', k)
                 Bl = GA.mv('B', 'blade', l)
-                self.assertEquals(Ak ^ Bl, (-1)**(k * l) * (Bl ^ Ak))
+                self.assertEquals(Ak ^ Bl, (-1) ** (k * l) * (Bl ^ Ak))

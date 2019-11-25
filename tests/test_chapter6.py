@@ -32,7 +32,6 @@ class TestChapter6(TestCase):
         e_23 = e_2 * e_3
         self.assertEquals(e_23 * e_23, -1)
 
-
     def test6_1_4_2(self):
         """
         The geometric product for vectors on a basis.
@@ -71,7 +70,6 @@ class TestChapter6(TestCase):
 
         self.assertEquals(a * b, a_1 * b_1 + a_2 * b_2 + (a_1 * b_2 - a_2 * b_1) * (e_1 ^ e_2))
 
-
     def test6_3_1(self):
         """
         The subspace products from symmetry.
@@ -103,7 +101,6 @@ class TestChapter6(TestCase):
         M = GA.mv('m', 'mv')
         self.assertEquals(a * M, (a < M) + (a ^ M))
 
-
     def test6_3_2(self):
         """
         The subspace products as selected grades.
@@ -120,7 +117,6 @@ class TestChapter6(TestCase):
             self.assertEquals(A > B, 0 if l > k else (A * B).get_grade(k - l))
             # TODO: scalar product
 
-
     def test6_6_2_3(self):
         """
         The outer product can be defined as the completely antisymmetric summed average of all permutations
@@ -136,7 +132,7 @@ class TestChapter6(TestCase):
             M_grades = list(GA.grade_decomposition(M).keys())
             self.assertEquals(len(M_grades), 1)
             return ((-1) ** M_grades[0]) * M
-        
+
         self.assertEquals(x * y * z, ((x < y) + (x ^ y)) * z)
         self.assertEquals(x * y * z, ((x < y) * z) + ((x ^ y) * z))
         self.assertEquals(x * y * z, ((x < y) * z) - (z < hat(x ^ y)) + (z ^ hat(x ^ y)))
@@ -180,10 +176,10 @@ class TestChapter6(TestCase):
         self.assertEquals(x < (y ^ z), ((x < y) ^ z) - (y ^ (x < z)))
         self.assertEquals(y < (z ^ x), ((y < z) ^ x) - (z ^ (y < x)))
 
-        self.assertEquals(((z < x) ^ y) - (x ^ (z < y)) + ((x < y) ^ z) - (y ^ (x < z)) + ((y < z) ^ x) - (z ^ (y < x)), 0)
+        self.assertEquals(((z < x) ^ y) - (x ^ (z < y)) + ((x < y) ^ z) - (y ^ (x < z)) + ((y < z) ^ x) - (z ^ (y < x)),
+                          0)
 
         self.assertEquals(x * y * z - y * x * z + y * z * x - z * y * x + z * x * y - x * z * y, 6 * (x ^ y ^ z))
-
 
     def test6_6_2_4(self):
         """
@@ -221,7 +217,6 @@ class TestChapter6(TestCase):
         result = solve_poly_system(system, unknowns)
         self.assertTrue(result is None)
 
-
     def test6_6_2_6(self):
         """
         Prove (X ^ A) * B = X * (A < B) using the grade based definition of ^, * and <.
@@ -237,7 +232,6 @@ class TestChapter6(TestCase):
             self.assertTrue(((X * A).get_grade(j + k) * B).get_grade(0) != 0 if j + k == l else True)
             self.assertTrue((X * (A * B).get_grade(l - k)).get_grade(0) != 0 if j == l - k else True)
             self.assertEquals(((X * A).get_grade(j + k) * B).get_grade(0), (X * (A * B).get_grade(l - k)).get_grade(0))
-
 
     def test6_6_2_7(self):
         """
@@ -257,7 +251,6 @@ class TestChapter6(TestCase):
             A_grade_and_blades = [(k, GA.mv('A', 'blade', k)) for k in range(GA.n + 1)]
             for k, A in A_grade_and_blades:
                 self.assertEquals((x < A.inv()) * A, (x < A.inv()) < A)
-
 
     def test6_6_2_9(self):
         """
