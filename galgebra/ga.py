@@ -16,6 +16,7 @@ from . import metric
 from . import mv
 from . import lt
 from . import utils
+import functools
 from functools import reduce
 
 half = Rational(1, 2)
@@ -32,52 +33,61 @@ def is_bases_product(w):
     return len(nc) == 2 or len(nc) == 1 and nc[0].is_Pow and nc[0].exp == 2
 
 
-class auto_update_dict(dict):
+class lazy_dict(dict):
     """
-    auto_update_dict creats entries to a dictionary on the fly.  When the
-    dictionary is called and the key used is not one of the existing keys
-    The function self.f_update(key) is called to evaluate the key.  The
-    result is then added to the dictionary so that self.f_update is not
+    A dictionary that creates missing entries on the fly.
+
+    When the dictionary is indexed and the key used is not one of the existing
+    keys, ``self.f_value(key)`` is called to evaluate the key.  The
+    result is then added to the dictionary so that ``self.f_value`` is not
     used to evaluate the same key again.
 
-    The __init__ is used to input self.f_update for a given dictionary.
+    Parameters
+    ----------
+    d :
+        Arguments to pass on to the :class:`dict` constructor, typically
+        a regular dictionary
+    f_value : function
+        The function to call to generate a value for a given key
     """
-    def __init__(self, f_update, instance=None):
-        self.f_update = f_update
-        self.instance = instance
-        self._dict = {}
+    def __init__(self, d, f_value):
+        dict.__init__(self, d)
+        self.f_value = f_value
 
-    def __getitem__(self, key):
-        try:
-            return dict.__getitem__(self, key)
-        except KeyError:
-            try:
-                if self.instance is None:
-                    f_key = self.f_update(key)
-                else:
-                    f_key = self.f_update(self.instance, key)
-                self[key] = f_key
-                dict.__setitem__(self, key, f_key)
-                return dict.__getitem__(self, key)
-            except ValueError:
-                raise ValueError('"f_update(' + str(key) + ')" not defined '
-                                 + 'for key')
+    def __missing__(self, key):
+        value = self.f_value(key)
+        self[key] = value
+        return value
 
-def update_and_substitute(expr1, expr2, func, mul_dict):
+    def __repr__(self):
+        return '{}({}, f_value={!r})'.format(
+            type(self).__qualname__, dict.__repr__(self), self.f_value)
+
+    def _repr_pretty_(self, p, cycle):
+        # ipython support
+        p_open, p_close = type(self).__qualname__ + '(', ')'
+        with p.group(len(p_open), p_open, p_close):
+            p.type_pprinters[dict](self, p, cycle)
+            p.text(',')
+            p.breakable()
+            p.text('f_value={}'.format(self.f_value))
+
+
+def update_and_substitute(expr1, expr2, mul_dict):
     """
     Linear expand expr1 and expr2 to get (summation convention)::
 
-        expr1 = coefs1[i]*bases1[i]
-        expr2 = coefs2[j]*bases2[j]
+        expr1 = coefs1[i] * bases1[i]
+        expr2 = coefs2[j] * bases2[j]
 
     where ``coefs1`` and ``coefs2`` are lists of are commutative expressions and
     ``bases1`` and ``bases2`` are lists of bases for the geometric algebra.
 
     Then evaluate::
 
-        expr = coefs1[i]*coefs2[j]*F(bases1[i],bases2[j])
+        expr = coefs1[i] * coefs2[j] * mul_dict[bases1[i], bases2[j]]
 
-    where ``F(bases1[i],bases2[j])`` is a function that returns the appropriate
+    where ``mul_dict[bases1[i], bases2[j]]`` contains the appropriate
     product of ``bases1[i]*bases2[j]`` as a linear combination of scalars and
     bases of the geometric algebra.
     """
@@ -98,9 +108,6 @@ def update_and_substitute(expr1, expr2, func, mul_dict):
                 expr += coef1 * coef2 * base1
             else:
                 key = (base1, base2)
-                #Update mul dictionary for future
-                if key not in mul_dict:
-                    mul_dict[key] = func(key)
                 expr += coef1 * coef2 * mul_dict[key]
     return expr
 
@@ -224,23 +231,28 @@ class Ga(metric.Metric):
     .. rubric:: Multiplication tables data structures
 
     Keys in all multiplication tables (``*``, ``^``, ``|``, ``<``, ``>``) are always ``symbol1*symbol2``.
-    The correct operation is known by the context (name) of the relevant list or dictionary)
-
-    .. attribute:: mul_table
-
-        Geometric products of basis blades as list of ``[(base1*base2, Expansion of base1*base2),...]``
+    The correct operation is known by the context (name) of the relevant list or dictionary). These dictionaries are
+    lazy, meaning they may be empty until an attempt is made to index them.
 
     .. attribute:: mul_table_dict
 
-        Geometric products of basis blades as dicitionary ``{base1*base2: Expansion of base1*base2,...}``
-
-    .. attribute:: wedge_table
-
-        Outer products of basis blades as list of ``[(base1*base2, Expansion of base1^base2),...]``
+        Geometric products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1*base2,...}``
 
     .. attribute:: wedge_table_dict
 
-        Outer products of basis blades as dicitionary ``{base1*base2: Expansion of base1^base2,...}``
+        Outer products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1^base2,...}`
+
+    .. attribute:: dot_table_dict
+
+        Hestenes inner products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1|base2,...}``
+
+    .. attribute:: left_contract_table_dict
+
+        Left contraction of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1<base2,...}``
+
+    .. attribute:: right_contract_table_dict
+
+        Right contraction of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1>base2,...}``
 
     .. rubric:: Reciprocal basis data structures
 
@@ -839,27 +851,25 @@ class Ga(metric.Metric):
 
             [(blade1*blade2, f(blade1, blade1)), ...]
         """
-
-        self.mul_table = []  # Geometric product (*) of blades
-        self.mul_table_dict = {}
+        self.mul_table_dict = lazy_dict({}, f_value=self.geometric_product_basis_blades)  # Geometric product (*) of blades
 
         if not self.is_ortho:
             self.non_orthogonal_mul_table()  # Fully populated geometric product (*) multiplication table
             self.base_blade_conversions()  # Generates conversion dictionaries between bases and blades
 
-        self.wedge_table = []  # Outer product (^)
-        self.wedge_table_dict = {}
+        self.wedge_table_dict = lazy_dict({}, f_value=self.wedge_product_basis_blades)  # Outer product (^)
 
         # All three (|,<,>) types of contractions use the same generation function
         # self.dot_product_basis_blades.  The type of dictionary entry generated depend
         # on self.dot_mode = '|', '<', or '>' as set in self.dot.
+        if self.is_ortho:
+            dot_product_basis_blades = self.dot_product_basis_blades
+        else:
+            dot_product_basis_blades = self.non_orthogonal_dot_product_basis_blades
 
-        self.dot_table = []  # Inner product (|)
-        self.dot_table_dict = {}
-        self.left_contract_table = []  # Left contraction (<)
-        self.left_contract_table_dict = {}
-        self.right_contract_table = []  # Right contraction (>)
-        self.right_contract_table_dict = {}
+        self.dot_table_dict = lazy_dict({}, f_value=functools.partial(dot_product_basis_blades, mode='|'))
+        self.left_contract_table_dict = lazy_dict({}, f_value=functools.partial(dot_product_basis_blades, mode='<'))
+        self.right_contract_table_dict = lazy_dict({}, f_value=functools.partial(dot_product_basis_blades, mode='>'))
 
         if self.debug:
             print('Exit basis_product_tables.\n')
@@ -1264,28 +1274,24 @@ class Ga(metric.Metric):
     def mul(self, A, B):  # geometric (*) product of blade representations
         if A == 0 or B == 0:
             return 0
-        return update_and_substitute(A, B, self.geometric_product_basis_blades, self.mul_table_dict)
+        return update_and_substitute(A, B, self.mul_table_dict)
 
     def wedge(self, A, B):
         # wedge assumes A and B are in blade rep
         # wedge product is same for both orthogonal and non-orthogonal for A and B in blade rep
         if A == 0 or B == 0:
             return 0
-        return update_and_substitute(A, B, self.wedge_product_basis_blades, self.wedge_table_dict)
+        return update_and_substitute(A, B, self.wedge_table_dict)
 
 
     def _dot(self, A, B, mode):
         if A == 0 or B == 0:
             return 0
-        if self.is_ortho:
-            dot_product_basis_blades = lambda x: self.dot_product_basis_blades(x, mode=mode)
-        else:
-            dot_product_basis_blades = lambda x: self.non_orthogonal_dot_product_basis_blades(x, mode=mode)
 
         if mode == '|':  # Hestenes dot product
             A = self.remove_scalar_part(A)
             B = self.remove_scalar_part(B)
-            return update_and_substitute(A, B, dot_product_basis_blades, self.dot_table_dict)
+            return update_and_substitute(A, B, self.dot_table_dict)
         elif mode == '<' or mode == '>':
             r"""
             Let :math:`A = a + A'` and :math:`B = b + B'` where :math:`a` and
@@ -1305,13 +1311,13 @@ class Ga(metric.Metric):
             (b, Bp) = self.split_multivector(B)  # Bp = B'
             if mode == '<':  # Left contraction
                 if Ap != 0 and Bp != 0:  # Neither nc part of A or B is zero
-                    prod = update_and_substitute(Ap, Bp, dot_product_basis_blades, self.left_contract_table_dict)
+                    prod = update_and_substitute(Ap, Bp, self.left_contract_table_dict)
                     return prod + a * B
                 else:  # Ap or Bp is zero
                     return a * B
             elif mode == '>':  # Right contraction
                 if Ap != 0 and Bp != 0: # Neither nc part of A or B is zero
-                    prod = update_and_substitute(Ap, Bp, dot_product_basis_blades, self.right_contract_table_dict)
+                    prod = update_and_substitute(Ap, Bp, self.right_contract_table_dict)
                     return prod + b * A
                 else:  # Ap or Bp is zero
                     return b * A
