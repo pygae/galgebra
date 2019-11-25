@@ -270,13 +270,6 @@ class Ga(metric.Metric):
         Derivatives of basis functions.  Two dimensional list. First entry is differentiating coordinate index.
         Second entry is basis vector index.  Quantities are linear combinations of basis vector symbols.
 
-    .. attribute:: dbases
-
-        Dictionary of derivatives of basis blades with respect to coordinate ,
-        ``{(coordinate index, basis blade): derivative of basis blade with respect to coordinate, ...}``.
-
-        Note that values in dictionary are not multivectors, but linear combinations of basis blade symbols.
-
     .. attribute:: Pdop_identity
 
         Partial differential operator identity (operates on multivector function to return function).
@@ -416,9 +409,9 @@ class Ga(metric.Metric):
         metric.Metric.__init__(self, bases, **kwargs)
 
         self.par_coords = None
-        self.build_bases()
+        self._build_bases()
         self.dot_mode = '|'
-        self.basis_product_tables()
+        self._build_basis_product_tables()
 
         if self.coords is not None:
             self.coords = list(self.coords)
@@ -428,7 +421,7 @@ class Ga(metric.Metric):
 
         if self.coords is not None:
             self.coord_vec = sum([coord * base for (coord, base) in zip(self.coords, self.basis)])
-            self.build_reciprocal_basis(self.gsym)
+            self._build_reciprocal_basis(self.gsym)
             self.Pdop_identity = mv.Pdop({},ga=self)  # Identity Pdop = 1
             self.Pdiffs = {}
             self.sPds = {}
@@ -440,9 +433,9 @@ class Ga(metric.Metric):
             self.r_basis_mv = None
 
         if self.connect_flg:
-            self.build_connection()
+            self._build_connection()
 
-        self.lt_flg = False
+        self._lt_flg = False  # cache for `self.lt`
 
         # Calculate normalized pseudo scalar (I**2 = +/-1)
 
@@ -477,7 +470,7 @@ class Ga(metric.Metric):
             print('Exit Ga.__init__()')
 
         self.a = []  # List of dummy vectors for Mlt calculations
-        self.agrads = {}  # Gradient operator with respect to vector a
+        self._agrads = {}  # cache of gradient operator with respect to vector a
         self.dslot = -1  # args slot for dervative, -1 for coordinates
         self.XOX = self.mv('XOX','vector')  # Versor test vector
 
@@ -488,8 +481,8 @@ class Ga(metric.Metric):
                 self.make_grad(ai)
             return
 
-        if a in list(self.agrads.keys()):
-            return self.agrads[a]
+        if a in list(self._agrads.keys()):
+            return self._agrads[a]
 
         if isinstance(a, mv.Mv):
             ai = a.get_coefs(1)
@@ -500,9 +493,9 @@ class Ga(metric.Metric):
         for (base, coord) in zip(self.r_basis_mv, ai):
             coefs.append(base)
             pdiffs.append(mv.Pdop({coord: 1}, ga=self))
-        self.agrads[a] = mv.Dop(coefs, pdiffs, ga=self, cmpflg=cmpflg)
+        self._agrads[a] = mv.Dop(coefs, pdiffs, ga=self, cmpflg=cmpflg)
         self.a.append(a)
-        return self.agrads[a]
+        return self._agrads[a]
 
     def __str__(self):
         return self.name
@@ -575,7 +568,7 @@ class Ga(metric.Metric):
         """
 
         if self.r_basis_mv is None:
-            self.build_reciprocal_basis(self.gsym)
+            self._build_reciprocal_basis(self.gsym)
         if norm and not self.is_ortho:
             return tuple([self.r_basis_mv[i] / self.e_sq for i in self.n_range])
         else:
@@ -627,8 +620,8 @@ class Ga(metric.Metric):
         Instanciate and return a linear transformation for this, 'self',
         geometric algebra.
         """
-        if not self.lt_flg:
-            self.lt_flg = True
+        if not self._lt_flg:
+            self._lt_flg = True
             (self.lt_coords, self.lt_x) = lt.Lt.setup(ga=self)
 
         kwargs['ga'] = self
@@ -660,7 +653,7 @@ class Ga(metric.Metric):
     def basis_vectors(self):
         return tuple(self.basis)
 
-    def build_bases(self):
+    def _build_bases(self):
         r"""
         The bases for the multivector (geometric) algebra are formed from
         all combinations of the bases of the vector space and the scalars.
@@ -823,7 +816,7 @@ class Ga(metric.Metric):
 
         return
 
-    def basis_product_tables(self):
+    def _build_basis_product_tables(self):
         """
         For the different products of geometric algebra bases/blade
         initialize auto-updating of bases/blades product lists.  For
@@ -844,8 +837,8 @@ class Ga(metric.Metric):
         self.mul_table_dict = {}
 
         if not self.is_ortho:
-            self.non_orthogonal_mul_table()  # Fully populated geometric product (*) multiplication table
-            self.base_blade_conversions()  # Generates conversion dictionaries between bases and blades
+            self._build_non_orthogonal_mul_table()  # Fully populated geometric product (*) multiplication table
+            self._build_base_blade_conversions()  # Generates conversion dictionaries between bases and blades
 
         self.wedge_table = []  # Outer product (^)
         self.wedge_table_dict = {}
@@ -862,10 +855,10 @@ class Ga(metric.Metric):
         self.right_contract_table_dict = {}
 
         if self.debug:
-            print('Exit basis_product_tables.\n')
+            print('Exit _build_basis_product_tables.\n')
         return
 
-    def build_connection(self):
+    def _build_connection(self):
         # Partial derivatives of multivector bases multiplied (*,^,|,<,>)
         # on left and right (True and False) by reciprocal basis vectors.
         self.connect = {('*', True): [], ('^', True): [], ('|', True): [],
@@ -873,7 +866,7 @@ class Ga(metric.Metric):
                         ('^', False): [], ('|', False): [], ('<', False): [],
                         ('>', False): []}
         # Partial derivatives of multivector bases
-        self.dbases = {}
+        self._dbases = {}
 
         return
 
@@ -1140,7 +1133,7 @@ class Ga(metric.Metric):
 
     ############# Non-Orthogonal Tables and Dictionaries ###############
 
-    def non_orthogonal_mul_table(self):
+    def _build_non_orthogonal_mul_table(self):
         mul_table = []
         self.basic_mul_keys = []
         self.basic_mul_values = []
@@ -1178,7 +1171,7 @@ class Ga(metric.Metric):
 
         return s
 
-    def base_blade_conversions(self):
+    def _build_base_blade_conversions(self):
 
         blade_expansion = []
         blade_index = []
@@ -1545,7 +1538,7 @@ class Ga(metric.Metric):
 
     ##################### Multivector derivatives ######################
 
-    def build_reciprocal_basis(self,gsym):
+    def _build_reciprocal_basis(self,gsym):
         r"""
         Calculate reciprocal basis vectors :math:`e^{j}` where
 
@@ -1568,7 +1561,7 @@ class Ga(metric.Metric):
         """
 
         if self.debug:
-            print('Enter build_reciprocal_basis.\n')
+            print('Enter _build_reciprocal_basis.\n')
 
         if self.is_ortho:
             self.r_basis = [self.basis[i] / self.g[i, i] for i in self.n_range]
@@ -1711,9 +1704,12 @@ class Ga(metric.Metric):
         derivatives in curvilinear coordinates or for more general
         manifolds.
 
-        'blade_derivation' saves the results in a dictionary, 'self.dbases',
+        'blade_derivation' caches the results in a dictionary, ``self._dbases``,
         so that the derivation for a given blade and coordinate is never
         calculated more that once.
+
+        Note that the return value is not a multivector, but linear combination
+        of basis blade symbols.
         """
 
         if isinstance(ib, int):
@@ -1723,8 +1719,8 @@ class Ga(metric.Metric):
             ib = self.coords.index(coord)
 
         key = (coord, blade)
-        if key in self.dbases:
-            return self.dbases[key]
+        if key in self._dbases:
+            return self._dbases[key]
 
         index = self.blades_to_indexes_dict[blade]
         grade = len(index)
@@ -1739,7 +1735,7 @@ class Ga(metric.Metric):
             for i in range(1, grade - 1):
                 db += self.wedge(self.wedge(self.indexes_to_blades[index[:i]], self.de[ib][index[i]]),
                                  self.indexes_to_blades[index[i + 1:]])
-        self.dbases[key] = db
+        self._dbases[key] = db
         return db
 
     def pdop(self,*args):
