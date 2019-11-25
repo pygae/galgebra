@@ -1,32 +1,10 @@
-import unittest
+from .test_utils import TestCase, com
 
-from sympy import simplify, Symbol, S
-
+from sympy import S
 from galgebra.ga import Ga
-from galgebra.mv import Mv
 
 
-def com(A, B):
-    """I like free functions..."""
-    return Ga.com(A, B)
-
-
-class TestChapter8(unittest.TestCase):
-
-    def assertEquals(self, first, second, msg=None):
-        """
-        Compare two expressions are equals.
-        """
-
-        if isinstance(first, Mv):
-            first = first.obj
-
-        if isinstance(second, Mv):
-            second = second.obj
-
-        diff = simplify(first - second)
-
-        self.assertTrue(diff == 0, "\n%s\n==\n%s\n%s" % (first, second, diff))
+class TestChapter8(TestCase):
 
     def test8_2_1(self):
         """

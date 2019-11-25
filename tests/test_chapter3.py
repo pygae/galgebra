@@ -1,26 +1,12 @@
-import unittest
+from .test_utils import TestCase
 
 from itertools import product
-from sympy import simplify, Symbol, cos, sin, sqrt
+from sympy import Symbol, cos, sin, sqrt
 from galgebra.ga import Ga
-from galgebra.mv import Mv, cross
+from galgebra.mv import cross
 
 
-class TestChapter3(unittest.TestCase):
-
-    def assertEquals(self, first, second, msg=None):
-        """
-        Compare two expressions are equals.
-        """
-
-        if isinstance(first, Mv):
-            first = first.obj
-
-        if isinstance(second, Mv):
-            second = second.obj
-
-        self.assertTrue(simplify(first - second) == 0, "%s == %s" % (first, second))
-
+class TestChapter3(TestCase):
 
     def test_3_1_2(self):
         """

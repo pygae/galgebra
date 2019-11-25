@@ -1,27 +1,10 @@
-import unittest
+from .test_utils import TestCase
 
-from sympy import simplify, Symbol, S
-
+from sympy import Symbol, S
 from galgebra.ga import Ga
-from galgebra.mv import Mv
 
 
-class TestChapter13(unittest.TestCase):
-
-    def assertEquals(self, first, second, msg=None):
-        """
-        Compare two expressions are equals.
-        """
-
-        if isinstance(first, Mv):
-            first = first.obj
-
-        if isinstance(second, Mv):
-            second = second.obj
-
-        diff = simplify(first - second)
-
-        self.assertTrue(diff == 0, "\n%s\n==\n%s\n%s" % (first, second, diff))
+class TestChapter13(TestCase):
 
     def test_13_1_2(self):
         """

@@ -1,28 +1,11 @@
-import unittest
+from .test_utils import TestCase
 
 from itertools import product
-from sympy import simplify, Symbol, solve_poly_system
+from sympy import Symbol, solve_poly_system
 from galgebra.ga import Ga
-from galgebra.mv import Mv
 
 
-class TestChapter6(unittest.TestCase):
-
-    def assertEquals(self, first, second, msg=None):
-        """
-        Compare two expressions are equals.
-        """
-
-        if isinstance(first, Mv):
-            first = first.obj
-
-        if isinstance(second, Mv):
-            second = second.obj
-
-        diff = simplify(first - second)
-
-        self.assertTrue(diff == 0, "\n%s\n==\n%s\n%s" % (first, second, diff))
-
+class TestChapter6(TestCase):
 
     def test6_1_4_1(self):
         """

@@ -1,42 +1,12 @@
-import unittest
+from .test_utils import TestCase
 
 from functools import reduce
-from sympy import simplify, sqrt, Rational, Symbol
+from sympy import sqrt, Rational, Symbol
 from galgebra.ga import Ga
 from galgebra.mv import Mv
 
 
-class TestChapter11(unittest.TestCase):
-
-    def assertEquals(self, first, second, msg=None):
-        """
-        Compare two expressions are equals.
-        """
-
-        if isinstance(first, Mv):
-            first = first.obj
-
-        if isinstance(second, Mv):
-            second = second.obj
-
-        diff = simplify(first - second)
-
-        self.assertTrue(diff == 0, "\n%s\n==\n%s\n%s" % (first, second, diff))
-
-    def assertNotEquals(self, first, second, msg=None):
-        """
-        Compare two expressions are equals.
-        """
-
-        if isinstance(first, Mv):
-            first = first.obj
-
-        if isinstance(second, Mv):
-            second = second.obj
-
-        diff = simplify(first - second)
-
-        self.assertTrue(diff != 0, "\n%s\n!=\n%s\n%s" % (first, second, diff))
+class TestChapter11(TestCase):
 
     def test11_4(self):
         """
@@ -182,4 +152,4 @@ class TestChapter11(unittest.TestCase):
             t_value = Rational(i, 10)
             x_value = x_t.subs({t: t_value})
             self.assertEquals(x_value ^ L, 0)
-            self.assertEquals(t_x.subs(zip([x_1, x_2, x_3], x_value.blade_coefs([e_1, e_2, e_3]))), t_value)
+            self.assertEquals(t_x.subs(list(zip([x_1, x_2, x_3], x_value.blade_coefs([e_1, e_2, e_3])))), t_value)

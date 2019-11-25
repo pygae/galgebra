@@ -1,29 +1,12 @@
-import unittest
+from .test_utils import TestCase
 import importlib
 
-from sympy import simplify
-
 from galgebra.ga import Ga
-from galgebra.mv import Mv, J, Jinv
+from galgebra.mv import J, Jinv
 from galgebra.generator import format_geometric_algebra, flatten, expand
 
 
-class TestGenerator(unittest.TestCase):
-
-    def assertEquals(self, first, second, msg=None):
-        """
-        Compare two expressions are equals.
-        """
-
-        if isinstance(first, Mv):
-            first = first.obj
-
-        if isinstance(second, Mv):
-            second = second.obj
-
-        diff = simplify(first - second)
-
-        self.assertTrue(diff == 0, "\n%s\n==\n%s\n%s" % (first, second, diff))
+class TestGenerator(TestCase):
 
     def setUp(self):
 

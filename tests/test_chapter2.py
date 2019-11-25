@@ -1,4 +1,4 @@
-import unittest
+from .test_utils import TestCase
 
 from functools import reduce
 from itertools import product
@@ -6,7 +6,8 @@ from sympy import Symbol, Matrix, solve, solve_poly_system, cos, sin
 from galgebra.ga import Ga
 from galgebra.mv import Mv
 
-class TestChapter2(unittest.TestCase):
+
+class TestChapter2(TestCase):
 
     def test2_3_2(self):
         """

@@ -1,43 +1,11 @@
-import unittest
+from .test_utils import TestCase, com
 
-from sympy import acos, asin, cos, sin, pi, Rational, S, simplify, sqrt, Symbol, symbols
-
+from sympy import acos, asin, cos, sin, pi, Rational, S, sqrt, Symbol, symbols
 from galgebra.ga import Ga
-from galgebra.mv import Mv, J, Jinv, com
+from galgebra.mv import J, Jinv
 
 
-class TestPGA(unittest.TestCase):
-
-    def assertEquals(self, first, second, msg=None):
-        """
-        Compare two expressions are equals.
-        """
-        if isinstance(first, Mv):
-            first = first.obj
-
-        if isinstance(second, Mv):
-            second = second.obj
-
-        diff = simplify(first - second)
-
-        self.assertTrue(diff == 0, "\n%s\n%s\n==\n%s\n%s" % (msg, first, second, diff))
-
-    def assertProjEquals(self, X, Y):
-        """
-        Compare two points, two planes or two lines up to a scalar.
-        """
-        assert isinstance(X, Mv)
-        assert isinstance(Y, Mv)
-
-        X /= self.norm(X)
-        Y /= self.norm(Y)
-
-        # We can't easily retrieve the sign, so we test both
-        diff = simplify(X.obj - Y.obj)
-        if diff != S.Zero:
-            diff = simplify(X.obj + Y.obj)
-
-        self.assertTrue(diff == S.Zero, "\n%s\n==\n%s" % (X, Y))
+class TestPGA(TestCase):
 
     def setUp(self):
         """
@@ -421,7 +389,7 @@ class TestPGA(unittest.TestCase):
         PGA = self.PGA
         for k in range(PGA.n + 1):
             X = PGA.mv('x', k, 'grade')
-            self.assertEquals(X, Jinv(J(X)), "grade is {}".format(k))
+            self.assertEquals(X, Jinv(J(X)))
         X = PGA.mv('x', 'mv')
         self.assertEquals(X, Jinv(J(X)))
 
@@ -632,8 +600,13 @@ class TestPGA(unittest.TestCase):
         l0 /= self.norm(l0)
         l1 /= self.norm(l1)
 
-        self.assertEquals(acos(l0 | ln), S.Half * pi)
-        self.assertEquals(acos(l1 | ln), S.Half * pi)
+        dot0 = l0 | ln
+        dot1 = l1 | ln
+        self.assertTrue(dot0.is_scalar())
+        self.assertTrue(dot1.is_scalar())
+
+        self.assertEquals(acos(dot0.scalar()), S.Half * pi)
+        self.assertEquals(acos(dot1.scalar()), S.Half * pi)
 
     def test_metric_angle_between_lines(self):
         """
@@ -650,7 +623,10 @@ class TestPGA(unittest.TestCase):
         l0 /= self.norm(l0)
         l1 /= self.norm(l1)
 
-        self.assertEquals(acos(l0 | l1), pi / 2)
+        dot = l0 | l1
+        self.assertTrue(dot.is_scalar())
+
+        self.assertEquals(acos(dot.scalar()), pi / 2)
 
     @staticmethod
     def rotor_cs(alpha, l):

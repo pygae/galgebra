@@ -1,26 +1,10 @@
-import unittest
+from .test_utils import TestCase
 
-from sympy import simplify, Symbol, pi, cos, sin, solve, sqrt, Rational, Mod
+from sympy import Symbol, pi, cos, sin, solve, sqrt, Rational, Mod
 from galgebra.ga import Ga
-from galgebra.mv import Mv
 
 
-class TestChapter7(unittest.TestCase):
-
-    def assertEquals(self, first, second, msg=None):
-        """
-        Compare two expressions are equals.
-        """
-
-        if isinstance(first, Mv):
-            first = first.obj
-
-        if isinstance(second, Mv):
-            second = second.obj
-
-        diff = simplify(first - second)
-
-        self.assertTrue(diff == 0, "\n%s\n==\n%s\n%s" % (first, second, diff))
+class TestChapter7(TestCase):
 
     def test7_9_1(self):
         """
