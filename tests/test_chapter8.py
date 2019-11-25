@@ -16,24 +16,24 @@ class TestChapter8(TestCase):
         B = GA.mv('B', 'mv')
         C = GA.mv('C', 'mv')
 
-        self.assertEquals(com(com(A, B), C) - com(A, com(B, C)), com(B, com(C, A)))
-        self.assertEquals(com(com(A, B), C) + com(com(C, A), B) + com(com(B, C), A), S.Zero)
+        self.assertEqual(com(com(A, B), C) - com(A, com(B, C)), com(B, com(C, A)))
+        self.assertEqual(com(com(A, B), C) + com(com(C, A), B) + com(com(B, C), A), S.Zero)
 
         B = GA.mv('B', 2, 'blade')
         X = GA.mv('A', 'mv')
-        self.assertEquals(B.pure_grade(), 2)
-        self.assertEquals(com(X, B).pure_grade(), -2)  # Not pure
+        self.assertEqual(B.pure_grade(), 2)
+        self.assertEqual(com(X, B).pure_grade(), -2)  # Not pure
 
         E = com(X, B).rev()
-        self.assertEquals(E, (B.rev() * X.rev() - X.rev() * B.rev()) / 2)
-        self.assertEquals(E, (X.rev() * B - B * X.rev()) / 2)
-        self.assertEquals(E, com(X.rev(), B))
+        self.assertEqual(E, (B.rev() * X.rev() - X.rev() * B.rev()) / 2)
+        self.assertEqual(E, (X.rev() * B - B * X.rev()) / 2)
+        self.assertEqual(E, com(X.rev(), B))
 
         alpha = GA.mv('alpha', 'scalar')
-        self.assertEquals(alpha * X, alpha ^ X)
+        self.assertEqual(alpha * X, alpha ^ X)
 
         a = GA.mv('a', 'vector')
-        self.assertEquals(a * X, (a < X) + (a ^ X))
+        self.assertEqual(a * X, (a < X) + (a ^ X))
 
         A = GA.mv('A', 2, 'grade')
-        self.assertEquals(A * X, (A < X) + com(A, X) + (A ^ X))
+        self.assertEqual(A * X, (A < X) + com(A, X) + (A ^ X))

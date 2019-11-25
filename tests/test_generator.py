@@ -25,7 +25,7 @@ class TestGenerator(TestCase):
         X = GA.mv('x', 'mv')
         Y = GA.mv('y', 'mv')
 
-        self.assertEquals(X + Y, expand(GA, flatten(flat_GA, X) + flatten(flat_GA, Y)))
+        self.assertEqual(X + Y, expand(GA, flatten(flat_GA, X) + flatten(flat_GA, Y)))
 
     def test_sub(self):
         GA = self.GA
@@ -33,7 +33,7 @@ class TestGenerator(TestCase):
         X = GA.mv('x', 'mv')
         Y = GA.mv('y', 'mv')
 
-        self.assertEquals(X - Y, expand(GA, flatten(flat_GA, X) - flatten(flat_GA, Y)))
+        self.assertEqual(X - Y, expand(GA, flatten(flat_GA, X) - flatten(flat_GA, Y)))
 
     def test_mul(self):
         GA = self.GA
@@ -41,7 +41,7 @@ class TestGenerator(TestCase):
         X = GA.mv('x', 'mv')
         Y = GA.mv('y', 'mv')
 
-        self.assertEquals(X * Y, expand(GA, flatten(flat_GA, X) * flatten(flat_GA, Y)))
+        self.assertEqual(X * Y, expand(GA, flatten(flat_GA, X) * flatten(flat_GA, Y)))
 
     def test_and(self):
         GA = self.GA
@@ -49,7 +49,7 @@ class TestGenerator(TestCase):
         X = GA.mv('x', 'mv')
         Y = GA.mv('y', 'mv')
 
-        self.assertEquals(Jinv(J(X) ^ J(Y)), expand(GA, flatten(flat_GA, X) & flatten(flat_GA, Y)))
+        self.assertEqual(Jinv(J(X) ^ J(Y)), expand(GA, flatten(flat_GA, X) & flatten(flat_GA, Y)))
 
     def test_xor(self):
         GA = self.GA
@@ -57,7 +57,7 @@ class TestGenerator(TestCase):
         X = GA.mv('x', 'mv')
         Y = GA.mv('y', 'mv')
 
-        self.assertEquals(X ^ Y, expand(GA, flatten(flat_GA, X) ^ flatten(flat_GA, Y)))
+        self.assertEqual(X ^ Y, expand(GA, flatten(flat_GA, X) ^ flatten(flat_GA, Y)))
 
     def test_lshift(self):
         GA = self.GA
@@ -65,7 +65,7 @@ class TestGenerator(TestCase):
         X = GA.mv('x', 'mv')
         Y = GA.mv('y', 'mv')
 
-        self.assertEquals(X << Y, expand(GA, flatten(flat_GA, X) << flatten(flat_GA, Y)))
+        self.assertEqual(X << Y, expand(GA, flatten(flat_GA, X) << flatten(flat_GA, Y)))
 
     def test_rshift(self):
         GA = self.GA
@@ -73,7 +73,7 @@ class TestGenerator(TestCase):
         X = GA.mv('x', 'mv')
         Y = GA.mv('y', 'mv')
 
-        self.assertEquals(X >> Y, expand(GA, flatten(flat_GA, X) >> flatten(flat_GA, Y)))
+        self.assertEqual(X >> Y, expand(GA, flatten(flat_GA, X) >> flatten(flat_GA, Y)))
 
     def test_meet_and_join(self):
         GA = self.GA
@@ -81,12 +81,12 @@ class TestGenerator(TestCase):
         X = GA.mv('x', 'mv')
         Y = GA.mv('y', 'mv')
 
-        self.assertEquals(Jinv(J(X) ^ J(Y)), expand(GA, flatten(flat_GA, X).meet(flatten(flat_GA, Y))))
-        self.assertEquals(X ^ Y, expand(GA, flatten(flat_GA, X).join(flatten(flat_GA, Y))))
+        self.assertEqual(Jinv(J(X) ^ J(Y)), expand(GA, flatten(flat_GA, X).meet(flatten(flat_GA, Y))))
+        self.assertEqual(X ^ Y, expand(GA, flatten(flat_GA, X).join(flatten(flat_GA, Y))))
 
     def test_rev(self):
         GA = self.GA
         flat_GA = self.flat_GA
         X = GA.mv('x', 'mv')
 
-        self.assertEquals(X.rev(), expand(GA, flatten(flat_GA, X).rev()))
+        self.assertEqual(X.rev(), expand(GA, flatten(flat_GA, X).rev()))

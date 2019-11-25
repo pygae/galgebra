@@ -14,7 +14,7 @@ def com(A, B):
 
 class TestCase(unittest.TestCase):
 
-    def assertEquals(self, first, second):
+    def assertEqual(self, first, second):
         """
         Compare two expressions are equals.
         """
@@ -28,7 +28,7 @@ class TestCase(unittest.TestCase):
 
         self.assertTrue(diff == 0, "\n%s\n==\n%s\n%s" % (first, second, diff))
 
-    def assertProjEquals(self, X, Y):
+    def assertProjEqual(self, X, Y):
         """
         Compare two points, two planes or two lines up to a scalar.
         """
@@ -45,7 +45,7 @@ class TestCase(unittest.TestCase):
 
         self.assertTrue(diff == S.Zero, "\n%s\n==\n%s" % (X, Y))
 
-    def assertNotEquals(self, first, second):
+    def assertNotEqual(self, first, second):
         """
         Compare two expressions are not equals.
         """

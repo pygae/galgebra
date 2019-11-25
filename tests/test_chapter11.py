@@ -30,9 +30,9 @@ class TestChapter11(TestCase):
         q = q.subs({q0: 1})
         r = r.subs({r0: 1})
 
-        self.assertEquals(p ^ q ^ r, p ^ (q - p) ^ (r - p))
-        self.assertEquals(p ^ q ^ r, p ^ (q_inf - p_inf) ^ (r_inf - p_inf))
-        self.assertEquals(p ^ q ^ r, ((p + q + r) / 3) ^ ((p ^ q) + (q ^ r) + (r ^ p)))
+        self.assertEqual(p ^ q ^ r, p ^ (q - p) ^ (r - p))
+        self.assertEqual(p ^ q ^ r, p ^ (q_inf - p_inf) ^ (r_inf - p_inf))
+        self.assertEqual(p ^ q ^ r, ((p + q + r) / 3) ^ ((p ^ q) + (q ^ r) + (r ^ p)))
 
     def test11_6(self):
         """
@@ -54,8 +54,8 @@ class TestChapter11(TestCase):
             Ip_inv = GA.I_inv()
             Ir = e_0_inv < Ip
             Ir_inv = Ir.inv()
-            self.assertEquals(Ip, e_0 ^ Ir)
-            self.assertEquals(Ip, e_0 * Ir)
+            self.assertEqual(Ip, e_0 ^ Ir)
+            self.assertEqual(Ip, e_0 * Ir)
 
             p = GA.mv([1] + [Symbol('p%d' % i, real=True) for i in range(1, GA.n)], 'vector')
 
@@ -70,7 +70,7 @@ class TestChapter11(TestCase):
             for k in range(1, GA.n):
                 A = reduce(Mv.__xor__, v[:k])
                 X = (p ^ A)
-                self.assertNotEquals(X, 0)
+                self.assertNotEqual(X, 0)
                 M = e_0_inv < (e_0 ^ X)
 
                 # Very slow
@@ -80,13 +80,13 @@ class TestChapter11(TestCase):
                 def hat(A):
                     return ((-1) ** A.pure_grade()) * A
 
-                self.assertEquals(hat(A < Ir_inv), ((-1) ** (GA.n - 1)) * (hat(A) < Ir_inv))
+                self.assertEqual(hat(A < Ir_inv), ((-1) ** (GA.n - 1)) * (hat(A) < Ir_inv))
 
                 Xd = (p ^ A).dual()
-                self.assertEquals(Xd, (p ^ A) < Ip_inv)
-                self.assertEquals(Xd, p < (A < Ip_inv))
-                self.assertEquals(Xd, p < ((A < Ir_inv) * e_0_inv))
-                self.assertEquals(Xd, hat(A < Ir_inv) - e_0_inv * (p < hat(A < Ir_inv)))
+                self.assertEqual(Xd, (p ^ A) < Ip_inv)
+                self.assertEqual(Xd, p < (A < Ip_inv))
+                self.assertEqual(Xd, p < ((A < Ir_inv) * e_0_inv))
+                self.assertEqual(Xd, hat(A < Ir_inv) - e_0_inv * (p < hat(A < Ir_inv)))
                 # Very slow
                 # self.assertEquals(Xd, hat(A < Ir_inv) + e_0_inv * hat(M < Ir_inv))
                 # self.assertEquals(Xd, (e_0_inv - d_inv) * hat(M < Ir_inv))
@@ -104,15 +104,15 @@ class TestChapter11(TestCase):
         p = e_0 + e_1
         q = e_0 + e_2
         d = e_2 - e_1
-        self.assertEquals(p ^ q, p ^ d)
-        self.assertEquals(p ^ q, q ^ d)
+        self.assertEqual(p ^ q, p ^ d)
+        self.assertEqual(p ^ q, q ^ d)
 
         r = e_0 + 2 * (e_2 - e_1)
         e = 2 * (e_2 - e_1)
         s = e_0 + 3 * (e_2 - e_1)
         t = 2 * (e_0 + e_2)
-        self.assertEquals(2 * (p ^ q), p ^ e)
-        self.assertEquals(2 * (p ^ q), p ^ t)
+        self.assertEqual(2 * (p ^ q), p ^ e)
+        self.assertEqual(2 * (p ^ q), p ^ t)
 
     def test11_12_2_1(self):
         """
@@ -124,7 +124,7 @@ class TestChapter11(TestCase):
 
         L = (e_1 + 2 * e_2 - e_3) ^ (e_0 + e_1 - 3 * e_2)
         d = (e_0.inv() < (e_0 ^ L)) / (e_0.inv() < L)
-        self.assertEquals(d.norm(), sqrt(Rational(35, 6)))
+        self.assertEqual(d.norm(), sqrt(Rational(35, 6)))
 
     def test11_12_2_2(self):
         """
@@ -152,5 +152,5 @@ class TestChapter11(TestCase):
         for i in range(11):
             t_value = Rational(i, 10)
             x_value = x_t.subs({t: t_value})
-            self.assertEquals(x_value ^ L, 0)
-            self.assertEquals(t_x.subs(list(zip([x_1, x_2, x_3], x_value.blade_coefs([e_1, e_2, e_3])))), t_value)
+            self.assertEqual(x_value ^ L, 0)
+            self.assertEqual(t_x.subs(list(zip([x_1, x_2, x_3], x_value.blade_coefs([e_1, e_2, e_3])))), t_value)

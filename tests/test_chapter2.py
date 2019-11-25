@@ -2,7 +2,7 @@ from .test_utils import TestCase
 
 from functools import reduce
 from itertools import product
-from sympy import Symbol, Matrix, solve, solve_poly_system, cos, sin
+from sympy import S, Symbol, Matrix, solve, solve_poly_system, cos, sin
 from galgebra.ga import Ga
 from galgebra.mv import Mv
 
@@ -20,10 +20,10 @@ class TestChapter2(TestCase):
         c = GA.mv('c', 'vector')
         alpha = Symbol('alpha', real=True)
 
-        self.assertEquals(a ^ b, -b ^ a)
-        self.assertEquals(a ^ (alpha * b), alpha * (a ^ b))
-        self.assertEquals(GA.mv(alpha, 'scalar') ^ b, alpha * b)
-        self.assertEquals(a ^ (b + c), (a ^ b) + (a ^ c))
+        self.assertEqual(a ^ b, -b ^ a)
+        self.assertEqual(a ^ (alpha * b), alpha * (a ^ b))
+        self.assertEqual(GA.mv(alpha, 'scalar') ^ b, alpha * b)
+        self.assertEqual(a ^ (b + c), (a ^ b) + (a ^ c))
 
     def test_2_4_2(self):
         """
@@ -45,8 +45,8 @@ class TestChapter2(TestCase):
         b = GA.mv((b_1, b_2, b_3), 'vector')
         c = GA.mv((c_1, c_2, c_3), 'vector')
 
-        self.assertEquals(a ^ b ^ c, a ^ (b ^ c))
-        self.assertEquals(a ^ b ^ c, (a ^ b) ^ c)
+        self.assertEqual(a ^ b ^ c, a ^ (b ^ c))
+        self.assertEqual(a ^ b ^ c, (a ^ b) ^ c)
 
         m = Matrix([
             [a_1, b_1, c_1],
@@ -54,7 +54,7 @@ class TestChapter2(TestCase):
             [a_3, b_3, c_3]
         ])
 
-        self.assertEquals(a ^ b ^ c, m.det() * (e_1 ^ e_2 ^ e_3))
+        self.assertEqual(a ^ b ^ c, m.det() * (e_1 ^ e_2 ^ e_3))
 
     def test2_9_1(self):
         """
@@ -66,20 +66,20 @@ class TestChapter2(TestCase):
         # Check for k in [0, R.n]
         for k in range(GA.n + 1):
             Ak = GA.mv('A', 'blade', k)
-            self.assertEquals(Ak.pure_grade(), k)
+            self.assertEqual(Ak.pure_grade(), k)
             grades = GA.grade_decomposition(Ak)
-            self.assertEquals(len(grades), 1)
-            self.assertEquals(list(grades.keys())[0], k)
+            self.assertEqual(len(grades), 1)
+            self.assertEqual(list(grades.keys())[0], k)
 
         # Check for k and l in [0, R.n]
         for k, l in product(range(GA.n + 1), range(GA.n + 1)):
             Ak = GA.mv('A', 'blade', k)
             Bl = GA.mv('B', 'blade', l)
             C = Ak ^ Bl
-            self.assertEquals(C.pure_grade(), 0 if C == 0 else k + l)
+            self.assertEqual(C.pure_grade(), 0 if C == 0 else k + l)
             grades = GA.grade_decomposition(C)
-            self.assertEquals(len(grades), 1)
-            self.assertEquals(list(grades.keys())[0], 0 if C == 0 else k + l)
+            self.assertEqual(len(grades), 1)
+            self.assertEqual(list(grades.keys())[0], 0 if C == 0 else k + l)
 
     def test2_9_5(self):
         """
@@ -91,8 +91,8 @@ class TestChapter2(TestCase):
             a = [GA.mv('a%d' % i, 'vector') for i in range(k)]
             A = reduce(Mv.__xor__, a)
             A_rev = reduce(Mv.__xor__, reversed(a))
-            self.assertEquals(A_rev, A.rev())
-            self.assertEquals(A_rev, ((-1) ** ((k * (k - 1)) / 2)) * A)
+            self.assertEqual(A_rev, A.rev())
+            self.assertEqual(A_rev, ((-1) ** ((k * (k - 1)) / 2)) * A)
 
     def test2_12_1_1(self):
         """
@@ -100,13 +100,13 @@ class TestChapter2(TestCase):
         giving the result relative to the basis {1, e_1, e_2, e_3, e_1^e_2, e_1^e_3, e_2^e_3, e_1^e_2^e_3}.
         """
         GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
-        self.assertTrue((e_1 + e_2) ^ (e_1 + e_3) == (-e_1 ^ e_2) + (e_1 ^ e_3) + (e_2 ^ e_3))
-        self.assertTrue((e_1 + e_2 + e_3) ^ (2 * e_1) == -2 * (e_1 ^ e_2) - 2 * (e_1 ^ e_3))
-        self.assertTrue((e_1 - e_2) ^ (e_1 - e_3) == (e_1 ^ e_2) - (e_1 ^ e_3) + (e_2 ^ e_3))
-        self.assertTrue(
-            (e_1 + e_2) ^ (0.5 * e_1 + 2 * e_2 + 3 * e_3) == 1.5 * (e_1 ^ e_2) + 3 * (e_1 ^ e_3) + 3 * (e_2 ^ e_3))
-        self.assertTrue((e_1 ^ e_2) ^ (e_1 + e_3) == (e_1 ^ e_2 ^ e_3))
-        self.assertTrue((e_1 + e_2) ^ ((e_1 ^ e_2) + (e_2 ^ e_3)) == (e_1 ^ e_2 ^ e_3))
+        self.assertEqual((e_1 + e_2) ^ (e_1 + e_3), (-e_1 ^ e_2) + (e_1 ^ e_3) + (e_2 ^ e_3))
+        self.assertEqual((e_1 + e_2 + e_3) ^ (2 * e_1), -2 * (e_1 ^ e_2) - 2 * (e_1 ^ e_3))
+        self.assertEqual((e_1 - e_2) ^ (e_1 - e_3), (e_1 ^ e_2) - (e_1 ^ e_3) + (e_2 ^ e_3))
+        self.assertEqual(
+            (e_1 + e_2) ^ (0.5 * e_1 + 2 * e_2 + 3 * e_3), 1.5 * (e_1 ^ e_2) + 3 * (e_1 ^ e_3) + 3 * (e_2 ^ e_3))
+        self.assertEqual((e_1 ^ e_2) ^ (e_1 + e_3), (e_1 ^ e_2 ^ e_3))
+        self.assertEqual((e_1 + e_2) ^ ((e_1 ^ e_2) + (e_2 ^ e_3)), (e_1 ^ e_2 ^ e_3))
 
     def test2_12_1_2(self):
         """
@@ -115,10 +115,10 @@ class TestChapter2(TestCase):
         """
         GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
         B = e_1 ^ (e_2 - e_3)
-        self.assertTrue(e_1 ^ B == 0)
-        self.assertFalse((e_1 + e_2) ^ B == 0)
-        self.assertFalse((e_1 + e_2 + e_3) ^ B == 0)
-        self.assertTrue((2 * e_1 - e_2 + e_3) ^ B == 0)
+        self.assertEqual(e_1 ^ B, 0)
+        self.assertNotEqual((e_1 + e_2) ^ B, 0)
+        self.assertNotEqual((e_1 + e_2 + e_3) ^ B, 0)
+        self.assertEqual((2 * e_1 - e_2 + e_3) ^ B, 0)
 
     def test2_12_1_3(self):
         """
@@ -129,7 +129,7 @@ class TestChapter2(TestCase):
         a = e_1 + 2 * e_2
         b = -e_1 - e_2
         B = a ^ b
-        self.assertTrue(B == 1 * (e_1 ^ e_2))
+        self.assertEqual(B, 1 * (e_1 ^ e_2))
 
     def test2_12_1_4(self):
         """
@@ -150,12 +150,12 @@ class TestChapter2(TestCase):
 
         # Solve the linear system
         R = solve([L.obj, M.obj], a, b, dict=True)  # TODO: fix this...
-        self.assertTrue(len(R), 1)
+        self.assertEqual(len(R), 1)
 
         # Replace symbols
         x = x.subs(R[0])
 
-        self.assertEquals(x, e_1 + 2 * e_2)
+        self.assertEqual(x, e_1 + 2 * e_2)
 
     def test2_12_1_5(self):
         """
@@ -170,7 +170,7 @@ class TestChapter2(TestCase):
         for k, l in product(range(GA.n + 1), range(GA.n + 1)):
             C += A.get_grade(k) ^ B.get_grade(l)
 
-        self.assertTrue(C == (2 * e_1 + 3 * (e_3 ^ e_1) + 2 * (e_2 ^ e_3)))
+        self.assertEqual(C, (2 * e_1 + 3 * (e_3 ^ e_1) + 2 * (e_2 ^ e_3)))
 
     def test2_12_2_1(self):
         """
@@ -187,17 +187,17 @@ class TestChapter2(TestCase):
         x = a * e_1
         y = b * (cos(t) * e_1 + sin(t) * e_2)
         B = x ^ y
-        self.assertTrue(B == (a * b * sin(t) * (e_1 ^ e_2)))
+        self.assertEqual(B, (a * b * sin(t) * (e_1 ^ e_2)))
 
         # Retrieve the parallelogram area from the 2-vector
         area = B.norm()
-        self.assertTrue(area == (a * b * sin(t)))
+        self.assertEqual(area, (a * b * sin(t)))
 
         # Compute the parallelogram area using the determinant
         x = [a, 0]
         y = [b * cos(t), b * sin(t)]
         area = Matrix([x, y]).det()
-        self.assertTrue(area == (a * b * sin(t)))
+        self.assertEqual(area, (a * b * sin(t)))
 
     def test2_12_2_2(self):
         """
@@ -217,7 +217,7 @@ class TestChapter2(TestCase):
 
         cross = x_1 * y_2 - y_1 * x_2
 
-        self.assertTrue(cross == (a * b * sin(t)))
+        self.assertEqual(cross, (a * b * sin(t)))
 
     def test2_12_2_4(self):
         """
@@ -244,19 +244,19 @@ class TestChapter2(TestCase):
         x = x_1 * a + x_2 * b + x_3 * c
 
         # Solve x_1
-        self.assertTrue((x ^ a) == (x_2 * (b ^ a) + x_3 * (c ^ a)))
-        self.assertTrue((x ^ a ^ b) == x_3 * (c ^ a ^ b))
-        self.assertTrue((x ^ a ^ b) * (c ^ a ^ b).inv() == GA.mv(x_3, 'scalar'))
+        self.assertEqual((x ^ a), (x_2 * (b ^ a) + x_3 * (c ^ a)))
+        self.assertEqual((x ^ a ^ b), x_3 * (c ^ a ^ b))
+        self.assertEqual((x ^ a ^ b) * (c ^ a ^ b).inv(), GA.mv(x_3, 'scalar'))
 
         # Solve x_2
-        self.assertTrue((x ^ b) == (x_1 * (a ^ b) + x_3 * (c ^ b)))
-        self.assertTrue((x ^ b ^ c) == x_1 * (a ^ b ^ c))
-        self.assertTrue((x ^ b ^ c) * (a ^ b ^ c).inv() == GA.mv(x_1, 'scalar'))
+        self.assertEqual((x ^ b), (x_1 * (a ^ b) + x_3 * (c ^ b)))
+        self.assertEqual((x ^ b ^ c), x_1 * (a ^ b ^ c))
+        self.assertEqual((x ^ b ^ c) * (a ^ b ^ c).inv(), GA.mv(x_1, 'scalar'))
 
         # Solve x_3
-        self.assertTrue((x ^ c) == (x_1 * (a ^ c) + x_2 * (b ^ c)))
-        self.assertTrue((x ^ c ^ a) == x_2 * (b ^ c ^ a))
-        self.assertTrue((x ^ c ^ a) * (b ^ c ^ a).inv() == GA.mv(x_2, 'scalar'))
+        self.assertEqual((x ^ c), (x_1 * (a ^ c) + x_2 * (b ^ c)))
+        self.assertEqual((x ^ c ^ a), x_2 * (b ^ c ^ a))
+        self.assertEqual((x ^ c ^ a) * (b ^ c ^ a).inv(), GA.mv(x_2, 'scalar'))
 
     def test2_12_2_5(self):
         """
@@ -331,10 +331,10 @@ class TestChapter2(TestCase):
         result = solve_poly_system(system, unknowns)
         result = result[0]
 
-        self.assertTrue(result[0] == 0)
-        self.assertTrue(result[1] == 0)
-        self.assertTrue(result[2] == 0)
-        self.assertTrue(result[3] == 0)
+        self.assertEqual(result[0], S.Zero)
+        self.assertEqual(result[1], S.Zero)
+        self.assertEqual(result[2], S.Zero)
+        self.assertEqual(result[3], S.Zero)
 
     def test2_12_2_9(self):
         """
@@ -344,4 +344,4 @@ class TestChapter2(TestCase):
             for k, l in product(range(GA.n + 1), range(GA.n + 1)):
                 Ak = GA.mv('A', 'blade', k)
                 Bl = GA.mv('B', 'blade', l)
-                self.assertEquals(Ak ^ Bl, (-1) ** (k * l) * (Bl ^ Ak))
+                self.assertEqual(Ak ^ Bl, (-1) ** (k * l) * (Bl ^ Ak))

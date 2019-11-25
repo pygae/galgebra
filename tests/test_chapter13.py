@@ -29,8 +29,8 @@ class TestChapter13(TestCase):
         p = point(vector(Symbol('px', real=True), Symbol('py', real=True), Symbol('pz', real=True)))
         q = point(vector(Symbol('qx', real=True), Symbol('qy', real=True), Symbol('qz', real=True)))
 
-        self.assertEquals(p | q, -S.Half * q * q + p | q - S.Half * p * p)
-        self.assertEquals(p | q, -S.Half * (q - p) * (q - p))
+        self.assertEqual(p | q, -S.Half * q * q + p | q - S.Half * p * p)
+        self.assertEqual(p | q, -S.Half * (q - p) * (q - p))
 
     def test_13_1_3(self):
         """
@@ -55,8 +55,8 @@ class TestChapter13(TestCase):
 
         alpha = Symbol('alpha', real=True)
         p = point(alpha, vector(Symbol('px', real=True), Symbol('py', real=True), Symbol('pz', real=True)))
-        self.assertEquals(p | p, S.Zero)
-        self.assertEquals(inf | p, -alpha)
+        self.assertEqual(p | p, S.Zero)
+        self.assertEqual(inf | p, -alpha)
 
         # Dual plane
         def dual_plane(n, delta):
@@ -66,8 +66,8 @@ class TestChapter13(TestCase):
         ny = Symbol('ny', real=True)
         nz = Symbol('nz', real=True)
         p = dual_plane(vector(nx, ny, nz), Symbol('delta', real=True))
-        self.assertEquals(p | p, nx * nx + ny * ny + nz * nz)
-        self.assertEquals(inf | p, S.Zero)
+        self.assertEqual(p | p, nx * nx + ny * ny + nz * nz)
+        self.assertEqual(inf | p, S.Zero)
 
         # Dual sphere
         def dual_sphere(alpha, c, r):
@@ -82,13 +82,13 @@ class TestChapter13(TestCase):
         r = Symbol('r', real=True)
 
         c = point(1, vector(cx, cy, cz))
-        self.assertEquals(c * c, S.Zero)
-        self.assertEquals(-inf | c, S.One)
+        self.assertEqual(c * c, S.Zero)
+        self.assertEqual(-inf | c, S.One)
 
         s = dual_sphere(alpha, c, r)
-        self.assertEquals(s | s, alpha * alpha * r * r)
-        self.assertEquals(-inf | s, alpha)
+        self.assertEqual(s | s, alpha * alpha * r * r)
+        self.assertEqual(-inf | s, alpha)
 
         im_s = dual_im_sphere(alpha, c, r)
-        self.assertEquals(im_s | im_s, -alpha * alpha * r * r)
-        self.assertEquals(-inf | im_s, alpha)
+        self.assertEqual(im_s | im_s, -alpha * alpha * r * r)
+        self.assertEqual(-inf | im_s, alpha)
