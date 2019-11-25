@@ -458,12 +458,6 @@ class Mv(object):
     def __radd__(self, A):
         return(self + A)
 
-    def __add_ab__(self, A):  # self += A
-        self.obj += A.obj
-        self.char_Mv = False
-        self.characterise_Mv()
-        return(self)
-
     def __sub__(self, A):
 
         if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
@@ -486,12 +480,6 @@ class Mv(object):
 
     def __rsub__(self, A):
         return -self + A
-
-    def __sub_ab__(self, A):  # self -= A
-        self.obj -= A.obj
-        self.char_Mv = False
-        self.characterise_Mv()
-        return(self)
 
     def __mul__(self, A):
 
@@ -533,20 +521,7 @@ class Mv(object):
 
 
     def __rmul__(self, A):
-            return Mv(expand(A * self.obj), ga=self.Ga)
-
-    def __mul_ab__(self, A):  # self *= A
-        self.obj *= A.obj
-        self.char_Mv = False
-        self.characterise_Mv()
-        return(self)
-
-    def __div_ab__(self,A):  # self /= A
-        if isinstance(A,Mv):
-            self *= A.inv()
-        else:
-            self *= S(1)/A
-        return
+        return Mv(expand(A * self.obj), ga=self.Ga)
 
     def __div__(self, A):
         if isinstance(A,Mv):
@@ -1666,35 +1641,6 @@ class Sdop(object):
 
     def __radd__(self, sdop):
         return Sdop(self, sdop)
-
-    def __add_ab__(self, sdop):
-        if isinstance(sdop, Sdop):
-            if self.Ga != sdop.Ga:
-                raise ValueError('In Sdop.__add_ab__ self.Ga != sdop.Ga.')
-
-            coefs, pdiffs = list(zip(*self.terms))
-            pdiffs = list(pdiffs)
-            coefs = list(coefs)
-
-            for (coef, pdiff) in sdop.terms:
-                if pdiff in pdiffs:
-                    index = pdiffs.index(pdiff)
-                    coefs[index] += coef
-                else:
-                    pdiffs.append(pdiff)
-                    coefs.append(coef)
-            self.term = list(zip(coefs, pdiffs))
-            self = Sdop.consolidate_coefs(self)
-            return
-
-        elif isinstance(sdop, tuple):
-            self.term.append(sdop)
-            self = Sdop.consolidate_coefs(self)
-            return
-        else:
-            self.terms.append((sdop, self.Ga.Pdop_identity))
-            self = Sdop.consolidate_coefs(self)
-            return
 
     def __sub__(self, sdop):
         return Sdop.Add(self, -sdop)
