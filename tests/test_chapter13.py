@@ -26,8 +26,8 @@ class TestChapter13(TestCase):
         def point(v):
             return o + v + S.Half * v * v * inf
 
-        p = point(vector(Symbol('px'), Symbol('py'), Symbol('pz')))
-        q = point(vector(Symbol('qx'), Symbol('qy'), Symbol('qz')))
+        p = point(vector(Symbol('px', real=True), Symbol('py', real=True), Symbol('pz', real=True)))
+        q = point(vector(Symbol('qx', real=True), Symbol('qy', real=True), Symbol('qz', real=True)))
 
         self.assertEquals(p | q, -S.Half * q * q + p | q - S.Half * p * p)
         self.assertEquals(p | q, -S.Half * (q - p) * (q - p))
@@ -53,8 +53,8 @@ class TestChapter13(TestCase):
         def point(alpha, v):
             return alpha * (o + v + S.Half * v * v * inf)
 
-        alpha = Symbol('alpha')
-        p = point(alpha, vector(Symbol('px'), Symbol('py'), Symbol('pz')))
+        alpha = Symbol('alpha', real=True)
+        p = point(alpha, vector(Symbol('px', real=True), Symbol('py', real=True), Symbol('pz', real=True)))
         self.assertEquals(p | p, S.Zero)
         self.assertEquals(inf | p, -alpha)
 
@@ -62,10 +62,10 @@ class TestChapter13(TestCase):
         def dual_plane(n, delta):
             return n + delta * inf
 
-        nx = Symbol('nx')
-        ny = Symbol('ny')
-        nz = Symbol('nz')
-        p = dual_plane(vector(nx, ny, nz), Symbol('delta'))
+        nx = Symbol('nx', real=True)
+        ny = Symbol('ny', real=True)
+        nz = Symbol('nz', real=True)
+        p = dual_plane(vector(nx, ny, nz), Symbol('delta', real=True))
         self.assertEquals(p | p, nx * nx + ny * ny + nz * nz)
         self.assertEquals(inf | p, S.Zero)
 
@@ -76,10 +76,10 @@ class TestChapter13(TestCase):
         def dual_im_sphere(alpha, c, r):
             return alpha * (c + S.Half * r * r * inf)
 
-        cx = Symbol('cx')
-        cy = Symbol('cy')
-        cz = Symbol('cz')
-        r = Symbol('r')
+        cx = Symbol('cx', real=True)
+        cy = Symbol('cy', real=True)
+        cz = Symbol('cz', real=True)
+        r = Symbol('r', real=True)
 
         c = point(1, vector(cx, cy, cz))
         self.assertEquals(c * c, S.Zero)

@@ -415,10 +415,10 @@ class TestPGA(TestCase):
         """
         Planes meet into points.
         """
-        P1 = self.point(*symbols('x1 y1 z1'))
-        P2 = self.point(*symbols('x2 y2 z2'))
-        P3 = self.point(*symbols('x3 y3 z3'))
-        P4 = self.point(*symbols('x4 y4 z4'))
+        P1 = self.point(*symbols('x1 y1 z1', real=True))
+        P2 = self.point(*symbols('x2 y2 z2', real=True))
+        P3 = self.point(*symbols('x3 y3 z3', real=True))
+        P4 = self.point(*symbols('x4 y4 z4', real=True))
         p123 = Jinv(J(P1) ^ J(P2) ^ J(P3))
         p124 = Jinv(J(P1) ^ J(P2) ^ J(P4))
         p234 = Jinv(J(P2) ^ J(P3) ^ J(P4))
@@ -434,13 +434,13 @@ class TestPGA(TestCase):
         """
         Points join into planes.
         """
-        x1, y1, z1 = symbols('x1 y1 z1')
+        x1, y1, z1 = symbols('x1 y1 z1', real=True)
         P1 = self.point(x1, y1, z1)
 
-        x2, y2, z2 = symbols('x2 y2 z2')
+        x2, y2, z2 = symbols('x2 y2 z2', real=True)
         P2 = self.point(x2, y2, z2)
 
-        x3, y3, z3 = symbols('x3 y3 z3')
+        x3, y3, z3 = symbols('x3 y3 z3', real=True)
         P3 = self.point(x3, y3, z3)
 
         pp = Jinv(J(P1) ^ J(P2) ^ J(P3))
@@ -530,7 +530,7 @@ class TestPGA(TestCase):
         """
         We can measure the distance between two parallel and normalized planes using the meeting line norm.
         """
-        nx, ny, nz, x, y = symbols('nx ny nz x y')
+        nx, ny, nz, x, y = symbols('nx ny nz x y', real=True)
 
         n_norm = sqrt(nx * nx + ny * ny + nz * nz)
         p1 = self.plane(nx / n_norm, ny / n_norm, nz / n_norm, -x)
@@ -580,16 +580,16 @@ class TestPGA(TestCase):
         """
         We can find the common normal line of two normalized lines.
         """
-        x0, y0, z0 = symbols('x0 y0 z0')
+        x0, y0, z0 = symbols('x0 y0 z0', real=True)
         P0 = self.point(x0, y0, z0)
 
-        x1, y1, z1 = symbols('x1 y1 z1')
+        x1, y1, z1 = symbols('x1 y1 z1', real=True)
         P1 = self.point(x1, y1, z1)
 
-        x2, y2, z2 = symbols('x2 y2 z2')
+        x2, y2, z2 = symbols('x2 y2 z2', real=True)
         P2 = self.point(x2, y2, z2)
 
-        x3, y3, z3 = symbols('x3 y3 z3')
+        x3, y3, z3 = symbols('x3 y3 z3', real=True)
         P3 = self.point(x3, y3, z3)
 
         l0 = Jinv(J(P0) ^ J(P1))
@@ -784,7 +784,7 @@ class TestPGA(TestCase):
         """
         Translate anything by a normalized line.
         """
-        x0, y0, z0 = symbols('x0 y0 z0')
+        x0, y0, z0 = symbols('x0 y0 z0', real=True)
         Px = self.point(x0, y0, z0)
 
         P0 = self.point(0, 0, 0)

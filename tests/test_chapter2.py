@@ -18,7 +18,7 @@ class TestChapter2(TestCase):
         a = GA.mv('a', 'vector')
         b = GA.mv('b', 'vector')
         c = GA.mv('c', 'vector')
-        alpha = Symbol('alpha')
+        alpha = Symbol('alpha', real=True)
 
         self.assertEquals(a ^ b, -b ^ a)
         self.assertEquals(a ^ (alpha * b), alpha * (a ^ b))
@@ -32,15 +32,15 @@ class TestChapter2(TestCase):
         """
         GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
-        a_1 = Symbol('a_1')
-        a_2 = Symbol('a_2')
-        a_3 = Symbol('a_3')
-        b_1 = Symbol('b_1')
-        b_2 = Symbol('b_2')
-        b_3 = Symbol('b_3')
-        c_1 = Symbol('c_1')
-        c_2 = Symbol('c_2')
-        c_3 = Symbol('c_3')
+        a_1 = Symbol('a_1', real=True)
+        a_2 = Symbol('a_2', real=True)
+        a_3 = Symbol('a_3', real=True)
+        b_1 = Symbol('b_1', real=True)
+        b_2 = Symbol('b_2', real=True)
+        b_3 = Symbol('b_3', real=True)
+        c_1 = Symbol('c_1', real=True)
+        c_2 = Symbol('c_2', real=True)
+        c_3 = Symbol('c_3', real=True)
 
         a = GA.mv((a_1, a_2, a_3), 'vector')
         b = GA.mv((b_1, b_2, b_3), 'vector')
@@ -146,8 +146,8 @@ class TestChapter2(TestCase):
         GA, e_1, e_2 = Ga.build('e*1|2')
 
         # x is defined in the basis {e_1, e_2}
-        a = Symbol('a')
-        b = Symbol('b')
+        a = Symbol('a', real=True)
+        b = Symbol('b', real=True)
         x = a * e_1 + b * e_2
 
         # x lies on L and M (eq. L == 0 and M == 0)
@@ -189,9 +189,9 @@ class TestChapter2(TestCase):
         GA, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 1')
 
         # TODO: use alpha, beta and theta instead of a, b and t (it crashes sympy)
-        a = Symbol('a')
-        b = Symbol('b')
-        t = Symbol('t')
+        a = Symbol('a', real=True)
+        b = Symbol('b', real=True)
+        t = Symbol('t', real=True)
         x = a * e_1
         y = b * (cos(t) * e_1 + sin(t) * e_2)
         B = x ^ y
@@ -213,9 +213,9 @@ class TestChapter2(TestCase):
         """
         GA, e_1, e_2 = Ga.build('e*1|2', g='1 0, 0 1')
 
-        a = Symbol('a')
-        b = Symbol('b')
-        t = Symbol('t')
+        a = Symbol('a', real=True)
+        b = Symbol('b', real=True)
+        t = Symbol('t', real=True)
         x = a * e_1
         y = b * (cos(t) * e_1 + sin(t) * e_2)
 
@@ -235,22 +235,22 @@ class TestChapter2(TestCase):
         """
         GA, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
-        a_1 = Symbol('a_1')
-        a_2 = Symbol('a_2')
-        a_3 = Symbol('a_3')
-        b_1 = Symbol('b_1')
-        b_2 = Symbol('b_2')
-        b_3 = Symbol('b_3')
-        c_1 = Symbol('c_1')
-        c_2 = Symbol('c_2')
-        c_3 = Symbol('c_3')
+        a_1 = Symbol('a_1', real=True)
+        a_2 = Symbol('a_2', real=True)
+        a_3 = Symbol('a_3', real=True)
+        b_1 = Symbol('b_1', real=True)
+        b_2 = Symbol('b_2', real=True)
+        b_3 = Symbol('b_3', real=True)
+        c_1 = Symbol('c_1', real=True)
+        c_2 = Symbol('c_2', real=True)
+        c_3 = Symbol('c_3', real=True)
         a = a_1 * e_1 + a_2 * e_2 + a_3 * e_3
         b = b_1 * e_1 + b_2 * e_2 + b_3 * e_3
         c = c_1 * e_1 + c_2 * e_2 + c_3 * e_3
 
-        x_1 = Symbol('x_1')
-        x_2 = Symbol('x_2')
-        x_3 = Symbol('x_3')
+        x_1 = Symbol('x_1', real=True)
+        x_2 = Symbol('x_2', real=True)
+        x_3 = Symbol('x_3', real=True)
         x = x_1 * a + x_2 * b + x_3 * c
 
         # Solve x_1
@@ -280,16 +280,16 @@ class TestChapter2(TestCase):
         B = (e_1 ^ e_2) + (e_3 ^ e_4)
 
         # C is the product of a and b vectors
-        a_1 = Symbol('a_1')
-        a_2 = Symbol('a_2')
-        a_3 = Symbol('a_3')
-        a_4 = Symbol('a_4')
+        a_1 = Symbol('a_1', real=True)
+        a_2 = Symbol('a_2', real=True)
+        a_3 = Symbol('a_3', real=True)
+        a_4 = Symbol('a_4', real=True)
         a = a_1 * e_1 + a_2 * e_2 + a_3 * e_3 + a_4 * e_4
 
-        b_1 = Symbol('b_1')
-        b_2 = Symbol('b_2')
-        b_3 = Symbol('b_3')
-        b_4 = Symbol('b_4')
+        b_1 = Symbol('b_1', real=True)
+        b_2 = Symbol('b_2', real=True)
+        b_3 = Symbol('b_3', real=True)
+        b_4 = Symbol('b_4', real=True)
         b = b_1 * e_1 + b_2 * e_2 + b_3 * e_3 + b_4 * e_4
 
         C = a ^ b
@@ -326,10 +326,10 @@ class TestChapter2(TestCase):
         B = (e_1 ^ e_2) + (e_3 ^ e_4)
 
         # x
-        x_1 = Symbol('x_1')
-        x_2 = Symbol('x_2')
-        x_3 = Symbol('x_3')
-        x_4 = Symbol('x_4')
+        x_1 = Symbol('x_1', real=True)
+        x_2 = Symbol('x_2', real=True)
+        x_3 = Symbol('x_3', real=True)
+        x_4 = Symbol('x_4', real=True)
         x = x_1 * e_1 + x_2 * e_2 + x_3 * e_3 + x_4 * e_4
 
         # Solve x ^ B = 0
@@ -358,9 +358,3 @@ class TestChapter2(TestCase):
                 Ak = GA.mv('A', 'blade', k)
                 Bl = GA.mv('B', 'blade', l)
                 self.assertEquals(Ak ^ Bl, (-1)**(k * l) * (Bl ^ Ak))
-
-
-if __name__ == '__main__':
-
-    unittest.main()
-

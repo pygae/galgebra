@@ -61,12 +61,12 @@ class TestChapter6(TestCase):
         self.assertEquals(e_12 * e_2, e_1)
         self.assertEquals(e_12 * e_12, -1)
 
-        a_1 = Symbol('a_1')
-        a_2 = Symbol('a_2')
+        a_1 = Symbol('a_1', real=True)
+        a_2 = Symbol('a_2', real=True)
         a = GA.mv((a_1, a_2), 'vector')
 
-        b_1 = Symbol('b_1')
-        b_2 = Symbol('b_2')
+        b_1 = Symbol('b_1', real=True)
+        b_2 = Symbol('b_2', real=True)
         b = GA.mv((b_1, b_2), 'vector')
 
         self.assertEquals(a * b, a_1 * b_1 + a_2 * b_2 + (a_1 * b_2 - a_2 * b_1) * (e_1 ^ e_2))
@@ -195,16 +195,16 @@ class TestChapter6(TestCase):
         R = (e_1 * (e_1 + e_2) * (e_2 + e_3) * (e_1 + e_4)).get_grade(2)
 
         # A 2-blade
-        a_1 = Symbol('a_1')
-        a_2 = Symbol('a_2')
-        a_3 = Symbol('a_3')
-        a_4 = Symbol('a_4')
+        a_1 = Symbol('a_1', real=True)
+        a_2 = Symbol('a_2', real=True)
+        a_3 = Symbol('a_3', real=True)
+        a_4 = Symbol('a_4', real=True)
         a = GA.mv((a_1, a_2, a_3, a_4), 'vector')
 
-        b_1 = Symbol('b_1')
-        b_2 = Symbol('b_2')
-        b_3 = Symbol('b_3')
-        b_4 = Symbol('b_4')
+        b_1 = Symbol('b_1', real=True)
+        b_2 = Symbol('b_2', real=True)
+        b_3 = Symbol('b_3', real=True)
+        b_4 = Symbol('b_4', real=True)
         b = GA.mv((b_1, b_2, b_3, b_4), 'vector')
         S = a ^ b
 
@@ -277,16 +277,16 @@ class TestChapter6(TestCase):
         R = X - P
 
         # A 2-blade
-        a_1 = Symbol('a_1')
-        a_2 = Symbol('a_2')
-        a_3 = Symbol('a_3')
-        a_4 = Symbol('a_4')
+        a_1 = Symbol('a_1', real=True)
+        a_2 = Symbol('a_2', real=True)
+        a_3 = Symbol('a_3', real=True)
+        a_4 = Symbol('a_4', real=True)
         a = GA.mv((a_1, a_2, a_3, a_4), 'vector')
 
-        b_1 = Symbol('b_1')
-        b_2 = Symbol('b_2')
-        b_3 = Symbol('b_3')
-        b_4 = Symbol('b_4')
+        b_1 = Symbol('b_1', real=True)
+        b_2 = Symbol('b_2', real=True)
+        b_3 = Symbol('b_3', real=True)
+        b_4 = Symbol('b_4', real=True)
         b = GA.mv((b_1, b_2, b_3, b_4), 'vector')
         S = a ^ b
 
@@ -302,8 +302,3 @@ class TestChapter6(TestCase):
         # TODO: use solve if sympy fix it
         result = solve_poly_system(system, unknowns)
         self.assertTrue(result is None)
-
-
-if __name__ == '__main__':
-
-    unittest.main()

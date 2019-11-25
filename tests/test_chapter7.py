@@ -26,12 +26,12 @@ class TestChapter7(TestCase):
         self.assertEquals(R2R1 * (e_1 ^ e_2) * R2R1.rev(), -e_2 ^ e_3)
 
         # .4 Compute the axis and angle of R2 R1
-        a_1 = Symbol('a_1')
-        a_2 = Symbol('a_2')
-        a_3 = Symbol('a_3')
+        a_1 = Symbol('a_1', real=True)
+        a_2 = Symbol('a_2', real=True)
+        a_3 = Symbol('a_3', real=True)
         a = GA.mv((a_1, a_2, a_3), 'vector')
 
-        theta = Symbol('theta')
+        theta = Symbol('theta', real=True)
         A = a.dual()
         R = cos(theta / 2) + A * sin(theta / 2)
 
@@ -81,8 +81,3 @@ class TestChapter7(TestCase):
 
         # Reset
         Ga.dual_mode()
-
-
-if __name__ == '__main__':
-
-    unittest.main()

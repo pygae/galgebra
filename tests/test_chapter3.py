@@ -63,7 +63,7 @@ class TestChapter3(TestCase):
         for (k, A), (l, B), (m, C) in product(A_blades, B_blades, C_blades):
             self.assertEquals(A < (B + C), (A < B) + (A < C))
 
-        alpha = Symbol("alpha")
+        alpha = Symbol('alpha', real=True)
         for (k, A), (l, B) in product(A_blades, B_blades):
             self.assertEquals((alpha * A) < B, alpha * (A < B))
             self.assertEquals((alpha * A) < B, A < (alpha * B))
@@ -466,8 +466,3 @@ class TestChapter3(TestCase):
         self.assertEquals(xx, b * (a < c) - c * (a < b))
 
         Ga.dual_mode()
-
-
-if __name__ == '__main__':
-
-    unittest.main()

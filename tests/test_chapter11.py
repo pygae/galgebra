@@ -14,13 +14,13 @@ class TestChapter11(TestCase):
         """
         GA, e_0, e_1, e_2, e_3 = Ga.build("e*0|1|2|3", g='-1 0 0 0, 0 1 0 0, 0 0 1 0, 0 0 0 1')
 
-        p0 = Symbol('p0')
-        q0 = Symbol('q0')
-        r0 = Symbol('r0')
+        p0 = Symbol('p0', real=True)
+        q0 = Symbol('q0', real=True)
+        r0 = Symbol('r0', real=True)
 
-        p = GA.mv((p0, Symbol('p1'), Symbol('p2'), Symbol('p3')), 'vector')
-        q = GA.mv((q0, Symbol('q1'), Symbol('q2'), Symbol('q3')), 'vector')
-        r = GA.mv((r0, Symbol('r1'), Symbol('r2'), Symbol('r3')), 'vector')
+        p = GA.mv((p0, Symbol('p1', real=True), Symbol('p2', real=True), Symbol('p3', real=True)), 'vector')
+        q = GA.mv((q0, Symbol('q1', real=True), Symbol('q2', real=True), Symbol('q3', real=True)), 'vector')
+        r = GA.mv((r0, Symbol('r1', real=True), Symbol('r2', real=True), Symbol('r3', real=True)), 'vector')
 
         p_inf = p.subs({p0: 0})
         q_inf = q.subs({q0: 0})
@@ -57,13 +57,13 @@ class TestChapter11(TestCase):
             self.assertEquals(Ip, e_0 ^ Ir)
             self.assertEquals(Ip, e_0 * Ir)
 
-            p = GA.mv([1] + [Symbol('p%d' % i) for i in range(1, GA.n)], 'vector')
+            p = GA.mv([1] + [Symbol('p%d' % i, real=True) for i in range(1, GA.n)], 'vector')
 
             v = [
-                GA.mv([0] + [Symbol('q%d' % i) for i in range(1, GA.n)], 'vector'),
-                GA.mv([0] + [Symbol('r%d' % i) for i in range(1, GA.n)], 'vector'),
-                GA.mv([0] + [Symbol('s%d' % i) for i in range(1, GA.n)], 'vector'),
-                GA.mv([0] + [Symbol('t%d' % i) for i in range(1, GA.n)], 'vector'),
+                GA.mv([0] + [Symbol('q%d' % i, real=True) for i in range(1, GA.n)], 'vector'),
+                GA.mv([0] + [Symbol('r%d' % i, real=True) for i in range(1, GA.n)], 'vector'),
+                GA.mv([0] + [Symbol('s%d' % i, real=True) for i in range(1, GA.n)], 'vector'),
+                GA.mv([0] + [Symbol('t%d' % i, real=True) for i in range(1, GA.n)], 'vector'),
             ]
 
             # We test available finite k-flats
@@ -136,10 +136,10 @@ class TestChapter11(TestCase):
         p = e_0 + e_1 - 3 * e_2
         L = u ^ p
 
-        t = Symbol('t')
-        x_1 = Symbol('x_1')
-        x_2 = Symbol('x_2')
-        x_3 = Symbol('x_3')
+        t = Symbol('t', real=True)
+        x_1 = Symbol('x_1', real=True)
+        x_2 = Symbol('x_2', real=True)
+        x_3 = Symbol('x_3', real=True)
         x = e_0 + x_1 * e_1 + x_2 * e_2 + x_3 * e_3
 
         # x(t)
