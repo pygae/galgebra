@@ -407,7 +407,7 @@ class Metric(object):
 
         return dg
 
-    def init_connect_flg(self):
+    def _init_connect_flg(self):
         # See if metric is flat
 
         self.connect_flg = False
@@ -419,13 +419,13 @@ class Metric(object):
                         self.connect_flg = True
                         break
 
-    def derivatives_of_basis(self):  # Derivatives of basis vectors from Christoffel symbols
+    def _build_derivatives_of_basis(self):  # Derivatives of basis vectors from Christoffel symbols
 
         n_range = self.n_range
 
         self.dg = dg = self.derivatives_of_g()
 
-        self.init_connect_flg()
+        self._init_connect_flg()
 
         if not self.connect_flg:
             self.de = None
@@ -724,7 +724,7 @@ class Metric(object):
                         break
 
         if self.coords is not None:
-            self.derivatives_of_basis()  # calculate derivatives of basis
+            self._build_derivatives_of_basis()  # calculate derivatives of basis
             if self.norm:  # normalize basis, metric, and derivatives of normalized basis
                 if not self.is_ortho:
                     raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
