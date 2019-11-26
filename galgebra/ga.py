@@ -2071,7 +2071,3 @@ class Sm(Ga):
         self.vpd = mv.Dop(r_basis, pdx, ga=self)
         self.rvpd = mv.Dop(r_basis, pdx, ga=self, cmpflg=True)
         return self.vpd, self.rvpd
-
-
-if __name__ == "__main__":
-    pass

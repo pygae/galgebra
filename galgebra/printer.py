@@ -1501,8 +1501,3 @@ def Fmt(obj,fmt=0):
         return
     else:
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
-
-
-if __name__ == "__main__":
-
-    pass

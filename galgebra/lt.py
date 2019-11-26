@@ -897,6 +897,3 @@ class Mlt(object):
             output += str(i)+':'+str(i_index)+':'+str(self(*e)) + '\n'
             i += 1
         return output
-
-if __name__ == "__main__":
-    pass

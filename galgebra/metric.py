@@ -751,8 +751,3 @@ class Metric(object):
 
         if self.debug:
             print('signature =', self.sig)
-
-
-if __name__ == "__main__":
-    pass
-

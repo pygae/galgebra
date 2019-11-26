@@ -2665,6 +2665,3 @@ def scalar(A):
     if not isinstance(A,Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.scalar()
-
-if __name__ == "__main__":
-    pass
