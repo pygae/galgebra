@@ -29,15 +29,6 @@ HALF = Rational(1, 2)
 
 half = Rational(1, 2)
 
-modules = \
-"""
-from sympy import symbols, sin, Function
-from mv import Mv
-from ga import Ga, half
-from printer import Eprint, xdvi
-from lt import Lt
-"""
-
 ########################### Multivector Class ##########################
 
 
