@@ -440,7 +440,7 @@ class Ga(metric.Metric):
             for x in self.coords:  # Partial derivative operator for each coordinate
                 self.Pdiffs[x] = mv.Pdop({x:1}, ga=self)
                 self.sPds[x] = mv.Sdop([(S(1), self.Pdiffs[x])], ga=self)
-            self.grad, self.rgrad = self.grads()
+            self._build_grads()
         else:
             self.r_basis_mv = None
 
@@ -474,9 +474,6 @@ class Ga(metric.Metric):
 
         if Ga.restore:  # restore printer to appropriate enhanced mode after ga is instantiated
             printer.GaLatexPrinter.redirect()
-
-        if self.coords is not None:
-            self.grads()
 
         if self.debug:
             print('Exit Ga.__init__()')
@@ -532,8 +529,6 @@ class Ga(metric.Metric):
         (self.mv_I, self.mv_basis, self.mv_x) = mv.Mv.setup(ga=self)
 
         if root is None:  # Return ga basis and compute grad and rgrad
-            if self.coords is not None:
-                self.grads()
             return self.mv_basis
 
         kwargs['ga'] = self
@@ -603,9 +598,7 @@ class Ga(metric.Metric):
 
         return {key:val for key,val in zip(var_names, bl)}
 
-
-
-    def grads(self):
+    def _build_grads(self):
         if not self.is_ortho:
             r_basis = [x / self.e_sq for x in self.r_basis_mv]
         else:
@@ -617,6 +610,10 @@ class Ga(metric.Metric):
 
         self.grad = mv.Dop(r_basis, pdx, ga=self)
         self.rgrad = mv.Dop(r_basis, pdx, ga=self, cmpflg=True)
+
+    def grads(self):
+        if self.coords is None:
+            raise ValueError("Ga must have been initialized with coords to compute grads")
         return self.grad, self.rgrad
 
     def dop(self, *args, **kwargs):
