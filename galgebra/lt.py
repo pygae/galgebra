@@ -893,6 +893,3 @@ class Mlt(object):
             if i_index[-1] % ndim == 0: print('')
             output += str(i)+':'+str(i_index)+':'+str(self(*e)) + '\n'
         return output
-
-if __name__ == "__main__":
-    pass
