@@ -113,7 +113,6 @@ class Mv(object):
             return A > B
         else:
             raise ValueError('Operation ' + op + 'not allowed in Mv.Mul!')
-        return
 
     def characterise_Mv(self):
         if self.char_Mv:
@@ -1179,7 +1178,6 @@ class Mv(object):
                 return title + ' = ' + s
             else:
                 return s
-        return
 
     def _repr_latex_(self):
         latex_str = printer.GaLatexPrinter.latex(self)
@@ -2411,7 +2409,6 @@ class Dop(object):
                 return title + ' = ' + s
             else:
                 return s
-        return
 
     @staticmethod
     def basic(ga):
