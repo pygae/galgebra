@@ -1587,8 +1587,7 @@ class Ga(metric.Metric):
             if self.debug:
                 print('E**2 =', self.e_sq)
 
-            # Take all (n-1)-blades
-            duals = list(self.blades_lst[-(self.n + 1):-1])
+            duals = list(self.blades[self.n - 1])
             # After reverse, the j-th of them is exactly e_{1}^...e_{j-1}^e_{j+1}^...^e_{n}
             duals.reverse()
 
