@@ -1885,8 +1885,7 @@ class Pdop(object):
             terms = copy.deepcopy(arg)
             while True:
                 D, D0 = D.factor()
-                k = 0
-                for term in terms:
+                for k, term in enumerate(terms):
                     dc = D0(term[0])
                     pd = D0(term[1])
                     #print 'D0, term, dc, pd =', D0, term, dc, pd
@@ -1896,7 +1895,6 @@ class Pdop(object):
                     if pd != 0 :
                         tmp.append((term[0],pd))
                     terms[k] = tmp
-                    k += 1
                 terms = [i for o in terms for i in o]  # flatten list one level
                 if D == 0:
                     break

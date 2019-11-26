@@ -749,11 +749,9 @@ class Ga(metric.Metric):
         self.indexes_to_blades_dict = OrderedDict(self.indexes_to_blades)
 
         self.blades_to_grades_dict = {}
-        igrade = 0
-        for grade in self.blades:
+        for igrade, grade in enumerate(self.blades):
             for blade in grade:
                 self.blades_to_grades_dict[blade] = igrade
-            igrade += 1
 
         if not self.is_ortho:
 
@@ -779,11 +777,9 @@ class Ga(metric.Metric):
             self.indexes_to_bases_dict = OrderedDict(self.indexes_to_bases)
 
             self.bases_to_grades_dict = {}
-            igrade = 0
-            for grade in self.bases:
+            for igrade, grade in enumerate(self.bases):
                 for base in grade:
                     self.bases_to_grades_dict[base] = igrade
-                igrade += 1
 
         if self.coords is None:
             base0 = str(self.basis[0])
@@ -983,8 +979,7 @@ class Ga(metric.Metric):
         nblst = len(blst)  # number of basis vectors
         if nblst <= 1:
             return True  # a scalar or vector is already reduced
-        jstep = 1
-        while jstep < nblst:
+        for jstep in range(1, nblst):
             istep = jstep - 1
             if blst[istep] == blst[jstep]:  # basis vectorindex is repeated
                 i = blst[istep]  # save basis vector index
@@ -1006,7 +1001,7 @@ class Ga(metric.Metric):
                 else:
                     blst1_flg = False  # more revision needed
                 return a1, blst1, blst1_flg, blst
-            jstep += 1
+ 
         return True  # revision complete, blst in normal order
 
     #******************* Outer/wedge (^) product **********************#
