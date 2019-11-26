@@ -240,7 +240,7 @@ class Lt(object):
         if self.spinor:
             if not isinstance(v, mv.Mv):
                 v = mv.Mv(v, ga=self.Ga)
-            if self.rho_sq == None:
+            if self.rho_sq is None:
                 R_v_Rrev = self.R * v * self.Rrev
             else:
                 R_v_Rrev = self.rho_sq * self.R * v * self.Rrev
