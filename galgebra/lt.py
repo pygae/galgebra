@@ -536,11 +536,9 @@ class Mlt(object):
         #  This is used when one wishes to substitute specific vector
         #  values into the Mlt such as the basis/reciprocal basis vectors.
         sub_lst = []
-        i = 0
-        for a in anew:
+        for i, a in enumerate(anew):
             acoefs = a.get_coefs(1)
             sub_lst += list(zip(Ga.pdiffs[i], acoefs))
-            i += 1
         return sub_lst
 
     @staticmethod
@@ -570,7 +568,7 @@ class Mlt(object):
             base_str = base_str.replace('}','')
             i = base_str.find('_') + 1
             if i == 0:
-               base_indexes.append(base_str)
+                base_indexes.append(base_str)
             else:
                 if base_str[i] == '_':
                     i += 1
@@ -888,14 +886,12 @@ class Mlt(object):
         basis = self.Ga.mv()
         rank = self.nargs
         ndim = len(basis)
-        i_indexes = rank*[list(range(ndim))]
-        indexes = rank*[basis]
-        i = 1
+        i_indexes = itertools.product(list(range(ndim)), repeat=rank)
+        indexes = itertools.product(basis, repeat=rank)
         output = ''
-        for (e,i_index) in zip(itertools.product(*indexes),itertools.product(*i_indexes)):
+        for i, (e, i_index) in enumerate(zip(indexes, i_indexes)):
             if i_index[-1] % ndim == 0: print('')
             output += str(i)+':'+str(i_index)+':'+str(self(*e)) + '\n'
-            i += 1
         return output
 
 if __name__ == "__main__":
