@@ -6,13 +6,17 @@ import sys
 import inspect
 import types
 import itertools
-from sympy import collect, expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add
 from copy import copy
+from functools import reduce
+
+from sympy import (
+    expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add
+)
+
 from . import printer
 from . import metric
 from . import mv
 from . import utils
-from functools import reduce
 
 def aprint(a):
     out = ''

@@ -2,26 +2,23 @@
 Multivector and Linear Multivector Differential Operator
 """
 
-import itertools
 import copy
 import numbers
-import operator
-# from compiler.ast import flatten
-# https://stackoverflow.com/questions/16176742/python-3-replacement-for-deprecated-compiler-ast-flatten-function
-from .utils import flatten
 from operator import itemgetter, mul, add
-from itertools import combinations
-from sympy import Symbol, Function, S, expand, Add, Mul, Pow, Basic, \
-    sin, cos, sinh, cosh, sqrt, trigsimp, expand, \
-    simplify, diff, Rational, Expr, Abs, collect, combsimp
+from functools import reduce, cmp_to_key
+
+from sympy import (
+    Symbol, Function, S, expand, Add,
+    sin, cos, sinh, cosh, sqrt, trigsimp, expand,
+    simplify, diff, Rational, Expr, Abs, collect,
+)
 from sympy import exp as sympy_exp
 from sympy import N as Nsympy
+
 from . import printer
 from . import metric
 from . import utils
 from .printer import ZERO_STR
-import sys
-from functools import reduce, cmp_to_key
 
 ONE = S(1)
 ZERO = S(0)
