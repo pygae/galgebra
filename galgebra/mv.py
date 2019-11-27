@@ -173,13 +173,18 @@ class Mv(object):
     # helper methods called by __init__. Note that these names must not change,
     # as the part of the name after `_make_` is public API via the string
     # argument passed to __init__.
+    #
+    # The double underscores in argument names are to force the passing
+    # positionally. When python 3.8 is the lowest supported version, we can
+    # switch to using the / syntax from PEP570
 
     @staticmethod
-    def _make_grade(ga, *args, **kwargs):
+    def _make_grade(ga, __name_or_coeffs, __grade, **kwargs):
         """ Make a pure grade multivector. """
-        grade = args[1]
-        if utils.isstr(args[0]):
-            root = args[0] + '__'
+        grade = __grade
+        if utils.isstr(__name_or_coeffs):
+            name = __name_or_coeffs
+            root = name + '__'
             if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
                 return sum([Symbol(root + super_script, real=True) * base
                                 for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
@@ -191,69 +196,72 @@ class Mv(object):
                 else: #Is a multivector function of tuple kwargs['f'] variables
                     return sum([Function(root + super_script, real=True)(*kwargs['f']) * base
                         for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
-        elif isinstance(args[0],(list,tuple)):
-            if len(args[0]) <= len(ga.blades[grade]):
+        elif isinstance(__name_or_coeffs, (list, tuple)):
+            coeffs = __name_or_coeffs
+            if len(coeffs) <= len(ga.blades[grade]):
                 return sum([coef * base
-                    for (coef, base) in zip(args[0], ga.blades[grade][:len(args[0])])])
+                    for (coef, base) in zip(coeffs, ga.blades[grade][:len(coeffs)])])
             else:
                 raise ValueError("Too many coefficients")
         else:
             raise TypeError("Expected a string, list, or tuple")
 
     @staticmethod
-    def _make_scalar(ga, *args, **kwargs):
+    def _make_scalar(ga, __name_or_value, **kwargs):
         """ Make a scalar multivector """
-        if utils.isstr(args[0]):
+        if utils.isstr(__name_or_value):
+            name = __name_or_value
             if 'f' in kwargs and isinstance(kwargs['f'],bool):
                 if kwargs['f']:
-                    return Function(args[0])(*ga.coords)
+                    return Function(name)(*ga.coords)
                 else:
-                    return Symbol(args[0], real=True)
+                    return Symbol(name, real=True)
             else:
                 if 'f' in kwargs and isinstance(kwargs['f'],tuple):
-                    return Function(args[0])(*kwargs['f'])
+                    return Function(name)(*kwargs['f'])
         else:
-            return args[0]
+            value = __name_or_value
+            return value
 
     @staticmethod
-    def _make_vector(ga, *args, **kwargs):
+    def _make_vector(ga, __name_or_coeffs, **kwargs):
         """ Make a vector multivector """
-        return Mv._make_grade(ga, args[0], 1, **kwargs)
+        return Mv._make_grade(ga, __name_or_coeffs, 1, **kwargs)
 
     @staticmethod
-    def _make_bivector(ga, *args, **kwargs):
+    def _make_bivector(ga, __name_or_coeffs, **kwargs):
         """ Make a bivector multivector """
-        return Mv._make_grade(ga, args[0], 2, **kwargs)
+        return Mv._make_grade(ga, __name_or_coeffs, 2, **kwargs)
 
     @staticmethod
-    def _make_pseudo(ga, *args, **kwargs):
+    def _make_pseudo(ga, __name_or_coeffs, **kwargs):
         """ Make a pseudo scalar multivector """
-        return Mv._make_grade(ga, args[0], ga.n, **kwargs)
+        return Mv._make_grade(ga, __name_or_coeffs, ga.n, **kwargs)
 
     @staticmethod
-    def _make_mv(ga, *args, **kwargs):
+    def _make_mv(ga, __name, **kwargs):
         """ Make a general (2**n components) multivector """
-        tmp = Mv._make_scalar(ga, args[0], **kwargs)
+        tmp = Mv._make_scalar(ga, __name, **kwargs)
         for grade in ga.n_range:
-            tmp += Mv._make_grade(ga, args[0], grade + 1, **kwargs)
+            tmp += Mv._make_grade(ga, __name, grade + 1, **kwargs)
         return tmp
 
     @staticmethod
-    def _make_spinor(ga, *args, **kwargs):
+    def _make_spinor(ga, __name, **kwargs):
         """ Make a general even (spinor) multivector """
-        tmp = Mv._make_scalar(ga, args[0], **kwargs)
+        tmp = Mv._make_scalar(ga, __name, **kwargs)
         for grade in ga.n_range:
             if (grade + 1) % 2 == 0:
-                tmp += Mv._make_grade(ga, args[0], grade + 1, **kwargs)
+                tmp += Mv._make_grade(ga, __name, grade + 1, **kwargs)
         return tmp
 
     @staticmethod
-    def _make_odd(ga, *args, **kwargs):
+    def _make_odd(ga, __name_or_coeffs, **kwargs):
         """ Make a general odd multivector """
         tmp = S(0)
         for grade in ga.n_range:
             if (grade + 1) % 2 == 1:
-                tmp += Mv._make_grade(args[0], grade + 1, **kwargs)
+                tmp += Mv._make_grade(__name_or_coeffs, grade + 1, **kwargs)
         return tmp
 
     # aliases
@@ -297,15 +305,18 @@ class Mv(object):
                 self.characterise_Mv()
         else:
             if utils.isstr(args[1]):
-                args = list(args)
-                mode = args.pop(1)
+                make_args = list(args)
+                mode = make_args.pop(1)
                 make_func = getattr(Mv, '_make_{}'.format(mode), None)
                 if make_func is None:
                     raise ValueError('{!r} is not an allowed multivector type.'.format(mode))
-                self.obj = make_func(self.Ga, *args, **kwargs)
+                self.obj = make_func(self.Ga, *make_args, **kwargs)
             elif isinstance(args[1], int):  # args[1] = r (integer) Construct grade r multivector
                 if args[1] == 0:
-                    self.obj = Mv._make_scalar(self.Ga, *args, **kwargs)
+                    # make_grade does not work for scalars (gh-82)
+                    make_args = list(args)
+                    make_args.pop(1)
+                    self.obj = Mv._make_scalar(self.Ga, *make_args, **kwargs)
                 else:
                     self.obj = Mv._make_grade(self.Ga, *args, **kwargs)
             else:

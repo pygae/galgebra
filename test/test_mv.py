@@ -84,3 +84,12 @@ class TestMv(unittest.TestCase):
         self.assertFalse(m0_base.is_blade_rep)  # original should not change
         self.assertTrue(m0_base_blade.is_blade_rep)
         self.assertEqual(m0, m0_base_blade)
+
+    def test_construction(self):
+        (ga, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+
+        # illegal arguments
+        with self.assertRaises(TypeError):
+            ga.mv('A', 'vector', "too many arguments")
+        with self.assertRaises(TypeError):
+            ga.mv('A', 'grade')  # too few arguments
