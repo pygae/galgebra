@@ -77,12 +77,8 @@ class Mv(object):
         a given geometric algebra, `ga`.
         """
         Mv.fmt = 1
-
-        basis = [Mv(x, ga=ga) for x in ga.basis]
-        I = Mv(ga.iobj, ga=ga)  # default pseudoscalar
-        x = Mv('XxXx', 'vector', ga=ga)  # testing vectors
-        # return default basis vectors and grad vector if coords defined
-        return I, basis, x
+        # copy basis in case the caller wanted to change it
+        return ga.mv_I, list(ga.mv_basis), ga.mv_x
 
     @staticmethod
     def Format(mode=1):
