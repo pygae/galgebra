@@ -38,8 +38,11 @@ class MV(Mv):
             return list(MV.GA.mv())
 
 
-    def __init__(self, base, mvtype, fct=False, blade_rep=True):
-        Mv.__init__(self, base, mvtype, f=fct, ga=MV.GA)
+    def __init__(self, base, mvtype, fct=None, blade_rep=True):
+        kwargs = {}
+        if fct is not None:
+            kwargs['f'] = fct  # only forward this argument if we received it
+        Mv.__init__(self, base, mvtype, ga=MV.GA, **kwargs)
 
     def Fmt(self, fmt=1, title=None):
         print(Mv.Fmt(self, fmt=fmt, title=title))
