@@ -261,7 +261,7 @@ class Mv(object):
         tmp = S(0)
         for grade in ga.n_range:
             if (grade + 1) % 2 == 1:
-                tmp += Mv._make_grade(__name_or_coeffs, grade + 1, **kwargs)
+                tmp += Mv._make_grade(ga, __name_or_coeffs, grade + 1, **kwargs)
         return tmp
 
     # aliases
