@@ -226,10 +226,6 @@ class Ga(metric.Metric):
 
         Map index tuples to basis bases (dictionary).
 
-    .. attribute:: pseudoI
-
-        Symbol for pseudo scalar (non-commutative sympy symbol).
-
     .. rubric:: Multiplication tables data structures
 
     Keys in all multiplication tables (``*``, ``^``, ``|``, ``<``, ``>``) are always ``symbol1*symbol2``.
@@ -430,7 +426,7 @@ class Ga(metric.Metric):
         if self.coords is not None:
             self.coords = list(self.coords)
 
-        self.e = mv.Mv(self.iobj, ga=self)  # Pseudo-scalar for geometric algebra
+        self.e = mv.Mv(self.blades_lst[-1], ga=self)  # Pseudo-scalar for geometric algebra
         self.e_sq = simplify(expand((self.e*self.e).scalar()))
 
         if self.coords is not None:
@@ -752,8 +748,6 @@ class Ga(metric.Metric):
 
         self.blades_lst0 = [S(1)] + self.blades_lst
 
-        self.iobj = self.blades_lst[-1]
-
         self.blades_to_indexes = []
         self.indexes_to_blades = []
         for (index, blade) in zip(self.indexes_lst, self.blades_lst):
@@ -779,8 +773,6 @@ class Ga(metric.Metric):
                     bases.append(base_symbol)
                     self.bases_lst.append(base_symbol)
                 self.bases.append(bases)
-
-            self.pseudoI = self.bases_lst[-1]
 
             self.bases_to_indexes = []
             self.indexes_to_bases = []
@@ -1580,7 +1572,6 @@ class Ga(metric.Metric):
         if self.is_ortho:
             self.r_basis = [self.basis[i] / self.g[i, i] for i in self.n_range]
         else:
-            self.e_obj = self.e.obj
             if gsym is not None:
                 # Define name of metric tensor determinant as sympy symbol
                 if printer.GaLatexPrinter.latex_flg:
@@ -1612,16 +1603,16 @@ class Ga(metric.Metric):
                 # r_basis_j = sgn * duals[j] * E_n so it's not normalized, missing a factor of {E_n}^{-2}
                 """
                 print('blades list =',self.blades_lst)
-                print('debug =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))))
-                print('collect arg =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))))
+                print('debug =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
+                print('collect arg =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
                 """
-                r_basis_j = metric.collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e_obj))), self.blades_lst)
+                r_basis_j = metric.collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))), self.blades_lst)
                 self.r_basis.append(r_basis_j)
                 # sgn = (-1)**{j-1}
                 sgn = -sgn
 
             if self.debug:
-                printer.oprint('E', self.iobj, 'E**2', self.e_sq, 'unnormalized reciprocal basis =\n', self.r_basis)
+                printer.oprint('E', self.e, 'E**2', self.e_sq, 'unnormalized reciprocal basis =\n', self.r_basis)
                 print('reciprocal basis test =')
                 for ei in self.basis:
                     for ej in self.r_basis:
@@ -1630,8 +1621,6 @@ class Ga(metric.Metric):
                             print('e_{i}|e_{j} = ' + str(ei_dot_ej))
                         else:
                             print('e_{i}|e_{j} = ' + str(expand(ei_dot_ej / self.e_sq)))
-
-        self.e_obj = self.blades_lst[-1]
 
         # Dictionary to represent reciprocal basis vectors as expansions
         # in terms of basis vectors.
