@@ -674,6 +674,32 @@ class Ga(metric.Metric):
     def basis_vectors(self):
         return tuple(self.basis)
 
+    def _build_basis_base_symbol(self, base_index):
+        """ Build a symbol used for the `base_rep` from the given tuple """
+        symbol_str = (''.join([str(self.basis[i]) + '*' for i in base_index]))[:-1]
+        return Symbol(symbol_str, commutative=False)
+
+    def _build_basis_blade_symbol(self, base_index):
+        """ Build a symbol used for the `blade_rep` from the given tuple """
+        if self.wedge_print:
+            symbol_str = (''.join([str(self.basis[i]) + '^' for i in base_index]))[:-1]
+        else:
+            sub_str = []
+            root_str = []
+            for i in base_index:
+                basis_vec_str = str(self.basis[i])
+                split_lst = basis_vec_str.split('_')
+                if len(split_lst) != 2:
+                    raise ValueError('!!!!Incompatible basis vector '+basis_vec_str+' for wedge_print = False!!!!')
+                else:
+                    sub_str.append(split_lst[1])
+                    root_str.append(split_lst[0])
+            if all_same(root_str):
+                symbol_str = root_str[0] + '_' + ''.join(sub_str)
+            else:
+                raise ValueError('!!!!No unique root symbol for wedge_print = False!!!!')
+        return Symbol(symbol_str, commutative=False)
+
     def _build_bases(self):
         r"""
         The bases for the multivector (geometric) algebra are formed from
@@ -728,24 +754,7 @@ class Ga(metric.Metric):
             blades = []
             super_scripts = []
             for base_index in grade_index:
-                if self.wedge_print:
-                    symbol_str = (''.join([str(self.basis[i]) + '^' for i in base_index]))[:-1]
-                else:
-                    sub_str = []
-                    root_str = []
-                    for i in base_index:
-                        basis_vec_str = str(self.basis[i])
-                        split_lst = basis_vec_str.split('_')
-                        if len(split_lst) != 2:
-                            raise ValueError('!!!!Incompatible basis vector '+basis_vec_str+' for wedge_print = False!!!!')
-                        else:
-                            sub_str.append(split_lst[1])
-                            root_str.append(split_lst[0])
-                    if all_same(root_str):
-                            symbol_str = root_str[0] + '_' + ''.join(sub_str)
-                    else:
-                        raise ValueError('!!!!No unique root symbol for wedge_print = False!!!!')
-                blade_symbol = Symbol(symbol_str, commutative=False)
+                blade_symbol = self._build_basis_blade_symbol(base_index)
                 blades.append(blade_symbol)
                 self.blades_lst.append(blade_symbol)
             self.blades.append(blades)
@@ -774,8 +783,7 @@ class Ga(metric.Metric):
             for grade_index in self.indexes:
                 bases = []
                 for base_index in grade_index:
-                    symbol_str = (''.join([str(self.basis[i]) + '*' for i in base_index]))[:-1]
-                    base_symbol = Symbol(symbol_str, commutative=False)
+                    base_symbol = self._build_basis_base_symbol(base_index)
                     bases.append(base_symbol)
                     self.bases_lst.append(base_symbol)
                 self.bases.append(bases)
