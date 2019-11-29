@@ -517,6 +517,18 @@ class Ga(metric.Metric):
     def I(self):  # Noromalized pseudo-scalar
         return self.i
 
+    @property
+    def mv_I(self):
+        # This exists for backwards compatibility. Note this is not `I()`!
+        # default pseudoscalar
+        return self.E()
+
+    @property
+    def mv_x(self):
+        # This exists for backwards compatibility.
+        # testing vectors
+        return Mv('XxXx', 'vector', ga=self)
+
     def X(self):
         return self.mv(sum([coord*base for (coord, base) in zip(self.coords, self.basis)]))
 
@@ -528,8 +540,6 @@ class Ga(metric.Metric):
         Instanciate and return a multivector for this, 'self',
         geometric algebra.
         """
-        (self.mv_I, self.mv_basis, self.mv_x) = mv.Mv.setup(ga=self)
-
         if root is None:  # Return ga basis and compute grad and rgrad
             return self.mv_basis
 
@@ -817,11 +827,15 @@ class Ga(metric.Metric):
                                 'indexes_to_bases_dict', self.indexes_to_bases_dict,
                                 'bases_to_grades_dict', self.bases_to_grades_dict)
 
-        self.mv_blades_lst = []
-        for obj in self.blades_lst:
-            self.mv_blades_lst.append(self.mv(obj))
-
-        return
+        # create the Mv wrappers
+        self.mv_blades_lst = [
+            mv.Mv(obj, ga=self)
+            for obj in self.blades_lst
+        ]
+        self.mv_basis = [
+            mv.Mv(obj, ga=self)
+            for obj in self.basis
+        ]
 
     def _build_basis_product_tables(self):
         """
