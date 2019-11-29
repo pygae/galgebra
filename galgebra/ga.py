@@ -676,13 +676,13 @@ class Ga(metric.Metric):
 
     def _build_basis_base_symbol(self, base_index):
         """ Build a symbol used for the `base_rep` from the given tuple """
-        symbol_str = (''.join([str(self.basis[i]) + '*' for i in base_index]))[:-1]
+        symbol_str = '*'.join([str(self.basis[i]) for i in base_index])
         return Symbol(symbol_str, commutative=False)
 
     def _build_basis_blade_symbol(self, base_index):
         """ Build a symbol used for the `blade_rep` from the given tuple """
         if self.wedge_print:
-            symbol_str = (''.join([str(self.basis[i]) + '^' for i in base_index]))[:-1]
+            symbol_str = '^'.join([str(self.basis[i]) for i in base_index])
         else:
             sub_str = []
             root_str = []
