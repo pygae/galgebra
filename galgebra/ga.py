@@ -4,20 +4,22 @@ Geometric Algebra (inherits Metric)
 
 import operator
 import copy
-from sympy import diff, Rational, Symbol, S, Mul, Pow, Add, \
-    collect, expand, simplify, eye, trigsimp, sin, cos, sinh, cosh, \
-    symbols, sqrt, Abs, numbers, Integer, Function
-import sympy
 from collections import OrderedDict
-#from sympy.core.compatibility import combinations
 from itertools import combinations
+import functools
+from functools import reduce
+
+from sympy import (
+    diff, Rational, Symbol, S, Mul, Add,
+    expand, simplify, eye, trigsimp,
+    symbols, sqrt, numbers, Function
+)
+
 from . import printer
 from . import metric
 from . import mv
 from . import lt
 from . import utils
-import functools
-from functools import reduce
 
 half = Rational(1, 2)
 one = S(1)

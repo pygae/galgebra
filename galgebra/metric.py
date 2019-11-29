@@ -2,13 +2,12 @@
 Metric Tensor and Derivatives of Basis Vectors.
 """
 
-import sys
 import copy
-import itertools
-from sympy import diff, trigsimp, Matrix, Rational, \
-    sqf_list, Symbol, sqrt, eye, zeros, S, expand, Mul, \
-    Add, simplify, together, ratsimp, Expr, latex, \
-    Function
+from sympy import (
+    diff, trigsimp, Matrix, Rational,
+    sqf_list, Symbol, sqrt, eye, S, expand, Mul,
+    Add, simplify, Expr, Function
+)
 
 from . import printer
 from . import utils
