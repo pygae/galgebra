@@ -23,20 +23,6 @@ def apply_function_list(f,x):
     else:
         return f(x)
 
-def str_to_lst(s):
-    if '[' in s:
-        s = s.replace('[', '')
-    if ']' in s:
-        s = s.replace(']', '')
-    s_lst = s.split(',')
-    v_lst = []
-    for x in s_lst:
-        try:
-            v_lst.append(int(s))
-        except ValueError:
-            v_lst.append(Symbol(s, real=True))
-    return v_lst
-
 
 def linear_expand(expr, mode=True):
 

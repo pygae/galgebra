@@ -1256,7 +1256,7 @@ class Ga(metric.Metric):
         elif mode == '^':
             return self.wedge(A, B)
         else:
-            return self.dot(A, B, mode=mode)
+            return self._dot(A, B, mode=mode)
 
     def mul(self, A, B):  # geometric (*) product of blade representations
         if A == 0 or B == 0:
