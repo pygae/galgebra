@@ -88,20 +88,25 @@ class TestMv(unittest.TestCase):
     def test_construction(self):
         (ga, e_1, e_2, e_3) = Ga.build('e*1|2|3')
 
+        def check(x, expected_grades):
+            self.assertEqual(x.grades, expected_grades)
+            self.assertNotEqual(x, 0)
+
         # non-function symbol construction
-        self.assertEqual(ga.mv('A', 'scalar').grades, [0])
-        self.assertEqual(ga.mv('A', 0).grades, [0])
-        self.assertEqual(ga.mv('A', 'vector').grades, [1])
-        self.assertEqual(ga.mv('A', 'grade', 1).grades, [1])
-        self.assertEqual(ga.mv('A', 1).grades, [1])
-        self.assertEqual(ga.mv('A', 'bivector').grades, [2])
-        self.assertEqual(ga.mv('A', 'grade2').grades, [2])
-        self.assertEqual(ga.mv('A', 2).grades, [2])
-        self.assertEqual(ga.mv('A', 'pseudo').grades, [3])
-        self.assertEqual(ga.mv('A', 'spinor').grades, [0, 2])
-        self.assertEqual(ga.mv('A', 'even').grades, [0, 2])
-        self.assertEqual(ga.mv('A', 'odd').grades, [1, 3])
-        self.assertEqual(ga.mv('A', 'mv').grades, [0, 1, 2, 3])
+        check(ga.mv('A', 'scalar'), [0])
+        check(ga.mv('A', 'grade', 0), [0])
+        check(ga.mv('A', 0), [0])
+        check(ga.mv('A', 'vector'), [1])
+        check(ga.mv('A', 'grade', 1), [1])
+        check(ga.mv('A', 1), [1])
+        check(ga.mv('A', 'bivector'), [2])
+        check(ga.mv('A', 'grade2'), [2])
+        check(ga.mv('A', 2), [2])
+        check(ga.mv('A', 'pseudo'), [3])
+        check(ga.mv('A', 'spinor'), [0, 2])
+        check(ga.mv('A', 'even'), [0, 2])
+        check(ga.mv('A', 'odd'), [1, 3])
+        check(ga.mv('A', 'mv'), [0, 1, 2, 3])
 
         # illegal arguments
         with self.assertRaises(TypeError):
