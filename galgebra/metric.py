@@ -305,6 +305,21 @@ class Metric(object):
                 raise ValueError('In dot_orthogonal dimension of metric ' +
                                  'must equal dimension of vector')
 
+    def _build_metric_element(self, s, i1, i2):
+        """ Build an element for the metric of `bases[i1] . basis[i2]` """
+        if s == '#':
+            if i1 <= i2:  # for default element ensure symmetry
+                return Symbol('(' + str(self.basis[i1]) +
+                              '.' + str(self.basis[i2]) + ')', real=True)
+            else:
+                return Symbol('(' + str(self.basis[i2]) +
+                              '.' + str(self.basis[i1]) + ')', real=True)
+        elif '/' in s:  # element is fraction
+            num, dem = s.split('/')
+            return Rational(num, dem)
+        else:  # element is integer
+            return Rational(s)
+
     def metric_symbols_list(self, s=None):  # input metric tensor as string
         """
         rows of metric tensor are separated by "," and elements
@@ -325,16 +340,8 @@ class Metric(object):
             if n_rows == 1:  # orthogonal metric
                 m_lst = s.split(' ')
                 m = []
-                for (s, base) in zip(m_lst, self.basis):
-                    if s == '#':
-                        s_symbol = Symbol('(' + str(base) + '.' + str(base) + ')', real=True)
-                    else:
-                        if '/' in s:
-                            [num, dem] = s.split('/')
-                            s_symbol = Rational(num, dem)
-                        else:
-                            s_symbol = Rational(s)
-                    m.append(s_symbol)
+                for i, s in enumerate(m_lst):
+                    m.append(self._build_metric_element(s, i, i))
 
                 if len(m) != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
@@ -360,23 +367,10 @@ class Metric(object):
                 if n != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
                                      ' different rank than bases "' + str(self.basis) + '"')
-                n_range = list(range(n))
-                for (row, i1) in zip(m_lst, n_range):
+                for i1, row in enumerate(m_lst):
                     row_symbols = []
-                    for (s, i2) in zip(row, n_range):
-                        if s == '#':
-                            if i1 <= i2:  # for default elment insure symmetry
-                                row_symbols.append(Symbol('(' + str(self.basis[i1]) +
-                                                          '.' + str(self.basis[i2]) + ')', real=True))
-                            else:
-                                row_symbols.append(Symbol('(' + str(self.basis[i2]) +
-                                                          '.' + str(self.basis[i1]) + ')', real=True))
-                        else:
-                            if '/' in s:  # element is fraction
-                                [num, dem] = s.split('/')
-                                row_symbols.append(Rational(num, dem))
-                            else:  # element is integer
-                                row_symbols.append(Rational(s))
+                    for i2, s in enumerate(row):
+                        row_symbols.append(self._build_metric_element(s, i1, i2))
                     m.append(row_symbols)
                 m = Matrix(m)
                 return m
