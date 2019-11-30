@@ -43,7 +43,7 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
                     if not f:
                         mat[row,col] = Symbol(element,real=True)
                     else:
-                       mat[row,col] = Function(element)(*coords)
+                        mat[row,col] = Function(element)(*coords)
 
         elif mode == 's':  # Symmetric symbolic matrix
             for row in n_range:
@@ -57,7 +57,7 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
                     if not f:
                         mat[row,col] = Symbol(element,real=True)
                     else:
-                       mat[row,col] = Function(element)(*coords)
+                        mat[row,col] = Function(element)(*coords)
 
         elif mode == 'a':  # Asymmetric symbolic matrix
             for row in n_range:
@@ -75,7 +75,7 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
                     if not f:
                         mat[row,col] = sign * Symbol(element,real=True)
                     else:
-                       mat[row,col] = sign * Function(element)(*coords)
+                        mat[row,col] = sign * Function(element)(*coords)
         else:
             raise ValueError('In Symbolic_Matrix mode = ' + str(mode))
     else:
@@ -219,8 +219,8 @@ class Lt(object):
                 raise ValueError('In Spinor input for Lt, S*S.rev() not a scalar!\n')
 
         elif utils.isstr(mat_rep):  # String input
-             Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords,mode=self.mode,f=self.fct_flg)
-             self.__init__(Amat, ga=self.Ga)
+            Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords,mode=self.mode,f=self.fct_flg)
+            self.__init__(Amat, ga=self.Ga)
 
         else:  # Linear multivector function input
             # F is a multivector function to be tested for linearity
@@ -239,7 +239,7 @@ class Lt(object):
     def __call__(self, v, obj=False):
 
         if isinstance(v, mv.Mv) and self.Ga.name != v.Ga.name:
-                raise ValueError('In Lt call Lt and argument refer to different vector spaces')
+            raise ValueError('In Lt call Lt and argument refer to different vector spaces')
 
         if self.spinor:
             if not isinstance(v, mv.Mv):
