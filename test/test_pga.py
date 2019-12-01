@@ -12,7 +12,7 @@ class TestPGA(TestCase):
         Setup 3D Projective Geometric Algebra aka PGA.
         """
         indexes = (
-            (),
+            ((),),
             ((0,), (1,), (2,), (3,)),
             ((0, 1), (0, 2), (0, 3), (1, 2), (3, 1), (2, 3)),
             ((0, 2, 1), (0, 1, 3), (0, 3, 2), (1, 2, 3)),
@@ -21,7 +21,7 @@ class TestPGA(TestCase):
 
         # Internal products use lexical ordering for computing expressions
         signs = (
-            (),
+            (1,),
             (1, 1, 1, 1),
             (1, 1, 1, 1, -1, 1),
             (-1, 1, -1, 1),
@@ -34,7 +34,7 @@ class TestPGA(TestCase):
             ((1, 2, 3), (0, 3, 2), (0, 1, 3), (0, 2, 1)),
             ((2, 3), (3, 1), (1, 2), (0, 3), (0, 2), (0, 1)),
             ((3,), (2,), (1,), (0,)),
-            (),
+            ((),),
         )
 
         PGA, e_0, e_1, e_2, e_3 = Ga.build('e*0|1|2|3', g=[0, 1, 1, 1], sign_and_indexes=(signs, indexes))
@@ -388,7 +388,7 @@ class TestPGA(TestCase):
         """
         PGA = self.PGA
         for k in range(PGA.n + 1):
-            X = PGA.mv('x', k, 'grade')
+            X = PGA.mv('x', 'grade', k)
             self.assertEqual(X, Jinv(J(X)))
         X = PGA.mv('x', 'mv')
         self.assertEqual(X, Jinv(J(X)))

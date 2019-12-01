@@ -19,7 +19,7 @@ class TestChapter8(TestCase):
         self.assertEqual(com(com(A, B), C) - com(A, com(B, C)), com(B, com(C, A)))
         self.assertEqual(com(com(A, B), C) + com(com(C, A), B) + com(com(B, C), A), S.Zero)
 
-        B = GA.mv('B', 2, 'blade')
+        B = GA.mv('B', 'blade', 2)
         X = GA.mv('A', 'mv')
         self.assertEqual(B.pure_grade(), 2)
         self.assertEqual(com(X, B).pure_grade(), -2)  # Not pure
@@ -35,5 +35,5 @@ class TestChapter8(TestCase):
         a = GA.mv('a', 'vector')
         self.assertEqual(a * X, (a < X) + (a ^ X))
 
-        A = GA.mv('A', 2, 'grade')
+        A = GA.mv('A', 'grade', 2)
         self.assertEqual(A * X, (A < X) + com(A, X) + (A ^ X))

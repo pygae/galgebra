@@ -2,13 +2,12 @@
 Metric Tensor and Derivatives of Basis Vectors.
 """
 
-import sys
 import copy
-import itertools
-from sympy import diff, trigsimp, Matrix, Rational, \
-    sqf_list, Symbol, sqrt, eye, zeros, S, expand, Mul, \
-    Add, simplify, together, ratsimp, Expr, latex, \
-    Function
+from sympy import (
+    diff, trigsimp, Matrix, Rational,
+    sqf_list, Symbol, sqrt, eye, S, expand, Mul,
+    Add, simplify, Expr, Function
+)
 
 from . import printer
 from . import utils
@@ -23,20 +22,6 @@ def apply_function_list(f,x):
         return fx
     else:
         return f(x)
-
-def str_to_lst(s):
-    if '[' in s:
-        s = s.replace('[', '')
-    if ']' in s:
-        s = s.replace(']', '')
-    s_lst = s.split(',')
-    v_lst = []
-    for x in s_lst:
-        try:
-            v_lst.append(int(s))
-        except ValueError:
-            v_lst.append(Symbol(s, real=True))
-    return v_lst
 
 
 def linear_expand(expr, mode=True):
@@ -321,6 +306,21 @@ class Metric(object):
                 raise ValueError('In dot_orthogonal dimension of metric ' +
                                  'must equal dimension of vector')
 
+    def _build_metric_element(self, s, i1, i2):
+        """ Build an element for the metric of `bases[i1] . basis[i2]` """
+        if s == '#':
+            if i1 <= i2:  # for default element ensure symmetry
+                return Symbol('(' + str(self.basis[i1]) +
+                              '.' + str(self.basis[i2]) + ')', real=True)
+            else:
+                return Symbol('(' + str(self.basis[i2]) +
+                              '.' + str(self.basis[i1]) + ')', real=True)
+        elif '/' in s:  # element is fraction
+            num, dem = s.split('/')
+            return Rational(num, dem)
+        else:  # element is integer
+            return Rational(s)
+
     def metric_symbols_list(self, s=None):  # input metric tensor as string
         """
         rows of metric tensor are separated by "," and elements
@@ -341,16 +341,8 @@ class Metric(object):
             if n_rows == 1:  # orthogonal metric
                 m_lst = s.split(' ')
                 m = []
-                for (s, base) in zip(m_lst, self.basis):
-                    if s == '#':
-                        s_symbol = Symbol('(' + str(base) + '.' + str(base) + ')', real=True)
-                    else:
-                        if '/' in s:
-                            [num, dem] = s.split('/')
-                            s_symbol = Rational(num, dem)
-                        else:
-                            s_symbol = Rational(s)
-                    m.append(s_symbol)
+                for i, s in enumerate(m_lst):
+                    m.append(self._build_metric_element(s, i, i))
 
                 if len(m) != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
@@ -376,23 +368,10 @@ class Metric(object):
                 if n != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
                                      ' different rank than bases "' + str(self.basis) + '"')
-                n_range = list(range(n))
-                for (row, i1) in zip(m_lst, n_range):
+                for i1, row in enumerate(m_lst):
                     row_symbols = []
-                    for (s, i2) in zip(row, n_range):
-                        if s == '#':
-                            if i1 <= i2:  # for default elment insure symmetry
-                                row_symbols.append(Symbol('(' + str(self.basis[i1]) +
-                                                          '.' + str(self.basis[i2]) + ')', real=True))
-                            else:
-                                row_symbols.append(Symbol('(' + str(self.basis[i2]) +
-                                                          '.' + str(self.basis[i1]) + ')', real=True))
-                        else:
-                            if '/' in s:  # element is fraction
-                                [num, dem] = s.split('/')
-                                row_symbols.append(Rational(num, dem))
-                            else:  # element is integer
-                                row_symbols.append(Rational(s))
+                    for i2, s in enumerate(row):
+                        row_symbols.append(self._build_metric_element(s, i1, i2))
                     m.append(row_symbols)
                 m = Matrix(m)
                 return m
@@ -408,7 +387,7 @@ class Metric(object):
 
         return dg
 
-    def init_connect_flg(self):
+    def _init_connect_flg(self):
         # See if metric is flat
 
         self.connect_flg = False
@@ -420,13 +399,13 @@ class Metric(object):
                         self.connect_flg = True
                         break
 
-    def derivatives_of_basis(self):  # Derivatives of basis vectors from Christoffel symbols
+    def _build_derivatives_of_basis(self):  # Derivatives of basis vectors from Christoffel symbols
 
         n_range = self.n_range
 
         self.dg = dg = self.derivatives_of_g()
 
-        self.init_connect_flg()
+        self._init_connect_flg()
 
         if not self.connect_flg:
             self.de = None
@@ -725,7 +704,7 @@ class Metric(object):
                         break
 
         if self.coords is not None:
-            self.derivatives_of_basis()  # calculate derivatives of basis
+            self._build_derivatives_of_basis()  # calculate derivatives of basis
             if self.norm:  # normalize basis, metric, and derivatives of normalized basis
                 if not self.is_ortho:
                     raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
@@ -752,8 +731,3 @@ class Metric(object):
 
         if self.debug:
             print('signature =', self.sig)
-
-
-if __name__ == "__main__":
-    pass
-

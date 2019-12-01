@@ -2,6 +2,33 @@
 Changelog
 =========
 
+- :feature:`78` :meth:`~galgebra.ga.Ga.grads` now raises a better error when it fails, and is faster.
+- :support:`72` Other internal cleanup
+- :feature:`66` (also :issue:`67`, :issue:`71`) Remove unused code in the public API:
+
+  * ``Ga.mul_table``, ``Ga.wedge_table``, ``Ga.dot_table``, ``Ga.left_contract_table``,
+    and ``Ga.right_contract_table``, all of which were the empty list, ``[]``.
+  * ``galgebra.mv.modules``, a string which served no purpose
+  * ``__add_ab__``, ``__sub_ab__``, ``__mul_ab__``, and ``__div_ab__``, none of are real magic method names.
+    No code should be calling these directly anyway.
+
+- :feature:`66` The :attr:`~galgebra.ga.Ga.mul_table_dict` table, and the equivalent tables for the other products, are now computed lazily when indexed. These are now all documented too.
+- :bug:`61` Make contraction and Hestenes dot products thread-safe.
+  Previously these relied on the :attr:`~galgebra.ga.Ga.dot_mode` setting not being changed mid-operation.
+  The :meth:`~galgebra.ga.Ga.dot` method still respects this setting, but is no longer used internally.
+- :bug:`60` Make :meth:`~galgebra.mv.Mv.blade_rep` and :meth:`~galgebra.mv.Mv.base_rep` not mutate the object they are called on.
+  Any code relying on this behavior will need to change from ``x.base_rep()`` to ``x = x.base_rep()``.
+- :support:`59` (also :issue:`65`) Make internal helper functions private.
+- :support:`57` (also :issue:`58`) Clean up the ``Mv(name, 'category')`` constructors to produce better error messages.
+- :support:`55` Rename ``*kargs`` to ``*args`` internally, to match convention.
+  This has no effect on callers, but makes the docs and source easier to read.
+- :feature:`50` (also :issue:`51`, :issue:`56`) Improve documentation formatting:
+
+    * LaTeX and code samples are now appropriately formatted
+    * Attributes of classes now have permalinks
+
+- :support:`46` (also :issue:`69`) Remove unnecessary executable bit from importable python files, and the corresponding no-op code that would be run.
+
 - :release:`0.4.4 <2019.09.30>`
 - :feature:`17` Fix examples under both Python 2 & 3
 

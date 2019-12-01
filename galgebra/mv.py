@@ -2,26 +2,23 @@
 Multivector and Linear Multivector Differential Operator
 """
 
-import itertools
 import copy
 import numbers
 import operator
-# from compiler.ast import flatten
-# https://stackoverflow.com/questions/16176742/python-3-replacement-for-deprecated-compiler-ast-flatten-function
-from .utils import flatten
-from operator import itemgetter, mul, add
-from itertools import combinations
-from sympy import Symbol, Function, S, expand, Add, Mul, Pow, Basic, \
-    sin, cos, sinh, cosh, sqrt, trigsimp, expand, \
-    simplify, diff, Rational, Expr, Abs, collect, combsimp
+from functools import reduce, cmp_to_key
+
+from sympy import (
+    Symbol, Function, S, expand, Add,
+    sin, cos, sinh, cosh, sqrt, trigsimp, expand,
+    simplify, diff, Rational, Expr, Abs, collect,
+)
 from sympy import exp as sympy_exp
 from sympy import N as Nsympy
+
 from . import printer
 from . import metric
 from . import utils
 from .printer import ZERO_STR
-import sys
-from functools import reduce, cmp_to_key
 
 ONE = S(1)
 ZERO = S(0)
@@ -29,40 +26,34 @@ HALF = Rational(1, 2)
 
 half = Rational(1, 2)
 
-modules = \
-"""
-from sympy import symbols, sin, Function
-from mv import Mv
-from ga import Ga, half
-from printer import Eprint, xdvi
-from lt import Lt
-"""
-
 ########################### Multivector Class ##########################
 
 
 class Mv(object):
     """
-    Wrapper class for multivector objects (self.obj) so that it is easy
-    to overload operators (*,^,|,<,>) for the various multivector
-    products and for printing.  Also provides an __init__ fuction to
-    easily instanciate multivector objects.  Additionally, the functionality
+    Wrapper class for multivector objects (``self.obj``) so that it is easy
+    to overload operators (``*``, ``^``, ``|``, ``<``, ``>``)  for the various
+    multivector products and for printing.
+
+    Also provides a constructor to easily instantiate multivector objects.
+
+    Additionally, the functionality
     of the multivector derivative have been added via the special vector
-    'grad' so that one can take the geometric derivative of a multivector
-    function 'A' by applying 'grad' from the left, 'grad*A', or the
-    right 'A*grad' for both the left and right derivatives.  The operator
-    between the 'grad' and the 'A' can be any of the multivector product
+    ``grad`` so that one can take the geometric derivative of a multivector
+    function ``A`` by applying ``grad`` from the left, ``grad*A``, or the
+    right ``A*grad`` for both the left and right derivatives.  The operator
+    between the ``grad`` and the 'A' can be any of the multivector product
     operators.
 
-    If 'f' is a scalar function 'grad*f' is the usual gradient of a function.
-    If 'A' is a vector function 'grad|f' is the divergence of 'A' and
-    '-I*(grad^A)' is the curl of 'A' (I is the pseudo scalar for the geometric
+    If ``f`` is a scalar function ``grad*f`` is the usual gradient of a function.
+    If ``A`` is a vector function ``grad|f`` is the divergence of ``A`` and
+    ``-I*(grad^A)`` is the curl of ``A`` (I is the pseudo scalar for the geometric
     algebra)
 
-    Data Variables -
-
-
-
+    Attributes
+    ----------
+    obj : sympy.core.Expr
+        The underlying sympy expression for this multivector
     """
 
     ################### Multivector initialization #####################
@@ -79,16 +70,12 @@ class Mv(object):
     @staticmethod
     def setup(ga):
         """
-        Set up constant mutilvectors reqired for multivector class for
-        a given geometric algebra, 'ga'.
+        Set up constant multivectors required for multivector class for
+        a given geometric algebra, `ga`.
         """
         Mv.fmt = 1
-
-        basis = [Mv(x, ga=ga) for x in ga.basis]
-        I = Mv(ga.iobj, ga=ga)  # default pseudoscalar
-        x = Mv('XxXx', 'vector', ga=ga)  # testing vectors
-        # return default basis vectors and grad vector if coords defined
-        return I, basis, x
+        # copy basis in case the caller wanted to change it
+        return ga.mv_I, list(ga.mv_basis), ga.mv_x
 
     @staticmethod
     def Format(mode=1):
@@ -100,7 +87,7 @@ class Mv(object):
     def Mul(A, B, op):
         """
         Function for all types of geometric multiplications called by
-        overloaded operators for *, ^, |, <, and >.
+        overloaded operators for ``*``, ``^``, ``|``, ``<``, and ``>``.
         """
         if not isinstance(A, Mv):
             A = B.Ga.mv(A)
@@ -119,7 +106,6 @@ class Mv(object):
             return A > B
         else:
             raise ValueError('Operation ' + op + 'not allowed in Mv.Mul!')
-        return
 
     def characterise_Mv(self):
         if self.char_Mv:
@@ -138,7 +124,7 @@ class Mv(object):
         if isinstance(obj, Add):
             args = obj.args
         else:
-            if obj in self.Ga.blades_lst:
+            if obj in self.Ga._all_blades_lst:
                 self.is_blade_rep = True
                 self.i_grade = self.Ga.blades_to_grades_dict[obj]
                 self.grades = [self.i_grade]
@@ -159,7 +145,7 @@ class Mv(object):
                 c, nc = term.args_cnc(split_1=False)
                 blade = nc[0]
                 #print 'blade =',blade
-                if blade in self.Ga.blades_lst:
+                if blade in self.Ga._all_blades_lst:
                     grade = self.Ga.blades_to_grades_dict[blade]
                     if not grade in grades:
                         grades.append(grade)
@@ -179,94 +165,102 @@ class Mv(object):
     # helper methods called by __init__. Note that these names must not change,
     # as the part of the name after `_make_` is public API via the string
     # argument passed to __init__.
-
-    def _make_blade(ga, *kargs, **kwargs):
-        """ Make a k-blade. """
-        if isinstance(kargs[0], str) and isinstance(kargs[1], int):
-            root = kargs[0]
-            return reduce(Mv.__xor__, [ga.mv('%s%d' % (root, i), 'vector') for i in range(kargs[1])], ga.mv(1, 'scalar')).obj
+    #
+    # The double underscores in argument names are to force the passing
+    # positionally. When python 3.8 is the lowest supported version, we can
+    # switch to using the / syntax from PEP570
 
     @staticmethod
-    def _make_grade(ga, *args, **kwargs):
+    def _make_blade(ga, __name, __grade, **kwargs):
+        if isinstance(__name, str) and isinstance(__grade, int):
+            return reduce(Mv.__xor__, [ga.mv('%s%d' % (__name, i), 'vector') for i in range(__grade)],
+                          ga.mv(1, 'scalar')).obj
+        else:
+            raise TypeError("name must be a string and grade must be an int")
+
+    @staticmethod
+    def _make_grade(ga, __name_or_coeffs, __grade, **kwargs):
         """ Make a pure grade multivector. """
-        grade = args[1]
-        if utils.isstr(args[0]):
-            root = args[0] + '__'
+        def add_superscript(root, s):
+            if not s:
+                return root
+            return '{}__{}'.format(root, s)
+        grade = __grade
+        if utils.isstr(__name_or_coeffs):
+            name = __name_or_coeffs
             if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
-                return sum([Symbol(root + super_script, real=True) * base
+                return sum([Symbol(add_superscript(name, super_script), real=True) * base
                                 for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
 
             else:
                 if isinstance(kwargs['f'], bool):  #Is a multivector function of all coordinates
-                    return sum([Function(root + super_script, real=True)(*ga.coords) * base
+                    return sum([Function(add_superscript(name, super_script), real=True)(*ga.coords) * base
                         for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
                 else: #Is a multivector function of tuple kwargs['f'] variables
-                    return sum([Function(root + super_script, real=True)(*kwargs['f']) * base
+                    return sum([Function(add_superscript(name, super_script), real=True)(*kwargs['f']) * base
                         for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
-        elif isinstance(args[0],(list,tuple)):
-            if len(args[0]) <= len(ga.blades[grade]):
+        elif isinstance(__name_or_coeffs, (list, tuple)):
+            coeffs = __name_or_coeffs
+            if len(coeffs) <= len(ga.blades[grade]):
                 return sum([coef * base
-                    for (coef, base) in zip(args[0], ga.blades[grade][:len(args[0])])])
+                    for (coef, base) in zip(coeffs, ga.blades[grade][:len(coeffs)])])
             else:
                 raise ValueError("Too many coefficients")
         else:
             raise TypeError("Expected a string, list, or tuple")
 
     @staticmethod
-    def _make_scalar(ga, *args, **kwargs):
+    def _make_scalar(ga, __name_or_value, **kwargs):
         """ Make a scalar multivector """
-        if utils.isstr(args[0]):
-            if 'f' in kwargs and isinstance(kwargs['f'],bool):
-                if kwargs['f']:
-                    return Function(args[0])(*ga.coords)
-                else:
-                    return Symbol(args[0], real=True)
-            else:
-                if 'f' in kwargs and isinstance(kwargs['f'],tuple):
-                    return Function(args[0])(*kwargs['f'])
+        if utils.isstr(__name_or_value):
+            name = __name_or_value
+            return Mv._make_grade(ga, name, 0, **kwargs)
         else:
-            return args[0]
+            value = __name_or_value
+            return value
 
     @staticmethod
-    def _make_vector(ga, *args, **kwargs):
+    def _make_vector(ga, __name_or_coeffs, **kwargs):
         """ Make a vector multivector """
-        return Mv._make_grade(ga, args[0], 1, **kwargs)
+        return Mv._make_grade(ga, __name_or_coeffs, 1, **kwargs)
 
     @staticmethod
-    def _make_bivector(ga, *args, **kwargs):
+    def _make_bivector(ga, __name_or_coeffs, **kwargs):
         """ Make a bivector multivector """
-        return Mv._make_grade(ga, args[0], 2, **kwargs)
+        return Mv._make_grade(ga, __name_or_coeffs, 2, **kwargs)
 
     @staticmethod
-    def _make_pseudo(ga, *args, **kwargs):
+    def _make_pseudo(ga, __name_or_coeffs, **kwargs):
         """ Make a pseudo scalar multivector """
-        return Mv._make_grade(ga, args[0], ga.n, **kwargs)
+        return Mv._make_grade(ga, __name_or_coeffs, ga.n, **kwargs)
 
     @staticmethod
-    def _make_mv(ga, *args, **kwargs):
+    def _make_mv(ga, __name, **kwargs):
         """ Make a general (2**n components) multivector """
-        tmp = Mv._make_scalar(ga, args[0], **kwargs)
-        for grade in ga.n_range:
-            tmp += Mv._make_grade(ga, args[0], grade + 1, **kwargs)
-        return tmp
+        if not isinstance(__name, str):
+            raise TypeError("Must be a string")
+        return reduce(operator.add, (
+            Mv._make_grade(ga, __name, grade, **kwargs)
+            for grade in range(ga.n + 1)
+        ))
 
     @staticmethod
-    def _make_spinor(ga, *args, **kwargs):
+    def _make_spinor(ga, __name, **kwargs):
         """ Make a general even (spinor) multivector """
-        tmp = Mv._make_scalar(ga, args[0], **kwargs)
-        for grade in ga.n_range:
-            if (grade + 1) % 2 == 0:
-                tmp += Mv._make_grade(ga, args[0], grade + 1, **kwargs)
-        return tmp
+        if not isinstance(__name, str):
+            raise TypeError("Must be a string")
+        return reduce(operator.add, (
+            Mv._make_grade(ga, __name, grade, **kwargs)
+            for grade in range(0, ga.n + 1, 2)
+        ))
 
     @staticmethod
-    def _make_odd(ga, *args, **kwargs):
+    def _make_odd(ga, __name_or_coeffs, **kwargs):
         """ Make a general odd multivector """
-        tmp = S(0)
-        for grade in ga.n_range:
-            if (grade + 1) % 2 == 1:
-                tmp += Mv._make_grade(args[0], grade + 1, **kwargs)
-        return tmp
+        return reduce(operator.add, (
+            Mv._make_grade(ga, __name_or_coeffs, grade, **kwargs)
+            for grade in range(1, ga.n + 1, 2)
+        ), S(0))  # base case needed in case n == 0
 
     # aliases
     _make_grade2 = _make_bivector
@@ -309,15 +303,18 @@ class Mv(object):
                 self.characterise_Mv()
         else:
             if utils.isstr(args[1]):
-                args = list(args)
-                mode = args.pop(1)
+                make_args = list(args)
+                mode = make_args.pop(1)
                 make_func = getattr(Mv, '_make_{}'.format(mode), None)
                 if make_func is None:
                     raise ValueError('{!r} is not an allowed multivector type.'.format(mode))
-                self.obj = make_func(self.Ga, *args, **kwargs)
+                self.obj = make_func(self.Ga, *make_args, **kwargs)
             elif isinstance(args[1], int):  # args[1] = r (integer) Construct grade r multivector
                 if args[1] == 0:
-                    self.obj = Mv._make_scalar(self.Ga, *args, **kwargs)
+                    # _make_scalar interprets its coefficient argument differently
+                    make_args = list(args)
+                    make_args.pop(1)
+                    self.obj = Mv._make_scalar(self.Ga, *make_args, **kwargs)
                 else:
                     self.obj = Mv._make_grade(self.Ga, *args, **kwargs)
             else:
@@ -461,12 +458,6 @@ class Mv(object):
     def __radd__(self, A):
         return(self + A)
 
-    def __add_ab__(self, A):  # self += A
-        self.obj += A.obj
-        self.char_Mv = False
-        self.characterise_Mv()
-        return(self)
-
     def __sub__(self, A):
 
         if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
@@ -489,12 +480,6 @@ class Mv(object):
 
     def __rsub__(self, A):
         return -self + A
-
-    def __sub_ab__(self, A):  # self -= A
-        self.obj -= A.obj
-        self.char_Mv = False
-        self.characterise_Mv()
-        return(self)
 
     def __mul__(self, A):
 
@@ -536,20 +521,7 @@ class Mv(object):
 
 
     def __rmul__(self, A):
-            return Mv(expand(A * self.obj), ga=self.Ga)
-
-    def __mul_ab__(self, A):  # self *= A
-        self.obj *= A.obj
-        self.char_Mv = False
-        self.characterise_Mv()
-        return(self)
-
-    def __div_ab__(self,A):  # self /= A
-        if isinstance(A,Mv):
-            self *= A.inv()
-        else:
-            self *= S(1)/A
-        return
+        return Mv(expand(A * self.obj), ga=self.Ga)
 
     def __div__(self, A):
         if isinstance(A,Mv):
@@ -588,10 +560,10 @@ class Mv(object):
         self.characterise_Mv()
         self.obj = metric.Simp.apply(self.obj)
         if self.is_blade_rep or self.Ga.is_ortho:
-            base_keys = self.Ga.blades_lst
+            base_keys = self.Ga._all_blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
         else:
-            base_keys = self.Ga.bases_lst
+            base_keys = self.Ga._all_bases_lst
             grade_keys = self.Ga.bases_to_grades_dict
         if isinstance(self.obj, Add):  # collect coefficients of bases
             if self.obj.is_commutative:
@@ -602,7 +574,7 @@ class Mv(object):
             for arg in args:
                 c, nc = arg.args_cnc()
                 if len(c) > 0:
-                    c = reduce(mul, c)
+                    c = reduce(operator.mul, c)
                 else:
                     c = S(1)
                 if len(nc) > 0:
@@ -619,7 +591,7 @@ class Mv(object):
             if grade0 != S(0):
                 terms[-1] = (grade0, S(1), -1)
             terms = list(terms.items())
-            sorted_terms = sorted(terms, key=itemgetter(0))  # sort via base indexes
+            sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
             s = str(sorted_terms[0][1][0] * sorted_terms[0][1][1])
             if printer.GaPrinter.fmt == 3:
@@ -675,10 +647,10 @@ class Mv(object):
             return ZERO_STR
 
         if self.is_blade_rep or self.Ga.is_ortho:
-            base_keys = self.Ga.blades_lst
+            base_keys = self.Ga._all_blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
         else:
-            base_keys = self.Ga.bases_lst
+            base_keys = self.Ga._all_bases_lst
             grade_keys = self.Ga.bases_to_grades_dict
         if isinstance(self.obj, Add):
             args = self.obj.args
@@ -689,7 +661,7 @@ class Mv(object):
         for arg in args:
             c, nc = arg.args_cnc(split_1=False)
             if len(c) > 0:
-                c = reduce(mul, c)
+                c = reduce(operator.mul, c)
             else:
                 c = S(1)
             if len(nc) > 0:
@@ -707,7 +679,7 @@ class Mv(object):
             terms[-1] = (grade0, S(1), 0)
         terms = list(terms.items())
 
-        sorted_terms = sorted(terms, key=itemgetter(0))  # sort via base indexes
+        sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
         if len(sorted_terms) == 1 and sorted_terms[0][1][2] == 0:  # scalar
             return printer.latex(printer.coef_simplify(sorted_terms[0][1][0]))
@@ -874,8 +846,10 @@ class Mv(object):
 
     def collect(self,deep=False):
         """
-        # group coeffients of blades of multivector
-        # so there is only one coefficient per grade
+        group coeffients of blades of multivector
+        so there is only one coefficient per grade
+        """
+        """ # dead code
         self.obj = expand(self.obj)
         if self.is_blade_rep or Mv.Ga.is_ortho:
             c = self.Ga.blades_lst
@@ -915,9 +889,11 @@ class Mv(object):
         else:
             return False
 
-    def is_blade(self):  # True is self is blade, otherwise False
-        # sets self.blade_flg and returns value
-
+    def is_blade(self):
+        """
+        True is self is blade, otherwise False
+        sets self.blade_flg and returns value
+        """
         if self.blade_flg is not None:
             return self.blade_flg
         else:
@@ -937,8 +913,10 @@ class Mv(object):
         else:
             return coefs[0] == ONE
 
-    def is_versor(self):  # Test for versor (geometric product of vectors)
+    def is_versor(self):
         """
+        Test for versor (geometric product of vectors)
+
         This follows Leo Dorst's test for a versor.
         Leo Dorst, 'Geometric Algebra for Computer Science,' p.533
         Sets self.versor_flg and returns value
@@ -964,20 +942,17 @@ class Mv(object):
         return False
 
     def scalar(self):
-        # return scalar part of multivector
-        # as sympy expression
+        """ return scalar part of multivector as sympy expression """
         return self.Ga.scalar_part(self.obj)
 
     def get_grade(self, r):
-        # return r-th grade of multivector as
-        # a multivector
+        """ return r-th grade of multivector as a multivector """
         return Mv(self.Ga.get_grade(self.obj, r), ga=self.Ga)
 
     def components(self):
         (coefs, bases) = metric.linear_expand(self.obj)
-        bases_lst = self.Ga.blades_lst
         cb = list(zip(coefs, bases))
-        cb = sorted(cb, key=lambda x: self.Ga.blades_lst0.index(x[1]))
+        cb = sorted(cb, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
         terms = []
         for (coef, base) in cb:
             terms.append(self.Ga.mv(coef * base))
@@ -985,7 +960,6 @@ class Mv(object):
 
     def get_coefs(self, grade):
         (coefs, bases) = metric.linear_expand(self.obj)
-        bases_lst = self.Ga.blades_lst
         cb = list(zip(coefs, bases))
         cb = sorted(cb, key=lambda x: self.Ga.blades[grade].index(x[1]))
         (coefs, bases) = list(zip(*cb))
@@ -994,14 +968,14 @@ class Mv(object):
     def J(self):
         # TODO: If we pick our basis smartly, we can probably use J in place of Jinv...
         obj = 0
-        for coef, coblade in zip(self.blade_coefs(self.Ga.mv_blades_lst0), self.Ga.coblades_lst0):
+        for coef, coblade in zip(self.blade_coefs(self.Ga._all_mv_blades_lst), self.Ga.coblades_lst):
             obj += coef * coblade
         return Mv(obj, ga=self.Ga)
 
     def Jinv(self):
         # TODO: If we pick our basis smartly, we can probably use J in place of Jinv...
         obj = 0
-        for coef, coblade_inv in zip(self.blade_coefs(self.Ga.mv_blades_lst0), self.Ga.coblades_inv_lst0):
+        for coef, coblade_inv in zip(self.blade_coefs(self.Ga._all_mv_blades_lst), self.Ga.coblades_inv_lst):
             obj += coef * coblade_inv
         return Mv(obj, ga=self.Ga)
 
@@ -1013,10 +987,10 @@ class Mv(object):
         """
 
         if blade_lst is None:
-            blade_lst = [self.Ga.mv(ONE)] + self.Ga.mv_blades_lst
+            blade_lst = self.Ga._all_mv_blades_lst
         else:
             for blade in blade_lst:
-                if not blade.is_base():     # or not blade.is_blade(): can't be used with degenerate metrics
+                if not blade.is_base() or not blade.is_blade():
                     raise ValueError("%s expression isn't a basis blade" % blade)
         blade_lst = [x.obj for x in blade_lst]
         (coefs, bases) = metric.linear_expand(self.obj)
@@ -1056,11 +1030,11 @@ class Mv(object):
             return sign * self * I
 
     def even(self):
-        # return even parts of multivector
+        """ return even parts of multivector """
         return Mv(self.Ga.even_odd(self.obj, True), ga=self.Ga)
 
     def odd(self):
-        # return odd parts of multivector
+        """ return odd parts of multivector """
         return Mv(self.Ga.even_odd(self.obj, False), ga=self.Ga)
 
     def rev(self):
@@ -1102,7 +1076,7 @@ class Mv(object):
         Returns various derivatives (*,^,|,<,>) of multivector functions
         with respect to arbitrary coordinates, 'coords'.  This would be
         used where you have a multivector function of both the basis
-        coordinate set and and auxilliary coordinate set.  Consider for
+        coordinate set and and auxiliary coordinate set.  Consider for
         example a linear transformation in which the matrix coefficients
         depend upon the manifold coordinates, but the vector being
         transformed does not and you wish to take the divergence of the
@@ -1180,17 +1154,17 @@ class Mv(object):
 
     def Fmt(self, fmt=1, title=None):
         """
-        Set format for printing of multivectors -
+        Set format for printing of multivectors
 
-            fmt = 1 - One multivector per line
-            fmt = 2 - One grade per line
-            fmt = 3 - one base per line
+         * `fmt=1` - One multivector per line
+         * `fmt=2` - One grade per line
+         * `fmt=3` - one base per line
 
-        Usage for multivector A example is -
+        Usage for multivector ``A`` example is::
 
             A.Fmt('2','A')
 
-        output is
+        output is::
 
             'A = '+str(A)
 
@@ -1225,7 +1199,6 @@ class Mv(object):
                 return title + ' = ' + s
             else:
                 return s
-        return
 
     def _repr_latex_(self):
         latex_str = printer.GaLatexPrinter.latex(self)
@@ -1249,21 +1222,24 @@ class Mv(object):
 
     def norm(self, hint='+'):
         """
-        If A is a multivector and A*A.rev() is a scalar then
+        If A is a multivector and A*A.rev() is a scalar then::
 
-            A.norm() = sqrt(Abs(A*A.rev()))
+            A.norm() == sqrt(Abs(A*A.rev()))
 
-        The problem in simplifing the norm is that if A is symbolic
-        you don't know if A*A.rev() is positive or negative. The use
+        The problem in simplifying the norm is that if ``A`` is symbolic
+        you don't know if ``A*A.rev()`` is positive or negative. The use
         of the hint argument is as follows:
 
-            hint    A.norm()
-             '+'    sqrt(A*A.rev())
-             '-'    sqrt(-A*A.rev())
-             '0'    sqrt(Abs(A*A.rev()))
+        =======  ========================
+        hint     ``A.norm()``
+        =======  ========================
+        ``'+'``  ``sqrt(A*A.rev())``
+        ``'-'``  ``sqrt(-A*A.rev())``
+        ``'0'``  ``sqrt(Abs(A*A.rev()))``
+        =======  ========================
 
-        The default hint='+' is correct for vectors in a Euclidean vector
-        space.  For bivectors in a Euclidean vector space use hint='-'. In
+        The default ``hint='+'`` is correct for vectors in a Euclidean vector
+        space.  For bivectors in a Euclidean vector space use ``hint='-'``. In
         a mixed signature space all bets are off for the norms of symbolic
         expressions.
         """
@@ -1287,7 +1263,7 @@ class Mv(object):
         else:
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
-    __abs__=norm # allow `abs(x)` to call z.norm()
+    __abs__ = norm # allow `abs(x)` to call z.norm()
 
     def inv(self):
         if self.is_scalar():  # self is a scalar
@@ -1370,7 +1346,7 @@ class Mv(object):
             if index not in indexes:
                 key_coefs.append((S(0), index))
 
-        key_coefs = sorted(key_coefs, key=itemgetter(1))
+        key_coefs = sorted(key_coefs, key=operator.itemgetter(1))
         coefs = [x[0] for x in key_coefs]
         return coefs
 
@@ -1389,7 +1365,7 @@ class Mv(object):
 
 def compare(A,B):
     """
-    Determine is B = c*A where c is a scalar.  If true return c
+    Determine if ``B = c*A`` where c is a scalar.  If true return c
     otherwise return 0.
     """
     if isinstance(A, Mv) and isinstance(B, Mv):
@@ -1424,10 +1400,15 @@ class Sdop(object):
     """
     Scalar differential operator is of the form (Einstein summation)
 
-        D = c_{i}*D_{i}
+    .. math:: D = c_{i}*D_{i}
 
-    where the c_{i}'s are scalar coefficient (they could be functions)
-    and the D_{i}'s are partial differential operators.
+    where the :math:`c_{i}`'s are scalar coefficient (they could be functions)
+    and the :math:`D_{i}`'s are partial differential operators (:class:`Pdop`).
+
+    Attributes
+    ----------
+    terms : list of tuple
+        the structure :math:`[(c_{1},D_{1}),(c_{2},D_{2}), ...]`
     """
 
     init_slots = {'ga': (None, 'Associated geometric algebra')}
@@ -1564,17 +1545,6 @@ class Sdop(object):
         return str(self)
 
     def __init__(self, *args, **kwargs):
-        """
-        The scalar differential operator structure is of the form
-        (Einstein summation)
-
-            D = c_{i}D_{i}
-
-        where the c_{i}'s are scalar coefficients and the D_{i}'s are
-        partial differential operator (class Pdop).  D is stored in
-        the structure self.terms = [(c_{1},D_{1}),(c_{2},D_{2}),...].
-        """
-
         kwargs = metric.test_init_slots(Sdop.init_slots, **kwargs)
 
         self.Ga = kwargs['ga']  # Associated geometric algebra (coords)
@@ -1682,35 +1652,6 @@ class Sdop(object):
     def __radd__(self, sdop):
         return Sdop(self, sdop)
 
-    def __add_ab__(self, sdop):
-        if isinstance(sdop, Sdop):
-            if self.Ga != sdop.Ga:
-                raise ValueError('In Sdop.__add_ab__ self.Ga != sdop.Ga.')
-
-            coefs, pdiffs = list(zip(*self.terms))
-            pdiffs = list(pdiffs)
-            coefs = list(coefs)
-
-            for (coef, pdiff) in sdop.terms:
-                if pdiff in pdiffs:
-                    index = pdiffs.index(pdiff)
-                    coefs[index] += coef
-                else:
-                    pdiffs.append(pdiff)
-                    coefs.append(coef)
-            self.term = list(zip(coefs, pdiffs))
-            self = Sdop.consolidate_coefs(self)
-            return
-
-        elif isinstance(sdop, tuple):
-            self.term.append(sdop)
-            self = Sdop.consolidate_coefs(self)
-            return
-        else:
-            self.terms.append((sdop, self.Ga.Pdop_identity))
-            self = Sdop.consolidate_coefs(self)
-            return
-
     def __sub__(self, sdop):
         return Sdop.Add(self, -sdop)
 
@@ -1748,15 +1689,20 @@ class Pdop(object):
     Partial derivative class for multivectors.  The partial derivatives
     are of the form
 
+    .. math::
         \partial_{i_{1}...i_{n}} =
-            \partial^{i_{1}+...+i_{n}}/\partial{x_{1}^{i_{1}}}...\partial{x_{n}^{i_{n}}}.
+            \frac{\partial^{i_{1}+...+i_{n}}}{\partial{x_{1}^{i_{1}}}...\partial{x_{n}^{i_{n}}}}.
 
-    If i_{j} = 0 then the partial derivative does not contain the x^{i_{j}}
-    coordinate.
+    If :math:`i_{j} = 0` then the partial derivative does not contain the
+    :math:`x^{i_{j}}` coordinate.
 
-    The partial derivative is represented by a dictionary with coordinates
-    for keys and key value are the number of times one differentiates with
-    respect to the key.
+    Attributes
+    ----------
+    pdiffs : dict
+        a dictionary where coordinates are keys and key value are the number of
+        times one differentiates with respect to the key.
+    order : int
+        total number of differentiations
     """
 
     ga = None
@@ -1805,14 +1751,11 @@ class Pdop(object):
         """
         The partial differential operator is a partial derivative with
         respect to a set of real symbols (variables).  The allowed
-        variables are in two lists.  self.Ga.coords is a list of the
-        coordinates associated with the geometric algebra.  self.Ga.auxvars
+        variables are in two lists. ``self.Ga.coords`` is a list of the
+        coordinates associated with the geometric algebra.  ``self.Ga.auxvars``
         is a list of auxiallary symbols that have be added to the geometric
-        algebra using the member function Ga.AddVars(self,auxvars).
+        algebra using the member function ``Ga.AddVars(self,auxvars)``.
 
-        The data structure of a Pdop is the dictionary self.pdiffs where
-        the keys are the variables of differentiation and the values are the
-        order of differentiation of with respect to the variable.
         """
 
         kwargs = metric.test_init_slots(Pdop.init_slots, **kwargs)
@@ -1835,7 +1778,7 @@ class Pdop(object):
         else:
             raise ValueError('In pdop args = ', str(args))
 
-        for x in list(self.pdiffs.keys()):  # self.order is total number of differentiations
+        for x in list(self.pdiffs.keys()):
             self.order += self.pdiffs[x]
 
     def factor(self):
@@ -1843,9 +1786,9 @@ class Pdop(object):
         If partial derivative operator self.order > 1 factor out first
         order differential operator.  Needed for application of partial
         derivative operator to product of sympy expression and partial
-        differential operator.  For example if D = Pdop({x:3}) then
+        differential operator.  For example if ``D = Pdop({x:3})`` then::
 
-            (Pdop({x:2}),Pdop({x:1})) = D.factor()
+            (Pdop({x:2}), Pdop({x:1})) = D.factor()
         """
         if self.order == 1:
             return S(0), self
@@ -1862,7 +1805,7 @@ class Pdop(object):
     def __call__(self, arg):
         """
         Calculate nth order partial derivative (order defined by
-        self) of Mv, Dop, Sdopm or sympy expression
+        self) of :class:`Mv`, :class:`Dop`, :class:`Sdop` or sympy expression
         """
         if self.pdiffs == {}:
             return arg  # result is Pdop identity (1)
@@ -1898,8 +1841,7 @@ class Pdop(object):
             terms = copy.deepcopy(arg)
             while True:
                 D, D0 = D.factor()
-                k = 0
-                for term in terms:
+                for k, term in enumerate(terms):
                     dc = D0(term[0])
                     pd = D0(term[1])
                     #print 'D0, term, dc, pd =', D0, term, dc, pd
@@ -1909,7 +1851,6 @@ class Pdop(object):
                     if pd != 0 :
                         tmp.append((term[0],pd))
                     terms[k] = tmp
-                    k += 1
                 terms = [i for o in terms for i in o]  # flatten list one level
                 if D == 0:
                     break
@@ -1979,37 +1920,46 @@ class Dop(object):
     Differential operator class for multivectors.  The operators are of
     the form
 
-        D = D^{i_{1}...i_{n}}\partial_{i_{1}...i_{n}}
+    .. math:: D = D^{i_{1}...i_{n}}\partial_{i_{1}...i_{n}}
 
-    where the D^{i_{1}...i_{n}} are multivector functions of the coordinates
-    x_{1},...,x_{n} and \partial_{i_{1}...i_{n}} are partial derivative
+    where the :math:`D^{i_{1}...i_{n}}` are multivector functions of the coordinates
+    :math:`x_{1},...,x_{n}` and :math:`\partial_{i_{1}...i_{n}}` are partial derivative
     operators
 
-        \partial_{i_{1}...i_{n}} =
-             \partial^{i_{1}+...+i_{n}}/\partial{x_{1}^{i_{1}}}...\partial{x_{n}^{i_{n}}}.
+    .. math:: \partial_{i_{1}...i_{n}} =
+            \frac{\partial^{i_{1}+...+i_{n}}}{\partial{x_{1}^{i_{1}}}...\partial{x_{n}^{i_{n}}}}.
 
-    If * is any multivector multiplicative operation then the operator D
-    operates on the multivector function F by the following definitions
+    If :math:`*` is any multivector multiplicative operation then the operator D
+    operates on the multivector function :math:`F` by the following definitions
 
-        D*F = D^{i_{1}...i_{n}}*\partial_{i_{1}...i_{n}}F
+    .. math:: D*F = D^{i_{1}...i_{n}}*\partial_{i_{1}...i_{n}}F
 
     returns a multivector and
 
-        F*D = F*D^{i_{1}...i_{n}}\partial_{i_{1}...i_{n}}
+    .. math:: F*D = F*D^{i_{1}...i_{n}}\partial_{i_{1}...i_{n}}
 
-    returns a differential operator.  If the 'cmpflg' in the operator is
-    set to 'True' the operation returns
+    returns a differential operator.  If the :attr:`cmpflg` in the operator is
+    set to ``True`` the operation returns
 
-        F*D = (\partial_{i_{1}...i_{n}}F)*D^{i_{1}...i_{n}}
+    .. math:: F*D = (\partial_{i_{1}...i_{n}}F)*D^{i_{1}...i_{n}}
 
     a multivector function.  For example the representation of the grad
     operator in 3d would be:
 
-        D^{i_{1}...i_{n}} = [e__x,e__y,e__z]
-        \partial_{i_{1}...i_{n}} = [(1,0,0),(0,1,0),(0,0,1)].
+    .. math::
+        D^{i_{1}...i_{n}} &= [e_x,e_y,e_z] \\
+        \partial_{i_{1}...i_{n}} &= [(1,0,0),(0,1,0),(0,0,1)].
 
     See LaTeX documentation for definitions of operator algebraic
-    operations +, -, *, ^, |, <, and >.
+    operations ``+``, ``-``, ``*``, ``^``, ``|``, ``<``, and ``>``.
+
+    Attributes
+    ----------
+    ga : ~galgebra.ga.Ga
+        Associated geometric algebra
+    cmpflg : bool
+        Complement flag
+    terms : list of tuples
     """
 
     init_slots = {'ga': (None, 'Associated geometric algebra'),
@@ -2035,7 +1985,7 @@ class Dop(object):
         kwargs = metric.test_init_slots(Dop.init_slots, **kwargs)
 
         self.cmpflg = kwargs['cmpflg']  # Complement flag (default False)
-        self.Ga = kwargs['ga']  # Associated geometric algebra
+        self.Ga = kwargs['ga']
 
         if self.Ga is None:
             if Dop.ga is None:
@@ -2368,7 +2318,7 @@ class Dop(object):
             for i in range(len(coefs)):
                 coefs[i] = coefs[i].simplify(modes)
         terms = list(zip(coefs, bases))
-        return sorted(terms, key=lambda x: self.Ga.blades_lst0.index(x[1]))
+        return sorted(terms, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
 
     def Dop_str(self):
         if len(self.terms) == 0:
@@ -2480,7 +2430,6 @@ class Dop(object):
                 return title + ' = ' + s
             else:
                 return s
-        return
 
     @staticmethod
     def basic(ga):
@@ -2683,6 +2632,3 @@ def scalar(A):
     if not isinstance(A,Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.scalar()
-
-if __name__ == "__main__":
-    pass

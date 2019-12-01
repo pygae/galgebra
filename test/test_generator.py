@@ -1,4 +1,5 @@
 from .test_utils import TestCase
+
 import importlib
 
 from galgebra.ga import Ga

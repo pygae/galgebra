@@ -90,7 +90,7 @@ def format_geometric_algebra(GA):
     X = create_multivector(GA, 'x')
     Y = create_multivector(GA, 'y')
 
-    flat_geometric_algebra = format_class(len(GA.blades_lst0))
+    flat_geometric_algebra = format_class(len(GA._all_blades_lst))
     flat_geometric_algebra += format_binary_operator('add', X + Y)
     flat_geometric_algebra += format_binary_operator('sub', X - Y)
     flat_geometric_algebra += format_binary_operator('mul', X * Y)
@@ -110,9 +110,9 @@ def flatten(flat_ga_module, mv):
 
 
 def expand(GA, flat_mv):
-    assert len(flat_mv.coefs) == len(GA.blades_lst0)
+    assert len(flat_mv.coefs) == len(GA._all_blades_lst)
     mv = GA.mv(0, 'scalar')
-    for blade_coef, blade in zip(flat_mv.coefs, GA.blades_lst0):
+    for blade_coef, blade in zip(flat_mv.coefs, GA._all_blades_lst):
         mv += blade_coef * blade
     return mv
 
