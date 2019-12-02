@@ -4,7 +4,7 @@ Multivector and Linear Multivector Differential Operator
 
 import copy
 import numbers
-from operator import itemgetter, mul, add
+import operator
 from functools import reduce, cmp_to_key
 
 from sympy import (
@@ -124,7 +124,7 @@ class Mv(object):
         if isinstance(obj, Add):
             args = obj.args
         else:
-            if obj in self.Ga.blades_lst:
+            if obj in self.Ga._all_blades_lst:
                 self.is_blade_rep = True
                 self.i_grade = self.Ga.blades_to_grades_dict[obj]
                 self.grades = [self.i_grade]
@@ -145,7 +145,7 @@ class Mv(object):
                 c, nc = term.args_cnc(split_1=False)
                 blade = nc[0]
                 #print 'blade =',blade
-                if blade in self.Ga.blades_lst:
+                if blade in self.Ga._all_blades_lst:
                     grade = self.Ga.blades_to_grades_dict[blade]
                     if not grade in grades:
                         grades.append(grade)
@@ -173,20 +173,23 @@ class Mv(object):
     @staticmethod
     def _make_grade(ga, __name_or_coeffs, __grade, **kwargs):
         """ Make a pure grade multivector. """
+        def add_superscript(root, s):
+            if not s:
+                return root
+            return '{}__{}'.format(root, s)
         grade = __grade
         if utils.isstr(__name_or_coeffs):
             name = __name_or_coeffs
-            root = name + '__'
             if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
-                return sum([Symbol(root + super_script, real=True) * base
+                return sum([Symbol(add_superscript(name, super_script), real=True) * base
                                 for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
 
             else:
                 if isinstance(kwargs['f'], bool):  #Is a multivector function of all coordinates
-                    return sum([Function(root + super_script, real=True)(*ga.coords) * base
+                    return sum([Function(add_superscript(name, super_script), real=True)(*ga.coords) * base
                         for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
                 else: #Is a multivector function of tuple kwargs['f'] variables
-                    return sum([Function(root + super_script, real=True)(*kwargs['f']) * base
+                    return sum([Function(add_superscript(name, super_script), real=True)(*kwargs['f']) * base
                         for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
         elif isinstance(__name_or_coeffs, (list, tuple)):
             coeffs = __name_or_coeffs
@@ -203,14 +206,7 @@ class Mv(object):
         """ Make a scalar multivector """
         if utils.isstr(__name_or_value):
             name = __name_or_value
-            if 'f' in kwargs and isinstance(kwargs['f'],bool):
-                if kwargs['f']:
-                    return Function(name)(*ga.coords)
-                else:
-                    return Symbol(name, real=True)
-            else:
-                if 'f' in kwargs and isinstance(kwargs['f'],tuple):
-                    return Function(name)(*kwargs['f'])
+            return Mv._make_grade(ga, name, 0, **kwargs)
         else:
             value = __name_or_value
             return value
@@ -233,28 +229,30 @@ class Mv(object):
     @staticmethod
     def _make_mv(ga, __name, **kwargs):
         """ Make a general (2**n components) multivector """
-        tmp = Mv._make_scalar(ga, __name, **kwargs)
-        for grade in ga.n_range:
-            tmp += Mv._make_grade(ga, __name, grade + 1, **kwargs)
-        return tmp
+        if not isinstance(__name, str):
+            raise TypeError("Must be a string")
+        return reduce(operator.add, (
+            Mv._make_grade(ga, __name, grade, **kwargs)
+            for grade in range(ga.n + 1)
+        ))
 
     @staticmethod
     def _make_spinor(ga, __name, **kwargs):
         """ Make a general even (spinor) multivector """
-        tmp = Mv._make_scalar(ga, __name, **kwargs)
-        for grade in ga.n_range:
-            if (grade + 1) % 2 == 0:
-                tmp += Mv._make_grade(ga, __name, grade + 1, **kwargs)
-        return tmp
+        if not isinstance(__name, str):
+            raise TypeError("Must be a string")
+        return reduce(operator.add, (
+            Mv._make_grade(ga, __name, grade, **kwargs)
+            for grade in range(0, ga.n + 1, 2)
+        ))
 
     @staticmethod
     def _make_odd(ga, __name_or_coeffs, **kwargs):
         """ Make a general odd multivector """
-        tmp = S(0)
-        for grade in ga.n_range:
-            if (grade + 1) % 2 == 1:
-                tmp += Mv._make_grade(ga, __name_or_coeffs, grade + 1, **kwargs)
-        return tmp
+        return reduce(operator.add, (
+            Mv._make_grade(ga, __name_or_coeffs, grade, **kwargs)
+            for grade in range(1, ga.n + 1, 2)
+        ), S(0))  # base case needed in case n == 0
 
     # aliases
     _make_grade2 = _make_bivector
@@ -305,7 +303,7 @@ class Mv(object):
                 self.obj = make_func(self.Ga, *make_args, **kwargs)
             elif isinstance(args[1], int):  # args[1] = r (integer) Construct grade r multivector
                 if args[1] == 0:
-                    # make_grade does not work for scalars (gh-82)
+                    # _make_scalar interprets its coefficient argument differently
                     make_args = list(args)
                     make_args.pop(1)
                     self.obj = Mv._make_scalar(self.Ga, *make_args, **kwargs)
@@ -553,10 +551,10 @@ class Mv(object):
         self.characterise_Mv()
         self.obj = metric.Simp.apply(self.obj)
         if self.is_blade_rep or self.Ga.is_ortho:
-            base_keys = self.Ga.blades_lst
+            base_keys = self.Ga._all_blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
         else:
-            base_keys = self.Ga.bases_lst
+            base_keys = self.Ga._all_bases_lst
             grade_keys = self.Ga.bases_to_grades_dict
         if isinstance(self.obj, Add):  # collect coefficients of bases
             if self.obj.is_commutative:
@@ -567,7 +565,7 @@ class Mv(object):
             for arg in args:
                 c, nc = arg.args_cnc()
                 if len(c) > 0:
-                    c = reduce(mul, c)
+                    c = reduce(operator.mul, c)
                 else:
                     c = S(1)
                 if len(nc) > 0:
@@ -584,7 +582,7 @@ class Mv(object):
             if grade0 != S(0):
                 terms[-1] = (grade0, S(1), -1)
             terms = list(terms.items())
-            sorted_terms = sorted(terms, key=itemgetter(0))  # sort via base indexes
+            sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
             s = str(sorted_terms[0][1][0] * sorted_terms[0][1][1])
             if printer.GaPrinter.fmt == 3:
@@ -640,10 +638,10 @@ class Mv(object):
             return ZERO_STR
 
         if self.is_blade_rep or self.Ga.is_ortho:
-            base_keys = self.Ga.blades_lst
+            base_keys = self.Ga._all_blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
         else:
-            base_keys = self.Ga.bases_lst
+            base_keys = self.Ga._all_bases_lst
             grade_keys = self.Ga.bases_to_grades_dict
         if isinstance(self.obj, Add):
             args = self.obj.args
@@ -654,7 +652,7 @@ class Mv(object):
         for arg in args:
             c, nc = arg.args_cnc(split_1=False)
             if len(c) > 0:
-                c = reduce(mul, c)
+                c = reduce(operator.mul, c)
             else:
                 c = S(1)
             if len(nc) > 0:
@@ -672,7 +670,7 @@ class Mv(object):
             terms[-1] = (grade0, S(1), 0)
         terms = list(terms.items())
 
-        sorted_terms = sorted(terms, key=itemgetter(0))  # sort via base indexes
+        sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
         if len(sorted_terms) == 1 and sorted_terms[0][1][2] == 0:  # scalar
             return printer.latex(printer.coef_simplify(sorted_terms[0][1][0]))
@@ -944,9 +942,8 @@ class Mv(object):
 
     def components(self):
         (coefs, bases) = metric.linear_expand(self.obj)
-        bases_lst = self.Ga.blades_lst
         cb = list(zip(coefs, bases))
-        cb = sorted(cb, key=lambda x: self.Ga.blades_lst0.index(x[1]))
+        cb = sorted(cb, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
         terms = []
         for (coef, base) in cb:
             terms.append(self.Ga.mv(coef * base))
@@ -954,7 +951,6 @@ class Mv(object):
 
     def get_coefs(self, grade):
         (coefs, bases) = metric.linear_expand(self.obj)
-        bases_lst = self.Ga.blades_lst
         cb = list(zip(coefs, bases))
         cb = sorted(cb, key=lambda x: self.Ga.blades[grade].index(x[1]))
         (coefs, bases) = list(zip(*cb))
@@ -968,7 +964,7 @@ class Mv(object):
         """
 
         if blade_lst is None:
-            blade_lst = [self.Ga.mv(ONE)] + self.Ga.mv_blades_lst
+            blade_lst = self.Ga._all_mv_blades_lst
 
         #print 'Enter blade_coefs blade_lst =', blade_lst, type(blade_lst), [i.is_blade() for i in blade_lst]
 
@@ -1329,7 +1325,7 @@ class Mv(object):
             if index not in indexes:
                 key_coefs.append((S(0), index))
 
-        key_coefs = sorted(key_coefs, key=itemgetter(1))
+        key_coefs = sorted(key_coefs, key=operator.itemgetter(1))
         coefs = [x[0] for x in key_coefs]
         return coefs
 
@@ -2301,7 +2297,7 @@ class Dop(object):
             for i in range(len(coefs)):
                 coefs[i] = coefs[i].simplify(modes)
         terms = list(zip(coefs, bases))
-        return sorted(terms, key=lambda x: self.Ga.blades_lst0.index(x[1]))
+        return sorted(terms, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
 
     def Dop_str(self):
         if len(self.terms) == 0:

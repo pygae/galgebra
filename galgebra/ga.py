@@ -197,13 +197,13 @@ class Ga(metric.Metric):
 
     .. attribute:: bases
 
-        List of bases (non-commutative sympy symbols).  Only created for
-        non-orthogonal basis vectors.
+        List of bases (non-commutative sympy symbols) by grade.
+        Only created for non-orthogonal basis vectors.
 
     .. attribute:: blades
 
-        List of basis blades (non-commutative sympy symbols).  For
-        orthogonal basis vectors the same as bases.
+        List of basis blades (non-commutative sympy symbols) by grade.
+        For orthogonal basis vectors the same as bases.
 
     .. attribute:: coord_vec
 
@@ -426,7 +426,7 @@ class Ga(metric.Metric):
         if self.coords is not None:
             self.coords = list(self.coords)
 
-        self.e = mv.Mv(self.blades_lst[-1], ga=self)  # Pseudo-scalar for geometric algebra
+        self.e = mv.Mv(self._all_blades_lst[-1], ga=self)  # Pseudo-scalar for geometric algebra
         self.e_sq = simplify(expand((self.e*self.e).scalar()))
 
         if self.coords is not None:
@@ -601,7 +601,7 @@ class Ga(metric.Metric):
         '''
         if prefix is None:
             prefix='e'
-        bl = self.mv_blades_lst
+        bl = self._all_mv_blades_lst[1:]  # do not include the scalar, which is not named
         var_names = [prefix+''.join([k for k in str(b) if k.isdigit()]) for b in bl]
 
         return {key:val for key,val in zip(var_names, bl)}
@@ -672,11 +672,15 @@ class Ga(metric.Metric):
 
     def _build_basis_base_symbol(self, base_index):
         """ Build a symbol used for the `base_rep` from the given tuple """
+        if not base_index:
+            return S(1)
         symbol_str = '*'.join([str(self.basis[i]) for i in base_index])
         return Symbol(symbol_str, commutative=False)
 
     def _build_basis_blade_symbol(self, base_index):
         """ Build a symbol used for the `blade_rep` from the given tuple """
+        if not base_index:
+            return S(1)
         if self.wedge_print:
             symbol_str = '^'.join([str(self.basis[i]) for i in base_index])
         else:
@@ -733,33 +737,32 @@ class Ga(metric.Metric):
 
         # index list for multivector bases and blades by grade
         basis_indexes = tuple(self.n_range)
-        self.indexes = [()]
-        self.indexes_lst = []
-        for i in basis_indexes:
-            base_tuple = tuple(combinations(basis_indexes, i + 1))
+        self.indexes = []
+        self._all_indexes_lst = []
+        for i in range(len(basis_indexes) + 1):
+            base_tuple = tuple(combinations(basis_indexes, i))
             self.indexes.append(base_tuple)
-            self.indexes_lst += list(base_tuple)
+            self._all_indexes_lst += list(base_tuple)
         self.indexes = tuple(self.indexes)
 
         # list of non-commutative symbols for multivector bases and blades
         # by grade and as a flattened list
 
         self.blades = []
-        self.blades_lst = []
+        self._all_blades_lst = []
         for grade_index in self.indexes:
             blades = []
             super_scripts = []
             for base_index in grade_index:
                 blade_symbol = self._build_basis_blade_symbol(base_index)
-                blades.append(blade_symbol)
-                self.blades_lst.append(blade_symbol)
-            self.blades.append(blades)
 
-        self.blades_lst0 = [S(1)] + self.blades_lst
+                blades.append(blade_symbol)
+                self._all_blades_lst.append(blade_symbol)
+            self.blades.append(blades)
 
         self.blades_to_indexes = []
         self.indexes_to_blades = []
-        for (index, blade) in zip(self.indexes_lst, self.blades_lst):
+        for (index, blade) in zip(self._all_indexes_lst, self._all_blades_lst):
             self.blades_to_indexes.append((blade, index))
             self.indexes_to_blades.append((index, blade))
         self.blades_to_indexes_dict = OrderedDict(self.blades_to_indexes)
@@ -771,20 +774,19 @@ class Ga(metric.Metric):
                 self.blades_to_grades_dict[blade] = igrade
 
         if not self.is_ortho:
-
             self.bases = []
-            self.bases_lst = []
+            self._all_bases_lst = []
             for grade_index in self.indexes:
                 bases = []
                 for base_index in grade_index:
                     base_symbol = self._build_basis_base_symbol(base_index)
                     bases.append(base_symbol)
-                    self.bases_lst.append(base_symbol)
+                    self._all_bases_lst.append(base_symbol)
                 self.bases.append(bases)
 
             self.bases_to_indexes = []
             self.indexes_to_bases = []
-            for (index, base) in zip(self.indexes_lst, self.bases_lst):
+            for (index, base) in zip(self._all_indexes_lst, self._all_bases_lst):
                 self.bases_to_indexes.append((base, index))
                 self.indexes_to_bases.append((index, base))
             self.bases_to_indexes_dict = OrderedDict(self.bases_to_indexes)
@@ -815,27 +817,36 @@ class Ga(metric.Metric):
             self.blade_super_scripts.append(super_scripts)
 
         if self.debug:
-            printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes_lst,
-                           'blades', self.blades, 'list(blades)', self.blades_lst,
+            printer.oprint('indexes', self.indexes, 'list(indexes)', self._all_indexes_lst,
+                           'blades', self.blades, 'list(blades)', self._all_blades_lst,
                            'blades_to_indexes_dict', self.blades_to_indexes_dict,
                            'indexes_to_blades_dict', self.indexes_to_blades_dict,
                            'blades_to_grades_dict', self.blades_to_grades_dict,
                            'blade_super_scripts', self.blade_super_scripts)
             if not self.is_ortho:
-                printer.oprint('bases', self.bases, 'list(bases)', self.bases_lst,
+                printer.oprint('bases', self.bases, 'list(bases)', self._all_bases_lst,
                                'bases_to_indexes_dict', self.bases_to_indexes_dict,
                                'indexes_to_bases_dict', self.indexes_to_bases_dict,
                                'bases_to_grades_dict', self.bases_to_grades_dict)
 
         # create the Mv wrappers
-        self.mv_blades_lst = [
+        self._all_mv_blades_lst = [
             mv.Mv(obj, ga=self)
-            for obj in self.blades_lst
+            for obj in self._all_blades_lst
         ]
         self.mv_basis = [
             mv.Mv(obj, ga=self)
             for obj in self.basis
         ]
+
+        # TODO[gh-64]: For compatibility with old behavior, the public
+        # properties do not include the scalar. We should consider making the
+        # breaking change such that they do.
+        self.indexes_lst = self._all_indexes_lst[1:]
+        self.blades_lst = self._all_blades_lst[1:]
+        self.mv_blades_lst = self._all_mv_blades_lst[1:]
+        if not self.is_ortho:
+            self.bases_lst = self._all_bases_lst[1:]
 
     def _build_basis_product_tables(self):
         """
@@ -1155,8 +1166,8 @@ class Ga(metric.Metric):
         mul_table = []
         self.basic_mul_keys = []
         self.basic_mul_values = []
-        for base1 in self.bases_lst:
-            for base2 in self.bases_lst:
+        for base1 in self._all_bases_lst:
+            for base2 in self._all_bases_lst:
                 key = base1 * base2
                 value = self.non_orthogonal_bases_products((base1, base2))
                 mul_table.append((key, value))
@@ -1195,10 +1206,10 @@ class Ga(metric.Metric):
         blade_index = []
 
         # expand blade basis in terms of base basis
-        for blade in self.blades_lst:
+        for blade in self._all_blades_lst:
             index = self.blades_to_indexes_dict[blade]
             grade = len(index)
-            if grade == 1:
+            if grade <= 1:
                 blade_expansion.append(blade)
                 blade_index.append(index)
             else:
@@ -1213,7 +1224,7 @@ class Ga(metric.Metric):
                 blade_expansion.append(expand(a_W_A))
 
         self.blade_expansion = blade_expansion
-        self.blade_expansion_dict = OrderedDict(list(zip(self.blades_lst, blade_expansion)))
+        self.blade_expansion_dict = OrderedDict(list(zip(self._all_blades_lst, blade_expansion)))
 
         if self.debug:
             print('blade_expansion_dict =', self.blade_expansion_dict)
@@ -1222,9 +1233,9 @@ class Ga(metric.Metric):
 
         base_expand = []
 
-        for (base, blade, index) in zip(self.bases_lst, self.blades_lst, self.indexes_lst):
+        for (base, blade, index) in zip(self._all_bases_lst, self._all_blades_lst, self._all_indexes_lst):
             grade = len(index)
-            if grade == 1:
+            if grade <= 1:
                 base_expand.append((base, base))
             else:  # back substitution of tridiagonal system
                 tmp = self.blade_expansion_dict[blade]
@@ -1254,7 +1265,7 @@ class Ga(metric.Metric):
             return A
         else:
             #return(expand(A).subs(self.blade_expansion_dict))
-            return nc_subs(expand(A), self.blades_lst, self.blade_expansion)
+            return nc_subs(expand(A), self._all_blades_lst, self.blade_expansion)
 
     ###### Products (*,^,|,<,>) for multivector representations ########
 
@@ -1610,11 +1621,11 @@ class Ga(metric.Metric):
                 # {E_n}^{-1} = \frac{E_n}{{E_n}^{2}}
                 # r_basis_j = sgn * duals[j] * E_n so it's not normalized, missing a factor of {E_n}^{-2}
                 """
-                print('blades list =',self.blades_lst)
+                print('blades list =',self._all_blades_lst)
                 print('debug =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
                 print('collect arg =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
                 """
-                r_basis_j = metric.collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))), self.blades_lst)
+                r_basis_j = metric.collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))), self._all_blades_lst)
                 self.r_basis.append(r_basis_j)
                 # sgn = (-1)**{j-1}
                 sgn = -sgn
