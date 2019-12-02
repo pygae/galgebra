@@ -1288,35 +1288,10 @@ class Ga(metric.Metric):
 
         if mode == '|':  # Hestenes dot product
             return update_and_substitute(A, B, self.dot_table_dict)
-        elif mode == '<' or mode == '>':
-            r"""
-            Let :math:`A = a + A'` and :math:`B = b + B'` where :math:`a` and
-            :math:`b` are the scalar parts of :math:`A` and :math:`B`, and
-            :math:`A'` and :math:`B'` are the remaining parts of :math:`A` and
-            :math:`B`. Then we have:
-
-            .. math::
-
-                (a+A') \rfloor (b+B') &= a(b+B') + A' \rfloor B' \\
-                (a+A') \lfloor (b+B') &= b(a+A') + A' \lfloor B'
-
-            We use these relations to reduce :math:`A \rfloor B` (``A<B``) and 
-            :math:`A \lfloor B` (``A>B``).
-            """
-            (a, Ap) = self.split_multivector(A)  # Ap = A'
-            (b, Bp) = self.split_multivector(B)  # Bp = B'
-            if mode == '<':  # Left contraction
-                if Ap != 0 and Bp != 0:  # Neither nc part of A or B is zero
-                    prod = update_and_substitute(Ap, Bp, self.left_contract_table_dict)
-                    return prod + a * B
-                else:  # Ap or Bp is zero
-                    return a * B
-            elif mode == '>':  # Right contraction
-                if Ap != 0 and Bp != 0: # Neither nc part of A or B is zero
-                    prod = update_and_substitute(Ap, Bp, self.right_contract_table_dict)
-                    return prod + b * A
-                else:  # Ap or Bp is zero
-                    return b * A
+        elif mode == '<':  # Left contraction
+            return update_and_substitute(A, B, self.left_contract_table_dict)
+        elif mode == '>':  # Right contraction
+            return update_and_substitute(A, B, self.right_contract_table_dict)
         else:
             raise ValueError('"' + str(mode) + '" not a legal mode in dot')
 
