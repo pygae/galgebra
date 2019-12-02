@@ -180,16 +180,17 @@ class Mv(object):
         grade = __grade
         if utils.isstr(__name_or_coeffs):
             name = __name_or_coeffs
-            if isinstance(kwargs['f'], bool) and not kwargs['f']:  #Is a constant mulitvector function
+            f = kwargs['f']
+            if isinstance(f, bool) and not f:  #Is a constant mulitvector function
                 return sum([Symbol(add_superscript(name, super_script), real=True) * base
                                 for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
 
             else:
-                if isinstance(kwargs['f'], bool):  #Is a multivector function of all coordinates
+                if isinstance(f, bool):  #Is a multivector function of all coordinates
                     return sum([Function(add_superscript(name, super_script), real=True)(*ga.coords) * base
                         for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
-                else: #Is a multivector function of tuple kwargs['f'] variables
-                    return sum([Function(add_superscript(name, super_script), real=True)(*kwargs['f']) * base
+                else: #Is a multivector function of tuple f variables
+                    return sum([Function(add_superscript(name, super_script), real=True)(*f) * base
                         for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
         elif isinstance(__name_or_coeffs, (list, tuple)):
             coeffs = __name_or_coeffs
