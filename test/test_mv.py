@@ -108,8 +108,15 @@ class TestMv(unittest.TestCase):
         check(ga.mv('A', 'odd'), [1, 3])
         check(ga.mv('A', 'mv'), [0, 1, 2, 3])
 
+        # value construction
+        check(ga.mv([1, 2, 3], 'vector'), [1])
+
         # illegal arguments
         with self.assertRaises(TypeError):
             ga.mv('A', 'vector', "too many arguments")
         with self.assertRaises(TypeError):
             ga.mv('A', 'grade')  # too few arguments
+        with self.assertRaises(TypeError):
+            ga.mv('A', 'grade', not_an_argument=True)  # invalid kwarg
+        with self.assertRaises(TypeError):
+            ga.mv([1, 2, 3], 'vector', f=True)  # can't pass f with coefficients

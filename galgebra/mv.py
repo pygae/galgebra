@@ -19,6 +19,7 @@ from . import printer
 from . import metric
 from . import utils
 from .printer import ZERO_STR
+from .utils import _KwargParser
 
 ONE = S(1)
 ZERO = S(0)
@@ -61,10 +62,6 @@ class Mv(object):
     fmt = 1
     latex_flg = False
     restore = False
-    init_slots = {'f': (False, 'True if function of coordinates'),
-                  'ga': (None, 'Geometric algebra to be used with multivectors'),
-                  'coords': (None, 'Coordinates to be used with multivector function'),
-                  'recp': (None, 'Normalization for reciprocal vector')}
     dual_mode_lst = ['+I','I+','+Iinv','Iinv+','-I','I-','-Iinv','Iinv-']
 
     @staticmethod
@@ -178,9 +175,11 @@ class Mv(object):
                 return root
             return '{}__{}'.format(root, s)
         grade = __grade
+        kw = _KwargParser('_make_grade', kwargs)
         if utils.isstr(__name_or_coeffs):
             name = __name_or_coeffs
-            f = kwargs['f']
+            f = kw.pop('f', False)
+            kw.reject_remaining()
             if isinstance(f, bool):
                 if f:  # Is a multivector function of all coordinates
                     return sum([Function(add_superscript(name, super_script), real=True)(*ga.coords) * base
@@ -193,6 +192,7 @@ class Mv(object):
                             for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
         elif isinstance(__name_or_coeffs, (list, tuple)):
             coeffs = __name_or_coeffs
+            kw.reject_remaining()
             if len(coeffs) <= len(ga.blades[grade]):
                 return sum([coef * base
                     for (coef, base) in zip(coeffs, ga.blades[grade][:len(coeffs)])])
@@ -259,14 +259,74 @@ class Mv(object):
     _make_even = _make_spinor
 
     def __init__(self, *args, **kwargs):
+        """
+        __init__(self, *args, ga, recp=None, **kwargs)
 
-        if 'ga' not in kwargs:
-            raise ValueError("Geometric algebra key inplut 'ga' required")
+        Note this constructor is overloaded, based on the type and number of
+        positional arguments:
 
-        kwargs = metric.test_init_slots(Mv.init_slots, **kwargs)
+        .. class:: Mv(*, ga, recp=None)
 
-        self.Ga = kwargs.pop('ga')
-        self.recp = kwargs.pop('recp')  # Normalization for reciprocal vectors
+            Create a zero multivector
+        .. class:: Mv(expr, /, *, ga, recp=None)
+
+            Create a multivector from an existing vector or sympy expression
+        .. class:: Mv(coeffs, grade, /, ga, recp=None)
+
+            Create a multivector constant with a given grade
+        .. class:: Mv(name, category, /, *cat_args, ga, recp=None, f=False)
+
+            Create a multivector constant with a given category
+        .. class:: Mv(name, grade, /, ga, recp=None, f=False)
+
+            Create a multivector variable or function of a given grade
+        .. class:: Mv(coeffs, category, /, *cat_args, ga, recp=None)
+
+            Create a multivector variable or function of a given category
+
+
+        ``*`` and ``/`` in the signatures above are python
+        3.8 syntax, and respectively indicate the boundaries between
+        positional-only, normal, and keyword-only arguments.
+
+        Parameters
+        ----------
+        ga : ~galgebra.ga.Ga
+            Geometric algebra to be used with multivectors
+        recp : object, optional
+            Normalization for reciprocal vector. Unused.
+        name : str
+            Name of this multivector, if it is a variable or function
+        coeffs : sequence
+            Sequence of coefficients for the given category.
+            This is only meaningful
+        category : str
+            One of:
+
+             * ``"grade"`` - this takes an additional argument, the grade to
+               create, in ``cat_args``
+             * ``"scalar"``
+             * ``"vector"``
+             * ``"bivector"`` / ``"grade2"``
+             * ``"pseudo"``
+             * ``"mv"``
+             * ``"even"`` / ``"spinor"``
+             * ``"odd"``
+
+        f : bool, tuple
+            True if function of coordinates, or a tuple of those coordinates.
+            Only valid if a name is passed
+
+        coords :
+            This argument is always accepted but ignored.
+
+            It is incorrectly described internally as the coordinates to be
+            used with multivector functions.
+        """
+        kw = _KwargParser('__init__', kwargs)
+        self.Ga = kw.pop('ga')
+        self.recp = kw.pop('recp', None)  # not used
+        kw.pop('coords', None)  # ignored
 
         self.char_Mv = False
         self.i_grade = None  # if pure grade mv, grade value
@@ -280,6 +340,7 @@ class Mv(object):
         if len(args) == 0:  # default constructor 0
             self.obj = S(0)
             self.i_grade = 0
+            kw.reject_remaining()
         elif len(args) == 1 and not utils.isstr(args[0]):  # copy constructor
             x = args[0]
             if isinstance(x, Mv):
@@ -293,6 +354,7 @@ class Mv(object):
                     self.obj = S(x)
                 self.is_blade_rep = True
                 self.characterise_Mv()
+            kw.reject_remaining()
         else:
             if utils.isstr(args[1]):
                 make_args = list(args)
