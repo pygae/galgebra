@@ -419,8 +419,8 @@ class Metric(object):
         # \frac{\partial e_{j}}{\partial x^{i}} = \Gamma_{ijk} e^{k}
         de = [[
             sum([Gamma_ijk * e__k for (Gamma_ijk, e__k) in zip(dG[i][j], self.r_symbols)])
-            for j in n_range]
-        for i in n_range]
+            for j in n_range
+        ] for i in n_range]
 
         if self.debug:
             printer.oprint('D_{i}e^{j}', de)

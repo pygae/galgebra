@@ -556,8 +556,8 @@ class Ga(metric.Metric):
             mvtype_lst = args[0].split(' ')
             if len(root_lst) != len(mvtype_lst):
                 raise ValueError('In Ga.mv() for multiple multivectors and ' +
-                                  'multivector types incompatible args ' +
-                                  str(root_lst) + ' and ' + str(mvtype_lst))
+                                 'multivector types incompatible args ' +
+                                 str(root_lst) + ' and ' + str(mvtype_lst))
 
             mv_lst = []
             for (root, mv_type) in zip(root_lst, mvtype_lst):
@@ -656,10 +656,10 @@ class Ga(metric.Metric):
     def parametric(self, coords):
         if not isinstance(coords, list):
             raise TypeError('In Ga.parametric coords = ' + str(coords) +
-                             ' is not a list.')
+                            ' is not a list.')
         if len(coords) != self.n:
             raise ValueError('In Ga.parametric number of parametric functions' +
-                              ' not equal to number of coordinates.')
+                             ' not equal to number of coordinates.')
 
         self.par_coords = {}
 
@@ -818,16 +818,16 @@ class Ga(metric.Metric):
 
         if self.debug:
             printer.oprint('indexes', self.indexes, 'list(indexes)', self._all_indexes_lst,
-                            'blades', self.blades, 'list(blades)', self._all_blades_lst,
-                            'blades_to_indexes_dict', self.blades_to_indexes_dict,
-                            'indexes_to_blades_dict', self.indexes_to_blades_dict,
-                            'blades_to_grades_dict', self.blades_to_grades_dict,
-                            'blade_super_scripts', self.blade_super_scripts)
+                           'blades', self.blades, 'list(blades)', self._all_blades_lst,
+                           'blades_to_indexes_dict', self.blades_to_indexes_dict,
+                           'indexes_to_blades_dict', self.indexes_to_blades_dict,
+                           'blades_to_grades_dict', self.blades_to_grades_dict,
+                           'blade_super_scripts', self.blade_super_scripts)
             if not self.is_ortho:
                 printer.oprint('bases', self.bases, 'list(bases)', self._all_bases_lst,
-                                'bases_to_indexes_dict', self.bases_to_indexes_dict,
-                                'indexes_to_bases_dict', self.indexes_to_bases_dict,
-                                'bases_to_grades_dict', self.bases_to_grades_dict)
+                               'bases_to_indexes_dict', self.bases_to_indexes_dict,
+                               'indexes_to_bases_dict', self.indexes_to_bases_dict,
+                               'bases_to_grades_dict', self.bases_to_grades_dict)
 
         # create the Mv wrappers
         self._all_mv_blades_lst = [
@@ -2033,7 +2033,7 @@ class Sm(Ga):
 
             if len(u) != n_base:
                 raise ValueError('In submanifold dimension of base manifold' +
-                                  ' not equal to dimension of mapping.')
+                                 ' not equal to dimension of mapping.')
             dxdu = []
             for x_i in u:
                 tmp = []
