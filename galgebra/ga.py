@@ -1066,6 +1066,26 @@ class Ga(metric.Metric):
 
     #****** Dot (|) product, reft (<) and right (>) contractions ******#
 
+    def _dot_product_grade(self, grade1, grade2, mode):
+        """
+        Get the grade to select from the geometric product, for a given
+        dot product
+        """
+        if mode == '|':
+            return abs(grade1 - grade2)
+        elif mode == '<':
+            grade = grade2 - grade1
+            if grade < 0:
+                return None
+            return grade
+        elif mode == '>':
+            grade = grade1 - grade2
+            if grade < 0:
+                return None
+            return grade
+        else:
+            raise ValueError('mode={!r} not allowed'.format(mode))
+
     def dot_product_basis_blades(self, blade12, mode):
         # dot (|), left (<), and right (>) products
         # dot product for orthogonal basis
@@ -1073,19 +1093,11 @@ class Ga(metric.Metric):
         index1 = self.blades_to_indexes_dict[blade1]
         index2 = self.blades_to_indexes_dict[blade2]
         index = list(index1 + index2)
-        grade1 = len(index1)
-        grade2 = len(index2)
 
-        if mode == '|':
-            grade = abs(grade1 - grade2)
-        elif mode == '<':
-            grade = grade2 - grade1
-            if grade < 0:
-                return 0
-        elif mode == '>':
-            grade = grade1 - grade2
-            if grade < 0:
-                return 0
+        grade = self._dot_product_grade(len(index1), len(index2), mode=mode)
+        if grade is None:
+            return zero
+
         n = len(index)
         sgn = 1
         result = 1
@@ -1138,27 +1150,11 @@ class Ga(metric.Metric):
         # grades of input blades
         grade1 = self.blades_to_grades_dict[blade1]
         grade2 = self.blades_to_grades_dict[blade2]
-        if mode == '|':
-            grade_dot = abs(grade2 - grade1)
-            if grade_dot in grade_dict:
-                return grade_dict[grade_dot]
-            else:
-                return zero
-        elif mode == '<':
-            grade_contract = grade2 - grade1
-            if grade_contract in grade_dict:
-                return grade_dict[grade_contract]
-            else:
-                return zero
-        elif mode == '>':
-            grade_contract = grade1 - grade2
-            if grade_contract in grade_dict:
-                return grade_dict[grade_contract]
-            else:
-                return zero
-        else:
-            raise ValueError('"' + str(mode) + '" not allowed '
-                             'dot mode in non_orthogonal_dot_basis')
+
+        grade = self._dot_product_grade(grade1, grade2, mode=mode)
+        if grade is None:
+            return zero
+        return grade_dict.get(grade, zero)
 
     ############# Non-Orthogonal Tables and Dictionaries ###############
 
