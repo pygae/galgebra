@@ -101,16 +101,7 @@ def update_and_substitute(expr1, expr2, mul_dict):
     expr = S(0)
     for (coef1, base1) in zip(coefs1, bases1):
         for (coef2, base2) in zip(coefs2, bases2):
-            #Special cases where base1 and/or base2 is scalar
-            if base1 == 1 and base2 == 1:
-                expr += coef1 * coef2
-            elif base1 == 1:
-                expr += coef1 * coef2 * base2
-            elif base2 == 1:
-                expr += coef1 * coef2 * base1
-            else:
-                key = (base1, base2)
-                expr += coef1 * coef2 * mul_dict[key]
+            expr += coef1 * coef2 * mul_dict[base1, base2]
     return expr
 
 
