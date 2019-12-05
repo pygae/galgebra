@@ -12,7 +12,7 @@ from functools import reduce
 from sympy import (
     diff, Rational, Symbol, S, Mul, Add,
     expand, simplify, eye, trigsimp,
-    symbols, sqrt, numbers, Function
+    symbols, sqrt, Function
 )
 
 from . import printer
@@ -93,9 +93,6 @@ def update_and_substitute(expr1, expr2, mul_dict):
     product of ``bases1[i]*bases2[j]`` as a linear combination of scalars and
     bases of the geometric algebra.
     """
-    if (isinstance(expr1, numbers.Number) or expr1.is_commutative) \
-        or (isinstance(expr2, numbers.Number) or expr2.is_commutative):
-        return expr1 * expr2
     (coefs1, bases1) = metric.linear_expand(expr1)
     (coefs2, bases2) = metric.linear_expand(expr2)
     expr = S(0)
@@ -1063,6 +1060,8 @@ class Ga(metric.Metric):
         dot product
         """
         if mode == '|':
+            if grade1 == 0 or grade2 == 0:
+                return None
             return abs(grade1 - grade2)
         elif mode == '<':
             grade = grade2 - grade1
@@ -1288,8 +1287,6 @@ class Ga(metric.Metric):
             return 0
 
         if mode == '|':  # Hestenes dot product
-            A = self.remove_scalar_part(A)
-            B = self.remove_scalar_part(B)
             return update_and_substitute(A, B, self.dot_table_dict)
         elif mode == '<' or mode == '>':
             r"""
