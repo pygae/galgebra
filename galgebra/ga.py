@@ -1266,8 +1266,14 @@ class Ga(metric.Metric):
             return self.mul(A, B)
         elif mode == '^':
             return self.wedge(A, B)
+        elif mode == '|':
+            return self.hestenes_dot(A, B)
+        elif mode == '<':
+            return self.left_contract(A, B)
+        elif mode == '>':
+            return self.right_contract(A, B)
         else:
-            return self._dot(A, B, mode=mode)
+            raise ValueError('Unknown multiplication operator {!r}', mode)
 
     def mul(self, A, B):  # geometric (*) product of blade representations
         if A == 0 or B == 0:
@@ -1281,31 +1287,17 @@ class Ga(metric.Metric):
             return 0
         return update_and_substitute(A, B, self.wedge_table_dict)
 
-
-    def _dot(self, A, B, mode):
-        if A == 0 or B == 0:
-            return 0
-
-        if mode == '|':  # Hestenes dot product
-            return update_and_substitute(A, B, self.dot_table_dict)
-        elif mode == '<':  # Left contraction
-            return update_and_substitute(A, B, self.left_contract_table_dict)
-        elif mode == '>':  # Right contraction
-            return update_and_substitute(A, B, self.right_contract_table_dict)
-        else:
-            raise ValueError('"' + str(mode) + '" not a legal mode in dot')
-
     def hestenes_dot(self, A, B):
         r""" compute the hestenes dot product, :math:`A \bullet B` """
-        return self._dot(A, B, mode='|')
+        return update_and_substitute(A, B, self.dot_table_dict)
 
     def left_contract(self, A, B):
         r""" compute the left contraction, :math:`A \rfloor B`  """
-        return self._dot(A, B, mode='<')
+        return update_and_substitute(A, B, self.left_contract_table_dict)
 
     def right_contract(self, A, B):
         r""" compute the right contraction, :math:`A \lfloor B` """
-        return self._dot(A, B, mode='>')
+        return update_and_substitute(A, B, self.right_contract_table_dict)
 
     def dot(self, A, B):
         r"""
@@ -1313,7 +1305,11 @@ class Ga(metric.Metric):
 
         The :attr:`dot_mode` attribute determines which of these is used.
         """
-        return self._dot(A, B, mode=self.dot_mode)
+        # forbid something silly like setting dot_mode to the wedge or geometric
+        # product
+        if self.dot_mode in '^*':
+            raise ValueError('"' + str(self.dot_mode) + '" not a legal mode in dot')
+        return self.Mul(A, B, mode=self.dot_mode)
 
     ######################## Helper Functions ##########################
 
