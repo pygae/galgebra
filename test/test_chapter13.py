@@ -1,6 +1,6 @@
 from .test_utils import TestCase
 
-from sympy import Symbol, S
+from sympy import Symbol, S, sqrt
 from galgebra.ga import Ga
 
 
@@ -11,14 +11,43 @@ class TestChapter13(TestCase):
         Initialize CGA.
         """
         g = [
-            [+0, +0, +0, +0, -1],
-            [+0, +1, +0, +0, +0],
-            [+0, +0, +1, +0, +0],
-            [+0, +0, +0, +1, +0],
-            [-1, +0, +0, +1, +0],
+            [ 1,  0,  0,  0,  0],
+            [ 0,  1,  0,  0,  0],
+            [ 0,  0,  1,  0,  0],
+            [ 0,  0,  0,  1,  0],
+            [ 0,  0,  0,  0, -1],
         ]
 
-        self.ga, self.o, self.e_1, self.e_2, self.e_3, self.inf = Ga.build('o e1 e2 e3 inf', g=g)
+        ga, e, e_1, e_2, e_3, eb = Ga.build('e e1 e2 e3 eb', g=g)
+        o = S.Half * (e + eb)
+        inf = eb - e
+
+        self.ga = ga
+        self.o = o
+        self.e_1 = e_1
+        self.e_2 = e_2
+        self.e_3 = e_3
+        self.inf = inf
+
+        """
+        # test_13_2_2 will fails with this
+        
+        g = [
+            [ 0, 0, 0, 0, -1],
+            [ 0, 1, 0, 0,  0],
+            [ 0, 0, 1, 0,  0],
+            [ 0, 0, 0, 1,  0],
+            [-1, 0, 0, 0,  0],
+        ]
+
+        ga, o, e_1, e_2, e_3, inf = Ga.build('o e1 e2 e3 inf', g=g)
+        self.ga = ga
+        self.o = o
+        self.e_1 = e_1
+        self.e_2 = e_2
+        self.e_3 = e_3
+        self.inf = inf
+        """
 
     def vector(self, x, y, z):
         """
@@ -94,3 +123,26 @@ class TestChapter13(TestCase):
         im_s = self.dual_im_sphere(alpha, c, r)
         self.assertEqual(im_s | im_s, -alpha * alpha * r * r)
         self.assertEqual(-self.inf | im_s, alpha)
+
+    def test_13_2_2(self):
+        """
+        Proper Euclidean motions as even versors : Translations.
+        """
+
+        nx = Symbol('nx', real=True)
+        ny = Symbol('ny', real=True)
+        nz = Symbol('nz', real=True)
+
+        n = self.vector(nx, ny, nz) / sqrt(nx * nx + ny * ny + nz * nz)
+        delta_1 = Symbol('delta_1', real=True)
+        delta_2 = Symbol('delta_2', real=True)
+
+        Tt = self.dual_plane(n, delta_2) * self.dual_plane(n, delta_1)
+
+        # Even versor
+        self.assertEqual(Tt * Tt.rev(), 1)
+
+        # Translation
+        r = Tt * self.o * Tt.inv()
+        t = self.point(1, 2 * (delta_2 - delta_1) * n)
+        self.assertEqual(r, t)
