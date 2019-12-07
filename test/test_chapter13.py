@@ -3,6 +3,8 @@ from .test_utils import TestCase
 from sympy import Symbol, S, sqrt
 from galgebra.ga import Ga
 
+USE_DIAGONAL_G = True
+
 
 class TestChapter13(TestCase):
 
@@ -10,17 +12,30 @@ class TestChapter13(TestCase):
         """
         Initialize CGA.
         """
-        g = [
-            [ 1,  0,  0,  0,  0],
-            [ 0,  1,  0,  0,  0],
-            [ 0,  0,  1,  0,  0],
-            [ 0,  0,  0,  1,  0],
-            [ 0,  0,  0,  0, -1],
-        ]
+        if USE_DIAGONAL_G:
+            # This is way faster with galgebra but o and inf can't be printed...
+            g = [
+                [ 1,  0,  0,  0,  0],
+                [ 0,  1,  0,  0,  0],
+                [ 0,  0,  1,  0,  0],
+                [ 0,  0,  0,  1,  0],
+                [ 0,  0,  0,  0, -1],
+            ]
 
-        ga, e, e_1, e_2, e_3, eb = Ga.build('e e1 e2 e3 eb', g=g)
-        o = S.Half * (e + eb)
-        inf = eb - e
+            ga, e, e_1, e_2, e_3, eb = Ga.build('e e1 e2 e3 eb', g=g)
+            o = S.Half * (e + eb)
+            inf = eb - e
+
+        else:
+            g = [
+                [ 0,  0,  0,  0, -1],
+                [ 0,  1,  0,  0,  0],
+                [ 0,  0,  1,  0,  0],
+                [ 0,  0,  0,  1,  0],
+                [-1,  0,  0,  0,  0],
+            ]
+
+            ga, o, e_1, e_2, e_3, inf = Ga.build('o e1 e2 e3 inf', g=g)
 
         self.ga = ga
         self.o = o
@@ -28,26 +43,6 @@ class TestChapter13(TestCase):
         self.e_2 = e_2
         self.e_3 = e_3
         self.inf = inf
-
-        """
-        # test_13_2_2 will fails with this
-        
-        g = [
-            [ 0, 0, 0, 0, -1],
-            [ 0, 1, 0, 0,  0],
-            [ 0, 0, 1, 0,  0],
-            [ 0, 0, 0, 1,  0],
-            [-1, 0, 0, 0,  0],
-        ]
-
-        ga, o, e_1, e_2, e_3, inf = Ga.build('o e1 e2 e3 inf', g=g)
-        self.ga = ga
-        self.o = o
-        self.e_1 = e_1
-        self.e_2 = e_2
-        self.e_3 = e_3
-        self.inf = inf
-        """
 
     def vector(self, x, y, z):
         """
