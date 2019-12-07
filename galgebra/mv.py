@@ -614,7 +614,7 @@ class Mv(object):
         obj = expand(self.obj)
         obj = metric.Simp.apply(obj)
         self = Mv(obj, ga=self.Ga)
-    
+
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga._all_blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
@@ -681,11 +681,13 @@ class Mv(object):
         if self.obj == 0:
             return ZERO_STR
 
-        self.first_line = True
+        # todo: use the nonlocal keyword here instead once we drop python 2
+        class first_line:
+            value = True
 
         def append_plus(c_str):
-            if self.first_line:
-                self.first_line = False
+            if first_line.value:
+                first_line.value = False
                 return c_str
             else:
                 c_str = c_str.strip()
@@ -765,7 +767,7 @@ class Mv(object):
             elif printer.GaLatexPrinter.fmt == 2:  # One grade per line
                 if grade != old_grade:
                     old_grade = grade
-                    if not self.first_line:
+                    if not first_line.value:
                         lines.append(s)
                     s = append_plus(cb_str)
                 else:
@@ -2485,11 +2487,9 @@ class Dop(object):
 
 def Nga(x, prec=5):
     if isinstance(x, Mv):
-        Px = Mv(x, ga=x.Ga)
-        Px.obj = Nsympy(x.obj, prec)
-        return(Px)
+        return Mv(Nsympy(x.obj, prec), ga=x.Ga)
     else:
-        return(Nsympy(x, prec))
+        return Nsympy(x, prec)
 
 
 def printeigen(M):    # Print eigenvalues, multiplicities, eigenvectors of M.
