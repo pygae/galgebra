@@ -930,7 +930,7 @@ class Mv(object):
                 obj += collect(obj_dict[base])*base
             else:
                 obj += obj_dict[base]*base
-        return Mv(obj, ga=ga)
+        return Mv(obj, ga=self.Ga)
 
 
     def is_scalar(self):
