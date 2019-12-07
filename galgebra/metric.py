@@ -206,8 +206,7 @@ class Simp:
 
     @staticmethod
     def applymv(mv):
-        mv.obj = Simp.apply(mv.obj)
-        return mv
+        return Mv(Simp.apply(mv.obj), ga=mv.Ga)
 
 
 class Metric(object):
