@@ -119,18 +119,19 @@ class TestChapter13(TestCase):
         self.assertEqual(im_s | im_s, -alpha * alpha * r * r)
         self.assertEqual(-self.inf | im_s, alpha)
 
+    def symbol_vector(self, name='n', normalize=False):
+        nx = Symbol(name + 'x', real=True)
+        ny = Symbol(name + 'y', real=True)
+        nz = Symbol(name + 'z', real=True)
+        return self.vector(nx, ny, nz) / (sqrt(nx * nx + ny * ny + nz * nz) if normalize else S.One)
+
     def test_13_2_2(self):
         """
         Proper Euclidean motions as even versors : Translations.
         """
-
-        nx = Symbol('nx', real=True)
-        ny = Symbol('ny', real=True)
-        nz = Symbol('nz', real=True)
-
-        n = self.vector(nx, ny, nz) / sqrt(nx * nx + ny * ny + nz * nz)
         delta_1 = Symbol('delta_1', real=True)
         delta_2 = Symbol('delta_2', real=True)
+        n = self.symbol_vector('n', normalize=True)
 
         Tt = self.dual_plane(n, delta_2) * self.dual_plane(n, delta_1)
 
@@ -141,3 +142,23 @@ class TestChapter13(TestCase):
         r = Tt * self.o * Tt.inv()
         t = self.point(1, 2 * (delta_2 - delta_1) * n)
         self.assertEqual(r, t)
+
+        # TODO: This exponential isn't available in galgebra
+        #Te = (-t * self.inf * S.Half).exp()
+        #self.assertEqual(Te * Te.rev(), 1)
+        #self.assertEqual(Te, Tt)
+
+    def test_13_2_3(self):
+        """
+        Proper Euclidean motions as even versors : Rotations in the origin.
+        """
+        n0 = self.symbol_vector('n0')
+        n1 = self.symbol_vector('n1')
+        R = n1 * n0     # 2 reflections
+        Rinv = R.inv()
+
+        p = self.symbol_vector('p')
+
+        p0 = R * self.point(1, p) * Rinv
+        p1 = self.point(1, R * p * Rinv)
+        self.assertEqual(p0, p1)
