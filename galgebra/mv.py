@@ -1090,7 +1090,6 @@ class Mv(object):
     __invert__ = rev # allow `~x` to call x.rev()
 
     def diff(self, coord):
-        Dself = Mv(ga=self.Ga)
         if self.Ga.coords is None:
             obj = diff(self.obj, coord)
         elif coord not in self.Ga.coords:
