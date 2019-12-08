@@ -609,9 +609,12 @@ class Mv(object):
         global print_replace_old, print_replace_new
         if self.i_grade == 0:
             return str(self.obj)
-        self.obj = expand(self.obj)
-        self.characterise_Mv()
-        self.obj = metric.Simp.apply(self.obj)
+
+        # note: this just replaces `self` for the rest of this function
+        obj = expand(self.obj)
+        obj = metric.Simp.apply(obj)
+        self = Mv(obj, ga=self.Ga)
+
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga._all_blades_lst
             grade_keys = self.Ga.blades_to_grades_dict
@@ -678,11 +681,13 @@ class Mv(object):
         if self.obj == 0:
             return ZERO_STR
 
-        self.first_line = True
+        # todo: use the nonlocal keyword here instead once we drop python 2
+        class first_line:
+            value = True
 
         def append_plus(c_str):
-            if self.first_line:
-                self.first_line = False
+            if first_line.value:
+                first_line.value = False
                 return c_str
             else:
                 c_str = c_str.strip()
@@ -692,9 +697,10 @@ class Mv(object):
                     return ' + ' + c_str
 
         # str representation of multivector
-        self.obj = expand(self.obj)
-        self.characterise_Mv()
-        self.obj = metric.Simp.apply(self.obj)
+        # note: this just replaces `self` for the rest of this function
+        obj = expand(self.obj)
+        obj = metric.Simp.apply(obj)
+        self = Mv(obj, ga=self.Ga)
 
         if self.obj == S(0):
             return ZERO_STR
@@ -761,7 +767,7 @@ class Mv(object):
             elif printer.GaLatexPrinter.fmt == 2:  # One grade per line
                 if grade != old_grade:
                     old_grade = grade
-                    if not self.first_line:
+                    if not first_line.value:
                         lines.append(s)
                     s = append_plus(cb_str)
                 else:
@@ -918,14 +924,13 @@ class Mv(object):
                 obj_dict[base] += coef
             else:
                 obj_dict[base] = coef
-        obj = 0
+        obj = S(0)
         for base in list(obj_dict.keys()):
             if deep:
                 obj += collect(obj_dict[base])*base
             else:
                 obj += obj_dict[base]*base
-        self.obj = obj
-        return(self)
+        return Mv(obj, ga=self.Ga)
 
 
     def is_scalar(self):
@@ -1087,27 +1092,23 @@ class Mv(object):
     def diff(self, coord):
         Dself = Mv(ga=self.Ga)
         if self.Ga.coords is None:
-            Dself.obj = diff(self.obj, coord)
-            return Dself
+            obj = diff(self.obj, coord)
         elif coord not in self.Ga.coords:
             if self.Ga.par_coords is None:
-                Dself.obj = diff(self.obj, coord)
+                obj = diff(self.obj, coord)
             elif coord not in self.Ga.par_coords:
-                Dself.obj = diff(self.obj, coord)
+                obj = diff(self.obj, coord)
             else:
-                Dself.obj = diff(self.obj, coord)
+                obj = diff(self.obj, coord)
                 for x_coord in self.Ga.coords:
                     f = self.Ga.par_coords[x_coord]
                     if f != S(0):
                         tmp1 = self.Ga.pDiff(self.obj, x_coord)
                         tmp2 = diff(f, coord)
-                        Dself.obj += tmp1 * tmp2
-            Dself.characterise_Mv()
-            return Dself
+                        obj += tmp1 * tmp2
         else:
-            Dself.obj = self.Ga.pDiff(self.obj, coord)
-            Dself.characterise_Mv()
-            return Dself
+            obj = self.Ga.pDiff(self.obj, coord)
+        return Mv(obj, ga=self.Ga)
 
     def pdiff(self, var):
         return Mv(self.Ga.pDiff(self.obj, var), ga=self.Ga)
@@ -1349,8 +1350,7 @@ class Mv(object):
         else:
             for (coef, base) in zip(coefs, bases):
                 obj += modes(coef) * base
-        self.obj = obj
-        return self
+        return Mv(obj, ga=self.Ga)
 
     def subs(self, d):
         # For each scalar coef of the multivector apply substitution argument d
@@ -1358,20 +1358,17 @@ class Mv(object):
         obj = S(0)
         for (coef, base) in zip(coefs, bases):
             obj += coef.subs(d) * base
-        #self.obj = obj
-        #return self
-        return self.Ga.mv(obj)
+        return Mv(obj, ga=self.Ga)
 
     def expand(self):
         coefs,bases = metric.linear_expand(self.obj)
         new_coefs = []
         for coef in coefs:
             new_coefs.append(expand(coef))
-        obj = 0
+        obj = S(0)
         for coef,base in zip(new_coefs,bases):
             obj += coef * base
-        self.obj = obj
-        return self
+        return Mv(obj, ga=self.Ga)
 
     def list(self):
         (coefs, bases) = metric.linear_expand(self.obj)
@@ -2490,11 +2487,9 @@ class Dop(object):
 
 def Nga(x, prec=5):
     if isinstance(x, Mv):
-        Px = Mv(x, ga=x.Ga)
-        Px.obj = Nsympy(x.obj, prec)
-        return(Px)
+        return Mv(Nsympy(x.obj, prec), ga=x.Ga)
     else:
-        return(Nsympy(x, prec))
+        return Nsympy(x, prec)
 
 
 def printeigen(M):    # Print eigenvalues, multiplicities, eigenvectors of M.

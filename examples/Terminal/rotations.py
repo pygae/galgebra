@@ -53,8 +53,8 @@ def main():
 
     R_th = cos(th/2)+I*e_phi*sin(th/2)
     R_th_rev = R_th.rev()
-    print(R_th)
-    print(R_th_rev)
+    print(R_th.trigsimp())
+    print(R_th_rev.trigsimp())
 
     e_r = (R_th*R_phi*ex*R_phi_rev*R_th_rev).trigsimp()
 
