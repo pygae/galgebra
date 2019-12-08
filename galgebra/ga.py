@@ -1754,12 +1754,7 @@ class Ga(metric.Metric):
                         c, nc = term.args_cnc(split_1=False)
                         x = self.blade_derivation(nc[0], coord)
                         if x != zero:
-                            if len(c) == 1:
-                                dA += c[0] * x
-                            elif len(c) == 0:
-                                dA += x
-                            else:
-                                dA += reduce(operator.mul, c, one) * x
+                            dA += reduce(operator.mul, c, x)
 
         return dA
 

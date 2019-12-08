@@ -629,10 +629,7 @@ class Mv(object):
             grade0 = S(0)
             for arg in args:
                 c, nc = arg.args_cnc()
-                if len(c) > 0:
-                    c = reduce(operator.mul, c)
-                else:
-                    c = S(1)
+                c = reduce(operator.mul, c, S(1))
                 if len(nc) > 0:
                     base = nc[0]
                     if base in base_keys:
@@ -719,10 +716,7 @@ class Mv(object):
         grade0 = S(0)
         for arg in args:
             c, nc = arg.args_cnc(split_1=False)
-            if len(c) > 0:
-                c = reduce(operator.mul, c)
-            else:
-                c = S(1)
+            c = reduce(operator.mul, c, S(1))
             if len(nc) > 0:
                 base = nc[0]
                 if base in base_keys:
