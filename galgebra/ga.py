@@ -1276,15 +1276,11 @@ class Ga(metric.Metric):
             raise ValueError('Unknown multiplication operator {!r}', mode)
 
     def mul(self, A, B):  # geometric (*) product of blade representations
-        if A == 0 or B == 0:
-            return 0
         return update_and_substitute(A, B, self.mul_table_dict)
 
     def wedge(self, A, B):
         # wedge assumes A and B are in blade rep
         # wedge product is same for both orthogonal and non-orthogonal for A and B in blade rep
-        if A == 0 or B == 0:
-            return 0
         return update_and_substitute(A, B, self.wedge_table_dict)
 
     def hestenes_dot(self, A, B):
