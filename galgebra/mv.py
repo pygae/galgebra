@@ -1608,7 +1608,7 @@ class Sdop(object):
                 terms += new_terms
             return Sdop(terms, ga=self.Ga)
         else:
-            return sum([x[0] * x[1](arg) for x in self.terms])
+            return sum([x[0] * x[1](arg) for x in self.terms], S(0))
 
 
     def __neg__(self):
@@ -1704,7 +1704,7 @@ class Sdop(object):
                 product = Sdop(terms, ga=sdopr.Ga)  # returns Sdop
                 return Sdop.consolidate_coefs(product)
             else:  # sdopr is a scalar or a multivector
-                return sum([x[0] * x[1](sdopr) for x in sdopl.terms])  # returns scalar
+                return sum([x[0] * x[1](sdopr) for x in sdopl.terms], S(0))  # returns scalar
 
     def __rmul__(self,sdop):
         terms = [(sdop * x[0], x[1]) for x in self.terms]
@@ -2168,6 +2168,7 @@ class Dop(object):
         if isinstance(dopl, Dop) and isinstance(dopr, Dop):
             if dopl.Ga != dopr.Ga:
                 raise ValueError('In Dop.Mul Dop arguments are not from same geometric algebra')
+            ga = dopl.Ga
             if dopl.cmpflg != dopr.cmpflg:
                 raise ValueError('In Dop.Mul Dop arguments do not have same cmplfg')
             if not dopl.cmpflg:  # dopl and dopr operate on right argument
@@ -2176,33 +2177,35 @@ class Dop(object):
                     Ddopl = pdiff(dopr.terms)  # list of terms
                     Ddopl = [(Mv.Mul(coef, x[0], op=op), x[1]) for x in Ddopl]
                     terms += Ddopl
-                product = Dop(terms, ga=dopl.Ga)
+                product = Dop(terms, ga=ga)
             else:  # dopl and dopr operate on left argument
                 terms = []
                 for (coef, pdiff) in dopr.terms:
                     Ddopr = pdiff(dopl.terms)  # list of terms
                     Ddopr = [(Mv.Mul(x[0], coef, op=op), x[1]) for x in Ddopr]
                     terms += Ddopr
-                product = Dop(terms, ga=dopr.Ga, cmpflg=True)
+                product = Dop(terms, ga=ga, cmpflg=True)
         else:
             if not isinstance(dopl, Dop):  # dopl is a scalar or Mv and dopr is Dop
                 if isinstance(dopl, Mv) and dopl.Ga != dopr.Ga:
                     raise ValueError('In Dop.Mul Dop arguments are not from same geometric algebra')
                 else:
                     dopl = dopr.Ga.mv(dopl)
+                ga = dopl.Ga
 
                 if not dopr.cmpflg:  # dopr operates on right argument
                     terms = [(Mv.Mul(dopl, x[0], op=op), x[1]) for x in dopr.terms]
-                    return Dop(terms, ga=dopr.Ga)  # returns Dop
+                    return Dop(terms, ga=ga)  # returns Dop
                 else:
-                    product = sum([Mv.Mul(x[1](dopl), x[0], op=op) for x in dopr.terms])  # returns multivector
+                    product = sum([Mv.Mul(x[1](dopl), x[0], op=op) for x in dopr.terms], Mv(0, ga=ga))  # returns multivector
             else:  # dopr is a scalar or a multivector
 
                 if isinstance(dopr, Mv) and dopl.Ga != dopr.Ga:
                     raise ValueError('In Dop.Mul Dop arguments are not from same geometric algebra')
+                ga = dopl.Ga
 
                 if not dopl.cmpflg:  # dopl operates on right argument
-                    return sum([Mv.Mul(x[0], x[1](dopr), op=op) for x in dopl.terms])  # returns multivector
+                    return sum([Mv.Mul(x[0], x[1](dopr), op=op) for x in dopl.terms], Mv(0, ga=ga))  # returns multivector
                 else:
                     terms = [(Mv.Mul(x[0], dopr, op=op), x[1]) for x in dopl.terms]
                     product = Dop(terms, ga=dopl.Ga, cmpflg=True)  # returns Dop complement
