@@ -9,6 +9,7 @@ defaults: &defaults
         command: |
           sudo pip install -r test_requirements.txt
           sudo pip install -e .
+          sudo pip check
     - run:
         name: Test
         command: |

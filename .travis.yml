@@ -13,6 +13,7 @@ before_install:
 install:
 - pip install -r test_requirements.txt
 - pip install -e .
+- pip check
 script:
 - pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg
 after_success:
