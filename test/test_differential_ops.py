@@ -17,16 +17,22 @@ class TestDop(object):
         # check addition distributes
         assert (laplacian + ga.grad) * v == laplacian * v + ga.grad * v != 0
         assert (laplacian + 1234567) * v == laplacian * v + 1234567 * v != 0
+        assert (1234 * ex + ga.grad) * v == 1234 * ex * v + ga.grad * v != 0
         # check subtraction distributes
         assert (laplacian - ga.grad) * v == laplacian * v - ga.grad * v != 0
         assert (laplacian - 1234567) * v == laplacian * v - 1234567 * v != 0
+        assert (1234 * ex - ga.grad) * v == 1234 * ex * v - ga.grad * v != 0
         # check unary subtraction distributes
         assert (-ga.grad) * v == -(ga.grad * v) != 0
         # check division is associative
         assert v * (ga.rgrad / 2) == (v * ga.rgrad) / 2 != 0
         # check multiplication is associative
+        assert (ex * ga.grad) * v == ex * (ga.grad * v) != 0
         assert (20 * ga.grad) * v == 20 * (ga.grad * v) != 0
+        assert v * (ga.rgrad * ex) == (v * ga.rgrad) * ex != 0
         assert v * (ga.rgrad * 20) == (v * ga.rgrad) * 20 != 0
+        assert (laplacian * ga.grad) * v == laplacian * (ga.grad * v) != 0
+        # check wedge is associative
         assert (ex ^ ga.grad) ^ v == ex ^ (ga.grad ^ v) != 0
         assert (20 ^ ga.grad) ^ v == 20 ^ (ga.grad ^ v) != 0
         assert v ^ (ga.rgrad ^ ex) == (v ^ ga.rgrad) ^ ex != 0
@@ -128,3 +134,21 @@ class TestPdop(object):
         with pytest.warns(DeprecationWarning):
             p = Pdop(None, ga=ga)
         assert p == Pdop({}, ga=ga)
+
+    def test_associativity_and_distributivity(self):
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+        v = ga.mv('v', 'vector', f=True)
+        laplacian = Sdop((ga.grad * ga.grad).terms, ga=ga)
+
+        # check addition distributes
+        assert (laplacian + 20) * v == laplacian * v + 20 * v != 0
+        assert (20 + laplacian) * v == laplacian * v + 20 * v != 0
+        # check subtraction distributes
+        assert (laplacian - 20) * v == laplacian * v - 20 * v != 0
+        assert (20 - laplacian) * v == 20 * v - laplacian * v != 0
+        # check unary subtraction distributes
+        assert (-laplacian) * v == -(laplacian * v) != 0
+        # check multiplication is associative
+        assert (20 * laplacian) * v == 20 * (laplacian * v) != 0
+        assert (laplacian * laplacian) * v == laplacian * (laplacian * v) != 0

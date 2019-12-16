@@ -1609,28 +1609,20 @@ class Sdop(object):
         if isinstance(sdop1, Sdop) and isinstance(sdop2, Sdop):
             if sdop1.Ga != sdop2.Ga:
                 raise ValueError('In Sdop.Add sdop1.Ga != sdop2.Ga.')
-
-            sdop_sum = Sdop(_merge_terms(sdop1.terms, sdop2.terms), ga=sdop1.Ga)
-        elif isinstance(sdop1, Sdop):
-            coefs, pdiffs = list(zip(*sdop1.terms))
-            if sdop1.Ga.Pdop_identity in pdiffs:
-                index = pdiffs.index(sdop1.Ga.Pdop_identity)
-                coef[index] += sdop2
-            else:
-                coef.append(sdop2)
-                pdiff.append(sdop1.Ga.Pdop_identity)
-            return Sdop(coefs, pdiffs, ga=sdop1.Ga)
+            return Sdop(_merge_terms(sdop1.terms, sdop2.terms), ga=sdop1.Ga)
         else:
-            coefs, pdiffs = list(zip(*sdop2.terms))
-            if sdop2.Ga.Pdop_identity in pdiffs:
-                index = pdiffs.index(sdop2.Ga.Pdop_identity)
-                coef[index] += sdop1
+            # convert values to multiplicative operators
+            if isinstance(sdop1, Sdop):
+                if not isinstance(sdop2, Mv):
+                    sdop2 = sdop1.Ga.mv(sdop2)
+                sdop2 = Sdop([(sdop2, sdop1.Ga.Pdop_identity)], ga=sdop1.Ga)
+            elif isinstance(sdop2, Sdop):
+                if not isinstance(sdop1, Mv):
+                    sdop1 = sdop2.Ga.mv(sdop1)
+                sdop1 = Sdop([(sdop1, sdop2.Ga.Pdop_identity)], ga=sdop2.Ga)
             else:
-                coef.append(sdop1)
-                pdiff.append(sdop2.Ga.Pdop_identity)
-            sdop_sum = Sdop(coefs, pdiffs, ga=sdop2.Ga)
-
-        return Sdop.consolidate_coefs(sdop_sum)
+                raise TypeError("Neither argument is a Dop instance")
+            return Sdop.Add(sdop1, sdop2)
 
     def __eq__(self, sdop):
         if isinstance(sdop, Sdop):
@@ -2033,14 +2025,17 @@ class Dop(object):
 
             return Dop(_merge_terms(dop1.terms, dop2.terms), cmpflg=dop1.cmpflg, ga=dop1.Ga)
         else:
-            if isinstance(dop1, Dop):  # dop1 is Dop
+            # convert values to multiplicative operators
+            if isinstance(dop1, Dop):
                 if not isinstance(dop2, Mv):
                     dop2 = dop1.Ga.mv(dop2)
-                dop2 = Dop([dop2], [dop1.Ga.Pdop_identity], cmpflg=dop1.cmpflg, ga=dop1.Ga)
-            else:  # dop2 is Dop
+                dop2 = Dop([(dop2, dop1.Ga.Pdop_identity)], cmpflg=dop1.cmpflg, ga=dop1.Ga)
+            elif isinstance(dop2, Dop):
                 if not isinstance(dop1, Mv):
                     dop1 = dop2.Ga.mv(dop1)
-                dop1 = Dop([dop1], [dop2.Ga.Pdop_identity], cmpflg=dop2.cmpflg, ga=dop2.Ga)
+                dop1 = Dop([(dop1, dop2.Ga.Pdop_identity)], cmpflg=dop2.cmpflg, ga=dop2.Ga)
+            else:
+                raise TypeError("Neither argument is a Dop instance")
             return Dop.Add(dop1, dop2)
 
     def __add__(self, dop):
