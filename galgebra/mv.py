@@ -816,11 +816,8 @@ class Mv(object):
             return A.Mul(self, A, op='|')
 
         self = self.blade_rep()
-        if self.is_scalar() or A.is_scalar():
-            return S(0)
         A = A.blade_rep()
-        self_dot_A = Mv(self.Ga.hestenes_dot(self.obj, A.obj), ga=self.Ga)
-        return self_dot_A
+        return Mv(self.Ga.hestenes_dot(self.obj, A.obj), ga=self.Ga)
 
     def __ror__(self, A):  # dot (|) product
         if not isinstance(A, Mv):
