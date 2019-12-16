@@ -1435,8 +1435,8 @@ class Sdop(object):
 
     Attributes
     ----------
-    terms : list of tuple
-        the structure :math:`[(c_{1},D_{1}),(c_{2},D_{2}), ...]`
+    terms : tuple of tuple
+        the structure :math:`((c_{1},D_{1}),(c_{2},D_{2}), ...)`
     """
 
     init_slots = {'ga': (None, 'Associated geometric algebra')}
@@ -1454,8 +1454,7 @@ class Sdop(object):
         new_terms = []
         for (coef, pdiff) in self.terms:
             new_terms.append((metric.Simp.apply(coef), pdiff))
-        self.terms = new_terms
-        return
+        return Sdop(new_terms, ga=self.Ga)
 
     @staticmethod
     def consolidate_coefs(sdop):
@@ -1489,21 +1488,20 @@ class Sdop(object):
         new_coefs = []
         for coef in coefs:
             new_coefs.append(metric.apply_function_list(modes,coef))
-        self.terms = list(zip(new_coefs,pdiffs))
-        return self
+        return Sdop(new_coefs, list(pdiffs), ga=self.Ga)
 
-    def sort_terms(self):
+    def _with_sorted_terms(self):
         # self.terms.sort(key=operator.itemgetter(1), cmp=Pdop.compare)
         # terms are in the form of (coef, pdiff)
         # so we need to first extract pdiff and then use Pdop.compare to compare
-        self.terms.sort(key=cmp_to_key(lambda term1, term2 : Pdop.compare(term1[1], term2[1])))
-        return
+        new_terms = sorted(self.terms, key=cmp_to_key(lambda term1, term2 : Pdop.compare(term1[1], term2[1])))
+        return Sdop(new_terms, ga=self.Ga)
 
     def Sdop_str(self):
         if len(self.terms) == 0:
             return ZERO_STR
 
-        self.sort_terms()
+        self = self._with_sorted_terms()
         s = ''
         for (coef, pdop) in self.terms:
             coef_str = printer.latex(coef)
@@ -1531,7 +1529,7 @@ class Sdop(object):
         if len(self.terms) == 0:
             return ZERO_STR
 
-        self.sort_terms()
+        self = self._with_sorted_terms()
 
         s = ''
         for (coef, pdop) in self.terms:
@@ -1584,16 +1582,16 @@ class Sdop(object):
                 self.Ga = Sdop.ga
 
         if len(args[0]) == 0:  # identity Dop
-            self.terms = [(S(1), self.Ga.Pdop_identity)]
+            self.terms = ((S(1), self.Ga.Pdop_identity),)
         elif len(args[0]) == 1 and isinstance(args[0],Symbol):  # Simple Pdop of order 1
-            self.terms = [(S(1), self.Ga.pdop(args[0]))]
+            self.terms = ((S(1), self.Ga.pdop(args[0])),)
         else:
             if len(args) == 2 and isinstance(args[0],list) and isinstance(args[1],list):
                 if len(args[0]) != len(args[1]):
                     raise ValueError('In Sdop.__init__ coefficent list and Pdop list must be same length.')
-                self.terms = list(zip(args[0],args[1]))
-            elif len(args) == 1 and isinstance(args[0],list):
-                self.terms = args[0]
+                self.terms = tuple(zip(args[0], args[1]))
+            elif len(args) == 1 and isinstance(args[0], (list, tuple)):
+                self.terms = tuple(args[0])
             else:
                 raise ValueError('In Sdop.__init__ length of args must be 1 or 2 args = '+str(args))
 
@@ -1821,14 +1819,13 @@ class Pdop(object):
         if self.order == 1:
             return S(0), self
         else:
-            x = list(self.pdiffs.keys())[0]
-            self.order -= 1
-            n = self.pdiffs[x]
+            new_pdiffs = self.pdiffs.copy()
+            x, n = next(iter(new_pdiffs.items()))
             if n == 1:
-                del self.pdiffs[x]
+                del new_pdiffs[x]
             else:
-                self.pdiffs[x] -= 1
-            return self, self.Ga.Pdiffs[x]
+                new_pdiffs[x] -= 1
+            return Pdop(new_pdiffs, ga=self.Ga), self.Ga.Pdiffs[x]
 
     def __call__(self, arg):
         """
@@ -1864,9 +1861,9 @@ class Pdop(object):
                 arg = diff(arg,x,self.pdiffs[x])
             return arg  # derivative is sympy expression
 
-        elif isinstance(arg, list):  # arg is list of tuples (coef, partial derivative)
-            D = copy.deepcopy(self)
-            terms = copy.deepcopy(arg)
+        elif isinstance(arg, (list, tuple)):  # arg is list of tuples (coef, partial derivative)
+            terms = list(arg)
+            D = self
             while True:
                 D, D0 = D.factor()
                 for k, term in enumerate(terms):
@@ -2030,10 +2027,10 @@ class Dop(object):
             if len(args) == 2:
                 if len(args[0]) != len(args[1]):
                     raise ValueError('In Dop.__init__ coefficent list and Pdop list must be same length.')
-                self.terms = list(zip(args[0],args[1]))
+                self.terms = tuple(zip(args[0], args[1]))
             elif len(args) == 1:
                 if isinstance(args[0][0][0], Mv):  # Mv expansion [(Mv, Pdop)]
-                    self.terms = args[0]
+                    self.terms = tuple(args[0])
                 elif isinstance(args[0][0][0], Sdop):  # Sdop expansion [(Sdop, Mv)]
                     coefs = []
                     pdiffs = []
@@ -2045,7 +2042,7 @@ class Dop(object):
                             else:
                                 pdiffs.append(pdiff)
                                 coefs.append(coef * mv)
-                    self.terms = list(zip(coefs, pdiffs))
+                    self.terms = tuple(zip(coefs, pdiffs))
                 else:
                     raise ValueError('In Dop.__init__ args[0] form not allowed. args = ' + str(args))
             else:
@@ -2062,7 +2059,6 @@ class Dop(object):
             tmp = coef.simplify(modes=modes)
             new_coefs.append(tmp)
             new_pd.append(pd)
-        self.terms = list(zip(new_coefs, new_pd))
         return Dop(new_coefs, new_pd, ga=self.Ga, cmpflg=self.cmpflg)
 
     def consolidate_coefs(self):
@@ -2082,7 +2078,6 @@ class Dop(object):
                     new_coefs.append(coef)
                     new_pdiffs.append(pd)
 
-        self.terms = list(zip(new_coefs, new_pdiffs))
         return Dop(new_coefs, new_pdiffs, ga=self.Ga, cmpflg=self.cmpflg)
 
 
@@ -2210,15 +2205,14 @@ class Dop(object):
                     terms = [(Mv.Mul(x[0], dopr, op=op), x[1]) for x in dopl.terms]
                     product = Dop(terms, ga=dopl.Ga, cmpflg=True)  # returns Dop complement
         if isinstance(product, Dop):
-            product.consolidate_coefs()
+            product = product.consolidate_coefs()
         return product
 
     def TSimplify(self):
         new_terms = []
         for (coef, pdiff) in self.terms:
             new_terms.append((metric.Simp.apply(coef), pdiff))
-        self.terms = new_terms
-        return
+        return Dop(new_terms, ga=self.Ga)
 
     def __div__(self, a):
         if isinstance(a, (Mv, Dop)):
