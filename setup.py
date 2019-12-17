@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
 from distutils.core import Extension
+import os
 
-VERSION = '0.4.4'
+version_path = os.path.join('galgebra', '_version.py')
+exec(open(version_path).read())
+
 LONG_DESCRIPTION = """
 Symbolic Geometric Algebra/Calculus package for SymPy. BSD License.
 """
 
 setup(name='galgebra',
-      version=VERSION,
+      version=__version__,
       description='Symbolic Geometric Algebra/Calculus package for SymPy.',
       author='Alan Bromborsky',
       author_email='hadfield.hugo@gmail.com',
