@@ -17,6 +17,8 @@ setup(name='galgebra',
       packages=find_packages(),
       package_dir={'galgebra':'galgebra'},
       install_requires = ['sympy'],
+      # 2.7 or >=3.5
+      python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
       long_description=LONG_DESCRIPTION,
       classifiers=[
             'Development Status :: 4 - Beta',
@@ -26,6 +28,8 @@ setup(name='galgebra',
             'Natural Language :: English',
             'Operating System :: OS Independent',
             'Programming Language :: Python :: 2.7',
-            'Programming Language :: Python :: 3',
+            'Programming Language :: Python :: 3.5',
+            'Programming Language :: Python :: 3.6',
+            'Programming Language :: Python :: 3.7',
             'Topic :: Scientific/Engineering :: Mathematics',
             'Topic :: Scientific/Engineering :: Physics'])
