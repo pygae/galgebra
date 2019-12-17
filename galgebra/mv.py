@@ -6,6 +6,7 @@ import copy
 import numbers
 import operator
 from functools import reduce, cmp_to_key
+import sys
 
 from sympy import (
     Symbol, Function, S, expand, Add,
@@ -577,17 +578,14 @@ class Mv(object):
     def __rmul__(self, A):
         return Mv(expand(A * self.obj), ga=self.Ga)
 
-    def __div__(self, A):
-        if isinstance(A,Mv):
-            return self * A.inv()
-        else:
-            return self * (S(1)/A)
-
     def __truediv__(self, A):
         if isinstance(A,Mv):
             return self * A.inv()
         else:
             return self * (S(1)/A)
+
+    if sys.version_info.major < 3:
+        __div__ = __truediv__
 
     def __str__(self):
         if printer.GaLatexPrinter.latex_flg:
@@ -1002,10 +1000,7 @@ class Mv(object):
         (coefs, bases) = metric.linear_expand(self.obj)
         cb = list(zip(coefs, bases))
         cb = sorted(cb, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
-        terms = []
-        for (coef, base) in cb:
-            terms.append(self.Ga.mv(coef * base))
-        return terms
+        return [self.Ga.mv(coef * base) for (coef, base) in cb]
 
     def get_coefs(self, grade):
         (coefs, bases) = metric.linear_expand(self.obj)
@@ -1345,19 +1340,16 @@ class Mv(object):
     def subs(self, d):
         # For each scalar coef of the multivector apply substitution argument d
         (coefs, bases) = metric.linear_expand(self.obj)
-        obj = S(0)
-        for (coef, base) in zip(coefs, bases):
-            obj += coef.subs(d) * base
+        obj = sum((
+            coef.subs(d) * base for coef, base in zip(coefs, bases)
+        ), S(0))
         return Mv(obj, ga=self.Ga)
 
     def expand(self):
-        coefs,bases = metric.linear_expand(self.obj)
-        new_coefs = []
-        for coef in coefs:
-            new_coefs.append(expand(coef))
-        obj = S(0)
-        for coef,base in zip(new_coefs,bases):
-            obj += coef * base
+        coefs, bases = metric.linear_expand(self.obj)
+        obj = sum((
+            expand(coef) * base for coef, base in zip(coefs, bases)
+        ), S(0))
         return Mv(obj, ga=self.Ga)
 
     def list(self):
@@ -1451,10 +1443,9 @@ class Sdop(object):
         return
 
     def TSimplify(self):
-        new_terms = []
-        for (coef, pdiff) in self.terms:
-            new_terms.append((metric.Simp.apply(coef), pdiff))
-        return Sdop(new_terms, ga=self.Ga)
+        return Sdop([
+            (metric.Simp.apply(coef), pdiff) for (coef, pdiff) in self.terms
+        ], ga=self.Ga)
 
     @staticmethod
     def consolidate_coefs(sdop):
@@ -2043,13 +2034,10 @@ class Dop(object):
         """
         Simplify each multivector coefficient of a partial derivative
         """
-        new_coefs = []
-        new_pd = []
-        for (coef, pd) in self.terms:
-            tmp = coef.simplify(modes=modes)
-            new_coefs.append(tmp)
-            new_pd.append(pd)
-        return Dop(new_coefs, new_pd, ga=self.Ga, cmpflg=self.cmpflg)
+        return Dop(
+            [(coef.simplify(modes=modes), pd) for coef, pd in self.terms],
+            ga=self.Ga, cmpflg=self.cmpflg
+        )
 
     def consolidate_coefs(self):
         """
@@ -2194,27 +2182,22 @@ class Dop(object):
         return product
 
     def TSimplify(self):
-        new_terms = []
-        for (coef, pdiff) in self.terms:
-            new_terms.append((metric.Simp.apply(coef), pdiff))
-        return Dop(new_terms, ga=self.Ga)
-
-    def __div__(self, a):
-        if isinstance(a, (Mv, Dop)):
-            raise TypeError('!!!!Can only divide Dop by sympy scalar expression!!!!')
-        else:
-            return (1/a) * self
-
-    def __mul__(self, dopr):  # * geometric product
-        return Dop.Mul(self, dopr, op='*')
+        return Dop([
+            (metric.Simp.apply(coef), pdiff) for (coef, pdiff) in self.terms
+        ], ga=self.Ga)
 
     def __truediv__(self, dopr):
         if isinstance(dopr, (Dop, Mv)):
-            raise ValueError('In Dop.__truediv__ dopr must be a sympy scalar.')
-        terms = []
-        for term in self.terms:
-            terms.append((term[0]/dopr,term[1]))
-        return Dop(terms, ga= self.Ga)
+            raise TypeError('In Dop.__truediv__ dopr must be a sympy scalar.')
+        return Dop([
+            (coef / dopr, pdiff) for (coef, pdiff) in self.terms
+        ], ga=self.Ga)
+
+    if sys.version_info.major < 3:
+        __div__ = __truediv__
+
+    def __mul__(self, dopr):  # * geometric product
+        return Dop.Mul(self, dopr, op='*')
 
     def __rmul__(self, dopl):  # * geometric product
         return Dop.Mul(dopl, self, op='*')
