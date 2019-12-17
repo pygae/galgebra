@@ -40,10 +40,6 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/python:3.5
-  "python-3.4":
-    <<: *defaults
-    docker:
-      - image: circleci/python:3.4
   "python-2.7":
     <<: *defaults
     docker:
@@ -55,5 +51,5 @@ workflows:
     jobs:
       - "python-3.7"
       - "python-3.6"
-      - "python-3.4"
+      - "python-3.5"
       - "python-2.7"
