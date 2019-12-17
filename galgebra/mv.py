@@ -1433,14 +1433,7 @@ class Sdop(object):
 
     init_slots = {'ga': (None, 'Associated geometric algebra')}
 
-    ga = None
     str_mode = False
-
-    @staticmethod
-    def setGa(ga):
-        Sdop.ga = ga
-        Pdop.setGa(ga)
-        return
 
     def TSimplify(self):
         return Sdop([
@@ -1566,10 +1559,7 @@ class Sdop(object):
         self.Ga = kwargs['ga']  # Associated geometric algebra (coords)
 
         if self.Ga is None:
-            if Sdop.ga is None:
-                raise ValueError('In Sdop.__init__ self.Ga must be defined.')
-            else:
-                self.Ga = Sdop.ga
+            raise ValueError('In Sdop.__init__ self.Ga must be defined.')
 
         if len(args[0]) == 1 and isinstance(args[0],Symbol):  # Simple Pdop of order 1
             self.terms = ((S(1), self.Ga.pdop(args[0])),)
@@ -1715,14 +1705,7 @@ class Pdop(object):
         total number of differentiations
     """
 
-    ga = None
-
     init_slots = {'ga': (None, 'Associated geometric algebra')}
-
-    @staticmethod
-    def setGa(ga):
-        Pdop.ga = ga
-        return
 
     @staticmethod
     def compare(pdop1, pdop2):  # compare two Pdops
@@ -1774,10 +1757,7 @@ class Pdop(object):
         self.order = 0
 
         if self.Ga is None:
-            if Pdop.ga is None:
-                raise ValueError('In Pdop.__init__ self.Ga must be defined.')
-            else:
-                self.Ga = Pdop.ga  # use geometric algebra of class Pdop
+            raise ValueError('In Pdop.__init__ self.Ga must be defined.')
 
         if args[0] is None:  # Pdop is the identity (1)
             self.pdiffs = {}
@@ -1976,15 +1956,6 @@ class Dop(object):
                   'debug': (False, 'True to print out debugging information'),
                   'fmt_dop': (1, '1 for normal dop partial derivative formating')}
 
-    ga = None
-
-
-    @staticmethod
-    def setGa(ga):  # set geometric algebra globally for all Dop's
-        Dop.ga = ga
-        Sdop.setGa(ga)
-        return
-
     @staticmethod
     def flatten_one_level(lst):
         return [inner for outer in lst for inner in outer]
@@ -1997,10 +1968,7 @@ class Dop(object):
         self.Ga = kwargs['ga']
 
         if self.Ga is None:
-            if Dop.ga is None:
-                raise ValueError('In Dop.__init__ self.Ga must be defined.')
-            else:
-                self.Ga = Dop.ga
+            raise ValueError('In Dop.__init__ self.Ga must be defined.')
 
         self.dop_fmt = kwargs['fmt_dop']  # Partial derivative output format (default 1)
         self.title = None
