@@ -1000,10 +1000,7 @@ class Mv(object):
         (coefs, bases) = metric.linear_expand(self.obj)
         cb = list(zip(coefs, bases))
         cb = sorted(cb, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
-        terms = []
-        for (coef, base) in cb:
-            terms.append(self.Ga.mv(coef * base))
-        return terms
+        return [self.Ga.mv(coef * base) for (coef, base) in cb]
 
     def get_coefs(self, grade):
         (coefs, bases) = metric.linear_expand(self.obj)
@@ -1343,19 +1340,16 @@ class Mv(object):
     def subs(self, d):
         # For each scalar coef of the multivector apply substitution argument d
         (coefs, bases) = metric.linear_expand(self.obj)
-        obj = S(0)
-        for (coef, base) in zip(coefs, bases):
-            obj += coef.subs(d) * base
+        obj = sum((
+            coef.subs(d) * base for coef, base in zip(coefs, bases)
+        ), S(0))
         return Mv(obj, ga=self.Ga)
 
     def expand(self):
-        coefs,bases = metric.linear_expand(self.obj)
-        new_coefs = []
-        for coef in coefs:
-            new_coefs.append(expand(coef))
-        obj = S(0)
-        for coef,base in zip(new_coefs,bases):
-            obj += coef * base
+        coefs, bases = metric.linear_expand(self.obj)
+        obj = sum((
+            expand(coef) * base for coef, base in zip(coefs, bases)
+        ), S(0))
         return Mv(obj, ga=self.Ga)
 
     def list(self):
@@ -1449,10 +1443,9 @@ class Sdop(object):
         return
 
     def TSimplify(self):
-        new_terms = []
-        for (coef, pdiff) in self.terms:
-            new_terms.append((metric.Simp.apply(coef), pdiff))
-        return Sdop(new_terms, ga=self.Ga)
+        return Sdop([
+            (metric.Simp.apply(coef), pdiff) for (coef, pdiff) in self.terms
+        ], ga=self.Ga)
 
     @staticmethod
     def consolidate_coefs(sdop):
@@ -2041,13 +2034,10 @@ class Dop(object):
         """
         Simplify each multivector coefficient of a partial derivative
         """
-        new_coefs = []
-        new_pd = []
-        for (coef, pd) in self.terms:
-            tmp = coef.simplify(modes=modes)
-            new_coefs.append(tmp)
-            new_pd.append(pd)
-        return Dop(new_coefs, new_pd, ga=self.Ga, cmpflg=self.cmpflg)
+        return Dop(
+            [(coef.simplify(modes=modes), pd) for coef, pd in self.terms],
+            ga=self.Ga, cmpflg=self.cmpflg
+        )
 
     def consolidate_coefs(self):
         """
@@ -2192,10 +2182,9 @@ class Dop(object):
         return product
 
     def TSimplify(self):
-        new_terms = []
-        for (coef, pdiff) in self.terms:
-            new_terms.append((metric.Simp.apply(coef), pdiff))
-        return Dop(new_terms, ga=self.Ga)
+        return Dop([
+            (metric.Simp.apply(coef), pdiff) for (coef, pdiff) in self.terms
+        ], ga=self.Ga)
 
     def __truediv__(self, dopr):
         if isinstance(dopr, (Dop, Mv)):
