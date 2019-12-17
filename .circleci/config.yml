@@ -9,6 +9,10 @@ defaults: &defaults
         command: |
           sudo pip install -r test_requirements.txt
           sudo pip install -e .
+          if [ -n "$PIP_EXTRA_INSTALLATION" ]; then
+            # deliberately not quoted
+            sudo pip install $PIP_EXTRA_INSTALLATION
+          fi
           sudo pip check
     - run:
         name: Test
@@ -28,6 +32,13 @@ defaults: &defaults
         path: test-reports
 
 jobs:
+  "python-3.7-sympy-1.5":
+    <<: *defaults
+    environment:
+      PIP_EXTRA_INSTALLATION: sympy==1.5
+    docker:
+      - image: circleci/python:3.7
+
   "python-3.7":
     <<: *defaults
     docker:
@@ -53,3 +64,4 @@ workflows:
       - "python-3.6"
       - "python-3.5"
       - "python-2.7"
+      - "python-3.7-sympy-1.5"
