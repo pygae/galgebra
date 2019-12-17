@@ -6,6 +6,7 @@ import copy
 import numbers
 import operator
 from functools import reduce, cmp_to_key
+import sys
 
 from sympy import (
     Symbol, Function, S, expand, Add,
@@ -577,17 +578,14 @@ class Mv(object):
     def __rmul__(self, A):
         return Mv(expand(A * self.obj), ga=self.Ga)
 
-    def __div__(self, A):
-        if isinstance(A,Mv):
-            return self * A.inv()
-        else:
-            return self * (S(1)/A)
-
     def __truediv__(self, A):
         if isinstance(A,Mv):
             return self * A.inv()
         else:
             return self * (S(1)/A)
+
+    if sys.version_info.major < 3:
+        __div__ = __truediv__
 
     def __str__(self):
         if printer.GaLatexPrinter.latex_flg:
@@ -2199,22 +2197,18 @@ class Dop(object):
             new_terms.append((metric.Simp.apply(coef), pdiff))
         return Dop(new_terms, ga=self.Ga)
 
-    def __div__(self, a):
-        if isinstance(a, (Mv, Dop)):
-            raise TypeError('!!!!Can only divide Dop by sympy scalar expression!!!!')
-        else:
-            return (1/a) * self
+    def __truediv__(self, dopr):
+        if isinstance(dopr, (Dop, Mv)):
+            raise TypeError('In Dop.__truediv__ dopr must be a sympy scalar.')
+        return Dop([
+            (coef / dopr, pdiff) for (coef, pdiff) in self.terms
+        ], ga=self.Ga)
+
+    if sys.version_info.major < 3:
+        __div__ = __truediv__
 
     def __mul__(self, dopr):  # * geometric product
         return Dop.Mul(self, dopr, op='*')
-
-    def __truediv__(self, dopr):
-        if isinstance(dopr, (Dop, Mv)):
-            raise ValueError('In Dop.__truediv__ dopr must be a sympy scalar.')
-        terms = []
-        for term in self.terms:
-            terms.append((term[0]/dopr,term[1]))
-        return Dop(terms, ga= self.Ga)
 
     def __rmul__(self, dopl):  # * geometric product
         return Dop.Mul(dopl, self, op='*')
