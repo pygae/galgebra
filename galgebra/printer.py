@@ -6,8 +6,8 @@ import os
 import sys
 import io
 import re
-from sympy.core.backend import Matrix, Basic, S, Symbol, Function, Derivative
-from sympy import Pow
+from sympy.core.backend import Matrix, S, Symbol, Function, Derivative
+from sympy import Basic, Pow
 from itertools import islice
 from sympy.printing.str import StrPrinter
 from sympy.printing.latex import LatexPrinter, accepted_latex_functions
