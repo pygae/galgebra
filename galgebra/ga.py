@@ -9,11 +9,12 @@ from itertools import combinations
 import functools
 from functools import reduce
 
-from sympy import (
+from sympy.core.backend import (
     diff, Rational, Symbol, S, Mul, Add,
-    expand, simplify, eye, trigsimp,
+    expand, eye,
     symbols, sqrt, Function
 )
+from sympy import simplify, trigsimp
 
 from . import printer
 from . import metric

@@ -8,12 +8,13 @@ import operator
 from functools import reduce, cmp_to_key
 import sys
 
-from sympy import (
+from sympy.core.backend import (
     Symbol, Function, S, expand, Add,
-    sin, cos, sinh, cosh, sqrt, trigsimp, expand,
-    simplify, diff, Rational, Expr, Abs, collect,
+    sin, cos, sinh, cosh, sqrt, expand,
+    diff, Rational
 )
-from sympy import exp as sympy_exp
+from sympy import simplify, trigsimp, Expr, Abs
+from sympy.core.backend import exp as sympy_exp
 from sympy import N as Nsympy
 
 from . import printer

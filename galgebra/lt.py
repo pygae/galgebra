@@ -9,9 +9,10 @@ import itertools
 from copy import copy
 from functools import reduce
 
-from sympy import (
-    expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add
+from sympy.core.backend import (
+    expand, symbols, Matrix, zeros, Symbol, Function, S, Add
 )
+from sympy import Transpose
 
 from . import printer
 from . import metric
