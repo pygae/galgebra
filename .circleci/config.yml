@@ -13,13 +13,20 @@ defaults: &defaults
     - run:
         name: Test
         command: |
-          pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg
+          mkdir test-reports
+          pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg --junitxml=test-reports/junit.xml
     - run:
         name: Coverage
         when: on_success
         command: |
           sudo pip install codecov
           codecov
+
+    - store_test_results:
+        path: test-reports
+    - store_artifacts:
+        path: test-reports
+
 jobs:
   "python-3.7":
     <<: *defaults
