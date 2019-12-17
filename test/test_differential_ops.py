@@ -32,7 +32,6 @@ class TestDop(object):
         assert v ^ (ga.rgrad ^ ex) == (v ^ ga.rgrad) ^ ex != 0
         assert v ^ (ga.rgrad ^ 20) == (v ^ ga.rgrad) ^ 20 != 0
 
-    @pytest.mark.xfail(raises=IndexError)
     def test_empty_dop(self):
         """ Test that dop with zero terms is equivalent to multiplying by zero """
         coords = x, y, z = symbols('x y z', real=True)
