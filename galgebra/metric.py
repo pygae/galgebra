@@ -4,11 +4,11 @@ Metric Tensor and Derivatives of Basis Vectors.
 
 import copy
 from sympy.core.backend import (
-    diff, Matrix, Rational,
+    diff, Rational,
     Symbol, sqrt, eye, S, expand, Mul,
     Add, Function
 )
-from sympy import simplify, trigsimp, sqf_list, Expr
+from sympy import simplify, trigsimp, sqf_list, Expr, Matrix
 
 from . import printer
 from . import utils
