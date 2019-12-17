@@ -24,7 +24,7 @@ def apply_function_list(f,x):
         return f(x)
 
 
-def linear_expand(expr, mode=True):
+def linear_expand(expr):
 
     if isinstance(expr, Expr):
         expr = expand(expr)
@@ -58,10 +58,13 @@ def linear_expand(expr, mode=True):
             else:
                 bases.append(base)
                 coefs.append(coef)
-    if mode:
-        return (coefs, bases)
-    else:
-        return list(zip(coefs, bases))
+    return (coefs, bases)
+
+
+def linear_expand_terms(expr):
+    coefs, bases = linear_expand(expr)
+    return zip(coefs, bases)
+
 
 def collect(A, nc_list):
     """

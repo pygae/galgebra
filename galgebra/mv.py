@@ -906,9 +906,8 @@ class Mv(object):
         self.obj = self.obj.collect(c)
         return self
         """
-        coefs, bases = metric.linear_expand(self.obj)
         obj_dict = {}
-        for (coef, base) in zip(coefs, bases):
+        for coef, base in metric.linear_expand_terms(self.obj):
             if base in list(obj_dict.keys()):
                 obj_dict[base] += coef
             else:
@@ -997,14 +996,12 @@ class Mv(object):
         return Mv(self.Ga.get_grade(self.obj, r), ga=self.Ga)
 
     def components(self):
-        (coefs, bases) = metric.linear_expand(self.obj)
-        cb = list(zip(coefs, bases))
+        cb = metric.linear_expand_terms(self.obj)
         cb = sorted(cb, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
         return [self.Ga.mv(coef * base) for (coef, base) in cb]
 
     def get_coefs(self, grade):
-        (coefs, bases) = metric.linear_expand(self.obj)
-        cb = list(zip(coefs, bases))
+        cb = metric.linear_expand_terms(self.obj)
         cb = sorted(cb, key=lambda x: self.Ga.blades[grade].index(x[1]))
         (coefs, bases) = list(zip(*cb))
         return coefs
@@ -1040,9 +1037,8 @@ class Mv(object):
         part of multivector with the same bases as in the bases_lst.
         """
         bases_lst = [x.obj for x in bases_lst]
-        (coefs, bases) = metric.linear_expand(self.obj)
         obj = 0
-        for (coef, base) in zip(coefs, bases):
+        for coef, base in metric.linear_expand_terms(self.obj):
             if base in bases_lst:
                 obj += coef * base
         return Mv(obj, ga=self.Ga)
@@ -1313,9 +1309,8 @@ class Mv(object):
         raise TypeError('In inv() for self =' + str(self) + 'self, or self*self or self*self.rev() is not a scalar')
 
     def func(self, fct):  # Apply function, fct, to each coefficient of multivector
-        (coefs, bases) = metric.linear_expand(self.obj)
         s = S(0)
-        for (coef, base) in zip(coefs, bases):
+        for coef, base in metric.linear_expand_terms(self.obj):
             s += fct(coef) * base
         fct_self = Mv(s, ga=self.Ga)
         fct_self.characterise_Mv()
@@ -1325,38 +1320,33 @@ class Mv(object):
         return self.func(trigsimp)
 
     def simplify(self, modes=simplify):
-        (coefs, bases) = metric.linear_expand(self.obj)
+        if not isinstance(modes, (list, tuple)):
+            modes = [modes]
+
         obj = S(0)
-        if isinstance(modes, list) or isinstance(modes, tuple):
-            for (coef, base) in zip(coefs, bases):
-                for mode in modes:
-                    coef = mode(coef)
-                obj += coef * base
-        else:
-            for (coef, base) in zip(coefs, bases):
-                obj += modes(coef) * base
+        for coef, base in metric.linear_expand_terms(self.obj):
+            for mode in modes:
+                coef = mode(coef)
+            obj += coef * base
         return Mv(obj, ga=self.Ga)
 
     def subs(self, d):
         # For each scalar coef of the multivector apply substitution argument d
-        (coefs, bases) = metric.linear_expand(self.obj)
         obj = sum((
-            coef.subs(d) * base for coef, base in zip(coefs, bases)
+            coef.subs(d) * base for coef, base in metric.linear_expand_terms(self.obj)
         ), S(0))
         return Mv(obj, ga=self.Ga)
 
     def expand(self):
-        coefs, bases = metric.linear_expand(self.obj)
         obj = sum((
-            expand(coef) * base for coef, base in zip(coefs, bases)
+            expand(coef) * base for coef, base in metric.linear_expand_terms(self.obj)
         ), S(0))
         return Mv(obj, ga=self.Ga)
 
     def list(self):
-        (coefs, bases) = metric.linear_expand(self.obj)
         indexes = []
         key_coefs = []
-        for (coef, base) in zip(coefs, bases):
+        for coef, base in metric.linear_expand_terms(self.obj):
             if base in self.Ga.basis:
                 index = self.Ga.basis.index(base)
                 key_coefs.append((coef, index))
@@ -2032,7 +2022,7 @@ class Dop(object):
         coefs = N * [[]]
         bases = N * [0]
         for term in self.terms:
-            for (coef, base) in metric.linear_expand(self.terms[0].obj, mode=False):
+            for coef, base in metric.linear_expand_terms(self.terms[0].obj):
                 index = self.blades.index(base)
                 coefs[index] = coef
                 bases[index] = base
@@ -2256,8 +2246,7 @@ class Dop(object):
 
         for (coef, pdiff) in self.terms:
             if isinstance(coef, Mv) and not coef.is_scalar():
-                mv_terms = metric.linear_expand(coef.obj, mode=False)
-                for (mv_coef, mv_base) in mv_terms:
+                for mv_coef, mv_base in metric.linear_expand_terms(coef.obj):
                     if mv_base in bases:
                         index = bases.index(mv_base)
                         coefs[index] += Sdop([(mv_coef, pdiff)], ga=self.Ga)
