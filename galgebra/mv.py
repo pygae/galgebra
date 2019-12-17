@@ -1616,7 +1616,7 @@ class Sdop(object):
 
     @staticmethod
     def Add(sdop1, sdop2):
-        if isinstance(sdop1, Sdop) and isinstance(sdop1, Sdop):
+        if isinstance(sdop1, Sdop) and isinstance(sdop2, Sdop):
             if sdop1.Ga != sdop2.Ga:
                 raise ValueError('In Sdop.Add sdop1.Ga != sdop2.Ga.')
             coefs1, pdiffs1 = list(zip(*sdop1.terms))
@@ -1678,7 +1678,7 @@ class Sdop(object):
         return Sdop.Add(self, sdop)
 
     def __radd__(self, sdop):
-        return Sdop(self, sdop)
+        return Sdop.Add(sdop, self)
 
     def __sub__(self, sdop):
         return Sdop.Add(self, -sdop)
