@@ -248,10 +248,12 @@ class Mv(object):
         ))
 
     @staticmethod
-    def _make_odd(ga, __name_or_coeffs, **kwargs):
+    def _make_odd(ga, __name, **kwargs):
         """ Make a general odd multivector """
+        if not isinstance(__name, str):
+            raise TypeError("Must be a string")
         return reduce(operator.add, (
-            Mv._make_grade(ga, __name_or_coeffs, grade, **kwargs)
+            Mv._make_grade(ga, __name, grade, **kwargs)
             for grade in range(1, ga.n + 1, 2)
         ), S(0))  # base case needed in case n == 0
 
