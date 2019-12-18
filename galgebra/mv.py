@@ -1964,16 +1964,20 @@ class Dop(object):
         self.title = None
 
         if len(args) == 2:
-            if len(args[0]) != len(args[1]):
+            coefs, pdiffs = args
+            if len(coefs) != len(pdiffs):
                 raise ValueError('In Dop.__init__ coefficent list and Pdop list must be same length.')
-            self.terms = tuple(zip(args[0], args[1]))
+            self.terms = tuple(zip(coefs, pdiffs))
         elif len(args) == 1:
-            if isinstance(args[0][0][0], Mv):  # Mv expansion [(Mv, Pdop)]
-                self.terms = tuple(args[0])
-            elif isinstance(args[0][0][0], Sdop):  # Sdop expansion [(Sdop, Mv)]
+            arg, = args
+            if len(arg) == 0:
+                self.terms = ()
+            elif isinstance(arg[0][0], Mv):  # Mv expansion [(Mv, Pdop)]
+                self.terms = tuple(arg)
+            elif isinstance(arg[0][0], Sdop):  # Sdop expansion [(Sdop, Mv)]
                 coefs = []
                 pdiffs = []
-                for (sdop, mv) in args[0]:
+                for (sdop, mv) in arg:
                     for (coef, pdiff) in sdop.terms:
                         if pdiff in pdiffs:
                             index = pdiffs.index(pdiff)
@@ -2037,23 +2041,18 @@ class Dop(object):
             if dop1.cmpflg != dop2.cmpflg:
                 raise ValueError('In Dop.Add complement flags have different values: %s vs. %s' % (dop1.cmpflg, dop2.cmpflg))
 
-            coefs1, pdiffs1 = list(zip(*dop1.terms))
-            coefs2, pdiffs2 = list(zip(*dop2.terms))
-
-            pdiffs1 = list(pdiffs1)
-            pdiffs2 = list(pdiffs2)
+            pdiffs1 = [pdiff for _, pdiff in dop1.terms]
+            pdiffs2 = [pdiff for _, pdiff in dop2.terms]
 
             pdiffs = pdiffs1 + [x for x in pdiffs2 if x not in pdiffs1]
             coefs = len(pdiffs) * [S(0)]
 
-            for pdiff in pdiffs1:
+            for coef, pdiff in dop1.terms:
                 index = pdiffs.index(pdiff)
-                coef = coefs1[pdiffs1.index(pdiff)]
                 coefs[index] += coef
 
-            for pdiff in pdiffs2:
+            for coef, pdiff in dop2.terms:
                 index = pdiffs.index(pdiff)
-                coef = coefs2[pdiffs2.index(pdiff)]
                 coefs[index] += coef
 
             return Dop(coefs, pdiffs, cmpflg=dop1.cmpflg, ga=dop1.Ga)
@@ -2149,7 +2148,7 @@ class Dop(object):
             raise TypeError('In Dop.__truediv__ dopr must be a sympy scalar.')
         return Dop([
             (coef / dopr, pdiff) for (coef, pdiff) in self.terms
-        ], ga=self.Ga)
+        ], ga=self.Ga, cmpflg=self.cmpflg)
 
     if sys.version_info.major < 3:
         __div__ = __truediv__
