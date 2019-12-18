@@ -83,3 +83,14 @@ class TestDop(object):
             v1 * ga2.rgrad
         with pytest.raises(ValueError):
             ga1.grad * ga2.grad
+
+    def test_components(self):
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+
+        components = ga.grad.components()
+        assert components == (
+            ex * (ex | ga.grad),
+            ey * (ey | ga.grad),
+            ez * (ez | ga.grad),
+        )
