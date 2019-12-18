@@ -1023,7 +1023,7 @@ class Ga(metric.Metric):
 
     @staticmethod
     def blade_reduce(lst):
-        sgn = 1
+        sgn = S(1)
         for i in range(1, len(lst)):
             save = lst[i]
             j = i
@@ -1033,7 +1033,7 @@ class Ga(metric.Metric):
                 j -= 1
             lst[j] = save
             if lst[j] == lst[j - 1]:
-                return 0, None
+                return S(0), None
         return sgn, lst
 
     def wedge_product_basis_blades(self, blade12):  # blade12 = blade1*blade2
@@ -1045,12 +1045,12 @@ class Ga(metric.Metric):
         index12 = list(index1 + index2)
 
         if len(index12) > self.n:
-            return 0
+            return S(0)
         (sgn, wedge12) = Ga.blade_reduce(index12)
         if sgn != 0:
             return(sgn * self.indexes_to_blades_dict[tuple(wedge12)])
         else:
-            return 0
+            return S(0)
 
     #****** Dot (|) product, reft (<) and right (>) contractions ******#
 
@@ -1089,8 +1089,8 @@ class Ga(metric.Metric):
             return zero
 
         n = len(index)
-        sgn = 1
-        result = 1
+        sgn = S(1)
+        result = S(1)
         ordered = False
         while n > grade:
             ordered = True
@@ -1102,7 +1102,7 @@ class Ga(metric.Metric):
                 if index1 == index2:
                     n -= 2
                     if n < grade:
-                        return 0
+                        return zero
                     result *= self.g[index1, index1]
                     index = index[:i1] + index[i2 + 1:]
                 elif index1 > index2:
@@ -1116,7 +1116,7 @@ class Ga(metric.Metric):
             if ordered:
                 break
         if n > grade:
-            return 0
+            return zero
         else:
             if index == []:
                 return sgn * result
