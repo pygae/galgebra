@@ -1946,10 +1946,6 @@ class Dop(object):
                   'debug': (False, 'True to print out debugging information'),
                   'fmt_dop': (1, '1 for normal dop partial derivative formating')}
 
-    @staticmethod
-    def flatten_one_level(lst):
-        return [inner for outer in lst for inner in outer]
-
     def __init__(self, *args, **kwargs):
 
         kwargs = metric.test_init_slots(Dop.init_slots, **kwargs)
