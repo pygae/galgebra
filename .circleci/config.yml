@@ -32,13 +32,19 @@ defaults: &defaults
         path: test-reports
 
 jobs:
+  "python-3.7-symengine":
+    <<: *defaults
+    environment:
+      PIP_EXTRA_INSTALLATION: numpy symengine==0.5.0
+      USE_SYMENGINE: 1
+    docker:
+      - image: circleci/python:3.7
   "python-3.7-sympy-1.5":
     <<: *defaults
     environment:
       PIP_EXTRA_INSTALLATION: sympy==1.5
     docker:
       - image: circleci/python:3.7
-
   "python-3.7":
     <<: *defaults
     docker:
@@ -60,8 +66,9 @@ workflows:
   version: 2
   build:
     jobs:
+      - "python-3.7-symengine"
+      - "python-3.7-sympy-1.5"
       - "python-3.7"
       - "python-3.6"
       - "python-3.5"
       - "python-2.7"
-      - "python-3.7-sympy-1.5"
