@@ -2378,18 +2378,6 @@ class Dop(object):
             else:
                 return s
 
-    @staticmethod
-    def basic(ga):
-        r_basis = list(ga.r_basis)
-
-        if not ga.is_ortho:
-            r_basis = [x / ga.e_sq for x in r_basis]
-        if ga.norm:
-            r_basis = [x / e_norm for (x, e_norm) in zip(r_basis, ga.e_norm)]
-
-        ga.lgrad = Dop(r_basis, ga.pdx, ga=ga)
-        ga.rgrad = Dop(r_basis, ga.pdx, ga=ga, cmpflg=true)
-        return ga.lgrad, ga.rgrad
 
 ################################# Alan Macdonald's additions #########################
 
