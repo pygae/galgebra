@@ -1,6 +1,6 @@
 import copy
 from itertools import combinations
-from sympy import trigsimp
+from sympy import trigsimp, S
 from . import ga
 from .mv import Mv
 from . import utils
@@ -63,7 +63,7 @@ def ReciprocalFrame(basis, mode='norm'):
     for igrade in index[-2:]:
         grade = []
         for iblade in igrade:
-            blade = Mv(1, 'scalar', ga=GA)
+            blade = Mv(S(1), 'scalar', ga=GA)
             for ibasis in iblade:
                 blade ^= basis[ibasis]
             blade = blade.trigsimp()
@@ -75,7 +75,7 @@ def ReciprocalFrame(basis, mode='norm'):
     duals = copy.copy(MFbasis[-2])
 
     duals.reverse()
-    sgn = 1
+    sgn = S(1)
     rbasis = []
     for dual in duals:
         recpv = (sgn * dual * E).trigsimp()
