@@ -2149,7 +2149,7 @@ class Dop(object):
             raise TypeError('In Dop.__truediv__ dopr must be a sympy scalar.')
         return Dop([
             (coef / dopr, pdiff) for (coef, pdiff) in self.terms
-        ], ga=self.Ga)
+        ], ga=self.Ga, cmpflg=self.cmpflg)
 
     if sys.version_info.major < 3:
         __div__ = __truediv__
