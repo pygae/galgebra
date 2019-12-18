@@ -59,6 +59,9 @@ class TestDop(object):
         assert laplacian.is_scalar()
         assert not ga.grad.is_scalar()
 
+        assert ga.grad == ga.grad
+        assert ga.grad != laplacian
+
         # inconsistent cmpflg, not clear which side the operator goes on
         with pytest.raises(ValueError):
             ga.grad + ga.rgrad
