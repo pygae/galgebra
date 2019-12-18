@@ -524,7 +524,8 @@ class Ga(metric.Metric):
         if root is None:  # Return ga basis and compute grad and rgrad
             return self.mv_basis
 
-        kwargs['ga'] = self
+        # ensure that ga is not already in kwargs
+        kwargs = dict(ga=self, **kwargs)
 
         if not utils.isstr(root):
             return mv.Mv(root, *args, **kwargs)
@@ -630,17 +631,14 @@ class Ga(metric.Metric):
             self._lt_flg = True
             (self.lt_coords, self.lt_x) = lt.Lt.setup(ga=self)
 
-        kwargs['ga'] = self
-        return lt.Lt(*args, **kwargs)
+        return lt.Lt(*args, ga=self, **kwargs)
 
     def sm(self, *args, **kwargs):
         """
         Instanciate and return a submanifold for this
         geometric algebra.  See :class:`Sm` for instantiation inputs.
         """
-        kwargs['ga'] = self
-        SM = Sm(*args, **kwargs)
-        return SM
+        return Sm(*args, ga=self, **kwargs)
 
     def parametric(self, coords):
         if not isinstance(coords, list):
