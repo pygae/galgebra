@@ -1406,6 +1406,44 @@ def compare(A,B):
     else:
         raise TypeError('In compare both arguments are not multivectors\n')
 
+
+def _consolidate_terms(terms):
+    """
+    Remove zero coefs and consolidate coefs with repeated pdiffs.
+    """
+    new_coefs = []
+    new_pdiffs = []
+    for (coef, pd) in terms:
+        if coef != S(0):
+            if pd in new_pdiffs:
+                index = new_pdiffs.index(pd)
+                new_coefs[index] += coef
+            else:
+                new_coefs.append(coef)
+                new_pdiffs.append(pd)
+    return tuple(zip(new_coefs, new_pdiffs))
+
+
+def _merge_terms(terms1, terms2):
+    """ Concatenate and consolidate two sets of already-consolidated terms """
+    pdiffs1 = [pdiff for _, pdiff in terms1]
+    pdiffs2 = [pdiff for _, pdiff in terms2]
+
+    pdiffs = pdiffs1 + [x for x in pdiffs2 if x not in pdiffs1]
+    coefs = len(pdiffs) * [S(0)]
+
+    for coef, pdiff in terms1:
+        index = pdiffs.index(pdiff)
+        coefs[index] += coef
+
+    for coef, pdiff in terms2:
+        index = pdiffs.index(pdiff)
+        coefs[index] += coef
+
+    # remove zeros
+    return [(coef, pdiff) for coef, pdiff in zip(coefs, pdiffs) if coef != S(0)]
+
+
 ################ Scalar Partial Differential Operator Class ############
 
 class Sdop(object):
@@ -1438,26 +1476,9 @@ class Sdop(object):
         Remove zero coefs and consolidate coefs with repeated pdiffs.
         """
         if isinstance(sdop, Sdop):
-            terms = sdop.terms
+            return Sdop(_consolidate_terms(sdop.terms), ga=sdop.Ga)
         else:
-            terms = sdop
-
-        new_coefs = []
-        new_pdiffs = []
-        for (coef, pd) in terms:
-            if coef != S(0):
-                if pd in new_pdiffs:
-                    index = new_pdiffs.index(pd)
-                    new_coefs[index] += coef
-                else:
-                    new_coefs.append(coef)
-                    new_pdiffs.append(pd)
-        new_terms = list(zip(new_coefs, new_pdiffs))
-
-        if isinstance(sdop, Sdop):
-            return Sdop(new_terms, ga=sdop.Ga)
-        else:
-            return new_terms
+            return _consolidate_terms(sdop)
 
     def simplify(self, modes=simplify):
         return Sdop([
@@ -1588,21 +1609,7 @@ class Sdop(object):
             if sdop1.Ga != sdop2.Ga:
                 raise ValueError('In Sdop.Add sdop1.Ga != sdop2.Ga.')
 
-            pdiffs1 = [pdiff for _, pdiff in sdop1.terms]
-            pdiffs2 = [pdiff for _, pdiff in sdop2.terms]
-
-            pdiffs = pdiffs1 + [x for x in pdiffs2 if x not in pdiffs1]
-            coefs = len(pdiffs) * [S(0)]
-
-            for coef, pdiff in sdop1.terms:
-                index = pdiffs.index(pdiff)
-                coefs[index] += coef
-
-            for coef, pdiff in sdop2.terms:
-                index = pdiffs.index(pdiff)
-                coefs[index] += coef
-
-            sdop_sum = Sdop(coefs, pdiffs, ga=sdop1.Ga)
+            sdop_sum = Sdop(_merge_terms(sdop1.terms, sdop2.terms), ga=sdop1.Ga)
         elif isinstance(sdop1, Sdop):
             coefs, pdiffs = list(zip(*sdop1.terms))
             if sdop1.Ga.Pdop_identity in pdiffs:
@@ -1973,17 +1980,11 @@ class Dop(object):
             elif isinstance(arg[0][0], Mv):  # Mv expansion [(Mv, Pdop)]
                 self.terms = tuple(arg)
             elif isinstance(arg[0][0], Sdop):  # Sdop expansion [(Sdop, Mv)]
-                coefs = []
-                pdiffs = []
-                for (sdop, mv) in arg:
-                    for (coef, pdiff) in sdop.terms:
-                        if pdiff in pdiffs:
-                            index = pdiffs.index(pdiff)
-                            coefs[index] += coef * mv
-                        else:
-                            pdiffs.append(pdiff)
-                            coefs.append(coef * mv)
-                self.terms = tuple(zip(coefs, pdiffs))
+                self.terms = _consolidate_terms(
+                    (coef * mv, pdiff)
+                    for (sdop, mv) in arg
+                    for (coef, pdiff) in sdop.terms
+                )
             else:
                 raise ValueError('In Dop.__init__ args[0] form not allowed. args = ' + str(args))
         else:
@@ -2003,18 +2004,7 @@ class Dop(object):
         """
         Remove zero coefs and consolidate coefs with repeated pdiffs.
         """
-        new_coefs = []
-        new_pdiffs = []
-        for (coef, pd) in self.terms:
-            if coef != S(0):
-                if pd in new_pdiffs:
-                    index = new_pdiffs.index(pd)
-                    new_coefs[index] += coef
-                else:
-                    new_coefs.append(coef)
-                    new_pdiffs.append(pd)
-
-        return Dop(new_coefs, new_pdiffs, ga=self.Ga, cmpflg=self.cmpflg)
+        return Dop(_consolidate_terms(self.terms), ga=self.Ga, cmpflg=self.cmpflg)
 
 
     def blade_rep(self):
@@ -2037,21 +2027,7 @@ class Dop(object):
             if dop1.cmpflg != dop2.cmpflg:
                 raise ValueError('In Dop.Add complement flags have different values: %s vs. %s' % (dop1.cmpflg, dop2.cmpflg))
 
-            pdiffs1 = [pdiff for _, pdiff in dop1.terms]
-            pdiffs2 = [pdiff for _, pdiff in dop2.terms]
-
-            pdiffs = pdiffs1 + [x for x in pdiffs2 if x not in pdiffs1]
-            coefs = len(pdiffs) * [S(0)]
-
-            for coef, pdiff in dop1.terms:
-                index = pdiffs.index(pdiff)
-                coefs[index] += coef
-
-            for coef, pdiff in dop2.terms:
-                index = pdiffs.index(pdiff)
-                coefs[index] += coef
-
-            return Dop(coefs, pdiffs, cmpflg=dop1.cmpflg, ga=dop1.Ga)
+            return Dop(_merge_terms(dop1.terms, dop2.terms), cmpflg=dop1.cmpflg, ga=dop1.Ga)
         else:
             if isinstance(dop1, Dop):  # dop1 is Dop
                 if not isinstance(dop2, Mv):
@@ -2213,21 +2189,13 @@ class Dop(object):
         return True
 
     def components(self):
-        dop_lst = []
-        for (sdop, base) in self.Dop_mv_expand():
-            new_coefs = []
-            new_pdiffs = []
-            for (coef, pdiff) in sdop.terms:
-                if pdiff in new_pdiffs:
-                    index = new_pdiffs.index(pdiff)
-                    new_coefs[index] += coef * base
-                else:
-                    new_pdiffs.append(pdiff)
-                    new_coefs.append(coef * base)
-            new_coefs = [Mv(x, ga=self.Ga) for x in new_coefs]
-            terms = list(zip(new_coefs, new_pdiffs))
-            dop_lst.append(Dop(terms, ga=self.Ga))
-        return tuple(dop_lst)
+        return tuple(
+            Dop(_consolidate_terms(
+                (Mv(coef * base, ga=self.Ga), pdiff)
+                for (coef, pdiff) in sdop.terms
+            ), ga=self.Ga)
+            for (sdop, base) in self.Dop_mv_expand()
+        )
 
     def Dop_mv_expand(self, modes=None):
         coefs = []
