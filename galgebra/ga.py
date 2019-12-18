@@ -1663,9 +1663,9 @@ class Ga(metric.Metric):
                 return self.wedge(blade, er)
         else:
             if left:
-                return self._dot(er, blade, mode=mode)
+                return self.Mul(er, blade, mode=mode)
             else:
-                return self._dot(blade, er, mode=mode)
+                return self.Mul(blade, er, mode=mode)
 
     def blade_derivation(self, blade, ib):
         """
