@@ -1,8 +1,8 @@
-from sympy import symbols
+from sympy import symbols, S
 import pytest
 
 from galgebra.ga import Ga
-from galgebra.mv import Dop
+from galgebra.mv import Dop, Sdop, Pdop
 
 
 class TestDop(object):
@@ -94,3 +94,37 @@ class TestDop(object):
             ey * (ey | ga.grad),
             ez * (ez | ga.grad),
         )
+
+
+class TestSdop(object):
+
+    def test_shorthand(self):
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+
+        # TODO: __eq__ is broken, remove `repr` when it is fixed
+        assert repr(Sdop(x, ga=ga)) == repr(Sdop([(S(1), Pdop({x: 1}, ga=ga))], ga=ga))
+
+    def test_empty_sdop(self):
+        """ Test that sdop with zero terms is equivalent to multiplying by zero """
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+        v = ga.mv('v', 'vector', f=True)
+
+        make_zero = Sdop([], ga=ga)
+        assert make_zero * v == 0
+        assert make_zero * make_zero * v == 0
+        assert (make_zero + make_zero) * v == 0
+        assert (-make_zero) * v == 0
+
+
+class TestPdop(object):
+
+    def test_deprecation(self):
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+
+        # passing `None` is a deprecate way to spell `{}`
+        with pytest.warns(DeprecationWarning):
+            p = Pdop(None, ga=ga)
+        assert p == Pdop({}, ga=ga)
