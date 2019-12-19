@@ -447,7 +447,7 @@ class Ga(metric.Metric):
         self.a = []  # List of dummy vectors for Mlt calculations
         self._agrads = {}  # cache of gradient operator with respect to vector a
         self.dslot = -1  # args slot for dervative, -1 for coordinates
-        self.XOX = self.mv('XOX','vector')  # Versor test vector
+        self._XOX = self.mv('XOX','vector')  # cached vector for use in is_versor
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
 
