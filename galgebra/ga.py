@@ -514,25 +514,25 @@ class Ga(metric.Metric):
     def Pdiffs(self):
         # galgebra 0.4.5
         warnings.warn(
-            "ga.Pdiffs[x] is deprecated, use `ga.pdop(x)` instead",
+            "ga.Pdiffs[x] is deprecated, use `Pdop(x)` instead",
             DeprecationWarning, stacklevel=2)
-        return {x: self.pdop(x) for x in self.coords}
+        return {x: mv.Pdop(x) for x in self.coords}
 
     @property
     def sPds(self):
         # galgebra 0.4.5
         warnings.warn(
-            "ga.sPds[x] is deprecated, use `ga.sdop(x)` instead",
+            "ga.sPds[x] is deprecated, use `Sdop(x)` instead",
             DeprecationWarning, stacklevel=2)
-        return {x: self.sdop(x) for x in self.coords}
+        return {x: mv.Sdop(x) for x in self.coords}
 
     @property
     def Pdop_identity(self):
         # galgebra 0.4.5
         warnings.warn(
-            "ga.Pdop_identity is deprecated, use `ga.pdop({})` instead",
+            "ga.Pdop_identity is deprecated, use `Pdop({})` instead",
             DeprecationWarning, stacklevel=2)
-        return self.pdop({})
+        return mv.Pdop({})
 
     def mv(self, root=None, *args, **kwargs):
         """
@@ -618,7 +618,7 @@ class Ga(metric.Metric):
         if self.norm:
             r_basis = [x / e_norm for (x, e_norm) in zip(self.r_basis_mv, self.e_norm)]
 
-        pdx = [self.pdop(x) for x in self.coords]
+        pdx = [mv.Pdop(x) for x in self.coords]
 
         self.grad = mv.Dop(r_basis, pdx, ga=self)
         self.rgrad = mv.Dop(r_basis, pdx, ga=self, cmpflg=True)
@@ -630,7 +630,11 @@ class Ga(metric.Metric):
 
     def pdop(self, *args, **kwargs):
         """ Shorthand to construct a :class:`~galgebra.mv.Pdop` for this algebra """
-        return mv.Pdop(*args, ga=self, **kwargs)
+        # galgebra 0.4.5
+        warnings.warn(
+            "`ga.pdop` is deprecated, use `Pdop()` directly.",
+            DeprecationWarning, stacklevel=2)
+        return mv.Pdop(*args, **kwargs)
 
     def dop(self, *args, **kwargs):
         """ Shorthand to construct a :class:`~galgebra.mv.Dop` for this algebra """
@@ -638,7 +642,11 @@ class Ga(metric.Metric):
 
     def sdop(self, *args, **kwargs):
         """ Shorthand to construct a :class:`~galgebra.mv.Sdop` for this algebra """
-        return mv.Sdop(*args, ga=self, **kwargs)
+        # galgebra 0.4.5
+        warnings.warn(
+            "`ga.sdop` is deprecated, use `Sdop()` directly.",
+            DeprecationWarning, stacklevel=2)
+        return mv.Sdop(*args, **kwargs)
 
     def lt(self, *args, **kwargs):
         """

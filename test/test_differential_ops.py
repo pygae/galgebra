@@ -120,7 +120,7 @@ class TestSdop(object):
         coords = x, y, z = symbols('x y z', real=True)
         ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
 
-        assert Sdop(x, ga=ga) == Sdop([(S(1), Pdop({x: 1}, ga=ga))], ga=ga)
+        assert Sdop(x) == Sdop([(S(1), Pdop({x: 1}))])
 
     def test_empty_sdop(self):
         """ Test that sdop with zero terms is equivalent to multiplying by zero """
@@ -128,7 +128,7 @@ class TestSdop(object):
         ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
         v = ga.mv('v', 'vector', f=True)
 
-        make_zero = Sdop([], ga=ga)
+        make_zero = Sdop([])
         assert make_zero * v == 0
         assert make_zero * make_zero * v == 0
         assert (make_zero + make_zero) * v == 0
@@ -138,7 +138,7 @@ class TestSdop(object):
         coords = x, y, z = symbols('x y z', real=True)
         ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
         v = ga.mv('v', 'vector', f=True)
-        laplacian = Sdop((ga.grad * ga.grad).terms, ga=ga)
+        laplacian = Sdop((ga.grad * ga.grad).terms)
 
         # check addition distributes
         assert (laplacian + 20) * v == laplacian * v + 20 * v != 0
@@ -177,8 +177,8 @@ class TestPdop(object):
 
         # passing `None` is a deprecate way to spell `{}`
         with pytest.warns(DeprecationWarning):
-            p = Pdop(None, ga=ga)
-        assert p == Pdop({}, ga=ga)
+            p = Pdop(None)
+        assert p == Pdop({})
 
         with pytest.warns(DeprecationWarning):
             ga.Pdop_identity
