@@ -1652,7 +1652,7 @@ class Sdop(object):
 
     def __mul__(self, sdopr):
         sdopl = self
-        if isinstance(sdopl, Sdop) and isinstance(sdopr, Sdop):
+        if isinstance(sdopr, Sdop):
             if sdopl.Ga != sdopr.Ga:
                 raise ValueError('In Sdop.__mul__ Sdop arguments are not from same geometric algebra')
             terms = []
@@ -1662,13 +1662,8 @@ class Sdop(object):
                 terms += Dsdopl
             product = Sdop(terms, ga=sdopl.Ga)
             return Sdop.consolidate_coefs(product)
-        else:
-            if not isinstance(sdopl, Sdop):  # sdopl is a scalar
-                terms = [(sdopl * x[0], x[1]) for x in sdopr.terms]
-                product = Sdop(terms, ga=sdopr.Ga)  # returns Sdop
-                return Sdop.consolidate_coefs(product)
-            else:  # sdopr is a scalar or a multivector
-                return sum([x[0] * x[1](sdopr) for x in sdopl.terms], S(0))  # returns scalar
+        else:  # sdopr is a scalar or a multivector
+            return sum([x[0] * x[1](sdopr) for x in sdopl.terms], S(0))  # returns scalar
 
     def __rmul__(self,sdop):
         terms = [(sdop * x[0], x[1]) for x in self.terms]
