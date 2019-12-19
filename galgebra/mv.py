@@ -436,19 +436,6 @@ class Mv(object):
         b.is_blade_rep = True
         return b
 
-    def __ne__(self, A):
-        if isinstance(A, Mv):
-            diff = (self - A).expand()
-            if diff.obj == S(0):
-                return False
-            else:
-                return True
-        else:
-            if self.is_scalar() and self.obj == A:
-                return False
-            else:
-                return True
-
     def __eq__(self, A):
         if isinstance(A, Mv):
             diff = (self - A).expand().simplify()
@@ -463,6 +450,9 @@ class Mv(object):
             else:
                 return False
 
+    if sys.version_info.major < 3:
+        def __ne__(self, other):
+            return not (self == other)
 
     """
     def __eq__(self, A):
