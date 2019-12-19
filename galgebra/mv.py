@@ -1684,8 +1684,6 @@ class Pdop(object):
             # sorted by symbol after that, after expansion
             sorted([
                 x.sort_key(order)
-                if x not in self.Ga.coords else
-                self.Ga.coords.index(x)
                 for x, k in self.pdiffs.items()
                 for i in range(k)
             ])
