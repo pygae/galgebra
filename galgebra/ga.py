@@ -1,7 +1,7 @@
 """
 Geometric Algebra (inherits Metric)
 """
-
+import warnings
 import operator
 import copy
 from collections import OrderedDict
@@ -268,20 +268,6 @@ class Ga(metric.Metric):
         Derivatives of basis functions.  Two dimensional list. First entry is differentiating coordinate index.
         Second entry is basis vector index.  Quantities are linear combinations of basis vector symbols.
 
-    .. attribute:: Pdop_identity
-
-        Partial differential operator identity (operates on multivector function to return function).
-
-    .. attribute:: Pdiffs
-
-        Dictionary of partial differential operators (operates on multivector functions) for each coordinate
-        :math:`\{x: \partial_{x}, ...\}`
-
-    .. attribute:: sPds
-
-        Dictionary of scalar partial differential operators (operates on scalar functions) for each coordinate
-        :math:`\{x: \partial_{x}, ...\}`
-
     .. attribute:: grad
 
         Geometric derivative operator from left. ``grad*F`` returns multivector
@@ -420,12 +406,6 @@ class Ga(metric.Metric):
         if self.coords is not None:
             self.coord_vec = sum([coord * base for (coord, base) in zip(self.coords, self.basis)])
             self._build_reciprocal_basis(self.gsym)
-            self.Pdop_identity = mv.Pdop({},ga=self)  # Identity Pdop = 1
-            self.Pdiffs = {}
-            self.sPds = {}
-            for x in self.coords:  # Partial derivative operator for each coordinate
-                self.Pdiffs[x] = mv.Pdop({x:1}, ga=self)
-                self.sPds[x] = mv.Sdop([(S(1), self.Pdiffs[x])], ga=self)
             self._build_grads()
         else:
             self.r_basis_mv = None
@@ -516,6 +496,30 @@ class Ga(metric.Metric):
     def X(self):
         return self.mv(sum([coord*base for (coord, base) in zip(self.coords, self.basis)]))
 
+    @property
+    def Pdiffs(self):
+        # galgebra 0.4.5
+        warnings.warn(
+            "ga.Pdiffs[x] is deprecated, use `ga.pdop(x)` instead",
+            DeprecationWarning, stacklevel=2)
+        return {x: self.pdop(x) for x in self.coords}
+
+    @property
+    def sPds(self):
+        # galgebra 0.4.5
+        warnings.warn(
+            "ga.sPds[x] is deprecated, use `ga.sdop(x)` instead",
+            DeprecationWarning, stacklevel=2)
+        return {x: self.sdop(x) for x in self.coords}
+
+    @property
+    def Pdop_identity(self):
+        # galgebra 0.4.5
+        warnings.warn(
+            "ga.Pdop_identity is deprecated, use `ga.pdop({})` instead",
+            DeprecationWarning, stacklevel=2)
+        return self.pdop({})
+
     def mv(self, root=None, *args, **kwargs):
         """
         Instanciate and return a multivector for this, 'self',
@@ -600,7 +604,7 @@ class Ga(metric.Metric):
         if self.norm:
             r_basis = [x / e_norm for (x, e_norm) in zip(self.r_basis_mv, self.e_norm)]
 
-        pdx = [self.Pdiffs[x] for x in self.coords]
+        pdx = [self.pdop(x) for x in self.coords]
 
         self.grad = mv.Dop(r_basis, pdx, ga=self)
         self.rgrad = mv.Dop(r_basis, pdx, ga=self, cmpflg=True)

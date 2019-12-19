@@ -109,6 +109,13 @@ class TestDop(object):
 
 class TestSdop(object):
 
+    def test_deprecation(self):
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+
+        with pytest.warns(DeprecationWarning):
+            ga.sPds
+
     def test_shorthand(self):
         coords = x, y, z = symbols('x y z', real=True)
         ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
@@ -172,6 +179,11 @@ class TestPdop(object):
         with pytest.warns(DeprecationWarning):
             p = Pdop(None, ga=ga)
         assert p == Pdop({}, ga=ga)
+
+        with pytest.warns(DeprecationWarning):
+            ga.Pdop_identity
+        with pytest.warns(DeprecationWarning):
+            ga.Pdiffs
 
     def test_misc(self):
         """ Other miscellaneous tests """
