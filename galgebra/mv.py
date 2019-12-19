@@ -1590,13 +1590,15 @@ class Sdop(object):
     def __call__(self, arg):
         if isinstance(arg, Sdop):
             if self.Ga != arg.Ga:
-                raise ValueError('In Sdop.__call__  self.Ga != arg.Ga.')
+                raise ValueError(
+                    'When chaining scalar differential operators, self.Ga != arg.Ga.')
             terms = []
             for (coef, pdiff) in self.terms:
                 new_terms = pdiff(arg.terms)
                 new_terms = [(coef * c, p) for c, p in new_terms]
                 terms += new_terms
-            return Sdop(terms, ga=self.Ga)
+            product = Sdop(terms, ga=self.Ga)
+            return Sdop.consolidate_coefs(product)
         else:
             return sum([coef * pdiff(arg) for coef, pdiff in self.terms], S(0))
 
@@ -1651,19 +1653,8 @@ class Sdop(object):
         return Sdop.Add(-self, sdop)
 
     def __mul__(self, sdopr):
-        sdopl = self
-        if isinstance(sdopr, Sdop):
-            if sdopl.Ga != sdopr.Ga:
-                raise ValueError('In Sdop.__mul__ Sdop arguments are not from same geometric algebra')
-            terms = []
-            for (coef, pdiff) in sdopl.terms:
-                Dsdopl = pdiff(sdopr.terms)  # list of terms
-                Dsdopl = [(coef * c, p) for c, p in Dsdopl]
-                terms += Dsdopl
-            product = Sdop(terms, ga=sdopl.Ga)
-            return Sdop.consolidate_coefs(product)
-        else:  # sdopr is a scalar or a multivector
-            return sum([coef * pdiff(sdopr) for coef, pdiff in sdopl.terms], S(0))  # returns scalar
+        # alias for applying the operator
+        return self.__call__(sdopr)
 
     def __rmul__(self, sdop):
         terms = [(sdop * coef, pdiff) for coef, pdiff in self.terms]
