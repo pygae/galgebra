@@ -516,9 +516,6 @@ class Ga(metric.Metric):
     def X(self):
         return self.mv(sum([coord*base for (coord, base) in zip(self.coords, self.basis)]))
 
-    def sdop(self, coefs, pdiffs=None):
-        return mv.Sdop(coefs, pdiffs, ga=self)
-
     def mv(self, root=None, *args, **kwargs):
         """
         Instanciate and return a multivector for this, 'self',
@@ -527,7 +524,8 @@ class Ga(metric.Metric):
         if root is None:  # Return ga basis and compute grad and rgrad
             return self.mv_basis
 
-        kwargs['ga'] = self
+        # ensure that ga is not already in kwargs
+        kwargs = dict(ga=self, **kwargs)
 
         if not utils.isstr(root):
             return mv.Mv(root, *args, **kwargs)
@@ -612,13 +610,17 @@ class Ga(metric.Metric):
             raise ValueError("Ga must have been initialized with coords to compute grads")
         return self.grad, self.rgrad
 
+    def pdop(self, *args, **kwargs):
+        """ Shorthand to construct a :class:`~galgebra.mv.Pdop` for this algebra """
+        return mv.Pdop(*args, ga=self, **kwargs)
+
     def dop(self, *args, **kwargs):
-        """
-        Instanciate and return a multivector differential operator for
-        this, 'self', geometric algebra.
-        """
-        kwargs['ga'] = self
-        return mv.Dop(*args, **kwargs)
+        """ Shorthand to construct a :class:`~galgebra.mv.Dop` for this algebra """
+        return mv.Dop(*args, ga=self, **kwargs)
+
+    def sdop(self, *args, **kwargs):
+        """ Shorthand to construct a :class:`~galgebra.mv.Sdop` for this algebra """
+        return mv.Sdop(*args, ga=self, **kwargs)
 
     def lt(self, *args, **kwargs):
         """
@@ -629,17 +631,14 @@ class Ga(metric.Metric):
             self._lt_flg = True
             (self.lt_coords, self.lt_x) = lt.Lt.setup(ga=self)
 
-        kwargs['ga'] = self
-        return lt.Lt(*args, **kwargs)
+        return lt.Lt(*args, ga=self, **kwargs)
 
     def sm(self, *args, **kwargs):
         """
         Instanciate and return a submanifold for this
         geometric algebra.  See :class:`Sm` for instantiation inputs.
         """
-        kwargs['ga'] = self
-        SM = Sm(*args, **kwargs)
-        return SM
+        return Sm(*args, ga=self, **kwargs)
 
     def parametric(self, coords):
         if not isinstance(coords, list):
@@ -1709,9 +1708,6 @@ class Ga(metric.Metric):
                                  self.indexes_to_blades[index[i + 1:]])
         self._dbases[key] = db
         return db
-
-    def pdop(self,*args):
-        return mv.Pdop(args,ga=self)
 
     def pDiff(self, A, coord):
         """
