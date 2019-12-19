@@ -170,6 +170,14 @@ class Mv(object):
     # switch to using the / syntax from PEP570
 
     @staticmethod
+    def _make_blade(ga, __name, __grade, **kwargs):
+        if isinstance(__name, str) and isinstance(__grade, int):
+            return reduce(Mv.__xor__, [ga.mv('%s%d' % (__name, i), 'vector') for i in range(__grade)],
+                          ga.mv(1, 'scalar')).obj
+        else:
+            raise TypeError("name must be a string and grade must be an int")
+
+    @staticmethod
     def _make_grade(ga, __name_or_coeffs, __grade, **kwargs):
         """ Make a pure grade multivector. """
         def add_superscript(root, s):
@@ -550,7 +558,7 @@ class Mv(object):
         if isinstance(A, Dop):
             return A.Mul(self, A, op='*')
 
-        if self.is_scalar():
+        if self.is_scalar() or A.is_scalar():
             return Mv(self.obj * A, ga=self.Ga)
 
         if self.is_blade_rep and A.is_blade_rep:
@@ -791,7 +799,7 @@ class Mv(object):
         if isinstance(A, Dop):
             return A.Mul(self, A, op='^')
 
-        if self.is_scalar():
+        if self.is_scalar() or isinstance(A, numbers.Number) or A.is_scalar():
             return self * A
 
         self = self.blade_rep()
@@ -1009,6 +1017,20 @@ class Mv(object):
         (coefs, bases) = list(zip(*cb))
         return coefs
 
+    def J(self):
+        # TODO: If we pick our basis smartly, we can probably use J in place of Jinv...
+        obj = 0
+        for coef, coblade in zip(self.blade_coefs(self.Ga._all_mv_blades_lst), self.Ga.coblades_lst):
+            obj += coef * coblade
+        return Mv(obj, ga=self.Ga)
+
+    def Jinv(self):
+        # TODO: If we pick our basis smartly, we can probably use J in place of Jinv...
+        obj = 0
+        for coef, coblade_inv in zip(self.blade_coefs(self.Ga._all_mv_blades_lst), self.Ga.coblades_inv_lst):
+            obj += coef * coblade_inv
+        return Mv(obj, ga=self.Ga)
+
     def blade_coefs(self, blade_lst=None):
         """
         For a multivector, A, and a list of basis blades, blade_lst return
@@ -1018,12 +1040,10 @@ class Mv(object):
 
         if blade_lst is None:
             blade_lst = self.Ga._all_mv_blades_lst
-
-        #print 'Enter blade_coefs blade_lst =', blade_lst, type(blade_lst), [i.is_blade() for i in blade_lst]
-
-        for blade in blade_lst:
-            if not blade.is_base() or not blade.is_blade():
-                raise ValueError("%s expression isn't a basis blade" % blade)
+        else:
+            for blade in blade_lst:
+                if not blade.is_base() or not blade.is_blade():
+                    raise ValueError("%s expression isn't a basis blade" % blade)
         blade_lst = [x.obj for x in blade_lst]
         (coefs, bases) = metric.linear_expand(self.obj)
         coef_lst = []
@@ -2413,6 +2433,20 @@ def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors 
         ulocal[i] -= uave
         vlocal[i] -= vave
     return ulocal.dot(vlocal) / (ulocal.norm() * vlocal.norm()). evalf(dec)
+
+
+def J(A):
+    if isinstance(A, Mv):
+        return A.J()
+    else:
+        raise ValueError('A not a multivector in J(A)')
+
+
+def Jinv(A):
+    if isinstance(A, Mv):
+        return A.Jinv()
+    else:
+        raise ValueError('A not a multivector in J(A)')
 
 
 def cross(v1, v2):

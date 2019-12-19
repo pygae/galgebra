@@ -393,7 +393,7 @@ class Ga(metric.Metric):
         metric.Metric.__init__(self, bases, **kwargs)
 
         self.par_coords = None
-        self._build_bases()
+        self._build_bases(kwargs.get('sign_and_indexes', None))
         self.dot_mode = '|'
         self._build_basis_product_tables()
 
@@ -480,6 +480,9 @@ class Ga(metric.Metric):
 
     def I(self):  # Noromalized pseudo-scalar
         return self.i
+
+    def I_inv(self):
+        return self.i_inv
 
     @property
     def mv_I(self):
@@ -699,7 +702,37 @@ class Ga(metric.Metric):
                 raise ValueError('!!!!No unique root symbol for wedge_print = False!!!!')
         return Symbol(symbol_str, commutative=False)
 
-    def _build_bases(self):
+    def build_cobases(self, coindexes=None):
+        """
+        Cobases for building Poincare duality, this is useful for defining wedge and vee without using I nor any metric.
+        """
+        # TODO: check this can be used with another GA than 3D PGA...
+        if coindexes is None:
+            raise NotImplementedError('!!!!We should provide a default implementation!!!!')
+        else:
+            self.coindexes = coindexes
+            self.coindexes_lst = [index for cograde_index in coindexes for index in cograde_index]
+
+        n = self.n
+
+        self.coblades_lst = []
+        for cograde_index in self.coindexes:
+            k = len(cograde_index[0]) if len(cograde_index) > 0 else 0
+            for cobase_index in cograde_index:
+                coblade_sign = -1 if k == n - 1 and k % 2 == 1 else 1
+                coblade = coblade_sign * self._build_basis_blade_symbol(cobase_index)
+                self.coblades_lst.append(coblade)
+
+        self.coblades_inv_lst = []
+        for grade_index in self.indexes:
+            k = len(grade_index[0]) if len(grade_index) > 0 else 0
+            for base_index in grade_index:
+                coblade_inv_sign = -1 if k == 1 and k % 2 == 1 else 1
+                coblade_inv = coblade_inv_sign * self._build_basis_blade_symbol(base_index)
+                self.coblades_inv_lst.append(coblade_inv)
+        self.coblades_inv_lst = list(reversed(self.coblades_inv_lst))
+
+    def _build_bases(self, sign_and_indexes=None):
         r"""
         The bases for the multivector (geometric) algebra are formed from
         all combinations of the bases of the vector space and the scalars.
@@ -735,14 +768,18 @@ class Ga(metric.Metric):
         """
 
         # index list for multivector bases and blades by grade
-        basis_indexes = tuple(self.n_range)
-        self.indexes = []
-        self._all_indexes_lst = []
-        for i in range(len(basis_indexes) + 1):
-            base_tuple = tuple(combinations(basis_indexes, i))
-            self.indexes.append(base_tuple)
-            self._all_indexes_lst += list(base_tuple)
-        self.indexes = tuple(self.indexes)
+        if sign_and_indexes is None:
+            basis_indexes = tuple(self.n_range)
+            self.indexes = []
+            self._all_indexes_lst = []
+            for i in range(len(basis_indexes) + 1):
+                base_tuple = tuple(combinations(basis_indexes, i))
+                self.indexes.append(base_tuple)
+                self._all_indexes_lst += list(base_tuple)
+            self.indexes = tuple(self.indexes)
+        else:
+            self.indexes = sign_and_indexes[1]
+            self._all_indexes_lst = [index for grade_index in self.indexes for index in grade_index]
 
         # list of non-commutative symbols for multivector bases and blades
         # by grade and as a flattened list
@@ -761,9 +798,21 @@ class Ga(metric.Metric):
 
         self.blades_to_indexes = []
         self.indexes_to_blades = []
-        for (index, blade) in zip(self._all_indexes_lst, self._all_blades_lst):
-            self.blades_to_indexes.append((blade, index))
-            self.indexes_to_blades.append((index, blade))
+
+        if sign_and_indexes is None:
+            for (index, blade) in zip(self._all_indexes_lst, self._all_blades_lst):
+                self.blades_to_indexes.append((blade, (1, index)))
+                self.indexes_to_blades.append((index, blade))
+        else:
+            basis_indexes = tuple(self.n_range)
+            default_indexes_lst = []
+            for i in range(len(basis_indexes) + 1):
+                base_tuple = tuple(combinations(basis_indexes, i))
+                default_indexes_lst += list(base_tuple)
+            signs_lst = [sign for grade_sign in sign_and_indexes[0] for sign in grade_sign]
+            for (default_index, sign, blade) in zip(default_indexes_lst, signs_lst, self._all_blades_lst):
+                self.blades_to_indexes.append((blade, (sign, default_index)))
+                self.indexes_to_blades.append((default_index, sign * blade))
         self.blades_to_indexes_dict = OrderedDict(self.blades_to_indexes)
         self.indexes_to_blades_dict = OrderedDict(self.indexes_to_blades)
 
@@ -907,11 +956,11 @@ class Ga(metric.Metric):
         # geometric (*) product for orthogonal basis
         if self.is_ortho:
             (blade1, blade2) = blade12
-            index1 = self.blades_to_indexes_dict[blade1]
-            index2 = self.blades_to_indexes_dict[blade2]
+            sign1, index1 = self.blades_to_indexes_dict[blade1]
+            sign2, index2 = self.blades_to_indexes_dict[blade2]
             blade_index = list(index1 + index2)
             repeats = []
-            sgn = 1
+            sgn = sign1 * sign2
             for i in range(1, len(blade_index)):
                 save = blade_index[i]
                 j = i
@@ -1027,7 +1076,7 @@ class Ga(metric.Metric):
                 else:
                     blst1_flg = False  # more revision needed
                 return a1, blst1, blst1_flg, blst
- 
+
         return True  # revision complete, blst in normal order
 
     #******************* Outer/wedge (^) product **********************#
@@ -1051,15 +1100,15 @@ class Ga(metric.Metric):
         # outer (^) product of basis blades
         # this method works for both orthogonal and non-orthogonal basis
         (blade1, blade2) = blade12
-        index1 = self.blades_to_indexes_dict[blade1]
-        index2 = self.blades_to_indexes_dict[blade2]
+        sign1, index1 = self.blades_to_indexes_dict[blade1]
+        sign2, index2 = self.blades_to_indexes_dict[blade2]
         index12 = list(index1 + index2)
 
         if len(index12) > self.n:
             return S(0)
         (sgn, wedge12) = Ga.blade_reduce(index12)
         if sgn != 0:
-            return(sgn * self.indexes_to_blades_dict[tuple(wedge12)])
+            return(sgn * sign1 * sign2 * self.indexes_to_blades_dict[tuple(wedge12)])
         else:
             return S(0)
 
@@ -1091,8 +1140,8 @@ class Ga(metric.Metric):
         # dot (|), left (<), and right (>) products
         # dot product for orthogonal basis
         (blade1, blade2) = blade12
-        index1 = self.blades_to_indexes_dict[blade1]
-        index2 = self.blades_to_indexes_dict[blade2]
+        sign1, index1 = self.blades_to_indexes_dict[blade1]
+        sign2, index2 = self.blades_to_indexes_dict[blade2]
         index = list(index1 + index2)
 
         grade = self._dot_product_grade(len(index1), len(index2), mode=mode)
@@ -1100,7 +1149,7 @@ class Ga(metric.Metric):
             return zero
 
         n = len(index)
-        sgn = S(1)
+        sgn = sign1 * sign2
         result = S(1)
         ordered = False
         while n > grade:
@@ -1204,7 +1253,7 @@ class Ga(metric.Metric):
 
         # expand blade basis in terms of base basis
         for blade in self._all_blades_lst:
-            index = self.blades_to_indexes_dict[blade]
+            sign, index = self.blades_to_indexes_dict[blade]
             grade = len(index)
             if grade <= 1:
                 blade_expansion.append(blade)
