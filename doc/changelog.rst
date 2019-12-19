@@ -2,8 +2,23 @@
 Changelog
 =========
 
+- :bug:`151` ``Dop([], ga=ga)`` and ``Sdop([], ga=ga)`` now evaluate to multiplication by zero, not by one.
+  Multiplication by one can as always be spelt ``Dop([(S(1), ga.Pdop_identity)], ga=ga)``.
+- :bug:`177` :class:`~galgebra.mv.Dop` objects that evaluate to ``0`` no longer raise cryptic ``ValueError``\ s when operated on.
+- :support:`175` ``Dop.flatten_one_level`` has been removed, use ``itertools.chain.from_iterable`` for this functionality.
+- :feature:`172` :data:`galgebra.__version__` has been added, which contains the version string.
+- :feature:`164` (and :issue:`169`, :issue:`170`) Sympy 1.5 is officially supported and tested.
+- :support:`167` Python 3.4 is no longer supported.
+- :bug:`165` :func:`galgebra.metric.linear_expand` no longer accepts a mode argument, as this did not work properly.
+  For the old behavior of ``linear_expand(x, mode=True)``, use ``linear_expand_terms(x)`` instead.
+- :bug:`151` (also :issue:`150`) :class:`~galgebra.mv.Dop`, :class:`~galgebra.mv.Sdop`, and :class:`~galgebra.mv.Pdop` no longer have mutating methods.
+  This fixed issues where not only would the laplacian be sometimes calculated incorrectly, but its correctness would vary depending on whether it had been printed!
+- :bug:`134` :attr:`~galgebra.ga.Ga.dot_table_dict` now contains correct values (zero) for scalar keys
+- :bug:`90` :attr:`~galgebra.ga.Ga.blades`, :attr:`~galgebra.ga.Ga.bases`, and :attr:`~galgebra.ga.Ga.indices` now reference the scalar ``S(0)`` as the single grade-0 object. Previously they listed no grade 0 objects.
+- :bug:`81` (also :issue:`180`) Passing coefficients as ``Mv(coefs, 'odd', ga=ga)`` is forbidden.
+- :bug:`80` (also :issue:`57`, :issue:`58`, :issue:`97`) The :class:`galgebra.mv.Mv` constructor no longer silently accepts illegal arguments, and produces better error messages.
 - :feature:`78` :meth:`~galgebra.ga.Ga.grads` now raises a better error when it fails, and is faster.
-- :support:`72` Other internal cleanup
+- :support:`72` Other internal cleanup.
 - :feature:`66` (also :issue:`67`, :issue:`71`) Remove unused code in the public API:
 
   * ``Ga.mul_table``, ``Ga.wedge_table``, ``Ga.dot_table``, ``Ga.left_contract_table``,
@@ -16,10 +31,20 @@ Changelog
 - :bug:`61` Make contraction and Hestenes dot products thread-safe.
   Previously these relied on the :attr:`~galgebra.ga.Ga.dot_mode` setting not being changed mid-operation.
   The :meth:`~galgebra.ga.Ga.dot` method still respects this setting, but is no longer used internally.
-- :bug:`60` Make :meth:`~galgebra.mv.Mv.blade_rep` and :meth:`~galgebra.mv.Mv.base_rep` not mutate the object they are called on.
-  Any code relying on this behavior will need to change from ``x.base_rep()`` to ``x = x.base_rep()``.
+- :bug:`60` (also :issue:`141`) Make the following operations on :class:`galgebra.mv.Mv` non-mutating:
+
+  * :meth:`~galgebra.mv.Mv.blade_rep`
+  * :meth:`~galgebra.mv.Mv.base_rep`
+  * :meth:`~galgebra.mv.Mv.diff`
+  * :meth:`~galgebra.mv.Mv.simplify`
+  * :meth:`~galgebra.mv.Mv.expand`
+  * :meth:`~galgebra.mv.Mv.collect`
+  * ``print(mv)``
+
+  Any code relying on this behavior will need to change from ``x.method()`` to ``x = x.method()``.
+  Note that the latter syntax was always supported even before this change.
+
 - :support:`59` (also :issue:`65`) Make internal helper functions private.
-- :support:`57` (also :issue:`58`) Clean up the ``Mv(name, 'category')`` constructors to produce better error messages.
 - :support:`55` Rename ``*kargs`` to ``*args`` internally, to match convention.
   This has no effect on callers, but makes the docs and source easier to read.
 - :feature:`50` (also :issue:`51`, :issue:`56`) Improve documentation formatting:

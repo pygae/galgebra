@@ -58,7 +58,7 @@ def main():
     basic_multivector_operations_2D()
 
     # xpdf('simple_test_latex.tex')
-    xpdf('simple_test_latex.tex', pdfprog=None)
+    xpdf('simple_check_latex.tex', pdfprog=None)
     return
 
 if __name__ == "__main__":

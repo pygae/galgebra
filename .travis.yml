@@ -11,12 +11,9 @@ matrix:
 before_install:
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then lsb_release -a ; fi
 install:
-- pip install sympy==1.3
+- pip install -r test_requirements.txt
 - pip install -e .
-- pip install pytest-cov
-- if [[ "$TRAVIS_PYTHON_VERSION" == 2.7 ]]; then pip install ipython==5.8.0 ; fi
-- pip install nbval
-- pip install pytest-xdist
+- pip check
 script:
 - pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg
 after_success:

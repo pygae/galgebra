@@ -198,13 +198,13 @@ class TestTest(unittest.TestCase):
         B = (L*e).expand().blade_rep() # D&L 10.152
         assert str(B) == 'X^Y - (Y.e)*X^e + (X.e)*Y^e'
         Bsq = B*B
-        assert str(Bsq) == '(X.Y)*((X.Y) - 2*(X.e)*(Y.e))'
+        assert str(Bsq) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e)'
         Bsq = Bsq.scalar()
         assert str(B) == 'X^Y - (Y.e)*X^e + (X.e)*Y^e'
 
         BeBr = B*e*B.rev()
         assert str(BeBr) == '(X.Y)*(-(X.Y) + 2*(X.e)*(Y.e))*e'
-        assert str(B*B) == '(X.Y)*((X.Y) - 2*(X.e)*(Y.e))'
+        assert str(B*B) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e)'
         assert str(L*L) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e)' # D&L 10.153
 
         (s,c,Binv,M,S,C,alpha) = symbols('s c (1/B) M S C alpha')

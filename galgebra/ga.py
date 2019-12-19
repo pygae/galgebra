@@ -1,7 +1,7 @@
 """
 Geometric Algebra (inherits Metric)
 """
-
+import warnings
 import operator
 import copy
 from collections import OrderedDict
@@ -12,7 +12,7 @@ from functools import reduce
 from sympy import (
     diff, Rational, Symbol, S, Mul, Add,
     expand, simplify, eye, trigsimp,
-    symbols, sqrt, numbers, Function
+    symbols, sqrt, Function
 )
 
 from . import printer
@@ -93,24 +93,12 @@ def update_and_substitute(expr1, expr2, mul_dict):
     product of ``bases1[i]*bases2[j]`` as a linear combination of scalars and
     bases of the geometric algebra.
     """
-    if (isinstance(expr1, numbers.Number) or expr1.is_commutative) \
-        or (isinstance(expr2, numbers.Number) or expr2.is_commutative):
-        return expr1 * expr2
     (coefs1, bases1) = metric.linear_expand(expr1)
     (coefs2, bases2) = metric.linear_expand(expr2)
     expr = S(0)
     for (coef1, base1) in zip(coefs1, bases1):
         for (coef2, base2) in zip(coefs2, bases2):
-            #Special cases where base1 and/or base2 is scalar
-            if base1 == 1 and base2 == 1:
-                expr += coef1 * coef2
-            elif base1 == 1:
-                expr += coef1 * coef2 * base2
-            elif base2 == 1:
-                expr += coef1 * coef2 * base1
-            else:
-                key = (base1, base2)
-                expr += coef1 * coef2 * mul_dict[key]
+            expr += coef1 * coef2 * mul_dict[base1, base2]
     return expr
 
 
@@ -280,20 +268,6 @@ class Ga(metric.Metric):
         Derivatives of basis functions.  Two dimensional list. First entry is differentiating coordinate index.
         Second entry is basis vector index.  Quantities are linear combinations of basis vector symbols.
 
-    .. attribute:: Pdop_identity
-
-        Partial differential operator identity (operates on multivector function to return function).
-
-    .. attribute:: Pdiffs
-
-        Dictionary of partial differential operators (operates on multivector functions) for each coordinate
-        :math:`\{x: \partial_{x}, ...\}`
-
-    .. attribute:: sPds
-
-        Dictionary of scalar partial differential operators (operates on scalar functions) for each coordinate
-        :math:`\{x: \partial_{x}, ...\}`
-
     .. attribute:: grad
 
         Geometric derivative operator from left. ``grad*F`` returns multivector
@@ -432,12 +406,6 @@ class Ga(metric.Metric):
         if self.coords is not None:
             self.coord_vec = sum([coord * base for (coord, base) in zip(self.coords, self.basis)])
             self._build_reciprocal_basis(self.gsym)
-            self.Pdop_identity = mv.Pdop({},ga=self)  # Identity Pdop = 1
-            self.Pdiffs = {}
-            self.sPds = {}
-            for x in self.coords:  # Partial derivative operator for each coordinate
-                self.Pdiffs[x] = mv.Pdop({x:1}, ga=self)
-                self.sPds[x] = mv.Sdop([(S(1), self.Pdiffs[x])], ga=self)
             self._build_grads()
         else:
             self.r_basis_mv = None
@@ -479,7 +447,7 @@ class Ga(metric.Metric):
         self.a = []  # List of dummy vectors for Mlt calculations
         self._agrads = {}  # cache of gradient operator with respect to vector a
         self.dslot = -1  # args slot for dervative, -1 for coordinates
-        self.XOX = self.mv('XOX','vector')  # Versor test vector
+        self._XOX = self.mv('XOX','vector')  # cached vector for use in is_versor
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
 
@@ -519,20 +487,49 @@ class Ga(metric.Metric):
     @property
     def mv_I(self):
         # This exists for backwards compatibility. Note this is not `I()`!
+        # galgebra 0.4.5
+        warnings.warn(
+            "`ga.mv_I` is deprecated, use `ga.E()` instead, or perhaps `ga.I()`",
+            DeprecationWarning, stacklevel=2)
         # default pseudoscalar
         return self.E()
 
     @property
     def mv_x(self):
         # This exists for backwards compatibility.
+        # galgebra 0.4.5
+        warnings.warn(
+            "`ga.mv_x` is deprecated, use `ga.mv(your_name, 'vector')` instead",
+            DeprecationWarning, stacklevel=2)
         # testing vectors
-        return Mv('XxXx', 'vector', ga=self)
+        return mv.Mv('XxXx', 'vector', ga=self)
 
     def X(self):
         return self.mv(sum([coord*base for (coord, base) in zip(self.coords, self.basis)]))
 
-    def sdop(self, coefs, pdiffs=None):
-        return mv.Sdop(coefs, pdiffs, ga=self)
+    @property
+    def Pdiffs(self):
+        # galgebra 0.4.5
+        warnings.warn(
+            "ga.Pdiffs[x] is deprecated, use `ga.pdop(x)` instead",
+            DeprecationWarning, stacklevel=2)
+        return {x: self.pdop(x) for x in self.coords}
+
+    @property
+    def sPds(self):
+        # galgebra 0.4.5
+        warnings.warn(
+            "ga.sPds[x] is deprecated, use `ga.sdop(x)` instead",
+            DeprecationWarning, stacklevel=2)
+        return {x: self.sdop(x) for x in self.coords}
+
+    @property
+    def Pdop_identity(self):
+        # galgebra 0.4.5
+        warnings.warn(
+            "ga.Pdop_identity is deprecated, use `ga.pdop({})` instead",
+            DeprecationWarning, stacklevel=2)
+        return self.pdop({})
 
     def mv(self, root=None, *args, **kwargs):
         """
@@ -542,7 +539,8 @@ class Ga(metric.Metric):
         if root is None:  # Return ga basis and compute grad and rgrad
             return self.mv_basis
 
-        kwargs['ga'] = self
+        # ensure that ga is not already in kwargs
+        kwargs = dict(ga=self, **kwargs)
 
         if not utils.isstr(root):
             return mv.Mv(root, *args, **kwargs)
@@ -559,8 +557,8 @@ class Ga(metric.Metric):
             mvtype_lst = args[0].split(' ')
             if len(root_lst) != len(mvtype_lst):
                 raise ValueError('In Ga.mv() for multiple multivectors and ' +
-                                  'multivector types incompatible args ' +
-                                  str(root_lst) + ' and ' + str(mvtype_lst))
+                                 'multivector types incompatible args ' +
+                                 str(root_lst) + ' and ' + str(mvtype_lst))
 
             mv_lst = []
             for (root, mv_type) in zip(root_lst, mvtype_lst):
@@ -617,7 +615,7 @@ class Ga(metric.Metric):
         if self.norm:
             r_basis = [x / e_norm for (x, e_norm) in zip(self.r_basis_mv, self.e_norm)]
 
-        pdx = [self.Pdiffs[x] for x in self.coords]
+        pdx = [self.pdop(x) for x in self.coords]
 
         self.grad = mv.Dop(r_basis, pdx, ga=self)
         self.rgrad = mv.Dop(r_basis, pdx, ga=self, cmpflg=True)
@@ -627,13 +625,17 @@ class Ga(metric.Metric):
             raise ValueError("Ga must have been initialized with coords to compute grads")
         return self.grad, self.rgrad
 
+    def pdop(self, *args, **kwargs):
+        """ Shorthand to construct a :class:`~galgebra.mv.Pdop` for this algebra """
+        return mv.Pdop(*args, ga=self, **kwargs)
+
     def dop(self, *args, **kwargs):
-        """
-        Instanciate and return a multivector differential operator for
-        this, 'self', geometric algebra.
-        """
-        kwargs['ga'] = self
-        return mv.Dop(*args, **kwargs)
+        """ Shorthand to construct a :class:`~galgebra.mv.Dop` for this algebra """
+        return mv.Dop(*args, ga=self, **kwargs)
+
+    def sdop(self, *args, **kwargs):
+        """ Shorthand to construct a :class:`~galgebra.mv.Sdop` for this algebra """
+        return mv.Sdop(*args, ga=self, **kwargs)
 
     def lt(self, *args, **kwargs):
         """
@@ -644,25 +646,22 @@ class Ga(metric.Metric):
             self._lt_flg = True
             (self.lt_coords, self.lt_x) = lt.Lt.setup(ga=self)
 
-        kwargs['ga'] = self
-        return lt.Lt(*args, **kwargs)
+        return lt.Lt(*args, ga=self, **kwargs)
 
     def sm(self, *args, **kwargs):
         """
         Instanciate and return a submanifold for this
         geometric algebra.  See :class:`Sm` for instantiation inputs.
         """
-        kwargs['ga'] = self
-        SM = Sm(*args, **kwargs)
-        return SM
+        return Sm(*args, ga=self, **kwargs)
 
     def parametric(self, coords):
         if not isinstance(coords, list):
             raise TypeError('In Ga.parametric coords = ' + str(coords) +
-                             ' is not a list.')
+                            ' is not a list.')
         if len(coords) != self.n:
             raise ValueError('In Ga.parametric number of parametric functions' +
-                              ' not equal to number of coordinates.')
+                             ' not equal to number of coordinates.')
 
         self.par_coords = {}
 
@@ -867,16 +866,16 @@ class Ga(metric.Metric):
 
         if self.debug:
             printer.oprint('indexes', self.indexes, 'list(indexes)', self._all_indexes_lst,
-                            'blades', self.blades, 'list(blades)', self._all_blades_lst,
-                            'blades_to_indexes_dict', self.blades_to_indexes_dict,
-                            'indexes_to_blades_dict', self.indexes_to_blades_dict,
-                            'blades_to_grades_dict', self.blades_to_grades_dict,
-                            'blade_super_scripts', self.blade_super_scripts)
+                           'blades', self.blades, 'list(blades)', self._all_blades_lst,
+                           'blades_to_indexes_dict', self.blades_to_indexes_dict,
+                           'indexes_to_blades_dict', self.indexes_to_blades_dict,
+                           'blades_to_grades_dict', self.blades_to_grades_dict,
+                           'blade_super_scripts', self.blade_super_scripts)
             if not self.is_ortho:
                 printer.oprint('bases', self.bases, 'list(bases)', self._all_bases_lst,
-                                'bases_to_indexes_dict', self.bases_to_indexes_dict,
-                                'indexes_to_bases_dict', self.indexes_to_bases_dict,
-                                'bases_to_grades_dict', self.bases_to_grades_dict)
+                               'bases_to_indexes_dict', self.bases_to_indexes_dict,
+                               'indexes_to_bases_dict', self.indexes_to_bases_dict,
+                               'bases_to_grades_dict', self.bases_to_grades_dict)
 
         # create the Mv wrappers
         self._all_mv_blades_lst = [
@@ -1084,7 +1083,7 @@ class Ga(metric.Metric):
 
     @staticmethod
     def blade_reduce(lst):
-        sgn = 1
+        sgn = S(1)
         for i in range(1, len(lst)):
             save = lst[i]
             j = i
@@ -1094,7 +1093,7 @@ class Ga(metric.Metric):
                 j -= 1
             lst[j] = save
             if lst[j] == lst[j - 1]:
-                return 0, None
+                return S(0), None
         return sgn, lst
 
     def wedge_product_basis_blades(self, blade12):  # blade12 = blade1*blade2
@@ -1106,14 +1105,36 @@ class Ga(metric.Metric):
         index12 = list(index1 + index2)
 
         if len(index12) > self.n:
-            return 0
+            return S(0)
         (sgn, wedge12) = Ga.blade_reduce(index12)
         if sgn != 0:
             return(sgn * sign1 * sign2 * self.indexes_to_blades_dict[tuple(wedge12)])
         else:
-            return 0
+            return S(0)
 
     #****** Dot (|) product, reft (<) and right (>) contractions ******#
+
+    def _dot_product_grade(self, grade1, grade2, mode):
+        """
+        Get the grade to select from the geometric product, for a given
+        dot product
+        """
+        if mode == '|':
+            if grade1 == 0 or grade2 == 0:
+                return None
+            return abs(grade1 - grade2)
+        elif mode == '<':
+            grade = grade2 - grade1
+            if grade < 0:
+                return None
+            return grade
+        elif mode == '>':
+            grade = grade1 - grade2
+            if grade < 0:
+                return None
+            return grade
+        else:
+            raise ValueError('mode={!r} not allowed'.format(mode))
 
     def dot_product_basis_blades(self, blade12, mode):
         # dot (|), left (<), and right (>) products
@@ -1122,22 +1143,14 @@ class Ga(metric.Metric):
         sign1, index1 = self.blades_to_indexes_dict[blade1]
         sign2, index2 = self.blades_to_indexes_dict[blade2]
         index = list(index1 + index2)
-        grade1 = len(index1)
-        grade2 = len(index2)
 
-        if mode == '|':
-            grade = abs(grade1 - grade2)
-        elif mode == '<':
-            grade = grade2 - grade1
-            if grade < 0:
-                return 0
-        elif mode == '>':
-            grade = grade1 - grade2
-            if grade < 0:
-                return 0
+        grade = self._dot_product_grade(len(index1), len(index2), mode=mode)
+        if grade is None:
+            return zero
+
         n = len(index)
         sgn = sign1 * sign2
-        result = 1
+        result = S(1)
         ordered = False
         while n > grade:
             ordered = True
@@ -1149,7 +1162,7 @@ class Ga(metric.Metric):
                 if index1 == index2:
                     n -= 2
                     if n < grade:
-                        return 0
+                        return zero
                     result *= self.g[index1, index1]
                     index = index[:i1] + index[i2 + 1:]
                 elif index1 > index2:
@@ -1163,7 +1176,7 @@ class Ga(metric.Metric):
             if ordered:
                 break
         if n > grade:
-            return 0
+            return zero
         else:
             if index == []:
                 return sgn * result
@@ -1187,27 +1200,11 @@ class Ga(metric.Metric):
         # grades of input blades
         grade1 = self.blades_to_grades_dict[blade1]
         grade2 = self.blades_to_grades_dict[blade2]
-        if mode == '|':
-            grade_dot = abs(grade2 - grade1)
-            if grade_dot in grade_dict:
-                return grade_dict[grade_dot]
-            else:
-                return zero
-        elif mode == '<':
-            grade_contract = grade2 - grade1
-            if grade_contract in grade_dict:
-                return grade_dict[grade_contract]
-            else:
-                return zero
-        elif mode == '>':
-            grade_contract = grade1 - grade2
-            if grade_contract in grade_dict:
-                return grade_dict[grade_contract]
-            else:
-                return zero
-        else:
-            raise ValueError('"' + str(mode) + '" not allowed '
-                             'dot mode in non_orthogonal_dot_basis')
+
+        grade = self._dot_product_grade(grade1, grade2, mode=mode)
+        if grade is None:
+            return zero
+        return grade_dict.get(grade, zero)
 
     ############# Non-Orthogonal Tables and Dictionaries ###############
 
@@ -1329,73 +1326,34 @@ class Ga(metric.Metric):
             return self.mul(A, B)
         elif mode == '^':
             return self.wedge(A, B)
+        elif mode == '|':
+            return self.hestenes_dot(A, B)
+        elif mode == '<':
+            return self.left_contract(A, B)
+        elif mode == '>':
+            return self.right_contract(A, B)
         else:
-            return self._dot(A, B, mode=mode)
+            raise ValueError('Unknown multiplication operator {!r}', mode)
 
     def mul(self, A, B):  # geometric (*) product of blade representations
-        if A == 0 or B == 0:
-            return 0
         return update_and_substitute(A, B, self.mul_table_dict)
 
     def wedge(self, A, B):
         # wedge assumes A and B are in blade rep
         # wedge product is same for both orthogonal and non-orthogonal for A and B in blade rep
-        if A == 0 or B == 0:
-            return 0
         return update_and_substitute(A, B, self.wedge_table_dict)
-
-
-    def _dot(self, A, B, mode):
-        if A == 0 or B == 0:
-            return 0
-
-        if mode == '|':  # Hestenes dot product
-            A = self.remove_scalar_part(A)
-            B = self.remove_scalar_part(B)
-            return update_and_substitute(A, B, self.dot_table_dict)
-        elif mode == '<' or mode == '>':
-            r"""
-            Let :math:`A = a + A'` and :math:`B = b + B'` where :math:`a` and
-            :math:`b` are the scalar parts of :math:`A` and :math:`B`, and
-            :math:`A'` and :math:`B'` are the remaining parts of :math:`A` and
-            :math:`B`. Then we have:
-
-            .. math::
-
-                (a+A') \rfloor (b+B') &= a(b+B') + A' \rfloor B' \\
-                (a+A') \lfloor (b+B') &= b(a+A') + A' \lfloor B'
-
-            We use these relations to reduce :math:`A \rfloor B` (``A<B``) and 
-            :math:`A \lfloor B` (``A>B``).
-            """
-            (a, Ap) = self.split_multivector(A)  # Ap = A'
-            (b, Bp) = self.split_multivector(B)  # Bp = B'
-            if mode == '<':  # Left contraction
-                if Ap != 0 and Bp != 0:  # Neither nc part of A or B is zero
-                    prod = update_and_substitute(Ap, Bp, self.left_contract_table_dict)
-                    return prod + a * B
-                else:  # Ap or Bp is zero
-                    return a * B
-            elif mode == '>':  # Right contraction
-                if Ap != 0 and Bp != 0: # Neither nc part of A or B is zero
-                    prod = update_and_substitute(Ap, Bp, self.right_contract_table_dict)
-                    return prod + b * A
-                else:  # Ap or Bp is zero
-                    return b * A
-        else:
-            raise ValueError('"' + str(mode) + '" not a legal mode in dot')
 
     def hestenes_dot(self, A, B):
         r""" compute the hestenes dot product, :math:`A \bullet B` """
-        return self._dot(A, B, mode='|')
+        return update_and_substitute(A, B, self.dot_table_dict)
 
     def left_contract(self, A, B):
         r""" compute the left contraction, :math:`A \rfloor B`  """
-        return self._dot(A, B, mode='<')
+        return update_and_substitute(A, B, self.left_contract_table_dict)
 
     def right_contract(self, A, B):
         r""" compute the right contraction, :math:`A \lfloor B` """
-        return self._dot(A, B, mode='>')
+        return update_and_substitute(A, B, self.right_contract_table_dict)
 
     def dot(self, A, B):
         r"""
@@ -1403,7 +1361,11 @@ class Ga(metric.Metric):
 
         The :attr:`dot_mode` attribute determines which of these is used.
         """
-        return self._dot(A, B, mode=self.dot_mode)
+        # forbid something silly like setting dot_mode to the wedge or geometric
+        # product
+        if self.dot_mode in '^*':
+            raise ValueError('"' + str(self.dot_mode) + '" not a legal mode in dot')
+        return self.Mul(A, B, mode=self.dot_mode)
 
     ######################## Helper Functions ##########################
 
@@ -1761,9 +1723,9 @@ class Ga(metric.Metric):
                 return self.wedge(blade, er)
         else:
             if left:
-                return self._dot(er, blade, mode=mode)
+                return self.Mul(er, blade, mode=mode)
             else:
-                return self._dot(blade, er, mode=mode)
+                return self.Mul(blade, er, mode=mode)
 
     def blade_derivation(self, blade, ib):
         """
@@ -1808,9 +1770,6 @@ class Ga(metric.Metric):
         self._dbases[key] = db
         return db
 
-    def pdop(self,*args):
-        return mv.Pdop(args,ga=self)
-
     def pDiff(self, A, coord):
         """
         Compute partial derivative of multivector function 'A' with
@@ -1852,12 +1811,7 @@ class Ga(metric.Metric):
                         c, nc = term.args_cnc(split_1=False)
                         x = self.blade_derivation(nc[0], coord)
                         if x != zero:
-                            if len(c) == 1:
-                                dA += c[0] * x
-                            elif len(c) == 0:
-                                dA += x
-                            else:
-                                dA += reduce(operator.mul, c, one) * x
+                            dA += reduce(operator.mul, c, x)
 
         return dA
 
@@ -2082,7 +2036,7 @@ class Sm(Ga):
 
             if len(u) != n_base:
                 raise ValueError('In submanifold dimension of base manifold' +
-                                  ' not equal to dimension of mapping.')
+                                 ' not equal to dimension of mapping.')
             dxdu = []
             for x_i in u:
                 tmp = []

@@ -1,0 +1,12 @@
+# requirements for CI
+sympy == 1.3
+pytest-cov
+ipython == 5.8.0; python_version == "2.7"
+nbval
+pytest-xdist
+
+# needed by pytest-xdist
+pytest >= 4.4.0
+
+# pinned until https://github.com/computationalmodelling/nbval/issues/129 is fixed
+coverage < 5

@@ -24,7 +24,7 @@ def apply_function_list(f,x):
         return f(x)
 
 
-def linear_expand(expr, mode=True):
+def linear_expand(expr):
 
     if isinstance(expr, Expr):
         expr = expand(expr)
@@ -58,10 +58,13 @@ def linear_expand(expr, mode=True):
             else:
                 bases.append(base)
                 coefs.append(coef)
-    if mode:
-        return (coefs, bases)
-    else:
-        return list(zip(coefs, bases))
+    return (coefs, bases)
+
+
+def linear_expand_terms(expr):
+    coefs, bases = linear_expand(expr)
+    return zip(coefs, bases)
+
 
 def collect(A, nc_list):
     """
@@ -206,8 +209,7 @@ class Simp:
 
     @staticmethod
     def applymv(mv):
-        mv.obj = Simp.apply(mv.obj)
-        return mv
+        return Mv(Simp.apply(mv.obj), ga=mv.Ga)
 
 
 class Metric(object):
@@ -420,8 +422,8 @@ class Metric(object):
         # \frac{\partial e_{j}}{\partial x^{i}} = \Gamma_{ijk} e^{k}
         de = [[
             sum([Gamma_ijk * e__k for (Gamma_ijk, e__k) in zip(dG[i][j], self.r_symbols)])
-            for j in n_range]
-        for i in n_range]
+            for j in n_range
+        ] for i in n_range]
 
         if self.debug:
             printer.oprint('D_{i}e^{j}', de)

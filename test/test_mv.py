@@ -1,9 +1,18 @@
 import unittest
+
+import pytest
 from sympy import Symbol
 from galgebra.ga import Ga
 from galgebra import utils
 
 class TestMv(unittest.TestCase):
+
+    def test_deprecations(self):
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        with pytest.warns(DeprecationWarning):
+            ga.mv_x
+        with pytest.warns(DeprecationWarning):
+            ga.mv_I
 
     def test_is_base(self):
         """
@@ -108,8 +117,15 @@ class TestMv(unittest.TestCase):
         check(ga.mv('A', 'odd'), [1, 3])
         check(ga.mv('A', 'mv'), [0, 1, 2, 3])
 
+        # value construction
+        check(ga.mv([1, 2, 3], 'vector'), [1])
+
         # illegal arguments
         with self.assertRaises(TypeError):
             ga.mv('A', 'vector', "too many arguments")
         with self.assertRaises(TypeError):
             ga.mv('A', 'grade')  # too few arguments
+        with self.assertRaises(TypeError):
+            ga.mv('A', 'grade', not_an_argument=True)  # invalid kwarg
+        with self.assertRaises(TypeError):
+            ga.mv([1, 2, 3], 'vector', f=True)  # can't pass f with coefficients
