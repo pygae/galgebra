@@ -370,10 +370,11 @@ class Ga(metric.Metric):
         Ga.set_simp(*simps)
         return Ga(*args, **kwargs)
 
+    def __hash__(self):
+        return hash(self.name)
+
     def __eq__(self, ga):
-        if self.name == ga.name:
-            return True
-        return False
+        return self.name == ga.name
 
     def __init__(self, bases, **kwargs):
 
