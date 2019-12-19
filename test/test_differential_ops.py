@@ -44,7 +44,7 @@ class TestDop(object):
         ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
         v = ga.mv('v', 'vector', f=True)
 
-        make_zero = Dop([], ga=ga)
+        make_zero = ga.dop([])
         assert make_zero * v == 0
         assert make_zero * make_zero * v == 0
         assert (make_zero + make_zero) * v == 0
@@ -65,8 +65,13 @@ class TestDop(object):
         assert laplacian.is_scalar()
         assert not ga.grad.is_scalar()
 
+        # test comparison
         assert ga.grad == ga.grad
+        assert not (ga.grad != ga.grad)
         assert ga.grad != laplacian
+        assert not (ga.grad == laplacian)
+        assert ga.grad != object()
+        assert not (ga.grad == object())
 
         # inconsistent cmpflg, not clear which side the operator goes on
         with pytest.raises(ValueError):
@@ -108,8 +113,7 @@ class TestSdop(object):
         coords = x, y, z = symbols('x y z', real=True)
         ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
 
-        # TODO: __eq__ is broken, remove `repr` when it is fixed
-        assert repr(Sdop(x, ga=ga)) == repr(Sdop([(S(1), Pdop({x: 1}, ga=ga))], ga=ga))
+        assert Sdop(x, ga=ga) == Sdop([(S(1), Pdop({x: 1}, ga=ga))], ga=ga)
 
     def test_empty_sdop(self):
         """ Test that sdop with zero terms is equivalent to multiplying by zero """
@@ -122,18 +126,6 @@ class TestSdop(object):
         assert make_zero * make_zero * v == 0
         assert (make_zero + make_zero) * v == 0
         assert (-make_zero) * v == 0
-
-
-class TestPdop(object):
-
-    def test_deprecation(self):
-        coords = x, y, z = symbols('x y z', real=True)
-        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
-
-        # passing `None` is a deprecate way to spell `{}`
-        with pytest.warns(DeprecationWarning):
-            p = Pdop(None, ga=ga)
-        assert p == Pdop({}, ga=ga)
 
     def test_associativity_and_distributivity(self):
         coords = x, y, z = symbols('x y z', real=True)
@@ -152,3 +144,48 @@ class TestPdop(object):
         # check multiplication is associative
         assert (20 * laplacian) * v == 20 * (laplacian * v) != 0
         assert (laplacian * laplacian) * v == laplacian * (laplacian * v) != 0
+
+
+    def test_misc(self):
+        """ Other miscellaneous tests """
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+        laplacian = ga.sdop((ga.grad * ga.grad).terms)
+        lap2 = laplacian*laplacian
+
+        # test comparison
+        assert lap2 == lap2
+        assert not (lap2 != lap2)
+        assert lap2 != laplacian
+        assert not (lap2 == laplacian)
+        assert lap2 != object()
+        assert not (lap2 == object())
+
+
+class TestPdop(object):
+
+    def test_deprecation(self):
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+
+        # passing `None` is a deprecate way to spell `{}`
+        with pytest.warns(DeprecationWarning):
+            p = Pdop(None, ga=ga)
+        assert p == Pdop({}, ga=ga)
+
+    def test_misc(self):
+        """ Other miscellaneous tests """
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+
+        pxa = ga.pdop({x: 1})
+        pxb = ga.pdop({x: 1})
+        p1 = ga.pdop({})
+
+        # test comparison
+        assert pxa == pxb
+        assert not (pxa != pxb)
+        assert p1 != pxa
+        assert not (p1 == pxa)
+        assert pxa != object()
+        assert not (pxa == object())
