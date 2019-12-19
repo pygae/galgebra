@@ -2006,8 +2006,6 @@ class Dop(object):
         new_coefs = []
         new_pdiffs = []
         for (coef, pd) in self.terms:
-            if isinstance(coef, Mv) and coef.is_scalar():
-                coef = coef.obj
             if coef != S(0):
                 if pd in new_pdiffs:
                     index = new_pdiffs.index(pd)
@@ -2180,13 +2178,8 @@ class Dop(object):
             if self.Ga != dop.Ga:
                 return False
 
-            self = Sdop.consolidate_coefs(self)
-            dop = Sdop.consolidate_coefs(dop)
-            if len(self.terms) != len(dop.terms):
-                return False
-            if set(self.terms) != set(dop.terms):
-                return False
-            return True
+            diff = self - dop
+            return all(coef == S(0) for coef, _ in diff.terms)
         else:
             return False
 
