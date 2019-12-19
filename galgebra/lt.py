@@ -238,7 +238,7 @@ class Lt(object):
 
     def __call__(self, v, obj=False):
 
-        if isinstance(v, mv.Mv) and self.Ga.name != v.Ga.name:
+        if isinstance(v, mv.Mv) and self.Ga != v.Ga:
             raise ValueError('In Lt call Lt and argument refer to different vector spaces')
 
         if self.spinor:
@@ -283,7 +283,7 @@ class Lt(object):
 
     def __add__(self, LT):
 
-        if self.Ga.name != LT.Ga.name:
+        if self.Ga != LT.Ga:
             raise ValueError("Attempting addition of Lt's from different geometric algebras")
 
         self_add_LT = copy(self.lt_dict)
@@ -296,7 +296,7 @@ class Lt(object):
 
     def __sub__(self, LT):
 
-        if self.Ga.name != LT.Ga.name:
+        if self.Ga != LT.Ga:
             raise ValueError("Attempting subtraction of Lt's from different geometric algebras")
 
         self_add_LT = copy(self.lt_dict)
@@ -311,7 +311,7 @@ class Lt(object):
 
         if isinstance(LT, Lt):
 
-            if self.Ga.name != LT.Ga.name:
+            if self.Ga != LT.Ga:
                 raise ValueError("Attempting multiplication of Lt's from different geometric algebras")
             self_mul_LT = {}
             for base in LT.lt_dict:

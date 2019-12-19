@@ -498,7 +498,7 @@ class Mv(object):
         if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
             return Mv(self.obj + A, ga=self.Ga)
 
-        if self.Ga.name != A.Ga.name:
+        if self.Ga != A.Ga:
             raise ValueError('In + operation Mv arguments are not from same geometric algebra')
 
         if isinstance(A, Dop):
@@ -521,7 +521,7 @@ class Mv(object):
         if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
             return Mv(self.obj - A, ga=self.Ga)
 
-        if self.Ga.name != A.Ga.name:
+        if self.Ga != A.Ga:
             raise ValueError('In - operation Mv arguments are not from same geometric algebra')
 
         if isinstance(A, Dop):
@@ -544,7 +544,7 @@ class Mv(object):
         if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
             return Mv(expand(A * self.obj), ga=self.Ga)
 
-        if self.Ga.name != A.Ga.name:
+        if self.Ga != A.Ga:
             raise ValueError('In * operation Mv arguments are not from same geometric algebra')
 
         if isinstance(A, Dop):
@@ -785,7 +785,7 @@ class Mv(object):
         if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
             return Mv(A * self.obj, ga=self.Ga)
 
-        if self.Ga.name != A.Ga.name:
+        if self.Ga != A.Ga:
             raise ValueError('In ^ operation Mv arguments are not from same geometric algebra')
 
         if isinstance(A, Dop):
@@ -810,7 +810,7 @@ class Mv(object):
         if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
             return Mv(ga=self.Ga)
 
-        if self.Ga.name != A.Ga.name:
+        if self.Ga != A.Ga:
             raise ValueError('In | operation Mv arguments are not from same geometric algebra')
 
         if isinstance(A, Dop):
@@ -852,7 +852,7 @@ class Mv(object):
         if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):  # sympy scalar
             return Mv(A * self.obj, ga=self.Ga)
 
-        if self.Ga.name != A.Ga.name:
+        if self.Ga != A.Ga:
             raise ValueError('In < operation Mv arguments are not from same geometric algebra')
 
         if isinstance(A, Dop):
@@ -876,7 +876,7 @@ class Mv(object):
         if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):  # sympy scalar
             return self.Ga.mv(A * self.scalar())
 
-        if self.Ga.name != A.Ga.name:
+        if self.Ga != A.Ga:
             raise ValueError('In > operation Mv arguments are not from same geometric algebra')
 
         if isinstance(A, Dop):
@@ -1713,7 +1713,7 @@ class Pdop(object):
                 return -1
 
     def __eq__(self,A):
-        if isinstance(A, Pdop) and self.Ga.name == A.Ga.name and self.pdiffs == A.pdiffs:
+        if isinstance(A, Pdop) and self.Ga == A.Ga and self.pdiffs == A.pdiffs:
             return True
         else:
             if len(self.pdiffs) == 0 and A == S(1):
@@ -1787,7 +1787,7 @@ class Pdop(object):
             return arg  # result is Pdop identity (1)
 
         if isinstance(arg, Pdop):  # arg is Pdop
-            if self.Ga.name != arg.Ga.name:
+            if self.Ga != arg.Ga:
                 raise ValueError('In Pdop.__call__ arguments do not belong to same geometric algebra.')
             elif arg.pdiffs == {}:  # arg is one
                 return self
@@ -2009,7 +2009,7 @@ class Dop(object):
     def Add(dop1, dop2):
 
         if isinstance(dop1, Dop) and isinstance(dop2, Dop):
-            if dop1.Ga.name != dop2.Ga.name:
+            if dop1.Ga != dop2.Ga:
                 raise ValueError('In Dop.Add Dop arguments are not from same geometric algebra')
 
             if dop1.cmpflg != dop2.cmpflg:
@@ -2416,7 +2416,7 @@ def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors 
 
 
 def cross(v1, v2):
-    if v1.is_vector() and v2.is_vector() and v1.Ga.name == v2.Ga.name and v1.Ga.n == 3:
+    if v1.is_vector() and v2.is_vector() and v1.Ga == v2.Ga and v1.Ga.n == 3:
         return -v1.Ga.I() * (v1 ^ v2)
     else:
         raise ValueError(str(v1) + ' and ' + str(v2) + ' not compatible for cross product.')
