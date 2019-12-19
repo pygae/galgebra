@@ -1594,15 +1594,15 @@ class Sdop(object):
             terms = []
             for (coef, pdiff) in self.terms:
                 new_terms = pdiff(arg.terms)
-                new_terms = [ (coef * x[0], x[1]) for x in new_terms]
+                new_terms = [(coef * c, p) for c, p in new_terms]
                 terms += new_terms
             return Sdop(terms, ga=self.Ga)
         else:
-            return sum([x[0] * x[1](arg) for x in self.terms], S(0))
+            return sum([coef * pdiff(arg) for coef, pdiff in self.terms], S(0))
 
 
     def __neg__(self):
-        return Sdop([(-x[0], x[1]) for x in self.terms], ga=self.Ga)
+        return Sdop([(-coef, pdiff) for coef, pdiff in self.terms], ga=self.Ga)
 
     @staticmethod
     def Add(sdop1, sdop2):
@@ -1658,15 +1658,15 @@ class Sdop(object):
             terms = []
             for (coef, pdiff) in sdopl.terms:
                 Dsdopl = pdiff(sdopr.terms)  # list of terms
-                Dsdopl = [(coef * x[0], x[1]) for x in Dsdopl]
+                Dsdopl = [(coef * c, p) for c, p in Dsdopl]
                 terms += Dsdopl
             product = Sdop(terms, ga=sdopl.Ga)
             return Sdop.consolidate_coefs(product)
         else:  # sdopr is a scalar or a multivector
-            return sum([x[0] * x[1](sdopr) for x in sdopl.terms], S(0))  # returns scalar
+            return sum([coef * pdiff(sdopr) for coef, pdiff in sdopl.terms], S(0))  # returns scalar
 
-    def __rmul__(self,sdop):
-        terms = [(sdop * x[0], x[1]) for x in self.terms]
+    def __rmul__(self, sdop):
+        terms = [(sdop * coef, pdiff) for coef, pdiff in self.terms]
         return Sdop(terms, ga=self.Ga)
 
 #################### Partial Derivative Operator Class #################
@@ -2066,14 +2066,14 @@ class Dop(object):
                 terms = []
                 for (coef, pdiff) in dopl.terms:  #Apply each dopl term to dopr
                     Ddopl = pdiff(dopr.terms)  # list of terms
-                    Ddopl = [(Mv.Mul(coef, x[0], op=op), x[1]) for x in Ddopl]
+                    Ddopl = [(Mv.Mul(coef, c, op=op), p) for c, p in Ddopl]
                     terms += Ddopl
                 product = Dop(terms, ga=ga)
             else:  # dopl and dopr operate on left argument
                 terms = []
                 for (coef, pdiff) in dopr.terms:
                     Ddopr = pdiff(dopl.terms)  # list of terms
-                    Ddopr = [(Mv.Mul(x[0], coef, op=op), x[1]) for x in Ddopr]
+                    Ddopr = [(Mv.Mul(c, coef, op=op), p) for c, p in Ddopr]
                     terms += Ddopr
                 product = Dop(terms, ga=ga, cmpflg=True)
         else:
@@ -2085,10 +2085,10 @@ class Dop(object):
                 ga = dopl.Ga
 
                 if not dopr.cmpflg:  # dopr operates on right argument
-                    terms = [(Mv.Mul(dopl, x[0], op=op), x[1]) for x in dopr.terms]
+                    terms = [(Mv.Mul(dopl, coef, op=op), pdiff) for coef, pdiff in dopr.terms]
                     return Dop(terms, ga=ga)  # returns Dop
                 else:
-                    product = sum([Mv.Mul(x[1](dopl), x[0], op=op) for x in dopr.terms], Mv(0, ga=ga))  # returns multivector
+                    product = sum([Mv.Mul(pdiff(dopl), coef, op=op) for coef, pdiff in dopr.terms], Mv(0, ga=ga))  # returns multivector
             else:  # dopr is a scalar or a multivector
 
                 if isinstance(dopr, Mv) and dopl.Ga != dopr.Ga:
@@ -2096,9 +2096,9 @@ class Dop(object):
                 ga = dopl.Ga
 
                 if not dopl.cmpflg:  # dopl operates on right argument
-                    return sum([Mv.Mul(x[0], x[1](dopr), op=op) for x in dopl.terms], Mv(0, ga=ga))  # returns multivector
+                    return sum([Mv.Mul(coef, pdiff(dopr), op=op) for coef, pdiff in dopl.terms], Mv(0, ga=ga))  # returns multivector
                 else:
-                    terms = [(Mv.Mul(x[0], dopr, op=op), x[1]) for x in dopl.terms]
+                    terms = [(Mv.Mul(coef, dopr, op=op), pdiff) for coef, pdiff in dopl.terms]
                     product = Dop(terms, ga=dopl.Ga, cmpflg=True)  # returns Dop complement
         if isinstance(product, Dop):
             product = product.consolidate_coefs()
@@ -2177,8 +2177,8 @@ class Dop(object):
         return latex_str
 
     def is_scalar(self):
-        for x in self.terms:
-            if isinstance(x[0], Mv) and not x[0].is_scalar():
+        for coef, pdiff in self.terms:
+            if isinstance(coef, Mv) and not coef.is_scalar():
                 return False
         return True
 
