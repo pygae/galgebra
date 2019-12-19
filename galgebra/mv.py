@@ -1626,19 +1626,19 @@ class Sdop(object):
                 raise TypeError("Neither argument is a Dop instance")
             return Sdop.Add(sdop1, sdop2)
 
-    def __eq__(self, sdop):
-        if isinstance(sdop, Sdop):
-            if self.Ga != sdop.Ga:
-                return False
-            self = Sdop.consolidate_coefs(self)
-            sdop = Sdop.consolidate_coefs(sdop)
-            if len(self.terms) != len(sdop.terms):
-                return False
-            if set(self.terms) != set(sdop.terms):
-                return False
-            return True
+    def __eq__(self, other):
+        if isinstance(other, Sdop):
+            if self.Ga != other.Ga:
+                return NotImplemented
+
+            diff = self - other
+            return len(diff.terms) == 0
         else:
-            return False
+            return NotImplemented
+
+    if sys.version_info.major < 3:
+        def __ne__(self, other):
+            return not (self == other)
 
     def __add__(self, sdop):
         return Sdop.Add(self, sdop)
@@ -1717,6 +1717,10 @@ class Pdop(object):
             if len(self.pdiffs) == 0 and A == S(1):
                 return True
             return False
+
+    if sys.version_info.major < 3:
+        def __ne__(self, other):
+            return not (self == other)
 
     def __init__(self, __arg, **kwargs):
         """
@@ -2134,15 +2138,19 @@ class Dop(object):
     def __gt__(self, dopr):  # > right contraction
         return Dop.Mul(self, dopr, op='>')
 
-    def __eq__(self, dop):
-        if isinstance(dop, Dop):
-            if self.Ga != dop.Ga:
-                return False
+    def __eq__(self, other):
+        if isinstance(other, Dop):
+            if self.Ga != other.Ga:
+                return NotImplemented
 
-            diff = self - dop
-            return all(coef == S(0) for coef, _ in diff.terms)
+            diff = self - other
+            return len(diff.terms) == 0
         else:
-            return False
+            return NotImplemented
+
+    if sys.version_info.major < 3:
+        def __ne__(self, other):
+            return not (self == other)
 
     def __str__(self):
         if printer.GaLatexPrinter.latex_flg:
