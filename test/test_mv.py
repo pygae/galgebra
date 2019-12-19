@@ -129,3 +129,13 @@ class TestMv(unittest.TestCase):
             ga.mv('A', 'grade', not_an_argument=True)  # invalid kwarg
         with self.assertRaises(TypeError):
             ga.mv([1, 2, 3], 'vector', f=True)  # can't pass f with coefficients
+
+    def test_hashable(self):
+        (ga, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+
+        d = {}
+        d[e_1] = 1
+        d[e_2] = 2
+        assert d[e_1 + 0] == 1
+        d[10] = 3  # note: not a multivector key!
+        assert d[e_1 * 0 + 10] == 3

@@ -436,6 +436,13 @@ class Mv(object):
         b.is_blade_rep = True
         return b
 
+    def __hash__(self):
+        if self.is_scalar():
+            # ensure we match equality
+            return hash(self.obj)
+        else:
+            return hash((self.Ga, self.obj))
+
     def __eq__(self, A):
         if isinstance(A, Mv):
             diff = (self - A).expand().simplify()
