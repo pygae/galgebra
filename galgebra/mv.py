@@ -1615,12 +1615,8 @@ class Sdop(object):
         else:
             # convert values to multiplicative operators
             if isinstance(sdop1, Sdop):
-                if not isinstance(sdop2, Mv):
-                    sdop2 = sdop1.Ga.mv(sdop2)
                 sdop2 = Sdop([(sdop2, Pdop({}, ga=sdop1.Ga))], ga=sdop1.Ga)
             elif isinstance(sdop2, Sdop):
-                if not isinstance(sdop1, Mv):
-                    sdop1 = sdop2.Ga.mv(sdop1)
                 sdop1 = Sdop([(sdop1, Pdop({}, ga=sdop2.Ga))], ga=sdop2.Ga)
             else:
                 raise TypeError("Neither argument is a Dop instance")
