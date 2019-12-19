@@ -1617,11 +1617,11 @@ class Sdop(object):
             if isinstance(sdop1, Sdop):
                 if not isinstance(sdop2, Mv):
                     sdop2 = sdop1.Ga.mv(sdop2)
-                sdop2 = Sdop([(sdop2, sdop1.Ga.Pdop_identity)], ga=sdop1.Ga)
+                sdop2 = Sdop([(sdop2, Pdop({}, ga=sdop1.Ga))], ga=sdop1.Ga)
             elif isinstance(sdop2, Sdop):
                 if not isinstance(sdop1, Mv):
                     sdop1 = sdop2.Ga.mv(sdop1)
-                sdop1 = Sdop([(sdop1, sdop2.Ga.Pdop_identity)], ga=sdop2.Ga)
+                sdop1 = Sdop([(sdop1, Pdop({}, ga=sdop2.Ga))], ga=sdop2.Ga)
             else:
                 raise TypeError("Neither argument is a Dop instance")
             return Sdop.Add(sdop1, sdop2)
@@ -1677,10 +1677,12 @@ class Pdop(object):
     Attributes
     ----------
     pdiffs : dict
-        a dictionary where coordinates are keys and key value are the number of
+        A dictionary where coordinates are keys and key value are the number of
         times one differentiates with respect to the key.
     order : int
-        total number of differentiations
+        Total number of differentiations.
+        When this is zero (i.e. when :attr:`pdiffs` is ``{}``) then this object
+        is the identity operator, and returns its operand unchanged.
     """
 
     init_slots = {'ga': (None, 'Associated geometric algebra')}
@@ -1774,7 +1776,7 @@ class Pdop(object):
                 del new_pdiffs[x]
             else:
                 new_pdiffs[x] -= 1
-            return Pdop(new_pdiffs, ga=self.Ga), self.Ga.Pdiffs[x]
+            return Pdop(new_pdiffs, ga=self.Ga), Pdop(x, ga=self.Ga)
 
     def __call__(self, arg):
         """
@@ -2019,11 +2021,11 @@ class Dop(object):
             if isinstance(dop1, Dop):
                 if not isinstance(dop2, Mv):
                     dop2 = dop1.Ga.mv(dop2)
-                dop2 = Dop([(dop2, dop1.Ga.Pdop_identity)], cmpflg=dop1.cmpflg, ga=dop1.Ga)
+                dop2 = Dop([(dop2, Pdop({}, ga=dop1.Ga))], cmpflg=dop1.cmpflg, ga=dop1.Ga)
             elif isinstance(dop2, Dop):
                 if not isinstance(dop1, Mv):
                     dop1 = dop2.Ga.mv(dop1)
-                dop1 = Dop([(dop1, dop2.Ga.Pdop_identity)], cmpflg=dop2.cmpflg, ga=dop2.Ga)
+                dop1 = Dop([(dop1, Pdop({}, ga=dop2.Ga))], cmpflg=dop2.cmpflg, ga=dop2.Ga)
             else:
                 raise TypeError("Neither argument is a Dop instance")
             return Dop.Add(dop1, dop2)
