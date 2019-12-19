@@ -1,9 +1,18 @@
 import unittest
+
+import pytest
 from sympy import Symbol
 from galgebra.ga import Ga
 from galgebra import utils
 
 class TestMv(unittest.TestCase):
+
+    def test_deprecations(self):
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        with pytest.warns(DeprecationWarning):
+            ga.mv_x
+        with pytest.warns(DeprecationWarning):
+            ga.mv_I
 
     def test_is_base(self):
         """

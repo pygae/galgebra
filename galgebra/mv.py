@@ -981,7 +981,7 @@ class Mv(object):
         if not test.is_scalar():
             return self.versor_flg
         # see if self*x*self.rev() returns a vector for x an arbitrary vector
-        test = self * self.Ga.XOX * self.rev()
+        test = self * self.Ga._XOX * self.rev()
         self.versor_flg = test.is_vector()
         return self.versor_flg
 

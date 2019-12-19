@@ -447,7 +447,7 @@ class Ga(metric.Metric):
         self.a = []  # List of dummy vectors for Mlt calculations
         self._agrads = {}  # cache of gradient operator with respect to vector a
         self.dslot = -1  # args slot for dervative, -1 for coordinates
-        self.XOX = self.mv('XOX','vector')  # Versor test vector
+        self._XOX = self.mv('XOX','vector')  # cached vector for use in is_versor
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
 
@@ -484,14 +484,22 @@ class Ga(metric.Metric):
     @property
     def mv_I(self):
         # This exists for backwards compatibility. Note this is not `I()`!
+        # galgebra 0.4.5
+        warnings.warn(
+            "`ga.mv_I` is deprecated, use `ga.E()` instead, or perhaps `ga.I()`",
+            DeprecationWarning, stacklevel=2)
         # default pseudoscalar
         return self.E()
 
     @property
     def mv_x(self):
         # This exists for backwards compatibility.
+        # galgebra 0.4.5
+        warnings.warn(
+            "`ga.mv_x` is deprecated, use `ga.mv(your_name, 'vector')` instead",
+            DeprecationWarning, stacklevel=2)
         # testing vectors
-        return Mv('XxXx', 'vector', ga=self)
+        return mv.Mv('XxXx', 'vector', ga=self)
 
     def X(self):
         return self.mv(sum([coord*base for (coord, base) in zip(self.coords, self.basis)]))
