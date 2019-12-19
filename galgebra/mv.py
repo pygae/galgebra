@@ -7,6 +7,7 @@ import numbers
 import operator
 from functools import reduce, cmp_to_key
 import sys
+import warnings
 
 from sympy import (
     Symbol, Function, S, expand, Add,
@@ -1574,8 +1575,8 @@ class Sdop(object):
         if self.Ga is None:
             raise ValueError('In Sdop.__init__ self.Ga must be defined.')
 
-        if len(args[0]) == 1 and isinstance(args[0],Symbol):  # Simple Pdop of order 1
-            self.terms = ((S(1), self.Ga.pdop(args[0])),)
+        if len(args) == 1 and isinstance(args[0],Symbol):  # Simple Pdop of order 1
+            self.terms = ((S(1), Pdop(args[0], ga=self.Ga)),)
         else:
             if len(args) == 2 and isinstance(args[0],list) and isinstance(args[1],list):
                 if len(args[0]) != len(args[1]):
@@ -1739,7 +1740,7 @@ class Pdop(object):
                 return True
             return False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, __arg, **kwargs):
         """
         The partial differential operator is a partial derivative with
         respect to a set of real symbols (variables).  The allowed
@@ -1753,22 +1754,25 @@ class Pdop(object):
         kwargs = metric.test_init_slots(Pdop.init_slots, **kwargs)
 
         self.Ga = kwargs['ga']  # Associated geometric algebra
-        self.order = 0
 
         if self.Ga is None:
             raise ValueError('In Pdop.__init__ self.Ga must be defined.')
 
-        if args[0] is None:  # Pdop is the identity (1)
-            self.pdiffs = {}
-        elif isinstance(args[0], dict):  # Pdop defined by dictionary
-            self.pdiffs = args[0]
-        elif isinstance(args[0],Symbol):  # First order derivative with respect to symbol
-            self.pdiffs = {args[0]:1}
-        else:
-            raise ValueError('In pdop args = ', str(args))
+        # galgebra 0.4.5
+        if __arg is None:
+            warnings.warn(
+                "`Pdop(None)` is deprecated, use `Pdop({})` instead",
+                DeprecationWarning, stacklevel=2)
+            __arg = {}
 
-        for x in list(self.pdiffs.keys()):
-            self.order += self.pdiffs[x]
+        if isinstance(__arg, dict):  # Pdop defined by dictionary
+            self.pdiffs = __arg
+        elif isinstance(__arg, Symbol):  # First order derivative with respect to symbol
+            self.pdiffs = {__arg: 1}
+        else:
+            raise TypeError('A dictionary or symbol is required, got {!r}'.format(__arg))
+
+        self.order = sum(self.pdiffs.values())
 
     def factor(self):
         """
