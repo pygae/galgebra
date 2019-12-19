@@ -484,14 +484,22 @@ class Ga(metric.Metric):
     @property
     def mv_I(self):
         # This exists for backwards compatibility. Note this is not `I()`!
+        # galgebra 0.4.5
+        warnings.warn(
+            "`ga.mv_I` is deprecated, use `ga.E()` instead, or perhaps `ga.I()`",
+            DeprecationWarning, stacklevel=2)
         # default pseudoscalar
         return self.E()
 
     @property
     def mv_x(self):
         # This exists for backwards compatibility.
+        # galgebra 0.4.5
+        warnings.warn(
+            "`ga.mv_x` is deprecated, use `ga.mv(your_name, 'vector')` instead",
+            DeprecationWarning, stacklevel=2)
         # testing vectors
-        return Mv('XxXx', 'vector', ga=self)
+        return mv.Mv('XxXx', 'vector', ga=self)
 
     def X(self):
         return self.mv(sum([coord*base for (coord, base) in zip(self.coords, self.basis)]))
