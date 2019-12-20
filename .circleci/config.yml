@@ -85,11 +85,11 @@ workflows:
           type: approval
           requires:
             - "python-3.7"
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*$/
       - publish:
           requires:
             - "hold"
-        # filters:
-        #   branches:
-        #     ignore: /.*/
-        #   tags:
-        #     only: /^v.*$/
