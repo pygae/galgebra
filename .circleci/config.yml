@@ -25,7 +25,6 @@ defaults: &defaults
         command: |
           sudo pip install codecov
           codecov
-
     - store_test_results:
         path: test-reports
     - store_artifacts:
@@ -61,6 +60,15 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/python:2.7
+  "publish":
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Upload to PyPi
+          command: |
+            ./circle-build-package
 
 workflows:
   version: 2
@@ -72,3 +80,15 @@ workflows:
       - "python-3.6"
       - "python-3.5"
       - "python-2.7"
+      - hold:
+          type: approval
+          requires:
+            - "python-3.7"
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*$/
+      - publish:
+          requires:
+            - "hold"

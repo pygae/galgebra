@@ -19,12 +19,12 @@ script:
 after_success:
 - pip install codecov
 - codecov
-deploy:
-  on:
-    tags: true
-  provider: pypi
-  skip_existing: true
-  user: utensil
-  password:
-    secure: KxiaDdJJRZDHRSegGH9hCyGYonoseDK0IrZD6mnBsDijcK1Hjwpwbr+GWztt3pzMFC/OOoOQTcGLgPz5DH8ppwAQ11j4y2/H1Z18FKXa3Cl4V1j94aaQ201Nrzhq4bDFRDGAjZrLhlOCQsIcvsO/ROr2B6wJBAmYrEEEqPrQC+/czvEt2dZePO3q/SZx+gs564OtEjUKzDsRriR14gH2NFtJsoixoGhaBlVPDrc2YVeqYk+kcQn1UbsmNR+0kL8dU9awra6Bd/8gbyMU/YgTOwHcRZmZImV8SHFH3pvz0siJ5PUtKuD03akVfp3Szoc/ZGjgV/p03OjpdAdUb9OZq4EHXXpxYHnIDeqFMyK9LIJMOy7goB6ST2vIElLGQjd5pw/8265JTNDNLEawHxtFeR61e4p/6E78ga7CjqyBthv8NujlNDVXLEjcipc57e27O5hY2tYe/dYvkKB5dn8zA5jEKMPQbcd6clrixdD3spUN2D3p20nUcX64HPGsAQfLqYMNRr7qbEJopObbsi39kKTUOfxR7zkx1HO/GPrrLDbUZH9CnFnNSsfTSqVDOOJhVXHnGCt6v77zyJKrpsf6ksWxWh8xGELIhbvTRs1xORVz3TxqQujYJs6xs1TJRYfIRY/RwfR5xr8d7jz11MXeK+d8/Ex3kMJqP/dHMPGOrwQ=
+# deploy:
+#   on:
+#     tags: true
+#   provider: pypi
+#   skip_existing: true
+#   user: utensil
+#   password:
+#     secure: KxiaDdJJRZDHRSegGH9hCyGYonoseDK0IrZD6mnBsDijcK1Hjwpwbr+GWztt3pzMFC/OOoOQTcGLgPz5DH8ppwAQ11j4y2/H1Z18FKXa3Cl4V1j94aaQ201Nrzhq4bDFRDGAjZrLhlOCQsIcvsO/ROr2B6wJBAmYrEEEqPrQC+/czvEt2dZePO3q/SZx+gs564OtEjUKzDsRriR14gH2NFtJsoixoGhaBlVPDrc2YVeqYk+kcQn1UbsmNR+0kL8dU9awra6Bd/8gbyMU/YgTOwHcRZmZImV8SHFH3pvz0siJ5PUtKuD03akVfp3Szoc/ZGjgV/p03OjpdAdUb9OZq4EHXXpxYHnIDeqFMyK9LIJMOy7goB6ST2vIElLGQjd5pw/8265JTNDNLEawHxtFeR61e4p/6E78ga7CjqyBthv8NujlNDVXLEjcipc57e27O5hY2tYe/dYvkKB5dn8zA5jEKMPQbcd6clrixdD3spUN2D3p20nUcX64HPGsAQfLqYMNRr7qbEJopObbsi39kKTUOfxR7zkx1HO/GPrrLDbUZH9CnFnNSsfTSqVDOOJhVXHnGCt6v77zyJKrpsf6ksWxWh8xGELIhbvTRs1xORVz3TxqQujYJs6xs1TJRYfIRY/RwfR5xr8d7jz11MXeK+d8/Ex3kMJqP/dHMPGOrwQ=
 
