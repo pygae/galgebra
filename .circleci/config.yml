@@ -14,17 +14,17 @@ defaults: &defaults
             sudo pip install $PIP_EXTRA_INSTALLATION
           fi
           sudo pip check
-    - run:
-        name: Test
-        command: |
-          mkdir test-reports
-          pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg --junitxml=test-reports/junit.xml
-    - run:
-        name: Coverage
-        when: on_success
-        command: |
-          sudo pip install codecov
-          codecov
+    # - run:
+    #     name: Test
+    #     command: |
+    #       mkdir test-reports
+    #       pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg --junitxml=test-reports/junit.xml
+    # - run:
+    #     name: Coverage
+    #     when: on_success
+    #     command: |
+    #       sudo pip install codecov
+    #       codecov
 
     - store_test_results:
         path: test-reports
@@ -61,14 +61,35 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/python:2.7
+  "publish":
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Upload to PyPi
+          command: |
+            ./circle-build-package
 
 workflows:
   version: 2
   build:
     jobs:
-      - "python-3.7-symengine"
-      - "python-3.7-sympy-1.5"
+      # - "python-3.7-symengine"
+      # - "python-3.7-sympy-1.5"
       - "python-3.7"
-      - "python-3.6"
-      - "python-3.5"
-      - "python-2.7"
+      # - "python-3.6"
+      # - "python-3.5"
+      # - "python-2.7"
+      - hold:
+          type: approval
+          requires:
+            - "python-3.7"
+      - publish:
+          requires:
+            - "hold"
+        # filters:
+        #   branches:
+        #     ignore: /.*/
+        #   tags:
+        #     only: /^v.*$/
