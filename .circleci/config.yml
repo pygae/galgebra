@@ -76,12 +76,14 @@ workflows:
     jobs:
       - "python-3.7-symengine"
       - "python-3.7-sympy-1.5"
-      - "python-3.7"
+      - python-3.7:
+          filters:
+            tags:
+              only: /^v.*$/
       - "python-3.6"
       - "python-3.5"
       - "python-2.7"
-      - hold:
-          type: approval
+      - publish:
           requires:
             - "python-3.7"
           filters:
@@ -89,6 +91,3 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*$/
-      - publish:
-          requires:
-            - "hold"
