@@ -5,7 +5,7 @@ Multivector and Linear Multivector Differential Operator
 import copy
 import numbers
 import operator
-from functools import reduce, cmp_to_key
+from functools import reduce
 import sys
 import warnings
 
@@ -1485,10 +1485,7 @@ class Sdop(object):
         ], ga=self.Ga)
 
     def _with_sorted_terms(self):
-        # self.terms.sort(key=operator.itemgetter(1), cmp=Pdop.compare)
-        # terms are in the form of (coef, pdiff)
-        # so we need to first extract pdiff and then use Pdop.compare to compare
-        new_terms = sorted(self.terms, key=cmp_to_key(lambda term1, term2 : Pdop.compare(term1[1], term2[1])))
+        new_terms = sorted(self.terms, key=lambda term: Pdop.sort_key(term[1]))
         return Sdop(new_terms, ga=self.Ga)
 
     def Sdop_str(self):
@@ -1680,30 +1677,19 @@ class Pdop(object):
 
     init_slots = {'ga': (None, 'Associated geometric algebra')}
 
-    @staticmethod
-    def compare(pdop1, pdop2):  # compare two Pdops
-        if pdop1.order > pdop2.order:
-            return 1
-        if pdop1.order < pdop2.order:
-            return -1
-
-        keys1 = list(pdop1.pdiffs.keys())
-        keys2 = list(pdop2.pdiffs.keys())
-        lkeys1 = len(keys1)
-        lkeys2 = len(keys2)
-
-        if lkeys1 == lkeys2:
-            s1 = ''.join([str(pdop1.Ga.coords.index(x)) for x in keys1])
-            s2 = ''.join([str(pdop1.Ga.coords.index(x)) for x in keys2])
-            if s1 < s2:
-                return -1
-            else:
-                return 1
-        else:
-            if lkeys1 < lkeys2:
-                return 1
-            else:
-                return -1
+    def sort_key(self, order=None):
+        return (
+            # lower order derivatives first
+            self.order,
+            # sorted by symbol after that, after expansion
+            sorted([
+                x.sort_key(order)
+                if x not in self.Ga.coords else
+                self.Ga.coords.index(x)
+                for x, k in self.pdiffs.items()
+                for i in range(k)
+            ])
+        )
 
     def __eq__(self,A):
         if isinstance(A, Pdop) and self.Ga == A.Ga and self.pdiffs == A.pdiffs:
