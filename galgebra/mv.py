@@ -1987,17 +1987,6 @@ class Dop(object):
         """
         return Dop(_consolidate_terms(self.terms), ga=self.Ga, cmpflg=self.cmpflg)
 
-
-    def blade_rep(self):
-        N = len(self.blades)
-        coefs = N * [[]]
-        bases = N * [0]
-        for term in self.terms:
-            for coef, base in metric.linear_expand_terms(self.terms[0].obj):
-                index = self.blades.index(base)
-                coefs[index] = coef
-                bases[index] = base
-
     @staticmethod
     def Add(dop1, dop2):
 
