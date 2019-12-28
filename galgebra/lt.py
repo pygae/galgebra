@@ -107,7 +107,10 @@ def Dictionary_to_Matrix(dict_rep, ga):
         lst_mat_row = n * [S(0)]
 
         if e_row in basis:  # If not in basis row all zeros
-            (coefs,bases) = metric.linear_expand(dict_rep[e_row])
+            element = dict_rep[e_row]
+            if isinstance(element, mv.Mv):
+                element = element.obj
+            (coefs,bases) = metric.linear_expand(element)
             for (coef,base) in zip(coefs,bases):
                 index = ga.basis.index(base)
                 lst_mat_row[index] = coef
