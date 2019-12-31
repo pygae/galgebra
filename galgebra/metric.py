@@ -25,9 +25,11 @@ def apply_function_list(f,x):
 
 
 def linear_expand(expr):
+    if not isinstance(expr, Expr):
+        raise TypeError('{!r} is not a SymPy Expr'.format(expr))
+    
+    expr = expand(expr)
 
-    if isinstance(expr, Expr):
-        expr = expand(expr)
     if expr == 0:
         coefs = [expr]
         bases = [S(1)]
