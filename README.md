@@ -109,14 +109,7 @@ Installing GAlgebra
 
 - Works on Linux, Windows, Mac OSX
 - [Python](https://www.python.org/) 2.7 or >=3.5
-- [SymPy](https://www.sympy.org)
-
-Note: 
-
-GAlgebra is tested on only SymPy 1.3 and Sympy 1.5. It is recommended to specify the latter explicitly when installing, which can be done with:
-```bash
-pip install sympy==1.5
-```
+- [SymPy](https://www.sympy.org) 1.3, 1.4 or preferably 1.5
 
 ### Installing GAlgebra From PyPI (Recommended for users)
 
