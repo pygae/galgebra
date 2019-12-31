@@ -26,7 +26,7 @@ def apply_function_list(f,x):
 
 def linear_expand(expr):
     if not isinstance(expr, Expr):
-        raise TypeError(expr + 'is not a SymPy Expr')
+        raise TypeError('{!r} is not a SymPy Expr'.format(expr))
     
     expr = expand(expr)
 

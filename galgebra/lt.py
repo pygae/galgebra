@@ -110,7 +110,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
             element = dict_rep[e_row]
             if isinstance(element, mv.Mv):
                 element = element.obj
-            (coefs,bases) = metric.linear_expand(element)
+            coefs, bases = metric.linear_expand(element)
             for (coef,base) in zip(coefs,bases):
                 index = ga.basis.index(base)
                 lst_mat_row[index] = coef
