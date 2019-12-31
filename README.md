@@ -113,15 +113,10 @@ Installing GAlgebra
 
 Note: 
 
-GAlgebra only supports SymPy 1.3 and below for now, see the tracking issue [#31](https://github.com/pygae/galgebra/issues/31).
-
-Please run the following to freeze the version of SymPy to 1.3:
-
+GAlgebra is tested on only SymPy 1.3 and Sympy 1.5. It is recommended to specify the latter explicitly when installing, which can be done with:
 ```bash
-pip install sympy==1.3
+pip install sympy==1.5
 ```
-
-If you need to use SymPy 1.4 and above for other libraries, please create a seperate virtual environment with SymPy 1.3 for GAlgebra using [conda](https://github.com/conda/conda) or [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv).
 
 ### Installing GAlgebra From PyPI (Recommended for users)
 
