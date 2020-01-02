@@ -108,7 +108,7 @@ Installing GAlgebra
 ### Prerequisites
 
 - Works on Linux, Windows, Mac OSX
-- [Python](https://www.python.org/) 2.7 or >=3.5
+- [Python](https://www.python.org/) >=3.5
 - [SymPy](https://www.sympy.org) 1.3, 1.4 or preferably 1.5
 
 ### Installing GAlgebra From PyPI (Recommended for users)
