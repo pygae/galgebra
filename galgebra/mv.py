@@ -667,13 +667,12 @@ class Mv(object):
         if self.obj == 0:
             return ZERO_STR
 
-        # todo: use the nonlocal keyword here instead once we drop python 2
-        class first_line:
-            value = True
+        first_line = True
 
         def append_plus(c_str):
-            if first_line.value:
-                first_line.value = False
+            nonlocal first_line
+            if first_line:
+                first_line = False
                 return c_str
             else:
                 c_str = c_str.strip()
@@ -750,7 +749,7 @@ class Mv(object):
             elif printer.GaLatexPrinter.fmt == 2:  # One grade per line
                 if grade != old_grade:
                     old_grade = grade
-                    if not first_line.value:
+                    if not first_line:
                         lines.append(s)
                     s = append_plus(cb_str)
                 else:
