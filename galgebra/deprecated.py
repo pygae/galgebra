@@ -3,7 +3,6 @@ from itertools import combinations
 from sympy import trigsimp, S
 from . import ga
 from .mv import Mv
-from . import utils
 
 ################################# MV class for backward compatibility ###################
 
@@ -23,7 +22,7 @@ class MV(Mv):
     @staticmethod
     def setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None)):
 
-        if utils.isstr(metric):
+        if isinstance(metric, str):
             metric = MV.convert_metric(metric)
         if curv != (None,None):
             MV.GA = ga.Ga(basis, g=None, coords=coords, X=curv[0], debug=debug)

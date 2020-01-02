@@ -10,7 +10,6 @@ from sympy import (
 )
 
 from . import printer
-from . import utils
 
 half = Rational(1, 2)
 
@@ -337,7 +336,7 @@ class Metric(object):
             s = self.n * (s[:-1] + ',')
             s = s[:-1]
 
-        if utils.isstr(s):
+        if isinstance(s, str):
             rows = s.split(',')
             n_rows = len(rows)
 
@@ -562,7 +561,7 @@ class Metric(object):
                 return
             else:
                 raise ValueError('self.sig = ' + str(self.sig) + ' > self.n, not an allowed hint')
-        if utils.isstr(self.sig):
+        if isinstance(self.sig, str):
             if self.sig == 'e':  # Euclidean metric signature
                 self.sig = (self.n, 0)
             elif self.sig == 'm+':  # Minkowski metric signature (n-1,1)
@@ -582,7 +581,7 @@ class Metric(object):
         self.name = 'GA' + str(Metric.count)
         Metric.count += 1
 
-        if not utils.isstr(basis):
+        if not isinstance(basis, str):
             raise TypeError('"' + str(basis) + '" must be string')
 
         X = kwargs['X']  # Vector manifold
@@ -651,7 +650,7 @@ class Metric(object):
                         printer.oprint('X_{i}', X, 'D_{i}X_{j}', dX)
 
         else:  # metric is symbolic or list of lists of functions of coordinates
-            if utils.isstr(g):  # metric elements are symbols or constants
+            if isinstance(g, str):  # metric elements are symbols or constants
                 if g == 'g':  # general symbolic metric tensor (g_ij functions of position)
                     g_lst = []
                     g_inv_lst = []

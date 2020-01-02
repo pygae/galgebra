@@ -16,7 +16,6 @@ from sympy import (
 from . import printer
 from . import metric
 from . import mv
-from . import utils
 
 def aprint(a):
     out = ''
@@ -221,7 +220,7 @@ class Lt(object):
             else:
                 raise ValueError('In Spinor input for Lt, S*S.rev() not a scalar!\n')
 
-        elif utils.isstr(mat_rep):  # String input
+        elif isinstance(mat_rep, str):  # String input
             Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords,mode=self.mode,f=self.fct_flg)
             self.__init__(Amat, ga=self.Ga)
 
@@ -726,7 +725,7 @@ class Mlt(object):
             Ga.make_grad(self.args)
             self.fvalue = (self.args[0] | f(self.args[1])).obj
             self.f = None
-        elif utils.isstr(f) and args is not None:
+        elif isinstance(f, str) and args is not None:
             self.f = None
             if isinstance(args,(list,tuple)):
                 self.args = args

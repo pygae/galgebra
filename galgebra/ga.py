@@ -20,7 +20,6 @@ from . import printer
 from . import metric
 from . import mv
 from . import lt
-from . import utils
 
 half = Rational(1, 2)
 one = S(1)
@@ -545,7 +544,7 @@ class Ga(metric.Metric):
         # ensure that ga is not already in kwargs
         kwargs = dict(ga=self, **kwargs)
 
-        if not utils.isstr(root):
+        if not isinstance(root, str):
             return mv.Mv(root, *args, **kwargs)
 
         if ' ' in root and ' ' not in args[0]:

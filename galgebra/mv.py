@@ -19,7 +19,6 @@ from sympy import N as Nsympy
 
 from . import printer
 from . import metric
-from . import utils
 from .printer import ZERO_STR
 from .utils import _KwargParser
 
@@ -178,7 +177,7 @@ class Mv(object):
             return '{}__{}'.format(root, s)
         grade = __grade
         kw = _KwargParser('_make_grade', kwargs)
-        if utils.isstr(__name_or_coeffs):
+        if isinstance(__name_or_coeffs, str):
             name = __name_or_coeffs
             f = kw.pop('f', False)
             kw.reject_remaining()
@@ -206,7 +205,7 @@ class Mv(object):
     @staticmethod
     def _make_scalar(ga, __name_or_value, **kwargs):
         """ Make a scalar multivector """
-        if utils.isstr(__name_or_value):
+        if isinstance(__name_or_value, str):
             name = __name_or_value
             return Mv._make_grade(ga, name, 0, **kwargs)
         else:
@@ -345,7 +344,7 @@ class Mv(object):
             self.obj = S(0)
             self.i_grade = 0
             kw.reject_remaining()
-        elif len(args) == 1 and not utils.isstr(args[0]):  # copy constructor
+        elif len(args) == 1 and not isinstance(args[0], str):  # copy constructor
             x = args[0]
             if isinstance(x, Mv):
                 self.obj = x.obj
@@ -360,7 +359,7 @@ class Mv(object):
                 self.characterise_Mv()
             kw.reject_remaining()
         else:
-            if utils.isstr(args[1]):
+            if isinstance(args[1], str):
                 make_args = list(args)
                 mode = make_args.pop(1)
                 make_func = getattr(Mv, '_make_{}'.format(mode), None)
@@ -378,7 +377,7 @@ class Mv(object):
             else:
                 raise TypeError("Expected string or int")
 
-            if utils.isstr(args[0]):
+            if isinstance(args[0], str):
                 self.title = args[0]
             self.characterise_Mv()
 

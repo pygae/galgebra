@@ -216,7 +216,7 @@ def oprint(*args, **kwargs):
     else:
         dict_mode = False
 
-    if utils.isstr(args[0]) or args[0] is None:
+    if isinstance(args[0], str) or args[0] is None:
         titles = list(islice(args, None, None, 2))
         objs = tuple(islice(args, 1, None, 2))
         if len(args) > 2:
