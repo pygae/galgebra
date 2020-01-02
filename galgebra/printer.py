@@ -13,7 +13,6 @@ from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
-from . import utils
 
 try:
     from IPython.display import display, Latex, Math, display_latex
@@ -631,7 +630,7 @@ class GaLatexPrinter(LatexPrinter):
             pass
         else:
             GaLatexPrinter.stdout = sys.stdout
-            sys.stdout = utils.StringIO()
+            sys.stdout = io.StringIO()
         return
 
     @staticmethod
