@@ -375,16 +375,24 @@ class Ga(metric.Metric):
     def __eq__(self, ga):
         return self.name == ga.name
 
-    def __init__(self, bases, **kwargs):
+    def __init__(self, bases, *, wedge=True, **kwargs):
+        """
+        Parameters
+        ----------
+        bases :
+            Passed as ``basis`` to ``Metric``.
+        wedge :
+            Use ``^`` symbol to print basis blades
+        **kwargs :
+            See :class:`galgebra.metric.Metric`.
+        """
 
         # Each time a geometric algebra is intialized in setup of append
         # the printer must be restored to the simple text mode (not
         # enhanced text of latex printing) so that when 'str' is used to
         # create symbol names the names are not mangled.
 
-        kwargs = metric.test_init_slots(metric.Metric.init_slots, **kwargs)
-
-        self.wedge_print = kwargs['wedge']
+        self.wedge_print = wedge
 
         if printer.GaLatexPrinter.latex_flg:
             printer.GaLatexPrinter.restore()
@@ -1897,31 +1905,10 @@ class Sm(Ga):
     the coordinates of the submanifold. The inputs required to define
     the submanifold are:
 
-    Parameters
-    ----------
-    u :
-        (``args[0]``) The coordinate map defining the submanifold
-        which is a list of functions of coordinates of the base
-        manifold in terms of the coordinates of the submanifold.
-        for example if the manifold is a unit sphere then -
-        ``u = [sin(u)*cos(v),sin(u)*sin(v),cos(u)]``.
-
-        Alternatively (``args[0]``) is a parametric vector function
-        of the basis vectors of the base manifold.  The
-        coefficients of the bases are functions of the coordinates
-        (``args[1]``).  In this case we would call the submanifold
-        a "vector" manifold and additional characteristics of the
-        manifold can be calculated since we have given an explicit
-        embedding of the manifold in the base manifold.
-
-    coords :
-        (``args[1]``) The coordinate list for the submanifold, for
-        example ``[u, v]``.
-
     Notes
     -----
 
-    See 'init_slots' for possible other inputs.  The 'Ga' member function
+    The 'Ga' member function
     'sm' can be used to instantiate the submanifold via (o3d is the base
     manifold)::
 
@@ -1931,13 +1918,40 @@ class Sm(Ga):
         (eu,ev) = sm_example.mv()
         sm_grad = sm_example.grad
     """
-    init_slots = {'debug': (False, 'True for debug output'),
-                  'root': ('e', 'Root symbol for basis vectors'),
-                  'name': (None, 'Name of submanifold'),
-                  'norm': (False, 'Normalize basis if True'),
-                  'ga': (None, 'Base Geometric Algebra')}
+    # __u is to emulate a Python 3.8 positional-only argument, with a clearer
+    # spelling than `*args`.
+    def __init__(self, __u, __coords, *, ga, norm=False, name=None, root='e', debug=False):
+        """
+        Parameters
+        ----------
+        u :
+            The coordinate map defining the submanifold
+            which is a list of functions of coordinates of the base
+            manifold in terms of the coordinates of the submanifold.
+            for example if the manifold is a unit sphere then -
+            ``u = [sin(u)*cos(v),sin(u)*sin(v),cos(u)]``.
 
-    def __init__(self, *args, **kwargs):
+            Alternatively, a parametric vector function
+            of the basis vectors of the base manifold.  The
+            coefficients of the bases are functions of the coordinates
+            (``coords``).  In this case we would call the submanifold
+            a "vector" manifold and additional characteristics of the
+            manifold can be calculated since we have given an explicit
+            embedding of the manifold in the base manifold.
+        coords :
+            The coordinate list for the submanifold, for
+            example ``[u, v]``.
+        debug :
+            True for debug output
+        root : str
+            Root symbol for basis vectors
+        name : str
+            Name of submanifold
+        norm : bool
+            Normalize basis if True
+        ga :
+            Base Geometric Algebra
+        """
 
         #print '!!!Enter Sm!!!'
 
@@ -1945,10 +1959,8 @@ class Sm(Ga):
             printer.GaLatexPrinter.restore()
             Ga.restore = True
 
-        kwargs = metric.test_init_slots(Sm.init_slots, **kwargs)
-        u = args[0]  # Coordinate map or vector embedding to define submanifold
-        coords = args[1]  # List of cordinates
-        ga = kwargs['ga']  # base geometric algebra
+        u = __u
+        coords = __coords
         if ga is None:
             raise ValueError('Base geometric algebra must be specified for submanifold.')
 
@@ -1957,7 +1969,6 @@ class Sm(Ga):
         n_sub = len(coords)
 
         # Construct names of basis vectors
-        root = kwargs['root']
         """
         basis_str = ''
         for x in coords:
@@ -2009,9 +2020,6 @@ class Sm(Ga):
                         for l in ga.n_range:
                             s += dxdu[k][i] * dxdu[l][j] * g_base[k, l].subs(sub_pairs)
                     g[i, j] = trigsimp(s)
-
-        norm = kwargs['norm']
-        debug = kwargs['debug']
 
         if Ga.restore:  # restore printer to appropriate enhanced mode after sm is instantiated
             printer.GaLatexPrinter.redirect()

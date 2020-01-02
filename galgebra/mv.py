@@ -260,7 +260,7 @@ class Mv(object):
     _make_grade2 = _make_bivector
     _make_even = _make_spinor
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, ga, recp=None, coords=None, **kwargs):
         """
         __init__(self, *args, ga, recp=None, **kwargs)
 
@@ -326,9 +326,8 @@ class Mv(object):
             used with multivector functions.
         """
         kw = _KwargParser('__init__', kwargs)
-        self.Ga = kw.pop('ga')
-        self.recp = kw.pop('recp', None)  # not used
-        kw.pop('coords', None)  # ignored
+        self.Ga = ga
+        self.recp = recp  # not used
 
         self.char_Mv = False
         self.i_grade = None  # if pure grade mv, grade value
@@ -1551,10 +1550,8 @@ class Sdop(object):
     def __repr__(self):
         return str(self)
 
-    def __init__(self, *args, **kwargs):
-        kwargs = metric.test_init_slots(Sdop.init_slots, **kwargs)
-
-        self.Ga = kwargs['ga']  # Associated geometric algebra (coords)
+    def __init__(self, *args, ga):
+        self.Ga = ga  # Associated geometric algebra (coords)
 
         if self.Ga is None:
             raise ValueError('In Sdop.__init__ self.Ga must be defined.')
@@ -1685,7 +1682,7 @@ class Pdop(object):
                 return True
             return False
 
-    def __init__(self, __arg, **kwargs):
+    def __init__(self, __arg, *, ga):
         """
         The partial differential operator is a partial derivative with
         respect to a set of real symbols (variables).  The allowed
@@ -1696,9 +1693,7 @@ class Pdop(object):
 
         """
 
-        kwargs = metric.test_init_slots(Pdop.init_slots, **kwargs)
-
-        self.Ga = kwargs['ga']  # Associated geometric algebra
+        self.Ga = ga  # Associated geometric algebra
 
         if self.Ga is None:
             raise ValueError('In Pdop.__init__ self.Ga must be defined.')
@@ -1899,22 +1894,27 @@ class Dop(object):
     terms : list of tuples
     """
 
-    init_slots = {'ga': (None, 'Associated geometric algebra'),
-                  'cmpflg': (False, 'Complement flag for Dop'),
-                  'debug': (False, 'True to print out debugging information'),
-                  'fmt_dop': (1, '1 for normal dop partial derivative formating')}
+    def __init__(self, *args, ga, cmpflg=False, debug=False, fmt_dop=1):
+        """
+        Parameters
+        ----------
+        ga :
+            Associated geometric algebra
+        cmpflg : bool
+            Complement flag for Dop
+        debug : bool
+            True to print out debugging information
+        fmt_dop :
+            1 for normal dop partial derivative formatting
+        """
 
-    def __init__(self, *args, **kwargs):
-
-        kwargs = metric.test_init_slots(Dop.init_slots, **kwargs)
-
-        self.cmpflg = kwargs['cmpflg']  # Complement flag (default False)
-        self.Ga = kwargs['ga']
+        self.cmpflg = cmpflg
+        self.Ga = ga
 
         if self.Ga is None:
             raise ValueError('In Dop.__init__ self.Ga must be defined.')
 
-        self.dop_fmt = kwargs['fmt_dop']  # Partial derivative output format (default 1)
+        self.dop_fmt = fmt_dop
         self.title = None
 
         if len(args) == 2:

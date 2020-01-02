@@ -148,9 +148,6 @@ class Lt(object):
     """
 
     mat_fmt = False
-    init_slots = {'ga': (None, 'Name of metric (geometric algebra)'),
-                  'f': (False, 'True if Lt if function of coordinates.'),
-                  'mode': ('g', 'g:general, s:symmetric, a:antisymmetric transformation.')}
 
     @staticmethod
     def setup(ga):
@@ -164,13 +161,20 @@ class Lt(object):
         Lt.mat_fmt = mat_fmt
         return
 
-    def __init__(self, *args, **kwargs):
-        kwargs = metric.test_init_slots(Lt.init_slots, **kwargs)
-
+    def __init__(self, *args, ga, f=False, mode='g'):
+        """
+        Parameters
+        ----------
+        ga :
+            Name of metric (geometric algebra)
+        f : bool
+            True if Lt if function of coordinates
+        mode : str
+            g:general, s:symmetric, a:antisymmetric transformation
+        """
         mat_rep = args[0]
-        ga = kwargs['ga']
-        self.fct_flg = kwargs['f']
-        self.mode = kwargs['mode']  # General g, s, or a transformation
+        self.fct_flg = f
+        self.mode = mode
         self.Ga = ga
         self.coords = ga.lt_coords
         self.X = ga.lt_x

@@ -198,7 +198,7 @@ def coef_simplify(expr):
     return expr
 
 
-def oprint(*args, **kwargs):
+def oprint(*args, dict_mode=False):
     """
     Debug printing for iterated (list/tuple/dict/set) objects. args is
     of form (title1,object1,title2,object2,...) and prints:
@@ -209,11 +209,6 @@ def oprint(*args, **kwargs):
 
     If you only wish to print a title set object = None.
     """
-
-    if 'dict_mode' in kwargs:
-        dict_mode = kwargs['dict_mode']
-    else:
-        dict_mode = False
 
     if isinstance(args[0], str) or args[0] is None:
         titles = list(islice(args, None, None, 2))
