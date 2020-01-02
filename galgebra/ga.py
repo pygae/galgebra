@@ -1,7 +1,6 @@
 """
 Geometric Algebra (inherits Metric)
 """
-import sys
 import warnings
 import operator
 import copy
@@ -375,10 +374,6 @@ class Ga(metric.Metric):
 
     def __eq__(self, ga):
         return self.name == ga.name
-
-    if sys.version_info.major < 3:
-        def __ne__(self, other):
-            return not (self == other)
 
     def __init__(self, bases, **kwargs):
 

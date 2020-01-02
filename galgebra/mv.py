@@ -6,7 +6,6 @@ import copy
 import numbers
 import operator
 from functools import reduce
-import sys
 import warnings
 
 from sympy import (
@@ -456,10 +455,6 @@ class Mv(object):
             else:
                 return False
 
-    if sys.version_info.major < 3:
-        def __ne__(self, other):
-            return not (self == other)
-
     """
     def __eq__(self, A):
         if not isinstance(A, Mv):
@@ -582,9 +577,6 @@ class Mv(object):
             return self * A.inv()
         else:
             return self * (S(1)/A)
-
-    if sys.version_info.major < 3:
-        __div__ = __truediv__
 
     def __str__(self):
         if printer.GaLatexPrinter.latex_flg:
@@ -1625,10 +1617,6 @@ class Sdop(object):
         else:
             return NotImplemented
 
-    if sys.version_info.major < 3:
-        def __ne__(self, other):
-            return not (self == other)
-
     def __add__(self, sdop):
         return Sdop.Add(self, sdop)
 
@@ -1697,10 +1685,6 @@ class Pdop(object):
             if len(self.pdiffs) == 0 and A == S(1):
                 return True
             return False
-
-    if sys.version_info.major < 3:
-        def __ne__(self, other):
-            return not (self == other)
 
     def __init__(self, __arg, **kwargs):
         """
@@ -2080,9 +2064,6 @@ class Dop(object):
             (coef / dopr, pdiff) for (coef, pdiff) in self.terms
         ], ga=self.Ga, cmpflg=self.cmpflg)
 
-    if sys.version_info.major < 3:
-        __div__ = __truediv__
-
     def __mul__(self, dopr):  # * geometric product
         return Dop.Mul(self, dopr, op='*')
 
@@ -2116,10 +2097,6 @@ class Dop(object):
             return len(diff.terms) == 0
         else:
             return NotImplemented
-
-    if sys.version_info.major < 3:
-        def __ne__(self, other):
-            return not (self == other)
 
     def __str__(self):
         if printer.GaLatexPrinter.latex_flg:
