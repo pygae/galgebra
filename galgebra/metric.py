@@ -10,7 +10,6 @@ from sympy import (
 )
 
 from . import printer
-from . import utils
 
 half = Rational(1, 2)
 
@@ -269,16 +268,6 @@ class Metric(object):
 
     count = 1
 
-    init_slots = {'g': (None, 'metric tensor'),
-                  'coords': (None, 'manifold/vector space coordinate list/tuple'),
-                  'X': (None, 'vector manifold function'),
-                  'norm': (False, 'True to normalize basis vectors'),
-                  'debug': (False, 'True to print out debugging information'),
-                  'gsym': (None, 'String s to use "det("+s+")" function in reciprocal basis'),
-                  'sig': ('e', 'Signature of metric, default is (n,0) a Euclidean metric'),
-                  'Isq': ('-', "Sign of square of pseudo-scalar, default is '-'"),
-                  'wedge': (True, 'Use ^ symbol to print basis blades')}
-
     @staticmethod
     def dot_orthogonal(V1, V2, g=None):
         """
@@ -337,7 +326,7 @@ class Metric(object):
             s = self.n * (s[:-1] + ',')
             s = s[:-1]
 
-        if utils.isstr(s):
+        if isinstance(s, str):
             rows = s.split(',')
             n_rows = len(rows)
 
@@ -562,7 +551,7 @@ class Metric(object):
                 return
             else:
                 raise ValueError('self.sig = ' + str(self.sig) + ' > self.n, not an allowed hint')
-        if utils.isstr(self.sig):
+        if isinstance(self.sig, str):
             if self.sig == 'e':  # Euclidean metric signature
                 self.sig = (self.n, 0)
             elif self.sig == 'm+':  # Minkowski metric signature (n-1,1)
@@ -575,24 +564,48 @@ class Metric(object):
         raise ValueError(str(self.sig) + ' is not allowed value for self.sig')
 
 
-    def __init__(self, basis, **kwargs):
-
-        kwargs = test_init_slots(Metric.init_slots, **kwargs)
+    def __init__(self, basis, *,
+            g=None,
+            coords=None,
+            X=None,
+            norm=False,
+            debug=False,
+            gsym=None,
+            sig='e',
+            Isq='-'
+        ):
+        """
+        Parameters
+        ----------
+        basis :
+            string specification
+        g :
+            metric tensor
+        coords :
+            manifold/vector space coordinate list/tuple  (sympy symbols)
+        X :
+            vector manifold function
+        norm :
+            True to normalize basis vectors
+        debug :
+            True to print out debugging information
+        gsym :
+            String s to use ``"det("+s+")"`` function in reciprocal basis
+        sig :
+            Signature of metric, default is (n,0) a Euclidean metric
+        Isq :
+            Sign of square of pseudo-scalar, default is '-'
+        """
 
         self.name = 'GA' + str(Metric.count)
         Metric.count += 1
 
-        if not utils.isstr(basis):
+        if not isinstance(basis, str):
             raise TypeError('"' + str(basis) + '" must be string')
 
-        X = kwargs['X']  # Vector manifold
-        g = kwargs['g']  # Explicit metric or base metric for vector manifold
-        debug = kwargs['debug']
-        coords = kwargs['coords']  # Manifold coordinates (sympy symbols)
-        norm = kwargs['norm']  # Normalize basis vectors
-        self.sig = kwargs['sig']  # Hint for metric signature
-        self.gsym = kwargs['gsym']
-        self.Isq = kwargs['Isq']  #: Sign of I**2, only needed if I**2 not a number
+        self.sig = sig  # Hint for metric signature
+        self.gsym = gsym
+        self.Isq = Isq  #: Sign of I**2, only needed if I**2 not a number
 
         self.debug = debug
         self.is_ortho = False  # Is basis othogonal
@@ -651,7 +664,7 @@ class Metric(object):
                         printer.oprint('X_{i}', X, 'D_{i}X_{j}', dX)
 
         else:  # metric is symbolic or list of lists of functions of coordinates
-            if utils.isstr(g):  # metric elements are symbols or constants
+            if isinstance(g, str):  # metric elements are symbols or constants
                 if g == 'g':  # general symbolic metric tensor (g_ij functions of position)
                     g_lst = []
                     g_inv_lst = []

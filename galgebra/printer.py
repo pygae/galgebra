@@ -13,7 +13,6 @@ from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
-from . import utils
 
 try:
     from IPython.display import display, Latex, Math, display_latex
@@ -199,7 +198,7 @@ def coef_simplify(expr):
     return expr
 
 
-def oprint(*args, **kwargs):
+def oprint(*args, dict_mode=False):
     """
     Debug printing for iterated (list/tuple/dict/set) objects. args is
     of form (title1,object1,title2,object2,...) and prints:
@@ -211,12 +210,7 @@ def oprint(*args, **kwargs):
     If you only wish to print a title set object = None.
     """
 
-    if 'dict_mode' in kwargs:
-        dict_mode = kwargs['dict_mode']
-    else:
-        dict_mode = False
-
-    if utils.isstr(args[0]) or args[0] is None:
+    if isinstance(args[0], str) or args[0] is None:
         titles = list(islice(args, None, None, 2))
         objs = tuple(islice(args, 1, None, 2))
         if len(args) > 2:
@@ -631,7 +625,7 @@ class GaLatexPrinter(LatexPrinter):
             pass
         else:
             GaLatexPrinter.stdout = sys.stdout
-            sys.stdout = utils.StringIO()
+            sys.stdout = io.StringIO()
         return
 
     @staticmethod

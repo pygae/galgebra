@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division
-from __future__ import print_function
 from sympy import expand, simplify
 from galgebra.printer import Format, xpdf
 from galgebra.ga import Ga

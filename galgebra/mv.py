@@ -6,7 +6,6 @@ import copy
 import numbers
 import operator
 from functools import reduce
-import sys
 import warnings
 
 from sympy import (
@@ -19,7 +18,6 @@ from sympy import N as Nsympy
 
 from . import printer
 from . import metric
-from . import utils
 from .printer import ZERO_STR
 from .utils import _KwargParser
 
@@ -178,7 +176,7 @@ class Mv(object):
             return '{}__{}'.format(root, s)
         grade = __grade
         kw = _KwargParser('_make_grade', kwargs)
-        if utils.isstr(__name_or_coeffs):
+        if isinstance(__name_or_coeffs, str):
             name = __name_or_coeffs
             f = kw.pop('f', False)
             kw.reject_remaining()
@@ -206,7 +204,7 @@ class Mv(object):
     @staticmethod
     def _make_scalar(ga, __name_or_value, **kwargs):
         """ Make a scalar multivector """
-        if utils.isstr(__name_or_value):
+        if isinstance(__name_or_value, str):
             name = __name_or_value
             return Mv._make_grade(ga, name, 0, **kwargs)
         else:
@@ -262,7 +260,7 @@ class Mv(object):
     _make_grade2 = _make_bivector
     _make_even = _make_spinor
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, ga, recp=None, coords=None, **kwargs):
         """
         __init__(self, *args, ga, recp=None, **kwargs)
 
@@ -328,9 +326,8 @@ class Mv(object):
             used with multivector functions.
         """
         kw = _KwargParser('__init__', kwargs)
-        self.Ga = kw.pop('ga')
-        self.recp = kw.pop('recp', None)  # not used
-        kw.pop('coords', None)  # ignored
+        self.Ga = ga
+        self.recp = recp  # not used
 
         self.char_Mv = False
         self.i_grade = None  # if pure grade mv, grade value
@@ -345,7 +342,7 @@ class Mv(object):
             self.obj = S(0)
             self.i_grade = 0
             kw.reject_remaining()
-        elif len(args) == 1 and not utils.isstr(args[0]):  # copy constructor
+        elif len(args) == 1 and not isinstance(args[0], str):  # copy constructor
             x = args[0]
             if isinstance(x, Mv):
                 self.obj = x.obj
@@ -360,7 +357,7 @@ class Mv(object):
                 self.characterise_Mv()
             kw.reject_remaining()
         else:
-            if utils.isstr(args[1]):
+            if isinstance(args[1], str):
                 make_args = list(args)
                 mode = make_args.pop(1)
                 make_func = getattr(Mv, '_make_{}'.format(mode), None)
@@ -378,7 +375,7 @@ class Mv(object):
             else:
                 raise TypeError("Expected string or int")
 
-            if utils.isstr(args[0]):
+            if isinstance(args[0], str):
                 self.title = args[0]
             self.characterise_Mv()
 
@@ -456,10 +453,6 @@ class Mv(object):
                 return True
             else:
                 return False
-
-    if sys.version_info.major < 3:
-        def __ne__(self, other):
-            return not (self == other)
 
     """
     def __eq__(self, A):
@@ -584,9 +577,6 @@ class Mv(object):
         else:
             return self * (S(1)/A)
 
-    if sys.version_info.major < 3:
-        __div__ = __truediv__
-
     def __str__(self):
         if printer.GaLatexPrinter.latex_flg:
             Printer = printer.GaLatexPrinter
@@ -676,13 +666,12 @@ class Mv(object):
         if self.obj == 0:
             return ZERO_STR
 
-        # todo: use the nonlocal keyword here instead once we drop python 2
-        class first_line:
-            value = True
+        first_line = True
 
         def append_plus(c_str):
-            if first_line.value:
-                first_line.value = False
+            nonlocal first_line
+            if first_line:
+                first_line = False
                 return c_str
             else:
                 c_str = c_str.strip()
@@ -759,7 +748,7 @@ class Mv(object):
             elif printer.GaLatexPrinter.fmt == 2:  # One grade per line
                 if grade != old_grade:
                     old_grade = grade
-                    if not first_line.value:
+                    if not first_line:
                         lines.append(s)
                     s = append_plus(cb_str)
                 else:
@@ -1561,10 +1550,8 @@ class Sdop(object):
     def __repr__(self):
         return str(self)
 
-    def __init__(self, *args, **kwargs):
-        kwargs = metric.test_init_slots(Sdop.init_slots, **kwargs)
-
-        self.Ga = kwargs['ga']  # Associated geometric algebra (coords)
+    def __init__(self, *args, ga):
+        self.Ga = ga  # Associated geometric algebra (coords)
 
         if self.Ga is None:
             raise ValueError('In Sdop.__init__ self.Ga must be defined.')
@@ -1625,10 +1612,6 @@ class Sdop(object):
             return len(diff.terms) == 0
         else:
             return NotImplemented
-
-    if sys.version_info.major < 3:
-        def __ne__(self, other):
-            return not (self == other)
 
     def __add__(self, sdop):
         return Sdop.Add(self, sdop)
@@ -1699,11 +1682,7 @@ class Pdop(object):
                 return True
             return False
 
-    if sys.version_info.major < 3:
-        def __ne__(self, other):
-            return not (self == other)
-
-    def __init__(self, __arg, **kwargs):
+    def __init__(self, __arg, *, ga):
         """
         The partial differential operator is a partial derivative with
         respect to a set of real symbols (variables).  The allowed
@@ -1714,9 +1693,7 @@ class Pdop(object):
 
         """
 
-        kwargs = metric.test_init_slots(Pdop.init_slots, **kwargs)
-
-        self.Ga = kwargs['ga']  # Associated geometric algebra
+        self.Ga = ga  # Associated geometric algebra
 
         if self.Ga is None:
             raise ValueError('In Pdop.__init__ self.Ga must be defined.')
@@ -1917,22 +1894,27 @@ class Dop(object):
     terms : list of tuples
     """
 
-    init_slots = {'ga': (None, 'Associated geometric algebra'),
-                  'cmpflg': (False, 'Complement flag for Dop'),
-                  'debug': (False, 'True to print out debugging information'),
-                  'fmt_dop': (1, '1 for normal dop partial derivative formating')}
+    def __init__(self, *args, ga, cmpflg=False, debug=False, fmt_dop=1):
+        """
+        Parameters
+        ----------
+        ga :
+            Associated geometric algebra
+        cmpflg : bool
+            Complement flag for Dop
+        debug : bool
+            True to print out debugging information
+        fmt_dop :
+            1 for normal dop partial derivative formatting
+        """
 
-    def __init__(self, *args, **kwargs):
-
-        kwargs = metric.test_init_slots(Dop.init_slots, **kwargs)
-
-        self.cmpflg = kwargs['cmpflg']  # Complement flag (default False)
-        self.Ga = kwargs['ga']
+        self.cmpflg = cmpflg
+        self.Ga = ga
 
         if self.Ga is None:
             raise ValueError('In Dop.__init__ self.Ga must be defined.')
 
-        self.dop_fmt = kwargs['fmt_dop']  # Partial derivative output format (default 1)
+        self.dop_fmt = fmt_dop
         self.title = None
 
         if len(args) == 2:
@@ -2081,9 +2063,6 @@ class Dop(object):
             (coef / dopr, pdiff) for (coef, pdiff) in self.terms
         ], ga=self.Ga, cmpflg=self.cmpflg)
 
-    if sys.version_info.major < 3:
-        __div__ = __truediv__
-
     def __mul__(self, dopr):  # * geometric product
         return Dop.Mul(self, dopr, op='*')
 
@@ -2117,10 +2096,6 @@ class Dop(object):
             return len(diff.terms) == 0
         else:
             return NotImplemented
-
-    if sys.version_info.major < 3:
-        def __ne__(self, other):
-            return not (self == other)
 
     def __str__(self):
         if printer.GaLatexPrinter.latex_flg:
