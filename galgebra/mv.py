@@ -1448,8 +1448,6 @@ class Sdop(object):
         the structure :math:`((c_{1},D_{1}),(c_{2},D_{2}), ...)`
     """
 
-    init_slots = {'ga': (None, 'Associated geometric algebra')}
-
     str_mode = False
 
     def TSimplify(self):
@@ -1657,8 +1655,6 @@ class Pdop(object):
         When this is zero (i.e. when :attr:`pdiffs` is ``{}``) then this object
         is the identity operator, and returns its operand unchanged.
     """
-
-    init_slots = {'ga': (None, 'Associated geometric algebra')}
 
     def sort_key(self, order=None):
         return (
