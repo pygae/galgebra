@@ -158,34 +158,6 @@ def symbols_list(s, indices=None, sub=True, commutative=False):
     return [Symbol(printer.Eprint.Base(s), commutative=commutative) for s in s_lst]
 
 
-def test_init_slots(init_slots, **kwargs):
-    """
-    Tests kwargs for allowed keyword arguments as defined by dictionary
-    init_slots.  If keyword argument defined by init_slots is not present
-    set default value asdefined by init_slots.  Allow for backward
-    compatible keyword arguments by equivalencing keywords by setting
-    default value of backward compatible keyword to new keyword and then
-    referencing new keywork (see init_slots for Metric class and equivalence
-    between keywords 'g' and 'metric')
-    """
-
-    for slot in kwargs:
-        if slot not in init_slots:
-            print('Allowed keyed input arguments')
-            for key in init_slots:
-                print(key + ': ' + init_slots[key][1])
-            raise ValueError('"' + slot + ' = " not in allowed values.')
-    for slot in init_slots:
-        if slot in kwargs:
-            if init_slots[slot][0] in init_slots:  # redirect for backward compatibility
-                kwargs[init_slots[slot][0]] = kwargs[slot]
-        else:  # use default value
-            if init_slots[slot][0] in init_slots:  # redirect for backward compatibility
-                kwargs[init_slots[slot][0]] = init_slots[init_slots[slot][0]][0]
-            kwargs[slot] = init_slots[slot][0]
-    return kwargs
-
-
 class Simp:
     modes = [simplify]
 
