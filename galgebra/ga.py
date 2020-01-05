@@ -1867,7 +1867,7 @@ class Ga(metric.Metric):
         for igrade in index[-2:]:
             grade = []
             for iblade in igrade:
-                blade = self.mv('1', 'scalar')
+                blade = self.mv(1, 'scalar')
                 for ibasis in iblade:
                     blade ^= basis[ibasis]
                 blade = blade.trigsimp()
