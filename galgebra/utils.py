@@ -9,12 +9,8 @@ import collections
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
-if PY3:
-    string_types = str
-    from io import StringIO
-else:
-    string_types = basestring
-    from StringIO import StringIO
+string_types = str
+from io import StringIO
 
 # https://stackoverflow.com/questions/16176742/python-3-replacement-for-deprecated-compiler-ast-flatten-function
 
@@ -31,7 +27,7 @@ def flatten(x):
 
 
 def isstr(s):
-    return isinstance(s, string_types)
+    return isinstance(s, str)
 
 
 class _KwargParser:

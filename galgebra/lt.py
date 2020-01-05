@@ -16,7 +16,6 @@ from sympy import (
 from . import printer
 from . import metric
 from . import mv
-from . import utils
 
 def aprint(a):
     out = ''
@@ -149,9 +148,6 @@ class Lt(object):
     """
 
     mat_fmt = False
-    init_slots = {'ga': (None, 'Name of metric (geometric algebra)'),
-                  'f': (False, 'True if Lt if function of coordinates.'),
-                  'mode': ('g', 'g:general, s:symmetric, a:antisymmetric transformation.')}
 
     @staticmethod
     def setup(ga):
@@ -165,13 +161,20 @@ class Lt(object):
         Lt.mat_fmt = mat_fmt
         return
 
-    def __init__(self, *args, **kwargs):
-        kwargs = metric.test_init_slots(Lt.init_slots, **kwargs)
-
+    def __init__(self, *args, ga, f=False, mode='g'):
+        """
+        Parameters
+        ----------
+        ga :
+            Name of metric (geometric algebra)
+        f : bool
+            True if Lt if function of coordinates
+        mode : str
+            g:general, s:symmetric, a:antisymmetric transformation
+        """
         mat_rep = args[0]
-        ga = kwargs['ga']
-        self.fct_flg = kwargs['f']
-        self.mode = kwargs['mode']  # General g, s, or a transformation
+        self.fct_flg = f
+        self.mode = mode
         self.Ga = ga
         self.coords = ga.lt_coords
         self.X = ga.lt_x
@@ -221,7 +224,7 @@ class Lt(object):
             else:
                 raise ValueError('In Spinor input for Lt, S*S.rev() not a scalar!\n')
 
-        elif utils.isstr(mat_rep):  # String input
+        elif isinstance(mat_rep, str):  # String input
             Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords,mode=self.mode,f=self.fct_flg)
             self.__init__(Amat, ga=self.Ga)
 
@@ -726,7 +729,7 @@ class Mlt(object):
             Ga.make_grad(self.args)
             self.fvalue = (self.args[0] | f(self.args[1])).obj
             self.f = None
-        elif utils.isstr(f) and args is not None:
+        elif isinstance(f, str) and args is not None:
             self.f = None
             if isinstance(args,(list,tuple)):
                 self.args = args
