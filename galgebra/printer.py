@@ -626,7 +626,6 @@ class GaLatexPrinter(LatexPrinter):
         else:
             GaLatexPrinter.stdout = sys.stdout
             sys.stdout = io.StringIO()
-        return
 
     @staticmethod
     def restore():
@@ -638,7 +637,6 @@ class GaLatexPrinter(LatexPrinter):
                 sys.stdout = GaLatexPrinter.stdout
             Basic.__str__ = GaLatexPrinter.Basic__str__
             Matrix.__str__ = GaLatexPrinter.Matrix__str__
-        return
 
     def _print_Pow(self, expr):
         base = self._print(expr.base)

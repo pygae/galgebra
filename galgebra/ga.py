@@ -332,7 +332,6 @@ class Ga(metric.Metric):
             raise ValueError('mode = ' + mode + ' not allowed for Ga.dual_mode.')
 
         Ga.dual_mode_value = mode
-        return
 
     @staticmethod
     def com(A, B):
@@ -672,7 +671,6 @@ class Ga(metric.Metric):
 
         for (coord, par_coord) in zip(self.coords, coords):
             self.par_coords[coord] = par_coord
-        return
 
     def basis_vectors(self):
         return tuple(self.basis)
@@ -893,7 +891,6 @@ class Ga(metric.Metric):
 
         if self.debug:
             print('Exit _build_basis_product_tables.\n')
-        return
 
     def _build_connection(self):
         # Partial derivatives of multivector bases multiplied (*,^,|,<,>)
@@ -904,8 +901,6 @@ class Ga(metric.Metric):
                         ('>', False): []}
         # Partial derivatives of multivector bases
         self._dbases = {}
-
-        return
 
     ######## Functions for Calculation products of blades/bases ########
 
@@ -1183,7 +1178,6 @@ class Ga(metric.Metric):
 
         if self.debug:
             print('basic_mul_table =\n', self.basic_mul_table)
-        return
 
     def non_orthogonal_bases_products(self, base12):  # base12 = (base1,base2)
         # geometric product of bases for non-orthogonal basis vectors
@@ -1253,8 +1247,6 @@ class Ga(metric.Metric):
 
         if self.debug:
             print('base_expansion_dict =', self.base_expansion_dict)
-
-        return
 
     def base_to_blade_rep(self, A):
 
@@ -1656,7 +1648,6 @@ class Ga(metric.Metric):
                       ('<', True): [], ('>', True): [], ('*', False): [],
                       ('^', False): [], ('|', False): [], ('<', False): [],
                       ('>', False): []}
-        return
 
     def er_blade(self, er, blade, mode='*', left=True):
         r"""

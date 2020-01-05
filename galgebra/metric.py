@@ -192,7 +192,6 @@ class Simp:
     @staticmethod
     def profile(s):
         Simp.modes = s
-        return
 
     @staticmethod
     def apply(expr):
@@ -418,7 +417,6 @@ class Metric(object):
         if self.debug:
             printer.oprint('D_{i}e^{j}', de)
         self.de = de
-        return
 
     def inverse_metric(self):
 
@@ -436,7 +434,6 @@ class Metric(object):
                 self.detg = Function('|' +self.gsym +'|',real=True)(*self.coords)
                 self.g_adj = simplify(self.g.adjugate())
                 self.g_inv = self.g_adj/self.detg
-        return
 
     def Christoffel_symbols(self,mode=1):
         """
@@ -526,8 +523,6 @@ class Metric(object):
         if self.debug:
             printer.oprint('e^{i}->e^{i}/|e_{i}|', renorm)
             printer.oprint('renorm(g)', self.g)
-
-        return
 
     def signature(self):
         if self.is_ortho:
