@@ -124,6 +124,82 @@ def square_root_of_expr(expr):
 
 
 def symbols_list(s, indices=None, sub=True, commutative=False):
+    """
+    Convert a string to a list of symbols.
+
+    If :class:`galgebra.printer.Eprint` is enabled, the symbol names will
+    contain ANSI escape sequences.
+
+    Parameters
+    ----------
+    s : str
+        Specification. If `indices` is specified, then this is just a prefix.
+        If `indices` is not specified then this is a string of one of the forms:
+
+        * ``prefix + "*" + index_1 + "|" + index_2 + "|" + ... + index_n``
+        * ``prefix + "*" + n_indices``
+        * ``name_1 + "," + name_2 + "," + ... + name_n``
+        * ``name_1 + " " + name_2 + " " + ... + name_n``
+
+    indices : list, optional
+        List of indices to append to the prefix.
+    sub : bool
+        If true, mark as subscript separating prefix and suffix with ``_``, else
+        mark as superscript using ``__``.
+    commutative : bool
+        Passed on to :class:`sympy.Symbol`.
+
+    Returns
+    -------
+    symbols : list of :class:`sympy.Symbol`
+
+    Examples
+    --------
+
+    Names can be comma or space separated:
+
+    >>> symbols_list('a,b,c')
+    [a, b, c]
+    >>> symbols_list('a b c')
+    [a, b, c]
+
+    Mixing commas and spaces gives surprising results:
+
+    >>> symbols_list('a b,c')
+    [a b, c]
+
+    Subscripts will be converted to superscripts if requested:
+
+    >>> symbols_list('a_1 a_2', sub=False)
+    [a__1, a__2]
+    >>> symbols_list('a__1 a__2', sub=False)
+    [a___1, a___2]
+
+    But not vice versa:
+
+    >>> symbols_list('a__1 a__2', sub=True)
+    [a__1, a__2]
+
+    Asterisk can be used for repetition:
+
+    >>> symbols_list('a*b|c|d')
+    [a_b, a_c, a_d]
+    >>> symbols_list('a*3')
+    [a_0, a_1, a_2]
+    >>> symbols_list('a*3')
+    [a_0, a_1, a_2]
+
+    Or the indices argument:
+
+    >>> symbols_list('a', [2, 4, 6])
+    [a_2, a_4, a_6]
+    >>> symbols_list('a', [2, 4, 6], sub=False)
+    [a__2, a__4, a__6]
+
+    See also
+    --------
+    :func:`sympy.symbols`: a similar function builtin to sympy
+    """
 
     if isinstance(s, list):  # s is already a list of symbols
         return(s)
