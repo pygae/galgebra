@@ -1,6 +1,3 @@
-import copy
-from itertools import combinations
-from sympy import trigsimp, S
 from . import ga
 from .mv import Mv
 
@@ -48,43 +45,5 @@ class MV(Mv):
         return
 
 def ReciprocalFrame(basis, mode='norm'):
-
     GA = basis[0].Ga
-    dim = len(basis)
-    indexes = tuple(range(dim))
-    index = [()]
-
-    for i in indexes[-2:]:
-        index.append(tuple(combinations(indexes, i + 1)))
-
-    MFbasis = []
-
-    for igrade in index[-2:]:
-        grade = []
-        for iblade in igrade:
-            blade = Mv(S(1), 'scalar', ga=GA)
-            for ibasis in iblade:
-                blade ^= basis[ibasis]
-            blade = blade.trigsimp()
-            grade.append(blade)
-        MFbasis.append(grade)
-    E = MFbasis[-1][0]
-    E_sq = trigsimp((E * E).scalar(),)
-
-    duals = copy.copy(MFbasis[-2])
-
-    duals.reverse()
-    sgn = S(1)
-    rbasis = []
-    for dual in duals:
-        recpv = (sgn * dual * E).trigsimp()
-        rbasis.append(recpv)
-        sgn = -sgn
-
-    if mode != 'norm':
-        rbasis.append(E_sq)
-    else:
-        for i in range(dim):
-            rbasis[i] = rbasis[i] / E_sq
-
-    return tuple(rbasis)
+    return GA.ReciprocalFrame(basis, mode=mode)

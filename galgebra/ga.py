@@ -1875,7 +1875,7 @@ class Ga(metric.Metric):
         for igrade in index[-2:]:
             grade = []
             for iblade in igrade:
-                blade = self.mv('1', 'scalar')
+                blade = self.mv(S(1), 'scalar')
                 for ibasis in iblade:
                     blade ^= basis[ibasis]
                 blade = blade.trigsimp()
@@ -1887,7 +1887,7 @@ class Ga(metric.Metric):
         duals = copy.copy(MFbasis[-2])
 
         duals.reverse()
-        sgn = 1
+        sgn = S(1)
         rbasis = []
         for dual in duals:
             recpv = (sgn * dual * E).trigsimp()
