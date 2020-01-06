@@ -13,8 +13,8 @@ from . import printer
 
 half = Rational(1, 2)
 
-def apply_function_list(f,x):
-    if isinstance(f,(tuple,list)):
+def apply_function_list(f, x):
+    if isinstance(f, (tuple, list)):
         fx = x
         for fi in f:
             fx = fi(fx)
@@ -243,16 +243,9 @@ class Simp:
 
     @staticmethod
     def apply(expr):
-        (coefs, bases) = linear_expand(expr)
         obj = S(0)
-        if isinstance(Simp.modes, list) or isinstance(Simp.modes, tuple):
-            for (coef, base) in zip(coefs, bases):
-                for mode in Simp.modes:
-                    coef = mode(coef)
-                obj += coef * base
-        else:
-            for (coef, base) in zip(coefs, bases):
-                obj += Simp.modes(coef) * base
+        for (coef, base) in linear_expand_terms(expr):
+            obj += apply_function_list(Simp.modes, coef) * base
         return obj
 
     @staticmethod
