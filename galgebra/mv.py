@@ -1448,14 +1448,12 @@ class Sdop(object):
         the structure :math:`((c_{1},D_{1}),(c_{2},D_{2}), ...)`
     """
 
-    init_slots = {'ga': (None, 'Associated geometric algebra')}
-
     str_mode = False
 
     def TSimplify(self):
         return Sdop([
             (metric.Simp.apply(coef), pdiff) for (coef, pdiff) in self.terms
-        ], ga=self.Ga)
+        ])
 
     @staticmethod
     def consolidate_coefs(sdop):
@@ -1463,7 +1461,7 @@ class Sdop(object):
         Remove zero coefs and consolidate coefs with repeated pdiffs.
         """
         if isinstance(sdop, Sdop):
-            return Sdop(_consolidate_terms(sdop.terms), ga=sdop.Ga)
+            return Sdop(_consolidate_terms(sdop.terms))
         else:
             return _consolidate_terms(sdop)
 
@@ -1471,11 +1469,11 @@ class Sdop(object):
         return Sdop([
             (metric.apply_function_list(modes, coef), pdiff)
             for coef, pdiff in self.terms
-        ], ga=self.Ga)
+        ])
 
     def _with_sorted_terms(self):
         new_terms = sorted(self.terms, key=lambda term: Pdop.sort_key(term[1]))
-        return Sdop(new_terms, ga=self.Ga)
+        return Sdop(new_terms)
 
     def Sdop_str(self):
         if len(self.terms) == 0:
@@ -1550,14 +1548,9 @@ class Sdop(object):
     def __repr__(self):
         return str(self)
 
-    def __init__(self, *args, ga):
-        self.Ga = ga  # Associated geometric algebra (coords)
-
-        if self.Ga is None:
-            raise ValueError('In Sdop.__init__ self.Ga must be defined.')
-
+    def __init__(self, *args):
         if len(args) == 1 and isinstance(args[0],Symbol):  # Simple Pdop of order 1
-            self.terms = ((S(1), Pdop(args[0], ga=self.Ga)),)
+            self.terms = ((S(1), Pdop(args[0])),)
         else:
             if len(args) == 2 and isinstance(args[0],list) and isinstance(args[1],list):
                 if len(args[0]) != len(args[1]):
@@ -1570,44 +1563,36 @@ class Sdop(object):
 
     def __call__(self, arg):
         if isinstance(arg, Sdop):
-            if self.Ga != arg.Ga:
-                raise ValueError(
-                    'When chaining scalar differential operators, self.Ga != arg.Ga.')
             terms = []
             for (coef, pdiff) in self.terms:
                 new_terms = pdiff(arg.terms)
                 new_terms = [(coef * c, p) for c, p in new_terms]
                 terms += new_terms
-            product = Sdop(terms, ga=self.Ga)
+            product = Sdop(terms)
             return Sdop.consolidate_coefs(product)
         else:
             return sum([coef * pdiff(arg) for coef, pdiff in self.terms], S(0))
 
 
     def __neg__(self):
-        return Sdop([(-coef, pdiff) for coef, pdiff in self.terms], ga=self.Ga)
+        return Sdop([(-coef, pdiff) for coef, pdiff in self.terms])
 
     @staticmethod
     def Add(sdop1, sdop2):
         if isinstance(sdop1, Sdop) and isinstance(sdop2, Sdop):
-            if sdop1.Ga != sdop2.Ga:
-                raise ValueError('In Sdop.Add sdop1.Ga != sdop2.Ga.')
-            return Sdop(_merge_terms(sdop1.terms, sdop2.terms), ga=sdop1.Ga)
+            return Sdop(_merge_terms(sdop1.terms, sdop2.terms))
         else:
             # convert values to multiplicative operators
             if isinstance(sdop1, Sdop):
-                sdop2 = Sdop([(sdop2, Pdop({}, ga=sdop1.Ga))], ga=sdop1.Ga)
+                sdop2 = Sdop([(sdop2, Pdop({}))])
             elif isinstance(sdop2, Sdop):
-                sdop1 = Sdop([(sdop1, Pdop({}, ga=sdop2.Ga))], ga=sdop2.Ga)
+                sdop1 = Sdop([(sdop1, Pdop({}))])
             else:
                 raise TypeError("Neither argument is a Dop instance")
             return Sdop.Add(sdop1, sdop2)
 
     def __eq__(self, other):
         if isinstance(other, Sdop):
-            if self.Ga != other.Ga:
-                return NotImplemented
-
             diff = self - other
             return len(diff.terms) == 0
         else:
@@ -1631,7 +1616,7 @@ class Sdop(object):
 
     def __rmul__(self, sdop):
         terms = [(sdop * coef, pdiff) for coef, pdiff in self.terms]
-        return Sdop(terms, ga=self.Ga)
+        return Sdop(terms)
 
 #################### Partial Derivative Operator Class #################
 
@@ -1658,8 +1643,6 @@ class Pdop(object):
         is the identity operator, and returns its operand unchanged.
     """
 
-    init_slots = {'ga': (None, 'Associated geometric algebra')}
-
     def sort_key(self, order=None):
         return (
             # lower order derivatives first
@@ -1667,37 +1650,24 @@ class Pdop(object):
             # sorted by symbol after that, after expansion
             sorted([
                 x.sort_key(order)
-                if x not in self.Ga.coords else
-                self.Ga.coords.index(x)
                 for x, k in self.pdiffs.items()
                 for i in range(k)
             ])
         )
 
     def __eq__(self,A):
-        if isinstance(A, Pdop) and self.Ga == A.Ga and self.pdiffs == A.pdiffs:
+        if isinstance(A, Pdop) and self.pdiffs == A.pdiffs:
             return True
         else:
             if len(self.pdiffs) == 0 and A == S(1):
                 return True
             return False
 
-    def __init__(self, __arg, *, ga):
+    def __init__(self, __arg):
         """
         The partial differential operator is a partial derivative with
-        respect to a set of real symbols (variables).  The allowed
-        variables are in two lists. ``self.Ga.coords`` is a list of the
-        coordinates associated with the geometric algebra.  ``self.Ga.auxvars``
-        is a list of auxiallary symbols that have be added to the geometric
-        algebra using the member function ``Ga.AddVars(self,auxvars)``.
-
+        respect to a set of real symbols (variables).
         """
-
-        self.Ga = ga  # Associated geometric algebra
-
-        if self.Ga is None:
-            raise ValueError('In Pdop.__init__ self.Ga must be defined.')
-
         # galgebra 0.4.5
         if __arg is None:
             warnings.warn(
@@ -1732,7 +1702,7 @@ class Pdop(object):
                 del new_pdiffs[x]
             else:
                 new_pdiffs[x] -= 1
-            return Pdop(new_pdiffs, ga=self.Ga), Pdop(x, ga=self.Ga)
+            return Pdop(new_pdiffs), Pdop(x)
 
     def __call__(self, arg):
         """
@@ -1743,9 +1713,7 @@ class Pdop(object):
             return arg  # result is Pdop identity (1)
 
         if isinstance(arg, Pdop):  # arg is Pdop
-            if self.Ga != arg.Ga:
-                raise ValueError('In Pdop.__call__ arguments do not belong to same geometric algebra.')
-            elif arg.pdiffs == {}:  # arg is one
+            if arg.pdiffs == {}:  # arg is one
                 return self
                 #return S(0)  # derivative is zero
             else:  # arg is partial derivative
@@ -1755,12 +1723,13 @@ class Pdop(object):
                         pdiffs[key] += self.pdiffs[key]
                     else:
                         pdiffs[key] = self.pdiffs[key]
-            return Pdop(pdiffs,ga=self.Ga)  # result is Pdop
+            return Pdop(pdiffs)  # result is Pdop
 
         elif isinstance(arg, Mv):  # arg is multivector
+            ga = arg.Ga
             for x in self.pdiffs:
                 for i in range(self.pdiffs[x]):
-                    arg = self.Ga.pDiff(arg, x)
+                    arg = ga.pDiff(arg, x)
             return arg  # result is multivector
 
         elif isinstance(arg, (Expr, Symbol, numbers.Number)):  # arg is sympy expression
@@ -1789,8 +1758,6 @@ class Pdop(object):
             terms = Sdop.consolidate_coefs(terms)
             return terms  # result is list of tuples (coef, partial derivative)
         elif isinstance(arg, Sdop):  # arg is scalar differential operator
-            if self.Ga != arg.Ga:
-                raise ValueError('In Pdop.__call__ self.Ga != arg.Ga.')
             return self(arg.terms)  # result is list of tuples (coef, partial derivative)
         else:
             raise ValueError('In Pdop.__call__ type(arg) = ' + str(type(arg)) + ' not allowed.')
@@ -1801,7 +1768,7 @@ class Pdop(object):
     def __rmul__(self, pdop):  # functional product of arg and self (arg*self)
         if isinstance(pdop, Pdop):
             return pdop(self)
-        return Sdop([(pdop, self)], ga=self.Ga)
+        return Sdop([(pdop, self)])
 
     def Pdop_str(self):
         if self.order == 0:
@@ -1822,7 +1789,7 @@ class Pdop(object):
             s += '^{' + printer.latex(self.order) + '}'
         s += '}{'
         keys = list(self.pdiffs.keys())
-        keys.sort(key=(self.Ga.coords + keys).index)
+        keys.sort()
         for key in keys:
             i = self.pdiffs[key]
             s += r'\partial ' + printer.latex(key)
@@ -1971,11 +1938,11 @@ class Dop(object):
             if isinstance(dop1, Dop):
                 if not isinstance(dop2, Mv):
                     dop2 = dop1.Ga.mv(dop2)
-                dop2 = Dop([(dop2, Pdop({}, ga=dop1.Ga))], cmpflg=dop1.cmpflg, ga=dop1.Ga)
+                dop2 = Dop([(dop2, Pdop({}))], cmpflg=dop1.cmpflg, ga=dop1.Ga)
             elif isinstance(dop2, Dop):
                 if not isinstance(dop1, Mv):
                     dop1 = dop2.Ga.mv(dop1)
-                dop1 = Dop([(dop1, Pdop({}, ga=dop2.Ga))], cmpflg=dop2.cmpflg, ga=dop2.Ga)
+                dop1 = Dop([(dop1, Pdop({}))], cmpflg=dop2.cmpflg, ga=dop2.Ga)
             else:
                 raise TypeError("Neither argument is a Dop instance")
             return Dop.Add(dop1, dop2)
@@ -2145,10 +2112,10 @@ class Dop(object):
                 for mv_coef, mv_base in metric.linear_expand_terms(coef.obj):
                     if mv_base in bases:
                         index = bases.index(mv_base)
-                        coefs[index] += Sdop([(mv_coef, pdiff)], ga=self.Ga)
+                        coefs[index] += Sdop([(mv_coef, pdiff)])
                     else:
                         bases.append(mv_base)
-                        coefs.append(Sdop([(mv_coef, pdiff)], ga=self.Ga))
+                        coefs.append(Sdop([(mv_coef, pdiff)]))
             else:
                 if isinstance(coef, Mv):
                     mv_coef = coef.obj
@@ -2156,10 +2123,10 @@ class Dop(object):
                     mv_coef = coef
                 if S(1) in bases:
                     index = bases.index(S(1))
-                    coefs[index] += Sdop([(mv_coef, pdiff)], ga=self.Ga)
+                    coefs[index] += Sdop([(mv_coef, pdiff)])
                 else:
                     bases.append(S(1))
-                    coefs.append(Sdop([(mv_coef, pdiff)], ga=self.Ga))
+                    coefs.append(Sdop([(mv_coef, pdiff)]))
         if modes is not None:
             for i in range(len(coefs)):
                 coefs[i] = coefs[i].simplify(modes)
