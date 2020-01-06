@@ -159,7 +159,6 @@ class Lt(object):
     @staticmethod
     def format(mat_fmt=False):
         Lt.mat_fmt = mat_fmt
-        return
 
     def __init__(self, *args, ga, f=False, mode='g'):
         """
@@ -566,7 +565,6 @@ class Mlt(object):
                 coefs = a.get_coefs(1)
                 Ga.pdiffs.append(coefs)
                 Ga.acoefs += coefs
-        return
 
     @staticmethod
     def extact_basis_indexes(Ga):
@@ -665,7 +663,6 @@ class Mlt(object):
                 print(title + ' = ' + latex_str)
             else:
                 print(latex_str)
-        return
 
     @staticmethod
     def expand_expr(expr,ga):

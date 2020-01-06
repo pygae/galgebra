@@ -78,7 +78,6 @@ class Mv(object):
     def Format(mode=1):
         Mv.latex_flg = True
         Mv.fmt = mode
-        return
 
     @staticmethod
     def Mul(A, B, op):
@@ -157,7 +156,6 @@ class Mv(object):
             self.i_grade = None
         self.grades = grades
         self.char_Mv = True
-        return
 
     # helper methods called by __init__. Note that these names must not change,
     # as the part of the name after `_make_` is public API via the string
@@ -1162,7 +1160,6 @@ class Mv(object):
             self.obj += (value - coefs[bases_lst.index(base)]) * base
         else:
             self.obj += value * base
-        return
 
     def Fmt(self, fmt=1, title=None):
         """

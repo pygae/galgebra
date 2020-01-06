@@ -42,7 +42,7 @@ class MV(Mv):
 
     def Fmt(self, fmt=1, title=None):
         print(Mv.Fmt(self, fmt=fmt, title=title))
-        return
+
 
 def ReciprocalFrame(basis, mode='norm'):
     GA = basis[0].Ga
