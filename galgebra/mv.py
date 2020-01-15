@@ -482,15 +482,14 @@ class Mv(object):
         return Mv(-self.obj, ga=self.Ga)
 
     def __add__(self, A):
+        if isinstance(A, Dop):
+            return NotImplemented
 
-        if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
+        if not isinstance(A, Mv):
             return Mv(self.obj + A, ga=self.Ga)
 
         if self.Ga != A.Ga:
             raise ValueError('In + operation Mv arguments are not from same geometric algebra')
-
-        if isinstance(A, Dop):
-            return Dop.Add(A, self)
 
         if self.is_blade_rep == A.is_blade_rep:
             return Mv(self.obj + A.obj, ga=self.Ga)
@@ -505,15 +504,11 @@ class Mv(object):
         return(self + A)
 
     def __sub__(self, A):
-
-        if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
-            return Mv(self.obj - A, ga=self.Ga)
+        if isinstance(A, Dop):
+            return NotImplemented
 
         if self.Ga != A.Ga:
             raise ValueError('In - operation Mv arguments are not from same geometric algebra')
-
-        if isinstance(A, Dop):
-            return Dop.Add(self, -A)
 
         if self.is_blade_rep == A.is_blade_rep:
             return Mv(self.obj - A.obj, ga=self.Ga)
@@ -528,15 +523,14 @@ class Mv(object):
         return -self + A
 
     def __mul__(self, A):
+        if isinstance(A, Dop):
+            return NotImplemented
 
-        if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
+        if not isinstance(A, Mv):
             return Mv(expand(A * self.obj), ga=self.Ga)
 
         if self.Ga != A.Ga:
             raise ValueError('In * operation Mv arguments are not from same geometric algebra')
-
-        if isinstance(A, Dop):
-            return A.Mul(self, A, op='*')
 
         if self.is_scalar():
             return Mv(self.obj * A, ga=self.Ga)
@@ -567,10 +561,12 @@ class Mv(object):
 
 
     def __rmul__(self, A):
+        if isinstance(A, Dop):
+            return NotImplemented
         return Mv(expand(A * self.obj), ga=self.Ga)
 
     def __truediv__(self, A):
-        if isinstance(A,Mv):
+        if isinstance(A, Mv):
             return self * A.inv()
         else:
             return self * (S(1)/A)
@@ -765,50 +761,47 @@ class Mv(object):
         return s
 
     def __xor__(self, A):  # wedge (^) product
+        if isinstance(A, Dop):
+            return NotImplemented
 
-        if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
+        if not isinstance(A, Mv):
             return Mv(A * self.obj, ga=self.Ga)
 
         if self.Ga != A.Ga:
             raise ValueError('In ^ operation Mv arguments are not from same geometric algebra')
-
-        if isinstance(A, Dop):
-            return A.Mul(self, A, op='^')
 
         if self.is_scalar():
             return self * A
 
         self = self.blade_rep()
         A = A.blade_rep()
-        self_W_A = self.Ga.wedge(self.obj, A.obj)
-        self_W_A = Mv(self_W_A, ga=self.Ga)
-        return self_W_A
+        return Mv(self.Ga.wedge(self.obj, A.obj), ga=self.Ga)
 
     def __rxor__(self, A):  # wedge (^) product
-        if not isinstance(A, Mv):
-            return Mv(A * self.obj, ga=self.Ga)
-        else:
-            return A * self
+        if isinstance(A, Dop):
+            return NotImplemented
+        assert not isinstance(A, Mv)
+        return Mv(A * self.obj, ga=self.Ga)
 
     def __or__(self, A):  # dot (|) product
-        if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):
+        if isinstance(A, Dop):
+            return NotImplemented
+
+        if not isinstance(A, Mv):
             return Mv(ga=self.Ga)
 
         if self.Ga != A.Ga:
             raise ValueError('In | operation Mv arguments are not from same geometric algebra')
-
-        if isinstance(A, Dop):
-            return A.Mul(self, A, op='|')
 
         self = self.blade_rep()
         A = A.blade_rep()
         return Mv(self.Ga.hestenes_dot(self.obj, A.obj), ga=self.Ga)
 
     def __ror__(self, A):  # dot (|) product
-        if not isinstance(A, Mv):
-            return Mv(ga=self.Ga)
-        else:
-            return A | self
+        if isinstance(A, Dop):
+            return NotImplemented
+        assert not isinstance(A, Mv)
+        return Mv(ga=self.Ga)
 
     def __pow__(self,n):  # Integer power operator
         if not isinstance(n,int):
@@ -832,52 +825,34 @@ class Mv(object):
         return half * (A * self - self * A)
 
     def __lt__(self, A):  # left contraction (<)
+        if isinstance(A, Dop):
+            # Cannot return `NotImplemented` here, as that would call `A > self`
+            return A.Mul(self, A, op='<')
 
-        if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):  # sympy scalar
+        if not isinstance(A, Mv):  # sympy scalar
             return Mv(A * self.obj, ga=self.Ga)
 
         if self.Ga != A.Ga:
             raise ValueError('In < operation Mv arguments are not from same geometric algebra')
 
-        if isinstance(A, Dop):
-            return A.Mul(self, A, op='<')
-
         self = self.blade_rep()
         A = A.blade_rep()
-        """
-        if A.is_scalar():
-            if self.is_scalar():
-                return self.obj * A.obj
-            else:
-                return S(0)
-        """
-
-        self_lc_A = Mv(self.Ga.left_contract(self.obj, A.obj), ga=self.Ga)
-        return self_lc_A
+        return Mv(self.Ga.left_contract(self.obj, A.obj), ga=self.Ga)
 
     def __gt__(self, A):  # right contraction (>)
+        if isinstance(A, Dop):
+            # Cannot return `NotImplemented` here, as that would call `A < self`
+            return A.Mul(self, A, op='>')
 
-        if (not isinstance(A, Mv)) and (not isinstance(A, Dop)):  # sympy scalar
+        if not isinstance(A, Mv):  # sympy scalar
             return self.Ga.mv(A * self.scalar())
 
         if self.Ga != A.Ga:
             raise ValueError('In > operation Mv arguments are not from same geometric algebra')
 
-        if isinstance(A, Dop):
-            return A.Mul(self, A, op='>')
-
         self = self.blade_rep()
         A = A.blade_rep()
-        """
-        if self.is_scalar():
-            if A.is_scalar():
-                return self.obj * A.obj
-            else:
-                return S(0)
-        """
-
-        self_rc_A = Mv(self.Ga.right_contract(self.obj, A.obj), ga=self.Ga)
-        return self_rc_A
+        return Mv(self.Ga.right_contract(self.obj, A.obj), ga=self.Ga)
 
     def collect(self,deep=False):
         """
