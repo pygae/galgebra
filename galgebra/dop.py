@@ -411,7 +411,7 @@ class Pdop(object):
             s += '^{' + printer.latex(self.order) + '}'
         s += '}{'
         keys = list(self.pdiffs.keys())
-        keys.sort()
+        keys.sort(key=lambda x: x.sort_key())
         for key in keys:
             i = self.pdiffs[key]
             s += r'\partial ' + printer.latex(key)
