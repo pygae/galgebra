@@ -1,8 +1,10 @@
+import operator
+
 from sympy import symbols, S
 import pytest
 
 from galgebra.ga import Ga
-from galgebra.mv import Dop
+from galgebra.mv import Dop, Mv
 from galgebra.dop import Sdop, Pdop
 
 
@@ -169,6 +171,44 @@ class TestSdop(object):
         assert lap2 != object()
         assert not (lap2 == object())
 
+    def chain_with_pdop(self):
+        x, y = symbols('x y', real=True)
+        s = Sdop([(x, Pdop(x)), (y, Pdop(y))])
+        # right-multiplication by Pdop chains only the pdiffs
+        sp = s * Pdop(x)
+        assert sp == Sdop([(x, Pdop(x) * Pdop(x)), (y, Pdop(y) * Pdop(x))])
+        # left-multiplcation by Pdop invokes the product rule
+        ps = Pdop(x) * s
+        assert ps == Sdop([(x, Pdop(x) * Pdop(x)), (1, Pdop(x)), (y, Pdop(y) * Pdop(x))])
+
+        # implicit multiplication
+        assert ps == Pdop(x)(s)
+        assert sp == s(Pdop(x))
+
+        # no-op pdop
+        assert s == Pdop({})(s)
+        assert s == s(Pdop({}))
+
+    def chain_with_mv(self):
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+        s = Sdop([(x, Pdop(x)), (y, Pdop(y))])
+
+        assert type(ex * s) is Sdop
+        assert type(s * ex) is Mv
+
+        # type should be preserved even when the result is 0
+        assert type(ex * Sdop([])) is Sdop
+        assert type(Sdop([]) * ex) is Mv
+
+        # As discussed with brombo, these operations are not well defined - if
+        # you need them, you should be using `Dop` not `Sdop`.
+        for op in [operator.xor, operator.or_, operator.lt, operator.gt]:
+            with pytest.raises(TypeError):
+                op(ex, s)
+            with pytest.raises(TypeError):
+                op(s, ex)
+
 
 class TestPdop(object):
 
@@ -202,3 +242,22 @@ class TestPdop(object):
         assert not (p1 == pxa)
         assert pxa != object()
         assert not (pxa == object())
+
+    def test_multiply(self):
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+
+        p = Pdop(x)
+        assert x * p == Sdop([(x, p)])
+        assert ex * p == Sdop([(ex, p)])
+
+        assert p * x == p(x) == S(1)
+        assert p * ex == p(ex) == S(0)
+        assert type(p(ex)) is Mv
+
+        # These are not defined for consistency with Sdop
+        for op in [operator.xor, operator.or_, operator.lt, operator.gt]:
+            with pytest.raises(TypeError):
+                op(ex, p)
+            with pytest.raises(TypeError):
+                op(p, ex)
