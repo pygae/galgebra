@@ -2,7 +2,8 @@ from sympy import symbols, S
 import pytest
 
 from galgebra.ga import Ga
-from galgebra.mv import Dop, Sdop, Pdop
+from galgebra.mv import Dop
+from galgebra.dop import Sdop, Pdop
 
 
 class TestDop(object):
