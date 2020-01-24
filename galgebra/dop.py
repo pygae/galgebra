@@ -335,26 +335,6 @@ class Pdop(_BaseDop):
 
         self.order = sum(self.pdiffs.values())
 
-    def factor(self):
-        """
-        If partial derivative operator self.order > 1 factor out first
-        order differential operator.  Needed for application of partial
-        derivative operator to product of sympy expression and partial
-        differential operator.  For example if ``D = Pdop({x:3})`` then::
-
-            (Pdop({x:2}), Pdop({x:1})) = D.factor()
-        """
-        if self.order == 1:
-            return S(0), self
-        else:
-            new_pdiffs = self.pdiffs.copy()
-            x, n = next(iter(new_pdiffs.items()))
-            if n == 1:
-                del new_pdiffs[x]
-            else:
-                new_pdiffs[x] -= 1
-            return Pdop(new_pdiffs), Pdop(x)
-
     def _eval_derivative_n_times(self, x, n) -> 'Pdop':  # pdiff(self)
         # d is partial derivative
         pdiffs = copy.copy(self.pdiffs)
