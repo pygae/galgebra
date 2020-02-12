@@ -7,6 +7,3 @@ pytest-xdist
 
 # needed by pytest-xdist
 pytest >= 4.4.0
-
-# pinned until https://github.com/computationalmodelling/nbval/issues/129 is fixed
-coverage < 5
