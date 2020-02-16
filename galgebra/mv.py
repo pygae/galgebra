@@ -482,7 +482,7 @@ class Mv(object):
         return Mv(-self.obj, ga=self.Ga)
 
     def __add__(self, A):
-        if isinstance(A, Dop):
+        if isinstance(A, dop._BaseDop):
             return NotImplemented
 
         if not isinstance(A, Mv):
@@ -504,7 +504,7 @@ class Mv(object):
         return(self + A)
 
     def __sub__(self, A):
-        if isinstance(A, Dop):
+        if isinstance(A, dop._BaseDop):
             return NotImplemented
 
         if self.Ga != A.Ga:
@@ -523,7 +523,7 @@ class Mv(object):
         return -self + A
 
     def __mul__(self, A):
-        if isinstance(A, Dop):
+        if isinstance(A, dop._BaseDop):
             return NotImplemented
 
         if not isinstance(A, Mv):
@@ -561,7 +561,7 @@ class Mv(object):
 
 
     def __rmul__(self, A):
-        if isinstance(A, Dop):
+        if isinstance(A, dop._BaseDop):
             return NotImplemented
         return Mv(expand(A * self.obj), ga=self.Ga)
 
@@ -761,7 +761,7 @@ class Mv(object):
         return s
 
     def __xor__(self, A):  # wedge (^) product
-        if isinstance(A, Dop):
+        if isinstance(A, dop._BaseDop):
             return NotImplemented
 
         if not isinstance(A, Mv):
@@ -778,13 +778,13 @@ class Mv(object):
         return Mv(self.Ga.wedge(self.obj, A.obj), ga=self.Ga)
 
     def __rxor__(self, A):  # wedge (^) product
-        if isinstance(A, Dop):
+        if isinstance(A, dop._BaseDop):
             return NotImplemented
         assert not isinstance(A, Mv)
         return Mv(A * self.obj, ga=self.Ga)
 
     def __or__(self, A):  # dot (|) product
-        if isinstance(A, Dop):
+        if isinstance(A, dop._BaseDop):
             return NotImplemented
 
         if not isinstance(A, Mv):
@@ -798,7 +798,7 @@ class Mv(object):
         return Mv(self.Ga.hestenes_dot(self.obj, A.obj), ga=self.Ga)
 
     def __ror__(self, A):  # dot (|) product
-        if isinstance(A, Dop):
+        if isinstance(A, dop._BaseDop):
             return NotImplemented
         assert not isinstance(A, Mv)
         return Mv(ga=self.Ga)
@@ -828,6 +828,11 @@ class Mv(object):
         if isinstance(A, Dop):
             # Cannot return `NotImplemented` here, as that would call `A > self`
             return A.Mul(self, A, op='<')
+        elif isinstance(A, dop._BaseDop):
+            raise TypeError(
+                "'<' not supported between instances of 'Mv' and {!r}"
+                .format(type(A).__name__)
+            )
 
         if not isinstance(A, Mv):  # sympy scalar
             return Mv(A * self.obj, ga=self.Ga)
@@ -843,6 +848,11 @@ class Mv(object):
         if isinstance(A, Dop):
             # Cannot return `NotImplemented` here, as that would call `A < self`
             return A.Mul(self, A, op='>')
+        elif isinstance(A, dop._BaseDop):
+            raise TypeError(
+                "'>' not supported between instances of 'Mv' and {!r}"
+                .format(type(A).__name__)
+            )
 
         if not isinstance(A, Mv):  # sympy scalar
             return self.Ga.mv(A * self.scalar())
@@ -1334,6 +1344,11 @@ class Mv(object):
             return self.i_grade
         return -self.grades[-1]
 
+    def _eval_derivative_n_times(self, x, n):
+        for i in range(n):
+            self = self.Ga.pDiff(self, x)
+        return self
+
 
 def compare(A,B):
     """
@@ -1368,7 +1383,7 @@ def compare(A,B):
 
 ################# Multivector Differential Operator Class ##############
 
-class Dop(object):
+class Dop(dop._BaseDop):
     r"""
     Differential operator class for multivectors.  The operators are of
     the form
@@ -1531,19 +1546,15 @@ class Dop(object):
             if dopl.cmpflg != dopr.cmpflg:
                 raise ValueError('In Dop.Mul Dop arguments do not have same cmplfg')
             if not dopl.cmpflg:  # dopl and dopr operate on right argument
-                terms = []
-                for (coef, pdiff) in dopl.terms:  #Apply each dopl term to dopr
-                    Ddopl = pdiff(dopr.terms)  # list of terms
-                    Ddopl = [(Mv.Mul(coef, c, op=op), p) for c, p in Ddopl]
-                    terms += Ddopl
-                product = Dop(terms, ga=ga)
+                product = sum((
+                    Dop.Mul(coef, pdiff(dopr), op=op)
+                    for (coef, pdiff) in dopl.terms
+                ), Dop([], ga=ga, cmpflg=False))
             else:  # dopl and dopr operate on left argument
-                terms = []
-                for (coef, pdiff) in dopr.terms:
-                    Ddopr = pdiff(dopl.terms)  # list of terms
-                    Ddopr = [(Mv.Mul(c, coef, op=op), p) for c, p in Ddopr]
-                    terms += Ddopr
-                product = Dop(terms, ga=ga, cmpflg=True)
+                product = sum((
+                    Dop.Mul(pdiff(dopl), coef, op=op)
+                    for (coef, pdiff) in dopr.terms
+                ), Dop([], ga=ga, cmpflg=True))
         else:
             if not isinstance(dopl, Dop):  # dopl is a scalar or Mv and dopr is Dop
                 if isinstance(dopl, Mv) and dopl.Ga != dopr.Ga:
@@ -1553,10 +1564,15 @@ class Dop(object):
                 ga = dopl.Ga
 
                 if not dopr.cmpflg:  # dopr operates on right argument
-                    terms = [(Mv.Mul(dopl, coef, op=op), pdiff) for coef, pdiff in dopr.terms]
-                    return Dop(terms, ga=ga)  # returns Dop
+                    product = Dop([
+                        (Mv.Mul(dopl, coef, op=op), pdiff)
+                        for coef, pdiff in dopr.terms
+                    ], ga=ga)
                 else:
-                    product = sum([Mv.Mul(pdiff(dopl), coef, op=op) for coef, pdiff in dopr.terms], Mv(0, ga=ga))  # returns multivector
+                    return sum([
+                        Mv.Mul(pdiff(dopl), coef, op=op)
+                        for coef, pdiff in dopr.terms
+                    ], Mv(0, ga=ga))
             else:  # dopr is a scalar or a multivector
 
                 if isinstance(dopr, Mv) and dopl.Ga != dopr.Ga:
@@ -1564,13 +1580,16 @@ class Dop(object):
                 ga = dopl.Ga
 
                 if not dopl.cmpflg:  # dopl operates on right argument
-                    return sum([Mv.Mul(coef, pdiff(dopr), op=op) for coef, pdiff in dopl.terms], Mv(0, ga=ga))  # returns multivector
+                    return sum([
+                        Mv.Mul(coef, pdiff(dopr), op=op)
+                        for coef, pdiff in dopl.terms
+                    ], Mv(0, ga=ga))
                 else:
-                    terms = [(Mv.Mul(coef, dopr, op=op), pdiff) for coef, pdiff in dopl.terms]
-                    product = Dop(terms, ga=dopl.Ga, cmpflg=True)  # returns Dop complement
-        if isinstance(product, Dop):
-            product = product.consolidate_coefs()
-        return product
+                    product = Dop([
+                        (Mv.Mul(coef, dopr, op=op), pdiff)
+                        for coef, pdiff in dopl.terms
+                    ], ga=ga, cmpflg=True)  # returns Dop complement
+        return product.consolidate_coefs()
 
     def TSimplify(self):
         return Dop([
@@ -1798,6 +1817,8 @@ class Dop(object):
             else:
                 return s
 
+    def _eval_derivative_n_times(self, x, n):
+        return Dop(dop._eval_derivative_n_times_terms(self.terms, x, n), cmpflg=self.cmpflg, ga=self.Ga)
 
 ################################# Alan Macdonald's additions #########################
 

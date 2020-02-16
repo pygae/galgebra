@@ -7,11 +7,10 @@ import copy
 import numbers
 import warnings
 
-from sympy import Symbol, S, Add, simplify, diff, Expr
+from sympy import Symbol, S, Add, simplify, diff, Expr, Dummy
 
 from . import printer
 from . import metric
-from . import mv
 from .printer import ZERO_STR
 
 
@@ -52,9 +51,29 @@ def _merge_terms(terms1, terms2):
     return [(coef, pdiff) for coef, pdiff in zip(coefs, pdiffs) if coef != S(0)]
 
 
+def _eval_derivative_n_times_terms(terms, x, n):
+    for i in range(n):
+        new_terms = []
+        for k, term in enumerate(terms):
+            dc = _basic_diff(term[0], x)
+            pd = _basic_diff(term[1], x)
+            #print 'D0, term, dc, pd =', D0, term, dc, pd
+            if dc != 0:
+                new_terms.append((dc, term[1]))
+            if pd != 0 :
+                new_terms.append((term[0], pd))
+        terms = new_terms
+    return _consolidate_terms(terms)
+
+
 ################ Scalar Partial Differential Operator Class ############
 
-class Sdop(object):
+class _BaseDop(object):
+    """ Base class for differential operators - used to avoid accidental promotion """
+    pass
+
+
+class Sdop(_BaseDop):
     """
     Scalar differential operator is of the form (Einstein summation)
 
@@ -183,17 +202,12 @@ class Sdop(object):
                 raise ValueError('In Sdop.__init__ length of args must be 1 or 2 args = '+str(args))
 
     def __call__(self, arg):
-        if isinstance(arg, Sdop):
-            terms = []
-            for (coef, pdiff) in self.terms:
-                new_terms = pdiff(arg.terms)
-                new_terms = [(coef * c, p) for c, p in new_terms]
-                terms += new_terms
-            product = Sdop(terms)
-            return Sdop.consolidate_coefs(product)
-        else:
-            return sum([coef * pdiff(arg) for coef, pdiff in self.terms], S(0))
-
+        # Ensure that we return the right type even when there are no terms - we
+        # do this by adding `0 * d(arg)/d(nonexistant)`, which must be zero, but
+        # will be a zero of the right type.
+        dummy_var = Dummy('nonexistant')
+        terms = self.terms or ((S(0), Pdop(dummy_var)),)
+        return sum([coef * pdiff(arg) for coef, pdiff in terms])
 
     def __neg__(self):
         return Sdop([(-coef, pdiff) for coef, pdiff in self.terms])
@@ -204,12 +218,12 @@ class Sdop(object):
             return Sdop(_merge_terms(sdop1.terms, sdop2.terms))
         else:
             # convert values to multiplicative operators
-            if isinstance(sdop1, Sdop):
+            if not isinstance(sdop2, _BaseDop):
                 sdop2 = Sdop([(sdop2, Pdop({}))])
-            elif isinstance(sdop2, Sdop):
+            elif not isinstance(sdop1, _BaseDop):
                 sdop1 = Sdop([(sdop1, Pdop({}))])
             else:
-                raise TypeError("Neither argument is a Dop instance")
+                return NotImplemented
             return Sdop.Add(sdop1, sdop2)
 
     def __eq__(self, other):
@@ -236,12 +250,27 @@ class Sdop(object):
         return self.__call__(sdopr)
 
     def __rmul__(self, sdop):
-        terms = [(sdop * coef, pdiff) for coef, pdiff in self.terms]
-        return Sdop(terms)
+        return Sdop([(sdop * coef, pdiff) for coef, pdiff in self.terms])
+
+    def _eval_derivative_n_times(self, x, n):
+        return Sdop(_eval_derivative_n_times_terms(self.terms, x, n))
+
 
 #################### Partial Derivative Operator Class #################
 
-class Pdop(object):
+
+def _basic_diff(f, x, n=1):
+    """ Simple wrapper for `diff` that works for our types too """
+    if isinstance(f, (Expr, Symbol, numbers.Number)):  # f is sympy expression
+        return diff(f, x, n)
+    elif hasattr(f, '_eval_derivative_n_times'):
+        # one of our types
+        return f._eval_derivative_n_times(x, n)
+    else:
+        raise ValueError('In_basic_diff type(arg) = ' + str(type(f)) + ' not allowed.')
+
+
+class Pdop(_BaseDop):
     r"""
     Partial derivative operatorp.
 
@@ -306,91 +335,30 @@ class Pdop(object):
 
         self.order = sum(self.pdiffs.values())
 
-    def factor(self):
-        """
-        If partial derivative operator self.order > 1 factor out first
-        order differential operator.  Needed for application of partial
-        derivative operator to product of sympy expression and partial
-        differential operator.  For example if ``D = Pdop({x:3})`` then::
-
-            (Pdop({x:2}), Pdop({x:1})) = D.factor()
-        """
-        if self.order == 1:
-            return S(0), self
+    def _eval_derivative_n_times(self, x, n) -> 'Pdop':  # pdiff(self)
+        # d is partial derivative
+        pdiffs = copy.copy(self.pdiffs)
+        if x in pdiffs:
+            pdiffs[x] += n
         else:
-            new_pdiffs = self.pdiffs.copy()
-            x, n = next(iter(new_pdiffs.items()))
-            if n == 1:
-                del new_pdiffs[x]
-            else:
-                new_pdiffs[x] -= 1
-            return Pdop(new_pdiffs), Pdop(x)
+            pdiffs[x] = n
+        return Pdop(pdiffs)
 
     def __call__(self, arg):
         """
         Calculate nth order partial derivative (order defined by
-        self) of :class:`~galgebra.mv.Mv`, :class:`Dop`, :class:`Sdop` or sympy expression
+        self) of expression
         """
-        if self.pdiffs == {}:
-            return arg  # result is Pdop identity (1)
+        for x, n in self.pdiffs.items():
+            arg = _basic_diff(arg, x, n)
+        return arg
 
-        if isinstance(arg, Pdop):  # arg is Pdop
-            if arg.pdiffs == {}:  # arg is one
-                return self
-                #return S(0)  # derivative is zero
-            else:  # arg is partial derivative
-                pdiffs = copy.copy(arg.pdiffs)
-                for key in self.pdiffs:
-                    if key in pdiffs:
-                        pdiffs[key] += self.pdiffs[key]
-                    else:
-                        pdiffs[key] = self.pdiffs[key]
-            return Pdop(pdiffs)  # result is Pdop
+    def __mul__(self, other):  # functional product of self and arg (self*arg)
+        return self(other)
 
-        elif isinstance(arg, mv.Mv):  # arg is multivector
-            ga = arg.Ga
-            for x in self.pdiffs:
-                for i in range(self.pdiffs[x]):
-                    arg = ga.pDiff(arg, x)
-            return arg  # result is multivector
-
-        elif isinstance(arg, (Expr, Symbol, numbers.Number)):  # arg is sympy expression
-            for x in self.pdiffs:
-                arg = diff(arg,x,self.pdiffs[x])
-            return arg  # derivative is sympy expression
-
-        elif isinstance(arg, (list, tuple)):  # arg is list of tuples (coef, partial derivative)
-            terms = list(arg)
-            D = self
-            while True:
-                D, D0 = D.factor()
-                for k, term in enumerate(terms):
-                    dc = D0(term[0])
-                    pd = D0(term[1])
-                    #print 'D0, term, dc, pd =', D0, term, dc, pd
-                    tmp = []
-                    if dc != 0:
-                        tmp.append((dc,term[1]))
-                    if pd != 0 :
-                        tmp.append((term[0],pd))
-                    terms[k] = tmp
-                terms = [i for o in terms for i in o]  # flatten list one level
-                if D == 0:
-                    break
-            terms = Sdop.consolidate_coefs(terms)
-            return terms  # result is list of tuples (coef, partial derivative)
-        elif isinstance(arg, Sdop):  # arg is scalar differential operator
-            return self(arg.terms)  # result is list of tuples (coef, partial derivative)
-        else:
-            raise ValueError('In Pdop.__call__ type(arg) = ' + str(type(arg)) + ' not allowed.')
-
-    def __mul__(self, pdop):  # functional product of self and arg (self*arg)
-        return self(pdop)
-
-    def __rmul__(self, pdop):  # functional product of arg and self (arg*self)
-        if isinstance(pdop, Pdop):
-            return pdop(self)
-        return Sdop([(pdop, self)])
+    def __rmul__(self, other):  # functional product of arg and self (arg*self)
+        assert not isinstance(other, Pdop)
+        return Sdop([(other, self)])
 
     def Pdop_str(self):
         if self.order == 0:
