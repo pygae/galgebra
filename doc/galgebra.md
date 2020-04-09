@@ -851,7 +851,7 @@ where the $F$’s are *sympy* symbolic constants or functions of the coordinates
 |$A-B$|difference of multivectors|
 |$A*B$|geometric product of multivectors|
 |$A{\wedge}B$|outer product of multivectors|
-|$A|B$|inner product of multivectors|
+|$A&#124;B$|inner product of multivectors|
 |$A<B$|left contraction of multivectors|
 |$A>B$|right contraction of multivectors|
 |$A/B$|division of multivectors|
