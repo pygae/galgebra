@@ -2,6 +2,20 @@
 Changelog
 =========
 
+- :feature:`450` ANSI printing can now be turned off with ``Eprint(deriv=None, fct=None, base=None)``.
+
+- :support:`450` Many undocumented parts of :func:`galgebra.printer.Eprint` have been removed:
+
+  * The ``debug`` argument to ``Eprint``, which just printed out the other arguments.
+  * The ``on`` argument to ``Eprint``, which if ``False`` just made the call do nothing at all.
+    Use ``if cond: Eprint(...)`` instead of ``Eprint(..., on=cond)``.
+  * The overrideable default settings ``Eprint.defaults``.
+  * The constant dictionaries ``Eprint.ColorCode`` and ``Eprint.InvColorCode``.
+  * The class methods ``Eprint.Base``, ``Eprint.Fct``, ``Eprint.Deriv``, and ``Eprint.Strip``.
+  * The class attributes ``Eprint.base``, ``Eprint.fct``, ``Eprint.deriv``, and ``Eprint.normal``.
+
+  If you were relying on these details to implement your own ansi printing, it is recommended that you use a package like ``colorama`` instead.
+
 - :bug:`448` Calling :func:`galgebra.printer.Eprint` no longer causes ansi escape codes to appear in the names of the coefficients of ``ga.mv('A', 'vector')``.
 
 - :feature:`436` The ``Ga`` constructor now allows algebras with only a single basis vector, via a trailing comma in the list of bases.

@@ -219,77 +219,51 @@ def oprint(*args, dict_mode=False):
             print(ostr(arg, dict_mode))
 
 
-class Eprint:
+_ansi_colors = {
+    'black':       '\033[0;30m', 'dark gray':     '\033[1;30m',
+    'red':         '\033[0;31m', 'bright red':    '\033[1;31m',
+    'green':       '\033[0;32m', 'bright green':  '\033[1;32m',
+    'yellow':      '\033[0;33m', 'bright yellow': '\033[1;33m',
+    'blue':        '\033[0;34m', 'bright blue':   '\033[1;34m',
+    'purple':      '\033[0;35m', 'bright purple': '\033[1;35m',
+    'cyan':        '\033[0;36m', 'bright cyan':   '\033[1;36m',
+    'bright gray': '\033[0;37m', 'white':         '\033[1;37m',
+}
+_ansi_reset = '\033[0m'
 
-    ColorCode = {'black': '0;30', 'bright gray': '0;37',
-                    'blue': '0;34', 'white': '1;37',
-                    'green': '0;32', 'bright blue': '1;34',
-                    'cyan': '0;36', 'bright green': '1;32',
-                    'red': '0;31', 'bright cyan': '1;36',
-                    'purple': '0;35', 'bright red': '1;31',
-                    'yellow': '0;33', 'bright purple': '1;35',
-                    'dark gray': '1;30', 'bright yellow': '1;33',
-                    'normal': '0'}
 
-    InvColorCode = dict(list(zip(list(ColorCode.values()), list(ColorCode.keys()))))
+def _apply_ansi_color(color: str, text: str) -> str:
+    if color is None:
+        return text
+    else:
+        return _ansi_colors.get(color, color) + text + _ansi_reset
 
-    normal = ''
-    base = ''
-    fct = ''
-    deriv = ''
-    bold = ''
 
-    defaults = {('win', 'base'): 'blue', ('unix', 'base'): 'blue',
-                ('win', 'fct'): 'red', ('unix', 'fct'): 'red',
-                ('win', 'deriv'): 'cyan', ('unix', 'deriv'): 'cyan'}
+def enhance_print(base='blue', fct='red', deriv='cyan'):
+    """ Enable ansi color codes in plain-text formatting.
 
-    def __init__(self, base=None, fct=None, deriv=None, on=True, debug=False):
-        if on:
-            OS = 'unix'
-            if 'win' in sys.platform and 'darwin' not in sys.platform:
-                OS = 'win'
+    Valid color names are:
 
-            if base is None:
-                Eprint.base = Eprint.ColorCode[Eprint.defaults[(OS, 'base')]]
-            else:
-                Eprint.base = Eprint.ColorCode[base]
-            if fct is None:
-                Eprint.fct = Eprint.ColorCode[Eprint.defaults[(OS, 'fct')]]
-            else:
-                Eprint.fct = Eprint.ColorCode[fct]
-            if deriv is None:
-                Eprint.deriv = Eprint.ColorCode[Eprint.defaults[(OS, 'deriv')]]
-            else:
-                Eprint.deriv = Eprint.ColorCode[deriv]
-            Eprint.normal = '\033[0m'
+    {colors}
 
-            if debug:
-                print('Enhanced Printing is on:')
-                print('Base/Blade color is ' + Eprint.InvColorCode[Eprint.base])
-                print('Function color is ' + Eprint.InvColorCode[Eprint.fct])
-                print('Derivative color is ' + Eprint.InvColorCode[Eprint.deriv] + '\n')
+    Pass ``None`` to disable coloring.
+    """
+    GaPrinter.set_global_settings(
+        function_color=fct,
+        derivative_color=deriv,
+        basis_vector_color=base,
+    )
 
-            Eprint.base = '\033[' + Eprint.base + 'm'
-            Eprint.fct = '\033[' + Eprint.fct + 'm'
-            Eprint.deriv = '\033[' + Eprint.deriv + 'm'
 
-    @staticmethod
-    def Base(s):
-        return Eprint.base + s + Eprint.normal
+# patch the docstring using our known color names
+enhance_print.__doc__ = enhance_print.__doc__.format(colors='\n    '.join(
+    " - ``{!r}``".format(k) for k in _ansi_colors
+))
 
-    @staticmethod
-    def Fct(s):
-        return Eprint.fct + s + Eprint.normal
 
-    @staticmethod
-    def Deriv(s):
-        return Eprint.deriv + s + Eprint.normal
-
-    @staticmethod
-    def Strip(s):
-        new_s = s.replace(Eprint.base, '')
-        new_s = new_s.replace(Eprint.normal, '')
-        return new_s
+def Eprint(*args, **kwargs):
+    """ Alias for :func:`enhance_print` """
+    return enhance_print(*args, **kwargs)
 
 
 class GaPrinter(StrPrinter):
@@ -306,6 +280,11 @@ class GaPrinter(StrPrinter):
       :attr:`~galgebra.ga.Ga.coords`, but sometimes misfires.
     * A new ``dict_mode`` setting, which when ``True`` prints :class:`dict`
       objects with ``->`` and one entry per line.
+    * New ANSI color settings:
+
+      * ``derivative_color``, for adjusting the color of ``D{x}``.
+      * ``function_color``, for adjusting the color of argument-less functions.
+      * ``basis_vector_color``, for adjusting the color of basis vector symbols.
 
     When :mod:`galgebra.printer` is imported, builtin sympy objects are patched
     to use this printer for their ``__repr__`` instead of the builtin
@@ -316,6 +295,9 @@ class GaPrinter(StrPrinter):
     _default_settings = ChainMap({
         # if true, print dicts with `->` instead of `:`, one entry per line
         "dict_mode": False,
+        "derivative_color": None,
+        "function_color": None,
+        "basis_vector_color": None,
     }, StrPrinter._default_settings)
 
     function_names = ('acos', 'acosh', 'acot', 'acoth', 'arg', 'asin', 'asinh',
@@ -330,10 +312,12 @@ class GaPrinter(StrPrinter):
             if name in GaPrinter.function_names:
                 return expr.func.__name__ + "(%s)" % self.stringify(expr.args, ", ")
 
-        return Eprint.Fct("%s" % (name,))
+        return _apply_ansi_color(
+            self._settings["function_color"], "%s" % (name,))
 
     def _print_BasisVectorSymbol(self, expr):
-        return Eprint.Base(self._print_Symbol(expr))
+        return _apply_ansi_color(
+            self._settings["basis_vector_color"], self._print_Symbol(expr))
 
     def _print_Derivative(self, expr):
         # Break the following to support both py 2 & 3
@@ -357,7 +341,7 @@ class GaPrinter(StrPrinter):
             if n > 1:
                 s += '^' + str(n)
         s += str(self._print(function))
-        return Eprint.Deriv(s)
+        return _apply_ansi_color(self._settings["derivative_color"], s)
 
     def _print_dict(self, expr):
         if not self._settings['dict_mode']:
@@ -419,11 +403,6 @@ def _print(*values, **kwargs):
 
 
 builtins.print = _print
-
-
-def enhance_print():
-    Eprint()
-    return
 
 
 class GaLatexPrinter(LatexPrinter):
