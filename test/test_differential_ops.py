@@ -109,6 +109,32 @@ class TestDop(object):
             ez * (ez | ga.grad),
         )
 
+    def test_constructor_errors(self):
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1])
+
+        # list lengths must match
+        with pytest.raises(ValueError, match='same length'):
+            Dop([ex], [], ga=ga)
+
+        # the two conventions can't be mixed
+        mixed_args = [
+            (ex, Pdop({})),
+            (Sdop([]), ex),
+        ]
+        with pytest.raises(TypeError, match='pairs'):
+            Dop(mixed_args, ga=ga)
+
+        # ga must be non-none
+        with pytest.raises(ValueError, match='must not be None'):
+            Dop([], ga=None)
+
+        # too few arguments
+        with pytest.raises(TypeError, match='0 were given'):
+            Dop(ga=ga)
+        # too many arguments
+        with pytest.raises(TypeError, match='3 were given'):
+            Dop(1, 2, 3, ga=ga)
+
 
 class TestSdop(object):
 
@@ -209,6 +235,29 @@ class TestSdop(object):
             with pytest.raises(TypeError):
                 op(s, ex)
 
+    def test_constructor_errors(self):
+        coords = x, y, z = symbols('x y z', real=True)
+        ga, ex, ey, ez = Ga.build('e*x|y|z', g=[1, 1, 1], coords=coords)
+
+        # list lengths must match
+        with pytest.raises(ValueError, match='same length'):
+            Sdop([ex], [])
+
+        # not a symbol or list
+        with pytest.raises(TypeError, match='symbol or sequence is required'):
+            Sdop(1)
+
+        # not a pair of lists
+        with pytest.raises(TypeError, match='must be lists'):
+            Sdop([], 1)
+
+        # too few arguments
+        with pytest.raises(TypeError, match='0 were given'):
+            Sdop()
+        # too many arguments
+        with pytest.raises(TypeError, match='3 were given'):
+            Sdop(1, 2, 3)
+
 
 class TestPdop(object):
 
@@ -261,3 +310,8 @@ class TestPdop(object):
                 op(ex, p)
             with pytest.raises(TypeError):
                 op(p, ex)
+
+    def test_constructor_errors(self):
+        # not a symbol or dict
+        with pytest.raises(TypeError, match='dictionary or symbol is required'):
+            Pdop(1)

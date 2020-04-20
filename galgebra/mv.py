@@ -6,6 +6,7 @@ import copy
 import numbers
 import operator
 from functools import reduce
+from typing import List, Any, Tuple, Union
 
 from sympy import (
     Symbol, Function, S, expand, Add,
@@ -1430,6 +1431,38 @@ class Dop(dop._BaseDop):
     terms : list of tuples
     """
 
+    def __init_from_coef_and_pdop(self, coefs: List[Any], pdiffs: List['Pdop']):
+        if len(coefs) != len(pdiffs):
+            raise ValueError('In Dop.__init__ coefficent list and Pdop list must be same length.')
+        self.terms = tuple(zip(coefs, pdiffs))
+
+    def __init_from_terms(self, terms: Union[
+        List[Tuple[Mv, dop.Pdop]],
+        List[Tuple[dop.Sdop, Mv]],
+    ]):
+        if len(terms) == 0:
+            self.terms = ()
+        elif all(
+            isinstance(coef, Mv) and isinstance(pdiff, dop.Pdop)
+            for coef, pdiff in terms
+        ):
+            # Mv expansion [(Mv, Pdop)]
+            self.terms = tuple(terms)
+        elif all(
+            isinstance(sdop, dop.Sdop) and isinstance(coef, Mv)
+            for sdop, coef in terms
+        ):
+            # Sdop expansion [(Sdop, Mv)]
+            self.terms = dop._consolidate_terms(
+                (coef * mv, pdiff)
+                for (sdop, mv) in terms
+                for (coef, pdiff) in sdop.terms
+            )
+        else:
+            raise TypeError(
+                'In Dop.__init__ terms are neither (Mv, Pdop) pairs or '
+                '(Sdop, Mv) pairs, got {}'.format(terms))
+
     def __init__(self, *args, ga, cmpflg=False, debug=False, fmt_dop=1):
         """
         Parameters
@@ -1443,38 +1476,23 @@ class Dop(dop._BaseDop):
         fmt_dop :
             1 for normal dop partial derivative formatting
         """
+        if ga is None:
+            raise ValueError('ga argument to Dop() must not be None')
 
         self.cmpflg = cmpflg
         self.Ga = ga
-
-        if self.Ga is None:
-            raise ValueError('In Dop.__init__ self.Ga must be defined.')
-
         self.dop_fmt = fmt_dop
         self.title = None
 
         if len(args) == 2:
-            coefs, pdiffs = args
-            if len(coefs) != len(pdiffs):
-                raise ValueError('In Dop.__init__ coefficent list and Pdop list must be same length.')
-            self.terms = tuple(zip(coefs, pdiffs))
+            self.__init_from_coef_and_pdop(*args)
         elif len(args) == 1:
-            arg, = args
-            if len(arg) == 0:
-                self.terms = ()
-            elif isinstance(arg[0][0], Mv):  # Mv expansion [(Mv, Pdop)]
-                self.terms = tuple(arg)
-            elif isinstance(arg[0][0], dop.Sdop):  # Sdop expansion [(Sdop, Mv)]
-                self.terms = dop._consolidate_terms(
-                    (coef * mv, pdiff)
-                    for (sdop, mv) in arg
-                    for (coef, pdiff) in sdop.terms
-                )
-            else:
-                raise ValueError('In Dop.__init__ args[0] form not allowed. args = ' + str(args))
+            self.__init_from_terms(*args)
         else:
-            raise ValueError('In Dop.__init__ length of args must be 1 or 2.')
-
+            # count include self, as python usually does
+            raise TypeError(
+                "Dop() takes from 1 to 2 positional arguments but {} were "
+                "given".format(len(args)))
 
     def simplify(self, modes=simplify):
         """
