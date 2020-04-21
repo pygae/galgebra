@@ -1,0 +1,9 @@
+# ignore the example files, we don't need quality there, and they skew our
+# stats and drown out real issues
+path_classifiers:
+  examples:
+    - examples
+  test:
+    - test
+  docs:
+    - doc

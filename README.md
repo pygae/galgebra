@@ -12,7 +12,7 @@ Development Status
 
 ![PyPI - Status](https://img.shields.io/pypi/status/galgebra.svg) ![GitHub contributors](https://img.shields.io/github/contributors/pygae/galgebra.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fe7642c639a54d909a36c75db6c2fa49)](https://app.codacy.com/app/utensilcandel/galgebra?utm_source=github.com&utm_medium=referral&utm_content=pygae/galgebra&utm_campaign=Badge_Grade_Settings) [![Codecov](https://img.shields.io/codecov/c/github/pygae/galgebra.svg)](https://codecov.io/gh/pygae/galgebra)
 
-[brombo/galgebra](https://github.com/brombo/galgebra) was originally written by Alan Bromborsky, but is no longer actively maintained.
+[brombo/galgebra][] was originally written by Alan Bromborsky, but was no longer actively maintained, and as of 2019-11-25 no longer exists.
 
 [pygae/galgebra](https://github.com/pygae/galgebra) is a community fork, maintained by [Pythonic Geometric Algebra Enthusiasts](https://github.com/pygae).
 
@@ -100,7 +100,7 @@ You may also check out more examples [here](https://github.com/pygae/galgebra/bl
 
 For detailed documentation, please visit https://galgebra.readthedocs.io/ .
 
-**NOTE:** If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out section [Migration Guide](#migration-guide) below.
+**NOTE:** If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra][], please check out section [Migration Guide](#migration-guide) below.
 
 Installing GAlgebra
 ---------------------
@@ -108,20 +108,8 @@ Installing GAlgebra
 ### Prerequisites
 
 - Works on Linux, Windows, Mac OSX
-- [Python](https://www.python.org/) 2.7 or 3
-- [SymPy](https://www.sympy.org)
-
-Note: 
-
-GAlgebra only supports SymPy 1.3 and below for now, see the tracking issue [#31](https://github.com/pygae/galgebra/issues/31).
-
-Please run the following to freeze the version of SymPy to 1.3:
-
-```bash
-pip install sympy==1.3
-```
-
-If you need to use SymPy 1.4 and above for other libraries, please create a seperate virtual environment with SymPy 1.3 for GAlgebra using [conda](https://github.com/conda/conda) or [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv).
+- [Python](https://www.python.org/) >=3.5
+- [SymPy](https://www.sympy.org) 1.3, 1.4 or preferably 1.5
 
 ### Installing GAlgebra From PyPI (Recommended for users)
 
@@ -176,7 +164,7 @@ Simply remove the `sympy.` prefix before `galgebra` then you are good to go:
 from galgebra.ga import *
 ```
 
-### Migrating from [brombo/galgebra](https://github.com/brombo/galgebra)
+### Migrating from [brombo/galgebra][]
 
 The `setgapth.py` way to install is now deprecated by `pip install galgebra` and all modules in GAlgebra should be imported from `galgebra`, for example:
 
@@ -194,3 +182,5 @@ Note that in the [doc/books](https://github.com/pygae/galgebra/blob/master/doc/b
 - `BookGA.pdf` which is a collection of notes on Geometric Algebra and Calculus based of "Geometric Algebra for Physicists" by Doran and Lasenby and on some papers by Lasenby and Hestenes.
 - `galgebra.pdf` which is the original main doc of GAlgebra in PDF format, while the math part is still valid, the part describing the installation and usage of GAlgebra is outdated, please read with cautious or visit https://galgebra.readthedocs.io/ instead.
 - `Macdonald` which constains bundled supplementary materials for [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) by Alan Macdonald, see [here](https://github.com/pygae/galgebra/blob/master/doc/books/Macdonald/) and [here](https://github.com/pygae/galgebra/blob/master/examples/Macdonald/) for more information.
+
+[brombo/galgebra]: https://web.archive.org/web/20180611145113/https://github.com/brombo/galgebra

@@ -6,13 +6,16 @@ import sys
 import inspect
 import types
 import itertools
-from sympy import collect, expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add
 from copy import copy
+from functools import reduce
+
+from sympy import (
+    expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add
+)
+
 from . import printer
 from . import metric
 from . import mv
-from . import utils
-from functools import reduce
 
 def aprint(a):
     out = ''
@@ -39,7 +42,7 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
                     if not f:
                         mat[row,col] = Symbol(element,real=True)
                     else:
-                       mat[row,col] = Function(element)(*coords)
+                        mat[row,col] = Function(element)(*coords)
 
         elif mode == 's':  # Symmetric symbolic matrix
             for row in n_range:
@@ -53,7 +56,7 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
                     if not f:
                         mat[row,col] = Symbol(element,real=True)
                     else:
-                       mat[row,col] = Function(element)(*coords)
+                        mat[row,col] = Function(element)(*coords)
 
         elif mode == 'a':  # Asymmetric symbolic matrix
             for row in n_range:
@@ -71,7 +74,7 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
                     if not f:
                         mat[row,col] = sign * Symbol(element,real=True)
                     else:
-                       mat[row,col] = sign * Function(element)(*coords)
+                        mat[row,col] = sign * Function(element)(*coords)
         else:
             raise ValueError('In Symbolic_Matrix mode = ' + str(mode))
     else:
@@ -80,7 +83,7 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
 
 
 def Matrix_to_dictionary(mat_rep,basis):
-    # Convert matrix representation of linear transformation to dictionary
+    """ Convert matrix representation of linear transformation to dictionary """
     dict_rep = {}
     n = len(basis)
     if mat_rep.rows != n or mat_rep.cols != n:
@@ -93,7 +96,7 @@ def Matrix_to_dictionary(mat_rep,basis):
     return dict_rep
 
 def Dictionary_to_Matrix(dict_rep, ga):
-    # Convert dictionary representation of linear transformation to matrix
+    """ Convert dictionary representation of linear transformation to matrix """
     basis = list(dict_rep.keys())
     n = len(basis)
     n_range = list(range(n))
@@ -103,7 +106,10 @@ def Dictionary_to_Matrix(dict_rep, ga):
         lst_mat_row = n * [S(0)]
 
         if e_row in basis:  # If not in basis row all zeros
-            (coefs,bases) = metric.linear_expand(dict_rep[e_row])
+            element = dict_rep[e_row]
+            if isinstance(element, mv.Mv):
+                element = element.obj
+            coefs, bases = metric.linear_expand(element)
             for (coef,base) in zip(coefs,bases):
                 index = ga.basis.index(base)
                 lst_mat_row[index] = coef
@@ -112,11 +118,36 @@ def Dictionary_to_Matrix(dict_rep, ga):
     return Transpose(Matrix(lst_mat))
 
 class Lt(object):
+    r"""
+    A Linear Transformation
+
+    Except for the spinor representation the linear transformation
+    is stored as a dictionary with basis vector keys and vector
+    values ``self.lt_dict`` so that a is a vector :math:`a = a^{i}e_{i}` then
+
+    .. math::
+        \mathtt{self(}a\mathtt{)}
+            = a^{i} * \mathtt{self.lt\_dict[}e_{i}\mathtt{]}.
+
+    For the spinor representation the linear transformation is
+    stored as the even multivector ``self.R`` so that if a is a
+    vector::
+
+        self(a) = self.R * a * self.R.rev().
+
+    Attributes
+    ----------
+    lt_dict : dict
+        the keys are the basis symbols, :math:`e_i`, and the dictionary
+        entries are the object vector images (linear combination of sympy
+        non-commutative basis symbols) of the keys so that if ``L`` is the
+        linear transformation then::
+
+            L(e_i) = self.Ga.mv(L.lt_dict[e_i])
+
+    """
 
     mat_fmt = False
-    init_slots = {'ga': (None, 'Name of metric (geometric algebra)'),
-                  'f': (False, 'True if Lt if function of coordinates.'),
-                  'mode': ('g', 'g:general, s:symmetric, a:antisymmetric transformation.')}
 
     @staticmethod
     def setup(ga):
@@ -128,39 +159,21 @@ class Lt(object):
     @staticmethod
     def format(mat_fmt=False):
         Lt.mat_fmt = mat_fmt
-        return
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, ga, f=False, mode='g'):
         """
-        Except for the spinor representation the linear transformation
-        is stored as a dictionary with basis vector keys and vector
-        values self.lt_dict so that a is a vector a = a^{i}e_{i} then
-
-            self(a) = a^{i} * self.lt_dict[e_{i}].
-
-        For the spinor representation the linear transformation is
-        stored as the even multivector self.R so that if a is a
-        vector
-
-            self(a) = self.R * a * self.R.rev().
-
-        For the general representation of a linear transformation the
-        linear transformation is represented as a dictionary self.lt_dict
-        where the keys are the basis symbols, {e_i}, and the dictionary
-        entries are the object vector images (linear combination of sympy
-        non-commutative basis symbols) of the keys so that if L is the
-        linear transformation then
-
-            L(e_i) = self.Ga.mv(L.lt_dict[e_i])
-
+        Parameters
+        ----------
+        ga :
+            Name of metric (geometric algebra)
+        f : bool
+            True if Lt if function of coordinates
+        mode : str
+            g:general, s:symmetric, a:antisymmetric transformation
         """
-
-        kwargs = metric.test_init_slots(Lt.init_slots, **kwargs)
-
         mat_rep = args[0]
-        ga = kwargs['ga']
-        self.fct_flg = kwargs['f']
-        self.mode = kwargs['mode']  # General g, s, or a transformation
+        self.fct_flg = f
+        self.mode = mode
         self.Ga = ga
         self.coords = ga.lt_coords
         self.X = ga.lt_x
@@ -210,9 +223,9 @@ class Lt(object):
             else:
                 raise ValueError('In Spinor input for Lt, S*S.rev() not a scalar!\n')
 
-        elif utils.isstr(mat_rep):  # String input
-             Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords,mode=self.mode,f=self.fct_flg)
-             self.__init__(Amat, ga=self.Ga)
+        elif isinstance(mat_rep, str):  # String input
+            Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords,mode=self.mode,f=self.fct_flg)
+            self.__init__(Amat, ga=self.Ga)
 
         else:  # Linear multivector function input
             # F is a multivector function to be tested for linearity
@@ -230,13 +243,13 @@ class Lt(object):
 
     def __call__(self, v, obj=False):
 
-        if isinstance(v, mv.Mv) and self.Ga.name != v.Ga.name:
-                raise ValueError('In Lt call Lt and argument refer to different vector spaces')
+        if isinstance(v, mv.Mv) and self.Ga != v.Ga:
+            raise ValueError('In Lt call Lt and argument refer to different vector spaces')
 
         if self.spinor:
             if not isinstance(v, mv.Mv):
                 v = mv.Mv(v, ga=self.Ga)
-            if self.rho_sq == None:
+            if self.rho_sq is None:
                 R_v_Rrev = self.R * v * self.Rrev
             else:
                 R_v_Rrev = self.rho_sq * self.R * v * self.Rrev
@@ -275,7 +288,7 @@ class Lt(object):
 
     def __add__(self, LT):
 
-        if self.Ga.name != LT.Ga.name:
+        if self.Ga != LT.Ga:
             raise ValueError("Attempting addition of Lt's from different geometric algebras")
 
         self_add_LT = copy(self.lt_dict)
@@ -288,7 +301,7 @@ class Lt(object):
 
     def __sub__(self, LT):
 
-        if self.Ga.name != LT.Ga.name:
+        if self.Ga != LT.Ga:
             raise ValueError("Attempting subtraction of Lt's from different geometric algebras")
 
         self_add_LT = copy(self.lt_dict)
@@ -303,7 +316,7 @@ class Lt(object):
 
         if isinstance(LT, Lt):
 
-            if self.Ga.name != LT.Ga.name:
+            if self.Ga != LT.Ga:
                 raise ValueError("Attempting multiplication of Lt's from different geometric algebras")
             self_mul_LT = {}
             for base in LT.lt_dict:
@@ -355,11 +368,10 @@ class Lt(object):
     def adj(self):
 
         self_adj = []
-        self.Ga.dot_mode = '|'
         for e_j in self.Ga.basis:
             s = S(0)
             for (e_i, er_i) in zip(self.Ga.basis, self.Ga.r_basis):
-                s += er_i * self.Ga.dot(e_j, self(e_i, obj=True))
+                s += er_i * self.Ga.hestenes_dot(e_j, self(e_i, obj=True))
             if self.Ga.is_ortho:
                 self_adj.append(expand(s))
             else:
@@ -486,28 +498,43 @@ class Lt(object):
 
 
 class Mlt(object):
-    """
+    r"""
     A multilinear transformation (mlt) is a multilinear multivector function of
-    a list of vectors (*args) F(v_1,...,v_r) where for any argument slot
-    j we have (a is a scalar and u_j a vector)
-          F(v_1,...,a*v_j,...,v_r) = a*F(v_1,...,v_j,...,v_r)
-          F(v_1,...,v_j+u_j,...,v_r) = F(v_1,...,v_j,...,v_r) + F(v_1,...,u_j,...,v_r).
-    If F and G are two mlt's with the same number of argument slots then the sum is
-          (F+G)F(v_1,...,v_r) = F(v_1,...,v_r) + G(v_1,...,v_r).
-    If F and G two mlt's with r and s argument slots then their product is
-          (F*G)(v_1,...,v_r,...,v_(r+s)) = F(v_1,...,v_r)*G(v_(r+1),...,v_(r+s)),
-    where * is any of the multivector multiplicative operations.
-    The derivative of a mlt with is defined as the directional derivative with respect
-    with respect to the coordinate vector (we assume F is implicitely a function of the
+    a list of vectors (``*args``) :math:`F(v_1,...,v_r)` where for any argument slot
+    :math:`j` we have (:math:`a` is a scalar and :math:`u_j` a vector)
+
+    .. math::
+          F(v_1,...,a*v_j,...,v_r) &= a*F(v_1,...,v_j,...,v_r) \\
+          F(v_1,...,v_j+u_j,...,v_r) &= F(v_1,...,v_j,...,v_r) + F(v_1,...,u_j,...,v_r).
+
+    If F and G are two :class:`Mlt`\ s with the same number of argument slots then the sum is
+
+    .. math:: (F+G)F(v_1,...,v_r) = F(v_1,...,v_r) + G(v_1,...,v_r).
+
+    If :math:`F` and :math:`G` are two :class:`Mlt`\ s with :math:`r` and :math:`s`
+    argument slots then their product is
+
+    .. math:: (F*G)(v_1,...,v_r,...,v_{r+s}) = F(v_1,...,v_r)*G(v_{r+1},...,v_{r+s}),
+
+    where :math:`*` is any of the multivector multiplicative operations.
+    The derivative of a :class:`Mlt` with is defined as the directional derivative with respect
+    to the coordinate vector (we assume :math:`F` is implicitely a function of the
     coordinates)
-        F(v_1,...,v_r;v_(r+1)) = (v_(r+1)|grad)F(v_1,...,v_j,...,v_r).
-    The contraction of a mlt between slots j and k is defined as the
-    geometric derivative of F with respect to slot k and the inner geometric
-    derivative with respect to slot j (this gives the standard tensor
-    definition of contraction for the case that F is a scalar function)
-        Contract(i,j,F) = grad_i|(grad_j*F(v_1,...,v_i,...,v_j,...,v_r))
-                        = grad_j|(grad_i*F(v_1,...,v_i,...,v_j,...,v_r)).
-    This returns a mlt with slot i and j removed.
+
+    .. math:: F(v_1,...,v_r;v_{r+1}) = (v_{r+1} \bullet \nabla)F(v_1,...,v_j,...,v_r).
+
+    The contraction of a :class:`Mlt` between slots :math:`j` and :math:`k` is defined as the
+    geometric derivative of :math:`F` with respect to slot :math:`k` and the inner geometric
+    derivative with respect to slot :math:`j` (this gives the standard tensor
+    definition of contraction for the case that :math:`F` is a scalar function)
+
+    .. math::
+
+        \operatorname{Contract}(i,j,F)
+            &= \nabla_i \bullet (\nabla_j F(v_1,...,v_i,...,v_j,...,v_r)) \\
+            &= \nabla_j \bullet (\nabla_i F(v_1,...,v_i,...,v_j,...,v_r)).
+
+    This returns a :class:`Mlt`\ with slot :math:`i` and :math:`j` removed.
     """
 
     @staticmethod
@@ -518,11 +545,9 @@ class Mlt(object):
         #  This is used when one wishes to substitute specific vector
         #  values into the Mlt such as the basis/reciprocal basis vectors.
         sub_lst = []
-        i = 0
-        for a in anew:
+        for i, a in enumerate(anew):
             acoefs = a.get_coefs(1)
             sub_lst += list(zip(Ga.pdiffs[i], acoefs))
-            i += 1
         return sub_lst
 
     @staticmethod
@@ -540,7 +565,6 @@ class Mlt(object):
                 coefs = a.get_coefs(1)
                 Ga.pdiffs.append(coefs)
                 Ga.acoefs += coefs
-        return
 
     @staticmethod
     def extact_basis_indexes(Ga):
@@ -552,7 +576,7 @@ class Mlt(object):
             base_str = base_str.replace('}','')
             i = base_str.find('_') + 1
             if i == 0:
-               base_indexes.append(base_str)
+                base_indexes.append(base_str)
             else:
                 if base_str[i] == '_':
                     i += 1
@@ -598,15 +622,20 @@ class Mlt(object):
 
     def Fmt(self, lcnt=1, title=None):
         """
-        Set format for printing of Tensors -
+        Set format for printing of Tensors
 
-            lcnt = Number of components per line
+        Parameters
+        ----------
+        lcnt :
+            Number of components per line
 
-        Usage for tensor T example is -
+        Notes
+        -----
+        Usage for tensor T example is::
 
             T.fmt('2','T')
 
-        output is
+        output is::
 
             print 'T = '+str(A)
 
@@ -634,7 +663,6 @@ class Mlt(object):
                 print(title + ' = ' + latex_str)
             else:
                 print(latex_str)
-        return
 
     @staticmethod
     def expand_expr(expr,ga):
@@ -698,7 +726,7 @@ class Mlt(object):
             Ga.make_grad(self.args)
             self.fvalue = (self.args[0] | f(self.args[1])).obj
             self.f = None
-        elif utils.isstr(f) and args is not None:
+        elif isinstance(f, str) and args is not None:
             self.f = None
             if isinstance(args,(list,tuple)):
                 self.args = args
@@ -865,15 +893,10 @@ class Mlt(object):
         basis = self.Ga.mv()
         rank = self.nargs
         ndim = len(basis)
-        i_indexes = rank*[list(range(ndim))]
-        indexes = rank*[basis]
-        i = 1
+        i_indexes = itertools.product(list(range(ndim)), repeat=rank)
+        indexes = itertools.product(basis, repeat=rank)
         output = ''
-        for (e,i_index) in zip(itertools.product(*indexes),itertools.product(*i_indexes)):
+        for i, (e, i_index) in enumerate(zip(indexes, i_indexes)):
             if i_index[-1] % ndim == 0: print('')
             output += str(i)+':'+str(i_index)+':'+str(self(*e)) + '\n'
-            i += 1
         return output
-
-if __name__ == "__main__":
-    pass

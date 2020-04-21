@@ -231,7 +231,7 @@ def noneuclidian_distance_calculation():
     W = W.subs(c**2,(C+1)/2)
     W = W.subs(s**2,(C-1)/2)
     W = simplify(W)
-    W = W.subs(1/Binv,Bmag)
+    W = W.subs(Binv,1/Bmag)
     W = expand(W)
 
     print(r'S = \f{\sinh}{\alpha} \T{ and } C = \f{\cosh}{\alpha}')

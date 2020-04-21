@@ -1,0 +1,9 @@
+# requirements for CI
+sympy == 1.5
+pytest-cov
+ipython == 5.8.0; python_version == "2.7"
+nbval
+pytest-xdist
+
+# needed by pytest-xdist
+pytest >= 4.4.0

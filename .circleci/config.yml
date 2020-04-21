@@ -7,24 +7,49 @@ defaults: &defaults
     - run:
         name: Install
         command: |
-          sudo pip install pytest
-          sudo pip install sympy==1.3
+          sudo pip install -r test_requirements.txt
           sudo pip install -e .
-          sudo pip install pytest-cov
-          if [[ "$CIRCLE_JOB" == "python-2.7" ]]; then sudo pip install ipython==5.8.0 ; fi
-          sudo pip install nbval
-          sudo pip install pytest-xdist
+          if [ -n "$PIP_EXTRA_INSTALLATION" ]; then
+            # deliberately not quoted
+            sudo pip install $PIP_EXTRA_INSTALLATION
+          fi
+          sudo pip check
     - run:
         name: Test
         command: |
-          pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg
+          mkdir test-reports
+          pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg --junitxml=test-reports/junit.xml
     - run:
         name: Coverage
         when: on_success
         command: |
           sudo pip install codecov
           codecov
+    - store_test_results:
+        path: test-reports
+    - store_artifacts:
+        path: test-reports
+
 jobs:
+  "python-3.7-symengine":
+    <<: *defaults
+    environment:
+      PIP_EXTRA_INSTALLATION: numpy symengine==0.5.0
+      USE_SYMENGINE: 1
+    docker:
+      - image: circleci/python:3.7
+  "python-3.7-sympy-1.3":
+    <<: *defaults
+    environment:
+      PIP_EXTRA_INSTALLATION: sympy==1.3
+    docker:
+      - image: circleci/python:3.7
+  "python-3.7-sympy-1.4":
+    <<: *defaults
+    environment:
+      PIP_EXTRA_INSTALLATION: sympy==1.3
+    docker:
+      - image: circleci/python:3.7
   "python-3.7":
     <<: *defaults
     docker:
@@ -37,20 +62,34 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/python:3.5
-  "python-3.4":
-    <<: *defaults
+  "publish":
     docker:
-      - image: circleci/python:3.4
-  "python-2.7":
-    <<: *defaults
-    docker:
-      - image: circleci/python:2.7
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Upload to PyPi
+          command: |
+            ./circle-build-package
 
 workflows:
   version: 2
   build:
     jobs:
-      - "python-3.7"
+      - "python-3.7-symengine"
+      - "python-3.7-sympy-1.3"
+      - "python-3.7-sympy-1.4"
+      - python-3.7:
+          filters:
+            tags:
+              only: /^v.*$/
       - "python-3.6"
-      - "python-3.4"
-      - "python-2.7"
+      - "python-3.5"
+      - publish:
+          requires:
+            - "python-3.7"
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*$/

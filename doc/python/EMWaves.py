@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division
-from __future__ import print_function
 import sys
 from sympy import symbols, exp, I, Matrix, solve, simplify
 from galgebra.printer import Format, xpdf, Get_Program, Print_Function

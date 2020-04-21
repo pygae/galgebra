@@ -4,22 +4,20 @@ Metric Tensor and Derivatives of Basis Vectors.
 
 """
 
-import sys
 import copy
-import itertools
-from sympy import diff, trigsimp, Matrix, Rational, \
-    sqf_list, Symbol, sqrt, eye, zeros, S, expand, Mul, \
-    Add, simplify, together, ratsimp, Expr, latex, \
-    Function
+from sympy import (
+    diff, trigsimp, Matrix, Rational,
+    sqf_list, Symbol, sqrt, eye, S, expand, Mul,
+    Add, simplify, Expr, Function
+)
 
 from . import mv
 from . import printer
-from . import utils
 
 half = Rational(1, 2)
 
-def apply_function_list(f,x):
-    if isinstance(f,(tuple,list)):
+def apply_function_list(f, x):
+    if isinstance(f, (tuple, list)):
         fx = x
         for fi in f:
             fx = fi(fx)
@@ -27,22 +25,8 @@ def apply_function_list(f,x):
     else:
         return f(x)
 
-def str_to_lst(s):
-    if '[' in s:
-        s = s.replace('[', '')
-    if ']' in s:
-        s = s.replace(']', '')
-    s_lst = s.split(',')
-    v_lst = []
-    for x in s_lst:
-        try:
-            v_lst.append(int(s))
-        except ValueError:
-            v_lst.append(Symbol(s, real=True))
-    return v_lst
 
-
-def linear_expand(expr, mode=True):
+def linear_expand(expr):
     """
     linear_expand takes an expression that is the sum of a scalar
     expression and a linear combination of noncommutative terms with
@@ -52,9 +36,11 @@ def linear_expand(expr, mode=True):
     term in the sum and also does not contain any repeated noncommutative
     symbols.
     """
+    if not isinstance(expr, Expr):
+        raise TypeError('{!r} is not a SymPy Expr'.format(expr))
+    
+    expr = expand(expr)
 
-    if isinstance(expr, Expr):
-        expr = expand(expr)
     if expr == 0: #expr is the scalar 0
         coefs = [expr]
         bases = [S(1)]
@@ -85,10 +71,13 @@ def linear_expand(expr, mode=True):
             else:
                 bases.append(base)
                 coefs.append(coef)
-    if mode:
-        return (coefs, bases)
-    else:
-        return list(zip(coefs, bases))
+    return (coefs, bases)
+
+
+def linear_expand_terms(expr):
+    coefs, bases = linear_expand(expr)
+    return zip(coefs, bases)
+
 
 def collect(A, nc_list):
     """
@@ -147,6 +136,82 @@ def square_root_of_expr(expr):
 
 
 def symbols_list(s, indices=None, sub=True, commutative=False):
+    """
+    Convert a string to a list of symbols.
+
+    If :class:`galgebra.printer.Eprint` is enabled, the symbol names will
+    contain ANSI escape sequences.
+
+    Parameters
+    ----------
+    s : str
+        Specification. If `indices` is specified, then this is just a prefix.
+        If `indices` is not specified then this is a string of one of the forms:
+
+        * ``prefix + "*" + index_1 + "|" + index_2 + "|" + ... + index_n``
+        * ``prefix + "*" + n_indices``
+        * ``name_1 + "," + name_2 + "," + ... + name_n``
+        * ``name_1 + " " + name_2 + " " + ... + name_n``
+
+    indices : list, optional
+        List of indices to append to the prefix.
+    sub : bool
+        If true, mark as subscript separating prefix and suffix with ``_``, else
+        mark as superscript using ``__``.
+    commutative : bool
+        Passed on to :class:`sympy.Symbol`.
+
+    Returns
+    -------
+    symbols : list of :class:`sympy.Symbol`
+
+    Examples
+    --------
+
+    Names can be comma or space separated:
+
+    >>> symbols_list('a,b,c')
+    [a, b, c]
+    >>> symbols_list('a b c')
+    [a, b, c]
+
+    Mixing commas and spaces gives surprising results:
+
+    >>> symbols_list('a b,c')
+    [a b, c]
+
+    Subscripts will be converted to superscripts if requested:
+
+    >>> symbols_list('a_1 a_2', sub=False)
+    [a__1, a__2]
+    >>> symbols_list('a__1 a__2', sub=False)
+    [a___1, a___2]
+
+    But not vice versa:
+
+    >>> symbols_list('a__1 a__2', sub=True)
+    [a__1, a__2]
+
+    Asterisk can be used for repetition:
+
+    >>> symbols_list('a*b|c|d')
+    [a_b, a_c, a_d]
+    >>> symbols_list('a*3')
+    [a_0, a_1, a_2]
+    >>> symbols_list('a*3')
+    [a_0, a_1, a_2]
+
+    Or the indices argument:
+
+    >>> symbols_list('a', [2, 4, 6])
+    [a_2, a_4, a_6]
+    >>> symbols_list('a', [2, 4, 6], sub=False)
+    [a__2, a__4, a__6]
+
+    See also
+    --------
+    :func:`sympy.symbols`: a similar function builtin to sympy
+    """
 
     if isinstance(s, list):  # s is already a list of symbols
         return(s)
@@ -181,60 +246,23 @@ def symbols_list(s, indices=None, sub=True, commutative=False):
     return [Symbol(printer.Eprint.Base(s), commutative=commutative) for s in s_lst]
 
 
-def test_init_slots(init_slots, **kwargs):
-    """
-    Tests kwargs for allowed keyword arguments as defined by dictionary
-    init_slots.  If keyword argument defined by init_slots is not present
-    set default value asdefined by init_slots.  Allow for backward
-    compatible keyword arguments by equivalencing keywords by setting
-    default value of backward compatible keyword to new keyword and then
-    referencing new keywork (see init_slots for Metric class and equivalence
-    between keywords 'g' and 'metric')
-    """
-
-    for slot in kwargs:
-        if slot not in init_slots:
-            print('Allowed keyed input arguments')
-            for key in init_slots:
-                print(key + ': ' + init_slots[key][1])
-            raise ValueError('"' + slot + ' = " not in allowed values.')
-    for slot in init_slots:
-        if slot in kwargs:
-            if init_slots[slot][0] in init_slots:  # redirect for backward compatibility
-                kwargs[init_slots[slot][0]] = kwargs[slot]
-        else:  # use default value
-            if init_slots[slot][0] in init_slots:  # redirect for backward compatibility
-                kwargs[init_slots[slot][0]] = init_slots[init_slots[slot][0]][0]
-            kwargs[slot] = init_slots[slot][0]
-    return kwargs
-
-
 class Simp:
     modes = [simplify]
 
     @staticmethod
     def profile(s):
         Simp.modes = s
-        return
 
     @staticmethod
     def apply(expr):
-        (coefs, bases) = linear_expand(expr)
         obj = S(0)
-        if isinstance(Simp.modes, list) or isinstance(Simp.modes, tuple):
-            for (coef, base) in zip(coefs, bases):
-                for mode in Simp.modes:
-                    coef = mode(coef)
-                obj += coef * base
-        else:
-            for (coef, base) in zip(coefs, bases):
-                obj += Simp.modes(coef) * base
+        for (coef, base) in linear_expand_terms(expr):
+            obj += apply_function_list(Simp.modes, coef) * base
         return obj
 
     @staticmethod
     def applymv(mv):
-        mv.obj = Simp.apply(mv.obj)
-        return mv
+        return Mv(Simp.apply(mv.obj), ga=mv.Ga)
 
 
 class Metric(object):
@@ -292,16 +320,6 @@ class Metric(object):
 
     count = 1
 
-    init_slots = {'g': (None, 'metric tensor'),
-                  'coords': (None, 'manifold/vector space coordinate list/tuple'),
-                  'X': (None, 'vector manifold function'),
-                  'norm': (False, 'True to normalize basis vectors'),
-                  'debug': (False, 'True to print out debugging information'),
-                  'gsym': (None, 'String s to use "det("+s+")" function in reciprocal basis'),
-                  'sig': ('e', 'Signature of metric, default is (n,0) a Euclidean metric'),
-                  'Isq': ('-', "Sign of square of pseudo-scalar, default is '-'"),
-                  'wedge': (True, 'Use ^ symbol to print basis blades')}
-
     @staticmethod
     def dot_orthogonal(V1, V2, g=None):
         """
@@ -332,6 +350,21 @@ class Metric(object):
                 raise ValueError('In dot_orthogonal dimension of metric ' +
                                  'must equal dimension of vector')
 
+    def _build_metric_element(self, s, i1, i2):
+        """ Build an element for the metric of `bases[i1] . basis[i2]` """
+        if s == '#':
+            if i1 <= i2:  # for default element ensure symmetry
+                return Symbol('(' + str(self.basis[i1]) +
+                              '.' + str(self.basis[i2]) + ')', real=True)
+            else:
+                return Symbol('(' + str(self.basis[i2]) +
+                              '.' + str(self.basis[i1]) + ')', real=True)
+        elif '/' in s:  # element is fraction
+            num, dem = s.split('/')
+            return Rational(num, dem)
+        else:  # element is integer
+            return Rational(s)
+
     def metric_symbols_list(self, s=None):  # input metric tensor as string
         """
         rows of metric tensor are separated by "," and elements
@@ -345,23 +378,15 @@ class Metric(object):
             s = self.n * (s[:-1] + ',')
             s = s[:-1]
 
-        if utils.isstr(s):
+        if isinstance(s, str):
             rows = s.split(',')
             n_rows = len(rows)
 
             if n_rows == 1:  # orthogonal metric
                 m_lst = s.split(' ')
                 m = []
-                for (s, base) in zip(m_lst, self.basis):
-                    if s == '#':
-                        s_symbol = Symbol('(' + str(base) + '.' + str(base) + ')', real=True)
-                    else:
-                        if '/' in s:
-                            [num, dem] = s.split('/')
-                            s_symbol = Rational(num, dem)
-                        else:
-                            s_symbol = Rational(s)
-                    m.append(s_symbol)
+                for i, s in enumerate(m_lst):
+                    m.append(self._build_metric_element(s, i, i))
 
                 if len(m) != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
@@ -387,23 +412,10 @@ class Metric(object):
                 if n != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
                                      ' different rank than bases "' + str(self.basis) + '"')
-                n_range = list(range(n))
-                for (row, i1) in zip(m_lst, n_range):
+                for i1, row in enumerate(m_lst):
                     row_symbols = []
-                    for (s, i2) in zip(row, n_range):
-                        if s == '#':
-                            if i1 <= i2:  # for default elment insure symmetry
-                                row_symbols.append(Symbol('(' + str(self.basis[i1]) +
-                                                          '.' + str(self.basis[i2]) + ')', real=True))
-                            else:
-                                row_symbols.append(Symbol('(' + str(self.basis[i2]) +
-                                                          '.' + str(self.basis[i1]) + ')', real=True))
-                        else:
-                            if '/' in s:  # element is fraction
-                                [num, dem] = s.split('/')
-                                row_symbols.append(Rational(num, dem))
-                            else:  # element is integer
-                                row_symbols.append(Rational(s))
+                    for i2, s in enumerate(row):
+                        row_symbols.append(self._build_metric_element(s, i1, i2))
                     m.append(row_symbols)
                 m = Matrix(m)
                 return m
@@ -419,7 +431,7 @@ class Metric(object):
 
         return dg
 
-    def init_connect_flg(self):
+    def _init_connect_flg(self):
         # See if metric is flat
 
         self.connect_flg = False
@@ -431,13 +443,13 @@ class Metric(object):
                         self.connect_flg = True
                         break
 
-    def derivatives_of_basis(self):  # Derivatives of basis vectors from Christoffel symbols
+    def _build_derivatives_of_basis(self):  # Derivatives of basis vectors from Christoffel symbols
 
         n_range = self.n_range
 
         self.dg = dg = self.derivatives_of_g()
 
-        self.init_connect_flg()
+        self._init_connect_flg()
 
         if not self.connect_flg:
             self.de = None
@@ -452,13 +464,12 @@ class Metric(object):
         # \frac{\partial e_{j}}{\partial x^{i}} = \Gamma_{ijk} e^{k}
         de = [[
             sum([Gamma_ijk * e__k for (Gamma_ijk, e__k) in zip(dG[i][j], self.r_symbols)])
-            for j in n_range]
-        for i in n_range]
+            for j in n_range
+        ] for i in n_range]
 
         if self.debug:
             printer.oprint('D_{i}e^{j}', de)
         self.de = de
-        return
 
     def inverse_metric(self):
 
@@ -476,7 +487,6 @@ class Metric(object):
                 self.detg = Function('|' +self.gsym +'|',real=True)(*self.coords)
                 self.g_adj = simplify(self.g.adjugate())
                 self.g_inv = self.g_adj/self.detg
-        return
 
     def Christoffel_symbols(self,mode=1):
         """
@@ -567,8 +577,6 @@ class Metric(object):
             printer.oprint('e^{i}->e^{i}/|e_{i}|', renorm)
             printer.oprint('renorm(g)', self.g)
 
-        return
-
     def signature(self):
         if self.is_ortho:
             p = 0
@@ -591,7 +599,7 @@ class Metric(object):
                 return
             else:
                 raise ValueError('self.sig = ' + str(self.sig) + ' > self.n, not an allowed hint')
-        if utils.isstr(self.sig):
+        if isinstance(self.sig, str):
             if self.sig == 'e':  # Euclidean metric signature
                 self.sig = (self.n, 0)
             elif self.sig == 'm+':  # Minkowski metric signature (n-1,1)
@@ -604,24 +612,48 @@ class Metric(object):
         raise ValueError(str(self.sig) + ' is not allowed value for self.sig')
 
 
-    def __init__(self, basis, **kwargs):
-
-        kwargs = test_init_slots(Metric.init_slots, **kwargs)
+    def __init__(self, basis, *,
+            g=None,
+            coords=None,
+            X=None,
+            norm=False,
+            debug=False,
+            gsym=None,
+            sig='e',
+            Isq='-'
+        ):
+        """
+        Parameters
+        ----------
+        basis :
+            string specification
+        g :
+            metric tensor
+        coords :
+            manifold/vector space coordinate list/tuple  (sympy symbols)
+        X :
+            vector manifold function
+        norm :
+            True to normalize basis vectors
+        debug :
+            True to print out debugging information
+        gsym :
+            String s to use ``"det("+s+")"`` function in reciprocal basis
+        sig :
+            Signature of metric, default is (n,0) a Euclidean metric
+        Isq :
+            Sign of square of pseudo-scalar, default is '-'
+        """
 
         self.name = 'GA' + str(Metric.count)
         Metric.count += 1
 
-        if not utils.isstr(basis):
+        if not isinstance(basis, str):
             raise TypeError('"' + str(basis) + '" must be string')
 
-        X = kwargs['X']  # Vector manifold
-        g = kwargs['g']  # Explicit metric or base metric for vector manifold
-        debug = kwargs['debug']
-        coords = kwargs['coords']  # Manifold coordinates (sympy symbols)
-        norm = kwargs['norm']  # Normalize basis vectors
-        self.sig = kwargs['sig']  # Hint for metric signature
-        self.gsym = kwargs['gsym']
-        self.Isq = kwargs['Isq']  #: Sign of I**2, only needed if I**2 not a number
+        self.sig = sig  # Hint for metric signature
+        self.gsym = gsym
+        self.Isq = Isq  #: Sign of I**2, only needed if I**2 not a number
 
         self.debug = debug
         self.is_ortho = False  # Is basis othogonal
@@ -680,7 +712,7 @@ class Metric(object):
                         printer.oprint('X_{i}', X, 'D_{i}X_{j}', dX)
 
         else:  # metric is symbolic or list of lists of functions of coordinates
-            if utils.isstr(g):  # metric elements are symbols or constants
+            if isinstance(g, str):  # metric elements are symbols or constants
                 if g == 'g':  # general symbolic metric tensor (g_ij functions of position)
                     g_lst = []
                     g_inv_lst = []
@@ -736,7 +768,7 @@ class Metric(object):
                         break
 
         if self.coords is not None:
-            self.derivatives_of_basis()  # calculate derivatives of basis
+            self._build_derivatives_of_basis()  # calculate derivatives of basis
             if self.norm:  # normalize basis, metric, and derivatives of normalized basis
                 if not self.is_ortho:
                     raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
@@ -763,8 +795,3 @@ class Metric(object):
 
         if self.debug:
             print('signature =', self.sig)
-
-
-if __name__ == "__main__":
-    pass
-

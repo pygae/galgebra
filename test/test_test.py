@@ -7,7 +7,6 @@ from galgebra.mv import Mv, Nga
 # for backward compatibility
 from galgebra.mv import ONE, ZERO, HALF
 from galgebra import ga
-from galgebra import utils
 
 def F(x):
     global n, nbar
@@ -15,7 +14,7 @@ def F(x):
     return(Fx)
 
 def make_vector(a, n=3, ga=None):
-    if utils.isstr(a):
+    if isinstance(a, str):
         v = zero
         for i in range(n):
             a_i = Symbol(a+str(i+1))
@@ -87,8 +86,6 @@ class TestTest(unittest.TestCase):
         assert str((A<X)) == 'A*X__x*e_x + A*X__y*e_y'
         assert str((A>X)) == 'A__xy*X__y*e_x - A__xy*X__x*e_y'
 
-        return
-
     def test_check_generalized_BAC_CAB_formulas(self):
 
         (a,b,c,d,e) = Ga('a b c d e').mv()
@@ -106,8 +103,6 @@ class TestTest(unittest.TestCase):
         assert str(((a^b)|c)|d) == '-(a.c)*(b.d) + (a.d)*(b.c)'
         assert str(Ga.com(a^b,c^d)) == '-(b.d)*a^c + (b.c)*a^d + (a.d)*b^c - (a.c)*b^d'
         assert str((a|(b^c))|(d^e)) == '(-(a.b)*(c.e) + (a.c)*(b.e))*d + ((a.b)*(c.d) - (a.c)*(b.d))*e'
-
-        return
 
     def test_derivatives_in_rectangular_coordinates(self):
 
@@ -142,8 +137,6 @@ class TestTest(unittest.TestCase):
         assert str(grad<C) == 'D{x}C__x + D{y}C__y + D{z}C__z + (-D{y}C__xy - D{z}C__xz)*e_x + (D{x}C__xy - D{z}C__yz)*e_y + (D{x}C__xz + D{y}C__yz)*e_z + D{z}C__xyz*e_x^e_y - D{y}C__xyz*e_x^e_z + D{x}C__xyz*e_y^e_z'
         assert str(grad>C) == 'D{x}C__x + D{y}C__y + D{z}C__z + D{x}C*e_x + D{y}C*e_y + D{z}C*e_z'
 
-        return
-
     def test_derivatives_in_spherical_coordinates(self):
 
         X = (r, th, phi) = symbols('r theta phi')
@@ -168,8 +161,6 @@ class TestTest(unittest.TestCase):
 
         assert str(grad^B) == '(r*D{r}B__thetaphi - B__rphi/tan(theta) + 2*B__thetaphi - D{theta}B__rphi + D{phi}B__rtheta/sin(theta))*e_r^e_theta^e_phi/r'
 
-        return
-
     def test_rounding_numerical_components(self):
 
         o3d = Ga('e_x e_y e_z', g=[1, 1, 1])
@@ -182,8 +173,6 @@ class TestTest(unittest.TestCase):
         assert str(Nga(X,2)) == '1.2*e_x + 2.3*e_y + 0.55*e_z'
         assert str(X*Y) == '12.7011000000000 + 4.02078*e_x^e_y + 6.175185*e_x^e_z + 10.182*e_y^e_z'
         assert str(Nga(X*Y,2)) == '13. + 4.0*e_x^e_y + 6.2*e_x^e_z + 10.0*e_y^e_z'
-
-        return
 
     def test_noneuclidian_distance_calculation(self):
         from sympy import solve,sqrt
@@ -198,13 +187,13 @@ class TestTest(unittest.TestCase):
         B = (L*e).expand().blade_rep() # D&L 10.152
         assert str(B) == 'X^Y - (Y.e)*X^e + (X.e)*Y^e'
         Bsq = B*B
-        assert str(Bsq) == '(X.Y)*((X.Y) - 2*(X.e)*(Y.e))'
+        assert str(Bsq) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e)'
         Bsq = Bsq.scalar()
         assert str(B) == 'X^Y - (Y.e)*X^e + (X.e)*Y^e'
 
         BeBr = B*e*B.rev()
         assert str(BeBr) == '(X.Y)*(-(X.Y) + 2*(X.e)*(Y.e))*e'
-        assert str(B*B) == '(X.Y)*((X.Y) - 2*(X.e)*(Y.e))'
+        assert str(B*B) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e)'
         assert str(L*L) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e)' # D&L 10.153
 
         (s,c,Binv,M,S,C,alpha) = symbols('s c (1/B) M S C alpha')
@@ -284,8 +273,6 @@ class TestTest(unittest.TestCase):
         C =  solve(a*x**2+b*x+c,x)[0]
         assert str(expand(simplify(expand(C)))) == '-(X.Y)/((X.e)*(Y.e)) + 1'
 
-        return
-
     def test_conformal_representations_of_circles_lines_spheres_and_planes(self):
         global n,nbar
 
@@ -320,8 +307,6 @@ class TestTest(unittest.TestCase):
 
         assert str(L) == '-x3*e_1^e_2^e_3^n - x3*e_1^e_2^e_3^nbar + (-x1**2/2 + x1 - x2**2/2 + x2 - x3**2/2 - 1/2)*e_1^e_2^n^nbar + x3*e_1^e_3^n^nbar - x3*e_2^e_3^n^nbar'
 
-        return
-
     def test_properties_of_geometric_objects(self):
 
         global n, nbar
@@ -348,8 +333,6 @@ class TestTest(unittest.TestCase):
         delta = ((C^n)|n)|nbar
         assert str(delta) == '2*p1^p2 - 2*p1^p3 + 2*p2^p3'
         assert str((p2-p1)^(p3-p1)) == 'p1^p2 - p1^p3 + p2^p3'
-
-        return
 
     def test_extracting_vectors_from_conformal_2_blade(self):
 
@@ -378,8 +361,6 @@ class TestTest(unittest.TestCase):
 
         aB = a|B
         assert str(aB) == '-(P2.a)*P1 + (P1.a)*P2'
-
-        return
 
     def test_reciprocal_frame_test(self):
 
@@ -441,5 +422,3 @@ class TestTest(unittest.TestCase):
         w = (E3|e3)
         w = (w.expand()).scalar()
         assert str(simplify(w/Esq)) == '1'
-
-        return
