@@ -17,7 +17,7 @@ class TestMv(unittest.TestCase):
         """
         Various tests on several multivectors.
         """
-        (_g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+        _g3d, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         self.assertTrue((e_1).is_base())
         self.assertTrue((e_2).is_base())
@@ -40,7 +40,7 @@ class TestMv(unittest.TestCase):
         """
         Various tests on several multivectors.
         """
-        (_g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+        _g3d, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         m0 =  2 * e_1 + e_2 - e_3 + 3 * (e_1 ^ e_3) + (e_1 ^ e_3) + (e_2 ^ (3 * e_3))
         self.assertTrue(m0.blade_coefs([e_1]) == [2])
@@ -71,7 +71,7 @@ class TestMv(unittest.TestCase):
 
     def test_rep_switching(self):
         # this ga has a non-diagonal metric
-        (_g3d, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+        _g3d, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         m0 =  2 * e_1 + e_2 - e_3 + 3 * (e_1 ^ e_3) + (e_1 ^ e_3) + (e_2 ^ (3 * e_3))
         m1 = (-4*(e_1 | e_3)-3*(e_2 | e_3))+2*e_1+e_2-e_3+4*e_1*e_3+3*e_2*e_3
@@ -94,7 +94,7 @@ class TestMv(unittest.TestCase):
         self.assertEqual(m0, m0_base_blade)
 
     def test_construction(self):
-        (ga, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         def check(x, expected_grades):
             self.assertEqual(x.grades, expected_grades)
@@ -130,7 +130,7 @@ class TestMv(unittest.TestCase):
             ga.mv([1, 2, 3], 'vector', f=True)  # can't pass f with coefficients
 
     def test_hashable(self):
-        (ga, e_1, e_2, e_3) = Ga.build('e*1|2|3')
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         d = {}
         d[e_1] = 1

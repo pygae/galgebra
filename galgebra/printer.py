@@ -64,7 +64,7 @@ SYS_CMD = {'linux2': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&
            'darwin': {'rm': 'rm', 'evince': 'open', 'null': ' > /dev/null', '&': '&'}}
 
 
-def print_replace(old='^',new='*'):
+def print_replace(old='^', new='*'):
     global print_replace_old, print_replace_new
     print_replace_old = old
     print_replace_new = new
@@ -94,14 +94,14 @@ def find_executable(executable, path=None):
     paths = path.split(os.pathsep)
     extlist = ['']
     if os.name == 'os2':
-        (_base, ext) = os.path.splitext(executable)
+        _base, ext = os.path.splitext(executable)
         # executable files on OS/2 can have an arbitrary extension, but
         # .exe is automatically appended if no dot is present in the name
         if not ext:
             executable = executable + ".exe"
     elif sys.platform == 'win32':
         pathext = os.environ['PATHEXT'].lower().split(os.pathsep)
-        (_base, ext) = os.path.splitext(executable)
+        _base, ext = os.path.splitext(executable)
         if ext.lower() not in pathext:
             extlist = pathext
     for ext in extlist:
@@ -204,7 +204,7 @@ def coef_simplify(expr):
 def oprint(*args, dict_mode=False):
     """
     Debug printing for iterated (list/tuple/dict/set) objects. args is
-    of form (title1,object1,title2,object2,...) and prints:
+    of form (title1, object1, title2, object2, ...) and prints:
 
         title1 = object1
         title2 = object2
@@ -221,14 +221,14 @@ def oprint(*args, dict_mode=False):
                 n = 0
             else:
                 n = len(titles[0])
-            for (title, obj) in zip(titles[1:], objs[1:]):
+            for title, obj in zip(titles[1:], objs[1:]):
                 if obj is None:
                     if not (dict_mode and isinstance(obj, dict)):
                         n = max(n, len(title))
         else:
             n = len(titles[0])
 
-        for (title, obj) in zip(titles, objs):
+        for title, obj in zip(titles, objs):
             if obj is None:
                 print(title)
             else:
@@ -405,7 +405,7 @@ class GaLatexPrinter(LatexPrinter):
     r"""
     The latex printer is turned on with the function (in ga.py) -
 
-        Format(Fmode=True,Dmode=True,ipy=False)
+        Format(Fmode=True, Dmode=True, ipy=False)
 
     where Fmode is the function printing mode that surpresses printing arguments,
     Dmode is the derivative printing mode that does not use fractions, and
@@ -413,7 +413,7 @@ class GaLatexPrinter(LatexPrinter):
 
     The latex output is post processed and displayed with the function (in GAPrint.py) -
 
-        xpdf(filename='tmplatex.tex',debug=False)
+        xpdf(filename='tmplatex.tex', debug=False)
 
     where filename is the name of the tex file one would keep for future
     inclusion in documents and debug=True would display the tex file
@@ -422,7 +422,7 @@ class GaLatexPrinter(LatexPrinter):
     There are three options for printing multivectors in latex.  They are
     acessed with the multivector member function -
 
-        A.Fmt(self,fmt=1,title=None)
+        A.Fmt(self, fmt=1, title=None)
 
     where fmt=1, 2, or 3 determines whether the entire multivector A is
     printed entirely on one line, or one grade is printed per line, or
@@ -444,7 +444,7 @@ class GaLatexPrinter(LatexPrinter):
 
     In the case of a print statement of the form -
 
-        print title,A
+        print title, A
 
     everthing in the title processing still applies except that the multivector
     formatting is one multivector per line.
@@ -650,7 +650,7 @@ class GaLatexPrinter(LatexPrinter):
         else:
             mode = False
 
-        # Treat x**Rational(1,n) as special case
+        # Treat x**Rational(1, n) as special case
         if expr.exp.is_Rational and abs(expr.exp.p) == 1 and expr.exp.q != 1:
             #base = self._print(expr.base)
             expq = expr.exp.q
@@ -711,7 +711,7 @@ class GaLatexPrinter(LatexPrinter):
         mode_dict = {'*': '', '^': '\\wedge '}
 
         def str_symbol(name_str):
-            (mode, name_lst, supers_lst, subs_lst) = GaLatexPrinter.split_super_sub(name_str)
+            mode, name_lst, supers_lst, subs_lst = GaLatexPrinter.split_super_sub(name_str)
 
             def translate(s):
                 tmp = s
@@ -740,7 +740,7 @@ class GaLatexPrinter(LatexPrinter):
 
             s = ''
 
-            for (name, supers, subs) in zip(name_lst, supers_lst, subs_lst):
+            for name, supers, subs in zip(name_lst, supers_lst, subs_lst):
 
                 name = translate(name)
 
@@ -771,7 +771,7 @@ class GaLatexPrinter(LatexPrinter):
 
         name_str = expr.name
 
-        if isinstance(expr,Symbol) and not expr.is_commutative:
+        if isinstance(expr, Symbol) and not expr.is_commutative:
             nc_flg = True
 
         # Translate entry in general metric tensor a.b -> a \cdot b
@@ -803,7 +803,7 @@ class GaLatexPrinter(LatexPrinter):
             can_fold_brackets = self._settings['fold_func_brackets'] and \
                 len(args) == 1 and not self._needs_function_brackets(expr.args[0])
 
-            inv_trig_table = ["asin", "acos", "atan", "acot","acosh","asinh","atanh"]
+            inv_trig_table = ["asin", "acos", "atan", "acot", "acosh", "asinh", "atanh"]
 
             # If the function is an inverse trig function, handle the style
             if func in inv_trig_table:
@@ -866,7 +866,7 @@ class GaLatexPrinter(LatexPrinter):
                     name = name % ",".join(args)
 
             if 'det(g)' in name:
-                name = name.replace('det(g)',r'\det\left ( g \right )')
+                name = name.replace('det(g)', r'\det\left ( g \right )')
 
             return name
 
@@ -940,7 +940,7 @@ class GaLatexPrinter(LatexPrinter):
         out_str = ' \\left [ \\begin{array}{' + (cols * 'c') + '} '
         for row in range(rows):
             for col in range(cols):
-                out_str += latex(expr[row,col]) + ' & '
+                out_str += latex(expr[row, col]) + ' & '
             out_str = out_str[:-2] + ' \\\\ '
         out_str = out_str[:-4] + ' \\end{array}\\right ] '
 
@@ -1052,8 +1052,8 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
             latex_line = latex_line.replace(r'\left.', r'@@')  # Disabiguate '.' in '\left.'
             latex_line = latex_line.replace(r'\right.', r'##')  # Disabiguate '.' in '\right.'
             latex_line = latex_line.replace('.', r' \cdot ')  # For components of metric tensor
-            latex_line = latex_line.replace(r'@@',r'\left.')  # Restore '\left.'
-            latex_line = latex_line.replace(r'##',r'\right.')  # Restore '\right.'
+            latex_line = latex_line.replace(r'@@', r'\left.')  # Restore '\left.'
+            latex_line = latex_line.replace(r'##', r'\right.')  # Restore '\right.'
             if '=' in latex_line:  # determing lhs of equation/align
                 eq_index = latex_line.rindex('=') + 1
                 lhs = latex_line[:eq_index]
@@ -1064,7 +1064,7 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
                     lhs = lhs.replace('|', r'\cdot ')
                     lhs = lhs.replace('^{', r'@@ ')
                     lhs = lhs.replace('^', r'\W ')
-                    lhs = lhs.replace(r'@@ ','^{')
+                    lhs = lhs.replace(r'@@ ', '^{')
                     lhs = lhs.replace('*', ' ')
                     lhs = lhs.replace('rgrad', r'\bar{\boldsymbol{\nabla}} ')
                     lhs = lhs.replace('grad', r'\boldsymbol{\nabla} ')
@@ -1111,12 +1111,12 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
 \\usepackage[vcentering]{geometry}
 """
         if paper == 'landscape':
-            paper = [11,8.5]
+            paper = [11, 8.5]
         paper_size += '\\geometry{papersize={' + str(paper[0]) + \
                       'in,' + str(paper[1]) + 'in},total={' + str(paper[0] - 1) + \
                       'in,' + str(paper[1] - 1) + 'in}}\n'
 
-    paper_size = paper_size.replace('@10pt@',pt)
+    paper_size = paper_size.replace('@10pt@', pt)
     latex_str = paper_size + GaLatexPrinter.preamble + latex_str + GaLatexPrinter.postscript
 
     return latex_str
@@ -1436,13 +1436,13 @@ r"""
 """
 
 
-def Fmt(obj,fmt=0):
-    if isinstance(obj,(list,tuple,dict)):
+def Fmt(obj, fmt=0):
+    if isinstance(obj, (list, tuple, dict)):
         n = len(obj)
-        if isinstance(obj,list):
+        if isinstance(obj, list):
             ldelim = '['
             rdelim = ']'
-        elif isinstance(obj,dict):
+        elif isinstance(obj, dict):
             ldelim = r'\{'
             rdelim = r'\}'
         else:
@@ -1451,7 +1451,7 @@ def Fmt(obj,fmt=0):
         if fmt == 1:
             latex_str = r' \left ' + ldelim + r' \begin{array}{' + n*'c' + '} '
             for cell in obj:
-                if isinstance(obj,dict):
+                if isinstance(obj, dict):
                     #cell.title = None
                     latex_cell = latex(cell) + ' : '+ latex(obj[cell])
                 else:
@@ -1463,7 +1463,7 @@ def Fmt(obj,fmt=0):
                 latex_cell= latex_cell.replace(r'\end{equation*}', ' ')
                 if cell.fmt != 1:
                     latex_cell= latex_cell.replace(r'\begin{align*}', r'\begin{array}{c} ')
-                    latex_cell= latex_cell.replace('&','')
+                    latex_cell= latex_cell.replace('&', '')
                     latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
                 latex_str += latex_cell + ', & '
                 #cell.title = title
@@ -1481,7 +1481,7 @@ def Fmt(obj,fmt=0):
                 latex_cell= latex_cell.replace(r'\end{equation*}', ' ')
                 if GaLatexPrinter.fmt != 1:
                     latex_cell= latex_cell.replace(r'\begin{align*}', r'\begin{array}{c} ')
-                    latex_cell= latex_cell.replace('&','')
+                    latex_cell= latex_cell.replace('&', '')
                     latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
                 #cell.title = title
                 if i == 1:
@@ -1498,7 +1498,7 @@ def Fmt(obj,fmt=0):
         else:
             return latex_str
 
-    elif isinstance(obj,int):
+    elif isinstance(obj, int):
         GaLatexPrinter.prev_fmt = GaLatexPrinter.fmt
         GaLatexPrinter.fmt = obj
         return

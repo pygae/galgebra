@@ -94,7 +94,7 @@ def collect(A, nc_list):
         of `nc_list` appear more than once in the sum. All coefficients of a given element of `nc_list`
         are combined into a single coefficient.
     """
-    (coefs,bases) = linear_expand(A)
+    coefs, bases = linear_expand(A)
     C = S(0)
     for x in nc_list:
         if x in bases:
@@ -118,14 +118,14 @@ def square_root_of_expr(expr):
             return sqrt(-expr)
     else:
         expr = trigsimp(expr)
-        (coef, pow_lst) = sqf_list(expr)
+        coef, pow_lst = sqf_list(expr)
         if coef != S(1):
             if coef.is_number:
                 coef = square_root_of_expr(coef)
             else:
                 coef = sqrt(abs(coef))  # Product coefficient not a number
         for p in pow_lst:
-            (f, n) = p
+            f, n = p
             if n % 2 != 0:
                 return sqrt(abs(expr))  # Product not all even powers
             else:
@@ -254,7 +254,7 @@ class Simp:
     @staticmethod
     def apply(expr):
         obj = S(0)
-        for (coef, base) in linear_expand_terms(expr):
+        for coef, base in linear_expand_terms(expr):
             obj += apply_function_list(Simp.modes, coef) * base
         return obj
 
@@ -335,13 +335,13 @@ class Metric(object):
         """
         if g is None:
             dot = 0
-            for (v1, v2) in zip(V1, V2):
+            for v1, v2 in zip(V1, V2):
                 dot += v1 * v2
             return dot
         else:
             if len(g) == len(V1):
                 dot = 0
-                for (v1, v2, gii) in zip(V1, V2, g):
+                for v1, v2, gii in zip(V1, V2, g):
                     dot += v1 * v2 * gii
                 return dot
             else:
@@ -461,7 +461,7 @@ class Metric(object):
 
         # \frac{\partial e_{j}}{\partial x^{i}} = \Gamma_{ijk} e^{k}
         de = [[
-            sum([Gamma_ijk * e__k for (Gamma_ijk, e__k) in zip(dG[i][j], self.r_symbols)])
+            sum([Gamma_ijk * e__k for Gamma_ijk, e__k in zip(dG[i][j], self.r_symbols)])
             for j in n_range
         ] for i in n_range]
 
@@ -477,7 +477,7 @@ class Metric(object):
         if self.is_ortho:  # Orthogonal metric
             self.g_inv = eye(self.n)
             for i in range(self.n):
-                self.g_inv[i,i] = S(1)/self.g(i,i)
+                self.g_inv[i, i] = S(1)/self.g(i, i)
         else:
             if self.gsym is None:
                 self.g_inv = simplify(self.g.inv())
@@ -486,7 +486,7 @@ class Metric(object):
                 self.g_adj = simplify(self.g.adjugate())
                 self.g_inv = self.g_adj/self.detg
 
-    def Christoffel_symbols(self,mode=1):
+    def Christoffel_symbols(self, mode=1):
         """
         mode = 1  Christoffel symbols of the first kind
         mode = 2  Christoffel symbols of the second kind
@@ -580,7 +580,7 @@ class Metric(object):
             p = 0
             q = 0
             for i in self.n_range:
-                g_ii = self.g[i,i]
+                g_ii = self.g[i, i]
                 if g_ii.is_number:
                     if g_ii > 0:
                         p += 1
@@ -589,11 +589,11 @@ class Metric(object):
                 else:
                     break
             if p + q == self.n:
-                self.sig = (p,q)
+                self.sig = (p, q)
                 return
-        if isinstance(self.sig,int):  # General signature
+        if isinstance(self.sig, int):  # General signature
             if self.sig <= self.n:
-                self.sig = (self.sig,self.n - self.sig)
+                self.sig = (self.sig, self.n - self.sig)
                 return
             else:
                 raise ValueError('self.sig = ' + str(self.sig) + ' > self.n, not an allowed hint')

@@ -63,7 +63,7 @@ class Mv(object):
     fmt = 1
     latex_flg = False
     restore = False
-    dual_mode_lst = ['+I','I+','+Iinv','Iinv+','-I','I-','-Iinv','Iinv-']
+    dual_mode_lst = ['+I', 'I+', '+Iinv', 'Iinv+', '-I', 'I-', '-Iinv', 'Iinv-']
 
     @staticmethod
     def setup(ga):
@@ -141,7 +141,7 @@ class Mv(object):
             else:
                 c, nc = term.args_cnc(split_1=False)
                 blade = nc[0]
-                # print 'blade =',blade
+                # print 'blade =', blade
                 if blade in self.Ga.blades.flat:
                     grade = self.Ga.blades_to_grades_dict[blade]
                     if grade not in grades:
@@ -182,20 +182,20 @@ class Mv(object):
             if isinstance(f, bool):
                 if f:  # Is a multivector function of all coordinates
                     return sum([Function(add_superscript(name, super_script), real=True)(*ga.coords) * base
-                                for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
+                                for super_script, base in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
                 else:  # Is a constant multivector function
                     return sum([Symbol(add_superscript(name, super_script), real=True) * base
-                                for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
+                                for super_script, base in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
             else:  # Is a multivector function of tuple f variables
                 return sum([Function(add_superscript(name, super_script), real=True)(*f) * base
-                            for (super_script, base) in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
+                            for super_script, base in zip(ga.blade_super_scripts[grade], ga.blades[grade])])
         elif isinstance(__name_or_coeffs, (list, tuple)):
             coeffs = __name_or_coeffs
             kw.reject_remaining()
             if len(coeffs) <= len(ga.blades[grade]):
                 return sum([
                     coef * base
-                    for (coef, base) in zip(coeffs, ga.blades[grade][:len(coeffs)])])
+                    for coef, base in zip(coeffs, ga.blades[grade][:len(coeffs)])])
             else:
                 raise ValueError("Too many coefficients")
         else:
@@ -389,7 +389,7 @@ class Mv(object):
             blade_inv = blade.rev() / blade.norm2()
             grade_dict = self.Ga.grade_decomposition(self)
             blade_grade = blade.i_grade
-            reflect = Mv(0,'scalar',ga=self.Ga)
+            reflect = Mv(0, 'scalar', ga=self.Ga)
             for grade in list(grade_dict.keys()):
                 if (grade * (blade_grade + 1)) % 2 == 0:
                     reflect += blade * grade_dict[grade] * blade_inv
@@ -399,7 +399,7 @@ class Mv(object):
         else:
             raise ValueError(str(blade) + 'is not a blade in reflect_in_blade(self, blade)')
 
-    def project_in_blade(self,blade):
+    def project_in_blade(self, blade):
         # See Mv class functions documentation
         if blade.is_blade():
             blade.characterise_Mv()
@@ -408,7 +408,7 @@ class Mv(object):
         else:
             raise ValueError(str(blade) + 'is not a blade in project_in_blade(self, blade)')
 
-    def rotate_multivector(self,itheta,hint='-'):
+    def rotate_multivector(self, itheta, hint='-'):
         Rm = (-itheta/S(2)).exp(hint)
         Rp = (itheta/S(2)).exp(hint)
         return Rm * self * Rp
@@ -582,7 +582,7 @@ class Mv(object):
     def __repr__(self):
         return str(self)
 
-    def __getitem__(self,key):
+    def __getitem__(self, key):
         '''
         get a specified grade of a multivector
         '''
@@ -618,7 +618,7 @@ class Mv(object):
                     if base in base_keys:
                         index = base_keys.index(base)
                         if index in terms:
-                            (c_tmp, base, g_keys) = terms[index]
+                            c_tmp, base, g_keys = terms[index]
                             terms[index] = (c_tmp + c, base, g_keys)
                         else:
                             terms[index] = (c, base, grade_keys[base])
@@ -651,7 +651,7 @@ class Mv(object):
             if s[-1] == '\n':
                 s = s[:-1]
             if printer.print_replace_old is not None:
-                s = s.replace(printer.print_replace_old,printer.print_replace_new)
+                s = s.replace(printer.print_replace_old, printer.print_replace_new)
             return s
         else:
             return str(self.obj)
@@ -704,7 +704,7 @@ class Mv(object):
                 if base in base_keys:
                     index = base_keys.index(base)
                     if index in terms:
-                        (c_tmp, base, g_keys) = terms[index]
+                        c_tmp, base, g_keys = terms[index]
                         terms[index] = (c_tmp + c, base, g_keys)
                     else:
                         terms[index] = (c, base, grade_keys[base])
@@ -804,8 +804,8 @@ class Mv(object):
         assert not isinstance(A, Mv)
         return Mv(ga=self.Ga)
 
-    def __pow__(self,n):  # Integer power operator
-        if not isinstance(n,int):
+    def __pow__(self, n):  # Integer power operator
+        if not isinstance(n, int):
             raise ValueError('!!!!Multivector power can only be to integer power!!!!')
 
         result = S(1)
@@ -865,7 +865,7 @@ class Mv(object):
         A = A.blade_rep()
         return Mv(self.Ga.right_contract(self.obj, A.obj), ga=self.Ga)
 
-    def collect(self,deep=False):
+    def collect(self, deep=False):
         """
         group coeffients of blades of multivector
         so there is only one coefficient per grade
@@ -925,7 +925,7 @@ class Mv(object):
             return self.blade_flg
 
     def is_base(self):
-        (coefs, _bases) = metric.linear_expand(self.obj)
+        coefs, _bases = metric.linear_expand(self.obj)
         if len(coefs) > 1:
             return False
         else:
@@ -970,12 +970,12 @@ class Mv(object):
     def components(self):
         cb = metric.linear_expand_terms(self.obj)
         cb = sorted(cb, key=lambda x: self.Ga.blades.flat.index(x[1]))
-        return [self.Ga.mv(coef * base) for (coef, base) in cb]
+        return [self.Ga.mv(coef * base) for coef, base in cb]
 
     def get_coefs(self, grade):
         cb = metric.linear_expand_terms(self.obj)
         cb = sorted(cb, key=lambda x: self.Ga.blades[grade].index(x[1]))
-        (coefs, bases) = list(zip(*cb))
+        coefs, bases = list(zip(*cb))
         return coefs
 
     def blade_coefs(self, blade_lst=None):
@@ -994,7 +994,7 @@ class Mv(object):
             if not blade.is_base() or not blade.is_blade():
                 raise ValueError("%s expression isn't a basis blade" % blade)
         blade_lst = [x.obj for x in blade_lst]
-        (coefs, bases) = metric.linear_expand(self.obj)
+        coefs, bases = metric.linear_expand(self.obj)
         coef_lst = []
         for blade in blade_lst:
             if blade in bases:
@@ -1093,7 +1093,7 @@ class Mv(object):
             sq = simplify(self_sq.obj)  # sympy expression for self**2
             if sq == S(0):  # sympy expression for self**2 = 0
                 return self + S(1)
-            (coefs,bases) = metric.linear_expand(self.obj)
+            coefs, bases = metric.linear_expand(self.obj)
             if len(coefs) == 1:  # Exponential of scalar * base
                 base = bases[0]
                 base_Mv = self.Ga.mv(base)
@@ -1138,7 +1138,7 @@ class Mv(object):
             base = self.Ga.blades[igrade][ibase]
         else:
             base = self.Ga.bases[igrade][ibase]
-        (coefs, bases) = metric.linear_expand(self.obj)
+        coefs, bases = metric.linear_expand(self.obj)
         bases_lst = list(bases)  # python 2.5
         if base in bases:
             self.obj += (value - coefs[bases_lst.index(base)]) * base
@@ -1155,7 +1155,7 @@ class Mv(object):
 
         Usage for multivector ``A`` example is::
 
-            A.Fmt('2','A')
+            A.Fmt('2', 'A')
 
         output is::
 
@@ -1202,7 +1202,7 @@ class Mv(object):
                 latex_str = r'\begin{equation*} ' + self.title + ' = ' + latex_str + r' \end{equation*}'
         else:
             if self.title is not None:
-                latex_str = latex_str.replace('&',' ' + self.title + ' =&',1)
+                latex_str = latex_str.replace('&', ' ' + self.title + ' =&', 1)
         return latex_str
 
     def norm2(self):
@@ -1355,7 +1355,7 @@ class Mv(object):
         return self
 
 
-def compare(A,B):
+def compare(A, B):
     """
     Determine if ``B = c*A`` where c is a scalar.  If true return c
     otherwise return 0.
@@ -1369,13 +1369,13 @@ def compare(A,B):
             return 0
         if Bcoefs[0] != 0 and Abases[0] == Bbases[0]:
             c = simplify(Acoefs[0]/Bcoefs[0])
-            print('c =',c)
+            print('c =', c)
         else:
             return 0
-        for acoef,abase,bcoef,bbase in zip(Acoefs[1:],Abases[1:],Bcoefs[1:],Bbases[1:]):
-            print(acoef,'\n',abase,'\n',bcoef,'\n',bbase)
+        for acoef, abase, bcoef, bbase in zip(Acoefs[1:], Abases[1:], Bcoefs[1:], Bbases[1:]):
+            print(acoef, '\n', abase, '\n', bcoef, '\n', bbase)
             if bcoef != 0 and abase == bbase:
-                print('c-a/b =',simplify(c-(acoef/bcoef)))
+                print('c-a/b =', simplify(c-(acoef/bcoef)))
                 if simplify(acoef/bcoef) != c:
                     return 0
                 else:
@@ -1571,12 +1571,12 @@ class Dop(dop._BaseDop):
             if not dopl.cmpflg:  # dopl and dopr operate on right argument
                 product = sum((
                     Dop.Mul(coef, pdiff(dopr), op=op)
-                    for (coef, pdiff) in dopl.terms
+                    for coef, pdiff in dopl.terms
                 ), Dop([], ga=ga, cmpflg=False))
             else:  # dopl and dopr operate on left argument
                 product = sum((
                     Dop.Mul(pdiff(dopl), coef, op=op)
-                    for (coef, pdiff) in dopr.terms
+                    for coef, pdiff in dopr.terms
                 ), Dop([], ga=ga, cmpflg=True))
         else:
             if not isinstance(dopl, Dop):  # dopl is a scalar or Mv and dopr is Dop
@@ -1616,14 +1616,14 @@ class Dop(dop._BaseDop):
 
     def TSimplify(self):
         return Dop([
-            (metric.Simp.apply(coef), pdiff) for (coef, pdiff) in self.terms
+            (metric.Simp.apply(coef), pdiff) for coef, pdiff in self.terms
         ], ga=self.Ga)
 
     def __truediv__(self, dopr):
         if isinstance(dopr, (Dop, Mv)):
             raise TypeError('In Dop.__truediv__ dopr must be a sympy scalar.')
         return Dop([
-            (coef / dopr, pdiff) for (coef, pdiff) in self.terms
+            (coef / dopr, pdiff) for coef, pdiff in self.terms
         ], ga=self.Ga, cmpflg=self.cmpflg)
 
     def __mul__(self, dopr):  # * geometric product
@@ -1680,7 +1680,7 @@ class Dop(dop._BaseDop):
                 latex_str = r'\begin{equation*} ' + self.title + ' = ' + latex_str + r' \end{equation*}'
         else:
             if self.title is not None:
-                latex_str = latex_str.replace('&',' ' + self.title + ' =&',1)
+                latex_str = latex_str.replace('&', ' ' + self.title + ' =&', 1)
         return latex_str
 
     def is_scalar(self):
@@ -1692,7 +1692,7 @@ class Dop(dop._BaseDop):
     def components(self):
         return tuple(
             Dop([(sdop, Mv(base, ga=self.Ga))], ga=self.Ga)
-            for (sdop, base) in self.Dop_mv_expand()
+            for sdop, base in self.Dop_mv_expand()
         )
 
     def Dop_mv_expand(self, modes=None):
@@ -1700,7 +1700,7 @@ class Dop(dop._BaseDop):
         bases = []
         self.consolidate_coefs()
 
-        for (coef, pdiff) in self.terms:
+        for coef, pdiff in self.terms:
             if isinstance(coef, Mv) and not coef.is_scalar():
                 for mv_coef, mv_base in metric.linear_expand_terms(coef.obj):
                     if mv_base in bases:
@@ -1733,7 +1733,7 @@ class Dop(dop._BaseDop):
         mv_terms = self.Dop_mv_expand(modes=simplify)
         s = ''
 
-        for (sdop, base) in mv_terms:
+        for sdop, base in mv_terms:
             str_base = printer.latex(base)
             str_sdop = printer.latex(sdop)
             if base == S(1):
@@ -1757,7 +1757,7 @@ class Dop(dop._BaseDop):
                             s += str_base + '*' + str_sdop
             s += ' + '
 
-        s = s.replace('+ -','-')
+        s = s.replace('+ -', '-')
         return s[:-3]
 
     def Dop_latex_str(self):
@@ -1769,7 +1769,7 @@ class Dop(dop._BaseDop):
         mv_terms = self.Dop_mv_expand(modes=simplify)
         s = ''
 
-        for (sdop, base) in mv_terms:
+        for sdop, base in mv_terms:
             str_base = printer.latex(base)
             str_sdop = printer.latex(sdop)
             if base == S(1):
@@ -1800,7 +1800,7 @@ class Dop(dop._BaseDop):
                                 s += str_base + ' ' + str_sdop
             s += ' + '
 
-        s = s.replace('+ -','-')
+        s = s.replace('+ -', '-')
         dop.Sdop.str_mode = False
         return s[:-3]
 
@@ -1935,19 +1935,19 @@ def dual(A):
 
 
 def even(A):
-    if not isinstance(A,Mv):
+    if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in even(A).')
     return A.even()
 
 
 def odd(A):
-    if not isinstance(A,Mv):
+    if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in even(A).')
     return A.odd()
 
 
-def exp(A,hint='-'):
-    if isinstance(A,Mv):
+def exp(A, hint='-'):
+    if isinstance(A, Mv):
         return A.exp(hint)
     else:
         return sympy_exp(A)
@@ -1957,11 +1957,11 @@ def grade(A, r=0):
     if isinstance(A, Mv):
         return A.grade(r)
     else:
-        raise ValueError('A not a multivector in grade(A,r)')
+        raise ValueError('A not a multivector in grade(A, r)')
 
 
 def inv(A):
-    if not isinstance(A,Mv):
+    if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.inv()
 
@@ -1981,24 +1981,24 @@ def norm2(A):
 
 
 def proj(B, A):  # Project on the blade B the multivector A
-    if isinstance(A,Mv):
+    if isinstance(A, Mv):
         return A.project_in_blade(B)
     else:
-        raise ValueError('A not a multivector in proj(B,A)')
+        raise ValueError('A not a multivector in proj(B, A)')
 
 
 def rot(itheta, A, hint='-'):  # Rotate by the 2-blade itheta the multivector A
-    if isinstance(A,Mv):
+    if isinstance(A, Mv):
         return A.rotate_multivector(itheta, hint)
     else:
-        raise ValueError('A not a multivector in rotate(A,itheta)')
+        raise ValueError('A not a multivector in rotate(A, itheta)')
 
 
 def refl(B, A):  # Project on the blade B the multivector A
-    if isinstance(A,Mv):
+    if isinstance(A, Mv):
         return A.reflect_in_blade(B)
     else:
-        raise ValueError('A not a multivector in reflect(B,A)')
+        raise ValueError('A not a multivector in reflect(B, A)')
 
 
 def rev(A):
@@ -2009,6 +2009,6 @@ def rev(A):
 
 
 def scalar(A):
-    if not isinstance(A,Mv):
+    if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.scalar()
