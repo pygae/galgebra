@@ -1291,6 +1291,12 @@ class Mv(object):
         return self.func(trigsimp)
 
     def simplify(self, modes=simplify):
+        """
+        Simplify a multivector by scalar (sympy) simplifications.
+
+        `modes` is an operation or sequence of operations to apply to the the
+        coefficients of a multivector expansion.
+        """
         if not isinstance(modes, (list, tuple)):
             modes = [modes]
 
