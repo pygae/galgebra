@@ -602,7 +602,7 @@ class Mlt(object):
             if first:
                 first = False
             else:
-                if coef_str[0].strip() is not '-' or term_add_flg:
+                if coef_str[0].strip() != '-' or term_add_flg:
                     coef_latex = ' + ' + coef_latex
             for aij in term[1]:
                 coef_latex += printer.latex(aij) + ' '
