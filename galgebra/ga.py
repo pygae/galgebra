@@ -1195,18 +1195,10 @@ class Ga(metric.Metric):
 
         (coefs, indexes) = self.reduce_basis(index)
 
-        s = 0
-
-        if [] in indexes:  # extract scalar part from multivector expansion
-            iscalar = indexes.index([])
-            s += coefs[iscalar]
-            del indexes[iscalar]
-            del coefs[iscalar]
-
-        for (coef, index) in zip(coefs, indexes):
-            s += coef * self.indexes_to_bases_dict[tuple(index)]
-
-        return s
+        return sum((
+            coef * self.indexes_to_bases_dict[tuple(index)]
+            for (coef, index) in zip(coefs, indexes)
+        ), S(0))
 
     def _build_base_blade_conversions(self):
 
@@ -1442,7 +1434,7 @@ class Ga(metric.Metric):
     def grades(self, A):  # Return list of grades present in A
         A = self.base_to_blade_rep(A)
         A = expand(A)
-        blades = []
+        blades = set()
         if isinstance(A, Add):
             args = A.args
         else:
@@ -1451,21 +1443,13 @@ class Ga(metric.Metric):
             blade = term.args_cnc()[1]
             l_blade = len(blade)
             if l_blade > 0:
-                if blade[0] not in blades:
-                    blades.append(blade[0])
+                blades.add(blade[0])
             else:
-                if one not in blades:
-                    blades.append(one)
-        grade_lst = []
-        if one in blades:
-            grade_lst.append(0)
-        for blade in blades:
-            if blade != one:
-                grade = self.blades_to_grades_dict[blade]
-                if grade not in grade_lst:
-                    grade_lst.append(grade)
-        grade_lst.sort()
-        return(grade_lst)
+                blades.add(one)
+        return sorted({
+            self.blades_to_grades_dict[blade]
+            for blade in blades
+        })
 
     def reverse(self, A):  # Calculates reverse of A (see documentation)
         A = expand(A)
@@ -1500,14 +1484,12 @@ class Ga(metric.Metric):
         return s
 
     def get_grade(self, A, r):  # Return grade r of A, <A>_{r}
-        if r == 0:
-            return self.scalar_part(A)
         coefs, bases = metric.linear_expand(A)
-        s = zero
-        for (coef, base) in zip(coefs, bases):
-            if base != one and self.blades_to_grades_dict[base] == r:
-                s += coef * base
-        return s
+        return sum((
+            coef * base
+            for coef, base in zip(coefs, bases)
+            if self.blades_to_grades_dict[base] == r
+        ), S(0))
 
     def even_odd(self, A, even=True):  # Return even or odd part of A
         A = expand(A)
