@@ -1668,10 +1668,7 @@ class Dop(dop._BaseDop):
 
     def components(self):
         return tuple(
-            Dop(dop._consolidate_terms(
-                (Mv(coef * base, ga=self.Ga), pdiff)
-                for (coef, pdiff) in sdop.terms
-            ), ga=self.Ga)
+            Dop([(sdop, Mv(base, ga=self.Ga))], ga=self.Ga)
             for (sdop, base) in self.Dop_mv_expand()
         )
 
