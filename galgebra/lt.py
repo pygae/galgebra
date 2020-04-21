@@ -297,7 +297,7 @@ class Lt(object):
                 self_add_LT[key] = metric.collect(self_add_LT[key] + LT.lt_dict[key], self.Ga.basis)
             else:
                 self_add_LT[key] = LT.lt_dict[key]
-        return(Lt(self_add_LT, ga=self.Ga))
+        return Lt(self_add_LT, ga=self.Ga)
 
     def __sub__(self, LT):
 
@@ -310,7 +310,7 @@ class Lt(object):
                 self_add_LT[key] = metric.collect(self_add_LT[key] - LT.lt_dict[key], self.Ga.basis)
             else:
                 self_add_LT[key] = -LT.lt_dict[key]
-        return(Lt(self_add_LT, ga=self.Ga))
+        return Lt(self_add_LT, ga=self.Ga)
 
     def __mul__(self, LT):
 
@@ -323,12 +323,12 @@ class Lt(object):
                 self_mul_LT[base] = self(LT(base, obj=True), obj=True)
             for key in self_mul_LT:
                 self_mul_LT[key] = metric.collect(expand(self_mul_LT[key]),self.Ga.basis)
-            return(Lt(self_mul_LT, ga=self.Ga))
+            return Lt(self_mul_LT, ga=self.Ga)
         else:
             self_mul_LT = {}
             for key in self.lt_dict:
                 self_mul_LT[key] = LT * self.lt_dict[key]
-            return(Lt(self_mul_LT, ga=self.Ga))
+            return Lt(self_mul_LT, ga=self.Ga)
 
     def __rmul__(self, LT):
 
@@ -336,7 +336,7 @@ class Lt(object):
             self_mul_LT = {}
             for key in self.lt_dict:
                 self_mul_LT[key] = LT * self.lt_dict[key]
-            return(Lt(self_mul_LT, ga=self.Ga))
+            return Lt(self_mul_LT, ga=self.Ga)
         else:
             raise TypeError('Cannot have LT as left argument in Lt __rmul__\n')
 
@@ -353,7 +353,7 @@ class Lt(object):
 
         lt_I = self(self.Ga.i, obj=True)
         det_lt_I = lt_I.subs(self.Ga.i.obj, S(1))
-        return(det_lt_I)
+        return det_lt_I
 
     def tr(self):  # tr(L) defined by tr(L) = grad|L(x)
 
@@ -363,7 +363,7 @@ class Lt(object):
         F_x = mv.Mv(self(self.Ga.lt_x, obj=True), ga=self.Ga)
         tr_F = (self.Ga.grad | F_x).scalar()
         self.Ga.connect_flg = connect_flg
-        return(tr_F)
+        return tr_F
 
     def adj(self):
 
@@ -471,7 +471,7 @@ class Lt(object):
                 self.spinor = False
                 mat = self.matrix()
                 self.spinor = True
-                return(mat)
+                return mat
             else:
                 """
                 mat_rep = []
@@ -491,7 +491,7 @@ class Lt(object):
                         mat_rep.append(row)
                     else:
                         mat_rep.append(self.Ga.n * [0])
-                return(Matrix(mat_rep).transpose())
+                return Matrix(mat_rep).transpose()
                 """
                 self.mat = Dictionary_to_Matrix(self.lt_dict, self.Ga) * self.Ga.g
                 return self.mat
