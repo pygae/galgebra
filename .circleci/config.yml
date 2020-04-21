@@ -31,6 +31,20 @@ defaults: &defaults
         path: test-reports
 
 jobs:
+  "flake8":
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: |
+            sudo pip install flake8
+      - run:
+          name: Lint
+          command: |
+            flake8
+    docker:
+      - image: circleci/python:3.8
+
   # symengine does not seem to install correctly with Python 3.8 yet
   "python-3.7-symengine":
     <<: *defaults
@@ -79,15 +93,27 @@ workflows:
   version: 2
   build:
     jobs:
+      - "flake8":
+          filters:
+            tags:
+              only: /^v.*$/
+
       - "python-3.8":
           filters:
             tags:
               only: /^v.*$/
-      - "python-3.7"
-      - "python-3.6"
-      - "python-3.5"
-      - "python-3.7-symengine"
-      - "python-3.7-sympy-1.3"
+          requires: ["flake8"]
+      - "python-3.7":
+          requires: ["flake8"]
+      - "python-3.6":
+          requires: ["flake8"]
+      - "python-3.5":
+          requires: ["flake8"]
+      - "python-3.7-symengine":
+          requires: ["flake8"]
+      - "python-3.7-sympy-1.3":
+          requires: ["flake8"]
+
       - publish:
           requires:
             - "python-3.8"

@@ -5,12 +5,13 @@ Utility Classes
 import sys
 import collections
 
+from io import StringIO  # noqa: F401
+
 # From https://github.com/benjaminp/six/blob/master/six.py
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
 string_types = str
-from io import StringIO
 
 # https://stackoverflow.com/questions/16176742/python-3-replacement-for-deprecated-compiler-ast-flatten-function
 
