@@ -897,6 +897,7 @@ class Mlt(object):
         indexes = itertools.product(basis, repeat=rank)
         output = ''
         for i, (e, i_index) in enumerate(zip(indexes, i_indexes)):
-            if i_index[-1] % ndim == 0: print('')
+            if i_index[-1] % ndim == 0:
+                print('')
             output += str(i)+':'+str(i_index)+':'+str(self(*e)) + '\n'
         return output
