@@ -1106,7 +1106,7 @@ class Ga(metric.Metric):
                 else:
                     blst1_flg = False  # more revision needed
                 return a1, blst1, blst1_flg, blst
- 
+
         return True  # revision complete, blst in normal order
 
     #******************* Outer/wedge (^) product **********************#

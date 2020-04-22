@@ -35,7 +35,7 @@ def linear_expand(expr):
     """
     if not isinstance(expr, Expr):
         raise TypeError('{!r} is not a SymPy Expr'.format(expr))
-    
+
     expr = expand(expr)
 
     if expr == 0:
