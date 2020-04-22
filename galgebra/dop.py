@@ -61,7 +61,7 @@ def _eval_derivative_n_times_terms(terms, x, n):
             #print 'D0, term, dc, pd =', D0, term, dc, pd
             if dc != 0:
                 new_terms.append((dc, term[1]))
-            if pd != 0 :
+            if pd != 0:
                 new_terms.append((term[0], pd))
         terms = new_terms
     return _consolidate_terms(terms)
