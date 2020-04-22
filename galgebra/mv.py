@@ -10,7 +10,7 @@ from typing import List, Any, Tuple, Union
 
 from sympy import (
     Symbol, Function, S, expand, Add,
-    sin, cos, sinh, cosh, sqrt, trigsimp, expand,
+    sin, cos, sinh, cosh, sqrt, trigsimp,
     simplify, diff, Rational, Expr, Abs, collect,
 )
 from sympy import exp as sympy_exp
