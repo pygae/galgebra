@@ -614,7 +614,7 @@ class Mlt(object):
                 latex_str += ' & ' + coef_latex
             else:
                 latex_str += coef_latex
-            if cnt%self.lcnt == 0:
+            if cnt % self.lcnt == 0:
                 latex_str += '\\\\ '
                 cnt = 1
             else:
