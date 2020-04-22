@@ -1126,7 +1126,6 @@ class Mv(object):
                 else:
                     norm = simplify(sqrt(-sq))
                     value = self.obj / norm
-                    obj = cos(norm) + sin(norm) * value
                     tmp = Mv(cos(norm) + sin(norm) * value, ga=self.Ga)
                     tmp.is_blade_rep = True
                     return tmp
