@@ -618,7 +618,7 @@ class Mlt(object):
         if self.lcnt == len(expr_lst) or self.lcnt == 1:
             latex_str = latex_str[:-3]
         latex_str = latex_str + ' \\end{align*} \n'
-        return  latex_str
+        return latex_str
 
     def Fmt(self, lcnt=1, title=None):
         """

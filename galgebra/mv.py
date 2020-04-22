@@ -113,7 +113,7 @@ class Mv(object):
             self.is_blade_rep = True
             self.grades = [0]
             return
-        if  obj.is_commutative:
+        if obj.is_commutative:
             self.i_grade = 0
             self.is_blade_rep = True
             self.grades = [0]
