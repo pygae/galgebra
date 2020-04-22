@@ -144,7 +144,7 @@ class Mv(object):
                 #print 'blade =',blade
                 if blade in self.Ga.blades.flat:
                     grade = self.Ga.blades_to_grades_dict[blade]
-                    if not grade in grades:
+                    if grade not in grades:
                         grades.append(grade)
                 else:
                     self.char_Mv = True
