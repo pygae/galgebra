@@ -58,7 +58,7 @@ def _eval_derivative_n_times_terms(terms, x, n):
         for k, term in enumerate(terms):
             dc = _basic_diff(term[0], x)
             pd = _basic_diff(term[1], x)
-            #print 'D0, term, dc, pd =', D0, term, dc, pd
+            # print 'D0, term, dc, pd =', D0, term, dc, pd
             if dc != 0:
                 new_terms.append((dc, term[1]))
             if pd != 0:

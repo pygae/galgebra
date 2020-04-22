@@ -132,7 +132,7 @@ class Mv(object):
                 args = [obj]
 
         grades = []
-        #print 'args =', args
+        # print 'args =', args
         self.is_blade_rep = True
         for term in args:
             if term.is_commutative:
@@ -141,7 +141,7 @@ class Mv(object):
             else:
                 c, nc = term.args_cnc(split_1=False)
                 blade = nc[0]
-                #print 'blade =',blade
+                # print 'blade =',blade
                 if blade in self.Ga.blades.flat:
                     grade = self.Ga.blades_to_grades_dict[blade]
                     if grade not in grades:
@@ -349,9 +349,9 @@ class Mv(object):
                 self.is_blade_rep = x.is_blade_rep
                 self.i_grade = x.i_grade
             else:
-                if isinstance(x, Expr):  #copy constructor for obj expression
+                if isinstance(x, Expr):  # copy constructor for obj expression
                     self.obj = x
-                else:  #copy constructor for scalar obj expression
+                else:  # copy constructor for scalar obj expression
                     self.obj = S(x)
                 self.is_blade_rep = True
                 self.characterise_Mv()
@@ -443,7 +443,7 @@ class Mv(object):
     def __eq__(self, A):
         if isinstance(A, Mv):
             diff = (self - A).expand().simplify()
-            #diff = (self - A).expand()
+            # diff = (self - A).expand()
             if diff.obj == S(0):
                 return True
             else:
@@ -724,7 +724,7 @@ class Mv(object):
         s = ''
         for (index, (coef, base, grade)) in sorted_terms:
             coef = printer.coef_simplify(coef)
-            #coef = simplify(coef)
+            # coef = simplify(coef)
             l_coef = printer.latex(coef)
             if l_coef == '1' and base != S(1):
                 l_coef = ''
@@ -988,7 +988,7 @@ class Mv(object):
         if blade_lst is None:
             blade_lst = self.Ga.mv_blades.flat
 
-        #print 'Enter blade_coefs blade_lst =', blade_lst, type(blade_lst), [i.is_blade() for i in blade_lst]
+        # print 'Enter blade_coefs blade_lst =', blade_lst, type(blade_lst), [i.is_blade() for i in blade_lst]
 
         for blade in blade_lst:
             if not blade.is_base() or not blade.is_blade():
@@ -1994,7 +1994,7 @@ def rot(itheta, A, hint='-'):  # Rotate by the 2-blade itheta the multivector A
         raise ValueError('A not a multivector in rotate(A,itheta)')
 
 
-def refl(B, A):  #  Project on the blade B the multivector A
+def refl(B, A):  # Project on the blade B the multivector A
     if isinstance(A,Mv):
         return A.reflect_in_blade(B)
     else:

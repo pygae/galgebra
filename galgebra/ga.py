@@ -477,7 +477,7 @@ class Ga(metric.Metric):
             if self.e_sq == S(0):
                 self.sing_flg = True
                 print('!!!!If I**2 = 0, I cannot be normalized!!!!')
-                #raise ValueError('!!!!If I**2 = 0, I cannot be normalized!!!!')
+                # raise ValueError('!!!!If I**2 = 0, I cannot be normalized!!!!')
             if self.e_sq > S(0):
                 self.i = self.e/sqrt(self.e_sq)
                 self.i_inv = self.i
@@ -951,7 +951,7 @@ class Ga(metric.Metric):
 
     ######## Functions for Calculation products of blades/bases ########
 
-    #******************** Geometric Product (*) ***********************#
+    # ******************* Geometric Product (*) ********************** #
 
     def geometric_product_basis_blades(self, blade12):
         # geometric (*) product for orthogonal basis
@@ -1037,9 +1037,9 @@ class Ga(metric.Metric):
                         blst_flg[i] = tmp[2]
                     else:  # blst_expand[i] revised
                         blst_coef[i] = -blst_coef[i]
-                        #if revision force one more pass in case revision
-                        #causes repeated index previous to revised pair of
-                        #indexes
+                        # if revision force one more pass in case revision
+                        # causes repeated index previous to revised pair of
+                        # indexes
                         blst_flg[i] = False
                         blst_expand[i] = tmp[3]
                         blst_coef.append(-blst_coef[i] * tmp[0])
@@ -1110,7 +1110,7 @@ class Ga(metric.Metric):
 
         return True  # revision complete, blst in normal order
 
-    #******************* Outer/wedge (^) product **********************#
+    # ****************** Outer/wedge (^) product ********************* #
 
     @staticmethod
     def blade_reduce(lst):
@@ -1152,7 +1152,7 @@ class Ga(metric.Metric):
         else:
             return S(0)
 
-    #****** Dot (|) product, reft (<) and right (>) contractions ******#
+    # ***** Dot (|) product, reft (<) and right (>) contractions ***** #
 
     def _dot_product_grade(self, grade1, grade2, mode):
         """
@@ -2010,7 +2010,7 @@ class Sm(Ga):
             Base Geometric Algebra
         """
 
-        #print '!!!Enter Sm!!!'
+        # print '!!!Enter Sm!!!'
 
         if printer.GaLatexPrinter.latex_flg:
             printer.GaLatexPrinter.restore()
@@ -2033,19 +2033,19 @@ class Sm(Ga):
         basis_str = basis_str[:-1]
         """
 
-        #print 'u =', u
+        # print 'u =', u
 
-        if isinstance(u,mv.Mv):  #Define vector manifold
+        if isinstance(u,mv.Mv):  # Define vector manifold
             self.ebasis = []
             for coord in coords:
-                #Partial derivation of vector function to get basis vectors
+                # Partial derivation of vector function to get basis vectors
                 self.ebasis.append(u.diff(coord))
 
-            #print 'sm ebasis =', self.ebasis
+            # print 'sm ebasis =', self.ebasis
 
             self.g = []
             for b1 in self.ebasis:
-                #Metric tensor from dot products of basis vectors
+                # Metric tensor from dot products of basis vectors
                 tmp = []
                 for b2 in self.ebasis:
                     tmp.append(b1 | b2)
@@ -2063,12 +2063,12 @@ class Sm(Ga):
                     tmp.append(diff(x_i, u_j))
                 dxdu.append(tmp)
 
-            #print 'dxdu =', dxdu
+            # print 'dxdu =', dxdu
 
             sub_pairs = list(zip(ga.coords, u))
 
-            #Construct metric tensor form coordinate maps
-            g = eye(n_sub)  #Zero n_sub x n_sub sympy matrix
+            # Construct metric tensor form coordinate maps
+            g = eye(n_sub)  # Zero n_sub x n_sub sympy matrix
             n_range = list(range(n_sub))
             for i in n_range:
                 for j in n_range:
@@ -2083,8 +2083,8 @@ class Sm(Ga):
 
         Ga.__init__(self, root, g=g, coords=coords, norm=norm, debug=debug)
 
-        if isinstance(u,mv.Mv):  #Construct additional functions for vector manifold
-            #self.r_basis_mv under construction
+        if isinstance(u,mv.Mv):  # Construct additional functions for vector manifold
+            # self.r_basis_mv under construction
 
             pass
 
