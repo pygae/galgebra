@@ -238,7 +238,7 @@ class Ga(metric.Metric):
 
     .. attribute:: wedge_table_dict
 
-        Outer products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1^base2,...}`
+        Outer products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1^base2,...}``
 
     .. attribute:: dot_table_dict
 
@@ -963,29 +963,32 @@ class Ga(metric.Metric):
             return self.base_to_blade_rep(base12)
 
     def reduce_basis(self, blst):
-        """
-        Repetitively applies reduce_basis_loop to basis
+        r"""
+        Repetitively applies :meth:`reduce_basis_loop` to `blst`
         product representation until normal form is
         realized for non-orthogonal basis
 
         If the basis vectors are represented by the non-
-        commutative symbols e_1,...,e_n then a grade r base
-        is the geometric product e_i_1*e_i_2*...*e_i_r where
-        i_1<i_2<...<i_r (normal form).  Then in galgebra this
+        commutative symbols :math:`e_1,...,e_n` then a grade :math:`r` base
+        is the geometric product :math:`e_{i_1}e_{i_2}\cdots e_{i_r}` where
+        :math:`i_1<i_2<\ldots<i_r` (normal form).  Then in galgebra this
         base is represented by a single indexed non-commutative
-        symbol with indexes [i_1,i_2,...,i_r].  The total number
-        of these bases in an n-dimensional vector space is 2**n.
-        reduce basis takes the geometric products of basis vectors that
+        symbol with indexes :math:`[i_1,i_2,\ldots,i_r]`.  The total number
+        of these bases in an n-dimensional vector space is :math:`2^n`.
+
+        :meth:`reduce_basis` takes the geometric products of basis vectors that
         are not in normal form (out of order) and reduces them to a sum
         of bases that are in normal form (in order).  It does this by
-        recursively applying the geometric algebra formula -
+        recursively applying the geometric algebra formula
 
-            e_i*e_j = 2*(e_i|e_j) - e_j*e_i
+        .. math::
 
-        where the scalar product (e_i|e_j) is obtained from the metric
+            e_ie_j = 2(e_i \cdot e_j) - e_je_i
+
+        where the scalar product :math:`e_i \cdot e_j` is obtained from the metric
         tensor of the vector space.  This also allows one to calculate
-        the geometric product of any two bases of and grade of the
-        geometric algebra, the multiplication table.
+        the geometric product of any two bases and grade of the
+        geometric algebra, and form the multiplication table.
         """
         blst = list(blst)
         if blst == []:  # blst represents scalar
@@ -1030,27 +1033,28 @@ class Ga(metric.Metric):
     @staticmethod
     def reduce_basis_loop(g, blst):
         r"""
-        blst is a list of integers :math:`[i_{1},...,i_{r}]` representing the geometric
-        product of r basis vectors :math:`a_{{i_1}}*...*a_{{i_r}}`. :meth:`reduce_basis_loop`
-        searches along the list :math:`[i_{1},...,i_{r}]` untill it finds :math:`i_{j} = i_{j+1}`
+        blst is a list of integers :math:`[i_{1},\ldots,i_{r}]` representing the geometric
+        product of r basis vectors :math:`a_{{i_1}}\cdots a_{{i_r}}`. :meth:`reduce_basis_loop`
+        searches along the list :math:`[i_{1},\ldots,i_{r}]` untill it finds :math:`i_{j} = i_{j+1}`
         and in this case contracts the list, or if :math:`i_{j} > i_{j+1}` it revises
         the list (:math:`\sim i_{j}` means remove :math:`i_{j}` from the list)
 
         * Case 1: If :math:`i_{j} = i_{j+1}`, return
           :math:`a_{i_{j}}^2` and
-          :math:`[i_{1},..,\sim i_{j},\sim i_{j+1},...,i_{r}]`
+          :math:`[i_{1},\ldots,\sim i_{j},\sim i_{j+1},\ldots,i_{r}]`
 
         * Case 2: If :math:`i_{j} > i_{j+1}`, return
           :math:`a_{i_{j}}.a_{i_{j+1}}`,
-          :math:`[i_{1},..,\sim i_{j},\sim i_{j+1},...,i_{r}]`, and
-          :math:`[i_{1},..,i_{j+1},i_{j},...,i_{r}]`
+          :math:`[i_{1},\ldots,\sim i_{j},\sim i_{j+1},\ldots,i_{r}]`, and
+          :math:`[i_{1},\ldots,i_{j+1},i_{j},\ldots,i_{r}]`
 
-        This is an implementation of the formula:
+        This is an implementation of the formula
 
-            e_i*e_j = 2(e_i|e_j) - e_j*e_i
+        .. math::
 
-        Where e_i and e_j are basis vectors, * the geometric product, and
-        | the dot product.
+            e_i e_j = 2(e_i \cdot e_j) - e_j e_i
+
+        Where :math:`e_i` and :math:`e_j` are basis vectors.
         """
         nblst = len(blst)  # number of basis vectors
         if nblst <= 1:
@@ -1085,12 +1089,13 @@ class Ga(metric.Metric):
     @staticmethod
     def blade_reduce(lst):
         """
-        Reduce wedge product of basis vectors to normal order.  lst is
-        list of indicies of basis vectors.  blade_reduce sorts the list
-        and determines if overall number of exchanges in list is odd or
-        even and returns sign changes (sgn) and sorted list.  If any two
-        indicies in list are equal (wedge product is zero) sgn = 0 and
-        lst = None are returned.
+        Reduce wedge product of basis vectors to normal order.
+
+        `lst` is a list of indicies of basis vectors.  blade_reduce sorts the list
+        and determines if the overall number of exchanges in the list is odd or
+        even, returning sign changes (``sgn``) and sorted list.  If any two
+        indicies in list are equal (wedge product is zero) ``sgn = 0`` and
+        ``lst = None`` are returned.
         """
         sgn = S(1)
         for i in range(1, len(lst)):
@@ -1117,7 +1122,7 @@ class Ga(metric.Metric):
             return S(0)
         (sgn, wedge12) = Ga.blade_reduce(index12)
         if sgn != 0:
-            return(sgn * self.indexes_to_blades_dict[tuple(wedge12)])
+            return sgn * self.indexes_to_blades_dict[tuple(wedge12)]
         else:
             return S(0)
 
@@ -1241,18 +1246,10 @@ class Ga(metric.Metric):
 
         (coefs, indexes) = self.reduce_basis(index)
 
-        s = 0
-
-        if [] in indexes:  # extract scalar part from multivector expansion
-            iscalar = indexes.index([])
-            s += coefs[iscalar]
-            del indexes[iscalar]
-            del coefs[iscalar]
-
-        for (coef, index) in zip(coefs, indexes):
-            s += coef * self.indexes_to_bases_dict[tuple(index)]
-
-        return s
+        return sum((
+            coef * self.indexes_to_bases_dict[tuple(index)]
+            for (coef, index) in zip(coefs, indexes)
+        ), S(0))
 
     def _build_base_blade_conversions(self):
 
@@ -1308,7 +1305,7 @@ class Ga(metric.Metric):
         if self.is_ortho:
             return A
         else:
-            #return(expand(A).subs(self.base_expansion_dict))
+            # return expand(A).subs(self.base_expansion_dict)
             return nc_subs(expand(A), self.base_expand)
 
     def blade_to_base_rep(self, A):
@@ -1316,7 +1313,7 @@ class Ga(metric.Metric):
         if self.is_ortho:
             return A
         else:
-            #return(expand(A).subs(self.blade_expansion_dict))
+            # return expand(A).subs(self.blade_expansion_dict)
             return nc_subs(expand(A), self._all_blades_lst, self.blade_expansion)
 
     ###### Products (*,^,|,<,>) for multivector representations ########
@@ -1444,7 +1441,7 @@ class Ga(metric.Metric):
         else:
             if isinstance(A, Add):
                 A = expand(A)
-                return(sum([x for x in A.args if not x.is_commutative]))
+                return sum([x for x in A.args if not x.is_commutative])
             elif isinstance(A, Symbol):
                 if A.is_commutative:
                     return 0
@@ -1464,7 +1461,7 @@ class Ga(metric.Metric):
         else:
             A = expand(A)
             if isinstance(A, Add):
-                return(sum([x for x in A.args if x.is_commutative]))
+                return sum([x for x in A.args if x.is_commutative])
             elif isinstance(A, Symbol):
                 if A.is_commutative:
                     return A
@@ -1488,7 +1485,7 @@ class Ga(metric.Metric):
     def grades(self, A):  # Return list of grades present in A
         A = self.base_to_blade_rep(A)
         A = expand(A)
-        blades = []
+        blades = set()
         if isinstance(A, Add):
             args = A.args
         else:
@@ -1497,21 +1494,13 @@ class Ga(metric.Metric):
             blade = term.args_cnc()[1]
             l_blade = len(blade)
             if l_blade > 0:
-                if blade[0] not in blades:
-                    blades.append(blade[0])
+                blades.add(blade[0])
             else:
-                if one not in blades:
-                    blades.append(one)
-        grade_lst = []
-        if one in blades:
-            grade_lst.append(0)
-        for blade in blades:
-            if blade != one:
-                grade = self.blades_to_grades_dict[blade]
-                if grade not in grade_lst:
-                    grade_lst.append(grade)
-        grade_lst.sort()
-        return(grade_lst)
+                blades.add(one)
+        return sorted({
+            self.blades_to_grades_dict[blade]
+            for blade in blades
+        })
 
     def reverse(self, A):  # Calculates reverse of A (see documentation)
         A = expand(A)
@@ -1546,14 +1535,12 @@ class Ga(metric.Metric):
         return s
 
     def get_grade(self, A, r):  # Return grade r of A, <A>_{r}
-        if r == 0:
-            return self.scalar_part(A)
         coefs, bases = metric.linear_expand(A)
-        s = zero
-        for (coef, base) in zip(coefs, bases):
-            if base != one and self.blades_to_grades_dict[base] == r:
-                s += coef * base
-        return s
+        return sum((
+            coef * base
+            for coef, base in zip(coefs, bases)
+            if self.blades_to_grades_dict[base] == r
+        ), S(0))
 
     def even_odd(self, A, even=True):  # Return even or odd part of A
         A = expand(A)

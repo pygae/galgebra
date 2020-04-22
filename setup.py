@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
-from distutils.core import Extension
 import os
 
 version_path = os.path.join('galgebra', '_version.py')
@@ -11,15 +10,15 @@ Symbolic Geometric Algebra/Calculus package for SymPy. BSD License.
 """
 
 setup(name='galgebra',
-      version=__version__,
+      version=__version__,  # noqa: F821
       description='Symbolic Geometric Algebra/Calculus package for SymPy.',
       author='Alan Bromborsky',
       author_email='hadfield.hugo@gmail.com',
       url='https://github.com/pygae/galgebra',
       license='BSD',
       packages=find_packages(),
-      package_dir={'galgebra':'galgebra'},
-      install_requires = ['sympy'],
+      package_dir={'galgebra': 'galgebra'},
+      install_requires=['sympy'],
       python_requires='>=3.5.*',
       long_description=LONG_DESCRIPTION,
       classifiers=[
@@ -32,5 +31,6 @@ setup(name='galgebra',
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',
             'Programming Language :: Python :: 3.7',
+            'Programming Language :: Python :: 3.8',
             'Topic :: Scientific/Engineering :: Mathematics',
             'Topic :: Scientific/Engineering :: Physics'])

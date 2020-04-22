@@ -402,7 +402,7 @@ class GaPrinter(StrPrinter):
 
         if expr.func.nargs is not None:
             if name in GaPrinter.function_names:
-                return(expr.func.__name__ + "(%s)" % self.stringify(expr.args, ", "))
+                return expr.func.__name__ + "(%s)" % self.stringify(expr.args, ", ")
 
         return Eprint.Fct("%s" % (name,))
 
@@ -841,9 +841,9 @@ class GaLatexPrinter(LatexPrinter):
             name_str = name_str[1:-1]
             name_lst = name_str.split('.')
             name_str = r'\left ( ' + str_symbol(name_lst[0]) + r'\cdot ' + str_symbol(name_lst[1]) + r'\right ) '
-            return(name_str)
+            return name_str
 
-        return(str_symbol(expr.name))
+        return str_symbol(expr.name)
 
     def _print_Function(self, expr, exp=None):
 
