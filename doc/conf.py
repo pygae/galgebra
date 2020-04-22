@@ -19,6 +19,7 @@
 # -- Imports
 
 import sphinx_rtd_theme
+import sphinx
 
 # -- Project information -----------------------------------------------------
 
@@ -51,6 +52,24 @@ extensions = [
     'releases'
 ]
 
+
+def monkeypatch(cls):
+    """ decorator to monkey-patch methods """
+    def decorator(f):
+        method = f.__name__
+        old_method = getattr(cls, method)
+        setattr(cls, method, lambda self, *args, **kwargs: f(old_method, self, *args, **kwargs))
+    return decorator
+
+# workaround until https://github.com/miyakogi/m2r/pull/55 is merged
+@monkeypatch(sphinx.registry.SphinxComponentRegistry)
+def add_source_parser(_old_add_source_parser, self, *args, **kwargs):
+    # signature is (parser: Type[Parser], **kwargs), but m2r expects
+    # the removed (str, parser: Type[Parser], **kwargs).
+    if isinstance(args[0], str):
+        args = args[1:]
+    return _old_add_source_parser(self, *args, **kwargs)
+
 # -- nbsphinx configuration ---------------------------------------------------
 
 import galgebra
@@ -66,15 +85,15 @@ nbsphinx_timeout = 60
 napoleon_include_init_with_doc= False
 
 autoclass_content = "both"  # include both class docstring and __init__
-autodoc_default_flags = [
+autodoc_default_options = {
         # Make sure that any autodoc declarations show the right members
-        "members",
-        "inherited-members",
-        # "undoc-members",
-        # "special-members",
-        # "private-members",
-        # "show-inheritance",
-]
+        "members": True,
+        "inherited-members": True,
+        # "undoc-members": True,
+        # "special-members": True,
+        # "private-members": True,
+        # "show-inheritance": True,
+}
 
 #autodoc_default_flags='members'
 # you have to list all files with automodule here due to bug in sphinx and nbsphinx
@@ -95,7 +114,7 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = ['.rst', '.md']
+source_suffix = ['.rst']
 
 # The master toctree document.
 master_doc = 'index'
@@ -110,7 +129,13 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', '**.ipynb_checkpoints', 'Thumbs.db', '.DS_Store']
+exclude_patterns = [
+    '_build', '**.ipynb_checkpoints', 'Thumbs.db', '.DS_Store',
+    # these are here for users, not for Sphinx
+    'books', 'old_installation.md', 'old_introduction.md',
+    # this is converted into ipynb elsewhere
+    'galgebra.md',
+]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
