@@ -21,4 +21,4 @@ Submodules
     utils
 """
 
-from ._version import __version__
+from ._version import __version__  # noqa: F401
