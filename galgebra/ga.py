@@ -26,6 +26,7 @@ half = Rational(1, 2)
 one = S(1)
 zero = S(0)
 
+
 def all_same(items):
     return all(x == items[0] for x in items)
 
@@ -137,6 +138,7 @@ def nc_subs(expr, base_keys, base_values=None):
 
 _T = TypeVar('T')
 _U = TypeVar('T')
+
 
 class GradedTuple(Tuple[Tuple[_T, ...], ...]):
     """ A nested tuple grouped by grade.
@@ -1954,6 +1956,7 @@ class Ga(metric.Metric):
 
     def Mlt(self,*args,**kwargs):
         return lt.Mlt(args[0], self, *args[1:], **kwargs)
+
 
 class Sm(Ga):
     """

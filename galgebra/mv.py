@@ -1390,6 +1390,7 @@ def compare(A,B):
 
 ################# Multivector Differential Operator Class ##############
 
+
 class Dop(dop._BaseDop):
     r"""
     Differential operator class for multivectors.  The operators are of

@@ -17,12 +17,14 @@ from . import printer
 from . import metric
 from . import mv
 
+
 def aprint(a):
     out = ''
     for ai in a:
         out += str(ai)+','
     print('['+out[:-1]+']')
     return
+
 
 def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
     if sub:
@@ -95,6 +97,7 @@ def Matrix_to_dictionary(mat_rep,basis):
             dict_rep[basis[row]] += mat_rep[col,row]*basis[col]
     return dict_rep
 
+
 def Dictionary_to_Matrix(dict_rep, ga):
     """ Convert dictionary representation of linear transformation to matrix """
     basis = list(dict_rep.keys())
@@ -116,6 +119,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
 
         lst_mat.append(lst_mat_row)
     return Transpose(Matrix(lst_mat))
+
 
 class Lt(object):
     r"""

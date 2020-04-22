@@ -63,11 +63,13 @@ SYS_CMD = {'linux2': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&
            'win32': {'rm': 'del', 'evince': 'start', 'null': ' > NUL', '&': ''},
            'darwin': {'rm': 'rm', 'evince': 'open', 'null': ' > /dev/null', '&': '&'}}
 
+
 def print_replace(old='^',new='*'):
     global print_replace_old, print_replace_new
     print_replace_old = old
     print_replace_new = new
     return
+
 
 def isinteractive():  #Is ipython running
     """
@@ -79,6 +81,7 @@ def isinteractive():  #Is ipython running
         return True
     except NameError:
         return False
+
 
 def find_executable(executable, path=None):
     """Try to find 'executable' in the directories listed in 'path' (a
@@ -392,9 +395,11 @@ Matrix.__str__ = lambda self: GaPrinter().doprint(self)
 Basic.__repr__ = lambda self: GaPrinter().doprint(self)
 Matrix.__repr__ = lambda self: GaPrinter().doprint(self)
 
+
 def enhance_print():
     Eprint()
     return
+
 
 class GaLatexPrinter(LatexPrinter):
     r"""
@@ -953,6 +958,7 @@ class GaLatexPrinter(LatexPrinter):
             s += '\n\\end{align*}'
             return s
 
+
 def latex(expr, **settings):
     return GaLatexPrinter(settings).doprint(expr)
 
@@ -993,6 +999,7 @@ def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
             init_printing(use_latex= 'mathjax')
 
     return
+
 
 def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     """
@@ -1114,6 +1121,7 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
 
     return latex_str
 
+
 def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug=False, pt='10pt', pdfprog='pdflatex'):
 
     """
@@ -1179,9 +1187,11 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
             os.system('Pdf2Png ' + filename[:-4])
     return
 
+
 def xdvi(filename=None, debug=False, paper=(14, 11)):
     xpdf(filename=filename, paper=paper, crop=False, png=False, prog=False, debug=debug, pt='10pt')
     return
+
 
 def LatexFormat(Fmode=True, Dmode=True, ipy=False):
     GaLatexPrinter.Dmode = Dmode
@@ -1424,6 +1434,7 @@ r"""
 \left .\begin{array}{c}         F \\ \end{array} \right ) \\
 \end{array}
 """
+
 
 def Fmt(obj,fmt=0):
     if isinstance(obj,(list,tuple,dict)):

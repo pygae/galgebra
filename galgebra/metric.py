@@ -13,6 +13,7 @@ from . import printer
 
 half = Rational(1, 2)
 
+
 def apply_function_list(f, x):
     if isinstance(f, (tuple, list)):
         fx = x
