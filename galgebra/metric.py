@@ -609,7 +609,6 @@ class Metric(object):
             return
         raise ValueError(str(self.sig) + ' is not allowed value for self.sig')
 
-
     def __init__(self, basis, *,
             g=None,
             coords=None,

@@ -34,7 +34,6 @@ class MV(Mv):
         else:
             return list(MV.GA.mv())
 
-
     def __init__(self, base, mvtype, fct=None, blade_rep=True):
         kwargs = {}
         if fct is not None:

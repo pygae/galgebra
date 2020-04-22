@@ -560,7 +560,6 @@ class Mv(object):
         else:
             return Mv(self.Ga.mul(self.obj, A.obj), ga=self.Ga)
 
-
     def __rmul__(self, A):
         if isinstance(A, dop._BaseDop):
             return NotImplemented
@@ -892,7 +891,6 @@ class Mv(object):
             else:
                 obj += obj_dict[base]*base
         return Mv(obj, ga=self.Ga)
-
 
     def is_scalar(self):
         grades = self.Ga.grades(self.obj)

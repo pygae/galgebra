@@ -354,7 +354,6 @@ class Ga(metric.Metric):
                'sph3d': 'r,theta,phi:[1,X[0]**2,X[0]**2*cos(X[1])**2]:[1,1,0]:norm=True',
                'para3d': 'u,v,z:[u**2+v**2,u**2+v**2,1]:[1,1,0]:norm=True'}
 
-
     @staticmethod
     def dual_mode(mode='I+'):
         """
@@ -1458,7 +1457,6 @@ class Ga(metric.Metric):
                 else:
                     return (0, A)
 
-
     def remove_scalar_part(self, A):
         """
         Return non-commutative part (sympy object) of ``A.obj``.
@@ -1480,7 +1478,6 @@ class Ga(metric.Metric):
                 else:
                     return A
 
-
     def scalar_part(self, A):
 
         if isinstance(A, mv.Mv):
@@ -1499,7 +1496,6 @@ class Ga(metric.Metric):
                     return A
                 else:
                     return 0
-
 
     """
         else:
