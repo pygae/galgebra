@@ -610,16 +610,16 @@ class Metric(object):
         raise ValueError(str(self.sig) + ' is not allowed value for self.sig')
 
     def __init__(
-            self, basis, *,
-            g=None,
-            coords=None,
-            X=None,
-            norm=False,
-            debug=False,
-            gsym=None,
-            sig='e',
-            Isq='-'
-        ):
+        self, basis, *,
+        g=None,
+        coords=None,
+        X=None,
+        norm=False,
+        debug=False,
+        gsym=None,
+        sig='e',
+        Isq='-'
+    ):
         """
         Parameters
         ----------
