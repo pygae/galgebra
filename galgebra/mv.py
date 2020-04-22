@@ -502,7 +502,7 @@ class Mv(object):
             return Mv(self.obj + A.obj, ga=self.Ga)
 
     def __radd__(self, A):
-        return(self + A)
+        return self + A
 
     def __sub__(self, A):
         if isinstance(A, dop._BaseDop):

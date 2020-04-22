@@ -112,9 +112,9 @@ def square_root_of_expr(expr):
     """
     if expr.is_number:
         if expr > 0:
-            return(sqrt(expr))
+            return sqrt(expr)
         else:
-            return(sqrt(-expr))
+            return sqrt(-expr)
     else:
         expr = trigsimp(expr)
         (coef, pow_lst) = sqf_list(expr)
@@ -126,7 +126,7 @@ def square_root_of_expr(expr):
         for p in pow_lst:
             (f, n) = p
             if n % 2 != 0:
-                return(sqrt(abs(expr)))  # Product not all even powers
+                return sqrt(abs(expr))  # Product not all even powers
             else:
                 coef *= f ** (n / 2)  # Positive sqrt of the square of an expression
         return coef
@@ -211,7 +211,7 @@ def symbols_list(s, indices=None, sub=True, commutative=False):
     """
 
     if isinstance(s, list):  # s is already a list of symbols
-        return(s)
+        return s
 
     if sub is True:  # subscripted list
         pos = '_'

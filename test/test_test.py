@@ -11,7 +11,7 @@ from galgebra import ga
 def F(x):
     global n, nbar
     Fx =  HALF * ((x * x) * n + 2 * x - nbar)
-    return(Fx)
+    return Fx
 
 def make_vector(a, n=3, ga=None):
     if isinstance(a, str):
@@ -20,9 +20,9 @@ def make_vector(a, n=3, ga=None):
             a_i = Symbol(a+str(i+1))
             v += a_i*ga.basis[i]
         v = ga.mv(v)
-        return(F(v))
+        return F(v)
     else:
-        return(F(a))
+        return F(a)
 
 class TestTest(unittest.TestCase):
     def setUp(self):

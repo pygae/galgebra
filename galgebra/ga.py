@@ -1110,7 +1110,7 @@ class Ga(metric.Metric):
             return S(0)
         (sgn, wedge12) = Ga.blade_reduce(index12)
         if sgn != 0:
-            return(sgn * self.indexes_to_blades_dict[tuple(wedge12)])
+            return sgn * self.indexes_to_blades_dict[tuple(wedge12)]
         else:
             return S(0)
 
@@ -1293,7 +1293,7 @@ class Ga(metric.Metric):
         if self.is_ortho:
             return A
         else:
-            #return(expand(A).subs(self.base_expansion_dict))
+            # return expand(A).subs(self.base_expansion_dict)
             return nc_subs(expand(A), self.base_expand)
 
     def blade_to_base_rep(self, A):
@@ -1301,7 +1301,7 @@ class Ga(metric.Metric):
         if self.is_ortho:
             return A
         else:
-            #return(expand(A).subs(self.blade_expansion_dict))
+            # return expand(A).subs(self.blade_expansion_dict)
             return nc_subs(expand(A), self._all_blades_lst, self.blade_expansion)
 
     ###### Products (*,^,|,<,>) for multivector representations ########
@@ -1429,7 +1429,7 @@ class Ga(metric.Metric):
         else:
             if isinstance(A, Add):
                 A = expand(A)
-                return(sum([x for x in A.args if not x.is_commutative]))
+                return sum([x for x in A.args if not x.is_commutative])
             elif isinstance(A, Symbol):
                 if A.is_commutative:
                     return 0
@@ -1449,7 +1449,7 @@ class Ga(metric.Metric):
         else:
             A = expand(A)
             if isinstance(A, Add):
-                return(sum([x for x in A.args if x.is_commutative]))
+                return sum([x for x in A.args if x.is_commutative])
             elif isinstance(A, Symbol):
                 if A.is_commutative:
                     return A
