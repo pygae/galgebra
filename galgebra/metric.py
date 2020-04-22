@@ -482,7 +482,7 @@ class Metric(object):
             if self.gsym is None:
                 self.g_inv = simplify(self.g.inv())
             else:
-                self.detg = Function('|' +self.gsym +'|',real=True)(*self.coords)
+                self.detg = Function('|' + self.gsym + '|', real=True)(*self.coords)
                 self.g_adj = simplify(self.g.adjugate())
                 self.g_inv = self.g_adj/self.detg
 
@@ -541,7 +541,7 @@ class Metric(object):
 
             return Gamma2
         else:
-            raise ValueError('In Christoffle_symobols mode = ' + str(mode) +' is not allowed\n')
+            raise ValueError('In Christoffle_symobols mode = ' + str(mode) + ' is not allowed\n')
 
     def normalize_metric(self):
 

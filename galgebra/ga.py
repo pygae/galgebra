@@ -677,7 +677,7 @@ class Ga(metric.Metric):
         >>> locals().update(ga.bases())
         '''
         if prefix is None:
-            prefix='e'
+            prefix = 'e'
         bl = self.blades.flat[1:]  # do not include the scalar, which is not named
         var_names = [prefix+''.join([k for k in str(b) if k.isdigit()]) for b in bl]
 
