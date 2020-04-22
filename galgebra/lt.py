@@ -2,7 +2,6 @@
 Multivector Linear Transformation
 """
 
-import sys
 import inspect
 import types
 import itertools
