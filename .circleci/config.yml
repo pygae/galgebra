@@ -17,8 +17,8 @@ defaults: &defaults
     - run:
         name: Test
         command: |
-          mkdir test-reports
-          pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg --junitxml=test-reports/junit.xml
+          mkdir -p test-reports/pytest
+          pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg --junitxml=test-reports/pytest/results.xml
     - run:
         name: Coverage
         when: on_success
@@ -37,11 +37,15 @@ jobs:
       - run:
           name: Install
           command: |
-            sudo pip install flake8
+            sudo pip install flake8 flake8_formatter_junit_xml
       - run:
           name: Lint
           command: |
-            flake8
+            mkdir -p test-reports/flake8
+            flake8 --format=junit-xml --output-file=test-reports/flake8/results.xml
+      - store_test_results:
+          path: test-reports
+
     docker:
       - image: circleci/python:3.8
 
