@@ -484,7 +484,7 @@ class Ga(metric.Metric):
                 self.i = self.e/sqrt(-self.e_sq)
                 self.i_inv = -self.i
         else:
-            if self.Isq == '+': # I**2 = 1
+            if self.Isq == '+':  # I**2 = 1
                 self.i = self.e/sqrt(self.e_sq)
                 self.i_inv = self.i
             else:  # I**2 = -1

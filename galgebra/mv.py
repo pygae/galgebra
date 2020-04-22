@@ -813,16 +813,16 @@ class Mv(object):
             result *= self
         return result
 
-    def __lshift__(self, A): # anti-comutator (<<)
+    def __lshift__(self, A):  # anti-comutator (<<)
         return half * (self * A + A * self)
 
-    def __rshift__(self, A): # comutator (>>)
+    def __rshift__(self, A):  # comutator (>>)
         return half * (self * A - A * self)
 
-    def __rlshift__(self, A): # anti-comutator (<<)
+    def __rlshift__(self, A):  # anti-comutator (<<)
         return half * (A * self + self * A)
 
-    def __rrshift__(self, A): # comutator (>>)
+    def __rrshift__(self, A):  # comutator (>>)
         return half * (A * self - self * A)
 
     def __lt__(self, A):  # left contraction (<)
@@ -1042,7 +1042,7 @@ class Mv(object):
         self = self.blade_rep()
         return Mv(self.Ga.reverse(self.obj), ga=self.Ga)
 
-    __invert__ = rev # allow `~x` to call x.rev()
+    __invert__ = rev  # allow `~x` to call x.rev()
 
     def diff(self, coord):
         if self.Ga.coords is None:
@@ -1099,7 +1099,7 @@ class Mv(object):
                 base = bases[0]
                 base_Mv = self.Ga.mv(base)
                 base_sq = (base_Mv*base_Mv).scalar()
-                if hint == '-': # base^2 < 0
+                if hint == '-':  # base^2 < 0
                     base_n = sqrt(-base_sq)
                     return self.Ga.mv(cos(base_n*coefs[0]) + sin(base_n*coefs[0])*(bases[0]/base_n))
                 else:  # base^2 > 0
@@ -1258,7 +1258,7 @@ class Mv(object):
         else:
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
-    __abs__ = norm # allow `abs(x)` to call z.norm()
+    __abs__ = norm  # allow `abs(x)` to call z.norm()
 
     def inv(self):
         if self.is_scalar():  # self is a scalar
@@ -1272,7 +1272,7 @@ class Mv(object):
             return (S(1)/self_sq.obj)*self
         self_rev = self.rev()
         self_self_rev = self * self_rev
-        if(self_self_rev.is_scalar()): # self*self.rev() is a scalar
+        if(self_self_rev.is_scalar()):  # self*self.rev() is a scalar
             """
             if self_self_rev.scalar() == S(0):
                 raise ValueError('!!!!In multivector inverse A*A.rev() is zero!!!!')

@@ -592,7 +592,7 @@ class Mlt(object):
         expr_lst = Mlt.expand_expr(self.fvalue,self.Ga)
         latex_str = '\\begin{align*} '
         first = True
-        cnt = 1 #  Component count on line
+        cnt = 1  # Component count on line
         for term in expr_lst:
             coef_str = str(term[0])
             coef_latex = printer.latex(term[0])
@@ -710,17 +710,17 @@ class Mlt(object):
         self.nargs = len(args)
         self.lcnt = 1
         if isinstance(f, mv.Mv):
-            if f.is_vector(): # f is vector T = f | a1
+            if f.is_vector():  # f is vector T = f | a1
                 if self.nargs != 1:
                     raise ValueError('For mlt nargs != 1 for vector!\n')
                 Ga.make_grad(self.args)
                 self.fvalue = (f | self.args[0]).obj
                 self.f = None
-            else: #  To be inplemented for f a general pure grade mulitvector
+            else:  # To be inplemented for f a general pure grade mulitvector
                 self.nargs = len(args)
                 self.fvalue = f
                 self.f = None
-        elif isinstance(f, Lt): #  f is linear transformation T = a1 | f(a2)
+        elif isinstance(f, Lt):  # f is linear transformation T = a1 | f(a2)
             if self.nargs != 2:
                 raise ValueError('For mlt nargs != 2 for linear transformation!\n')
             Ga.make_grad(self.args)
@@ -734,35 +734,35 @@ class Mlt(object):
             else:
                 self.args = [args]
                 self.nargs = 1
-            if self.nargs > 1: #  General tensor of rank > 1
+            if self.nargs > 1:  # General tensor of rank > 1
                 t_indexes = self.nargs * [Mlt.extact_basis_indexes(self.Ga)]
                 print(t_indexes)
                 print(self.Ga.Pdiffs)
                 self.fvalue = 0
                 for (t_index,a_prod) in zip(itertools.product(*t_indexes),
                                             itertools.product(*self.Ga.Pdiffs)):
-                    if fct: #  Tensor field
+                    if fct:  # Tensor field
                         coef = Function(f+'_'+''.join(map(str,t_index)),real=True)(*self.Ga.coords)
-                    else: #  Constant Tensor
+                    else:  # Constant Tensor
                         coef = symbols(f+'_'+''.join(map(str,t_index)),real=True)
                     coef *= reduce(lambda x, y: x*y, a_prod)
                     self.fvalue += coef
-            else: #  General tensor of rank = 1
+            else:  # General tensor of rank = 1
                 self.fvalue = 0
                 for (t_index,a_prod) in zip(Mlt.extact_basis_indexes(self.Ga),self.Ga.pdiffs[0]):
-                    if fct: #  Tensor field
+                    if fct:  # Tensor field
                         coef = Function(f+'_'+''.join(map(str,t_index)),real=True)(*self.Ga.coords)
-                    else: #  Constant Tensor
+                    else:  # Constant Tensor
                         coef = symbols(f+'_'+''.join(map(str,t_index)),real=True)
                     self.fvalue += coef * a_prod
         else:
-            if isinstance(f, types.FunctionType): #  Tensor defined by general multi-linear function
+            if isinstance(f, types.FunctionType):  # Tensor defined by general multi-linear function
                 args, _varargs, _kwargs, _defaults = inspect.getargspec(f)
                 self.nargs = len(args)
                 self.f = f
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f(*tuple(Ga.a[0:self.nargs]))
-            else: # Tensor defined by component expression
+            else:  # Tensor defined by component expression
                 self.f = None
                 self.nargs = len(args)
                 Mlt.increment_slots(self.nargs, Ga)
