@@ -193,7 +193,8 @@ class Mv(object):
             coeffs = __name_or_coeffs
             kw.reject_remaining()
             if len(coeffs) <= len(ga.blades[grade]):
-                return sum([coef * base
+                return sum([
+                    coef * base
                     for (coef, base) in zip(coeffs, ga.blades[grade][:len(coeffs)])])
             else:
                 raise ValueError("Too many coefficients")
