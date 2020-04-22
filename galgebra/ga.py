@@ -226,7 +226,7 @@ class Ga(metric.Metric):
 
     .. attribute:: wedge_table_dict
 
-        Outer products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1^base2,...}`
+        Outer products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1^base2,...}``
 
     .. attribute:: dot_table_dict
 
