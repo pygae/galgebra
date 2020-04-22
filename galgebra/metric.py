@@ -24,6 +24,15 @@ def apply_function_list(f, x):
 
 
 def linear_expand(expr):
+    """
+    linear_expand takes an expression that is the sum of a scalar
+    expression and a linear combination of noncommutative terms with
+    scalar coefficients and generates lists of coefficients and
+    noncommutative symbols the coefficients multiply.  The list of
+    noncommutatives symbols contains the scalar 1 if there is a scalar
+    term in the sum and also does not contain any repeated noncommutative
+    symbols.
+    """
     if not isinstance(expr, Expr):
         raise TypeError('{!r} is not a SymPy Expr'.format(expr))
     

@@ -7,7 +7,7 @@ class MV(Mv):
 
     @staticmethod
     def convert_metric(gstr):
-        if gstr[0] is '[' and gstr[-1] is ']':
+        if gstr[0] == '[' and gstr[-1] == ']':
             gstr_lst = gstr[1:-1].split(',')
             g = []
             for x in gstr_lst:

@@ -31,6 +31,21 @@ defaults: &defaults
         path: test-reports
 
 jobs:
+  "flake8":
+    steps:
+      - checkout
+      - run:
+          name: Install
+          command: |
+            sudo pip install flake8
+      - run:
+          name: Lint
+          command: |
+            flake8
+    docker:
+      - image: circleci/python:3.8
+
+  # symengine does not seem to install correctly with Python 3.8 yet
   "python-3.7-symengine":
     <<: *defaults
     environment:
@@ -38,18 +53,19 @@ jobs:
       USE_SYMENGINE: 1
     docker:
       - image: circleci/python:3.7
+  # sympy 1.3 does not claim to support Python 3.8
   "python-3.7-sympy-1.3":
     <<: *defaults
     environment:
       PIP_EXTRA_INSTALLATION: sympy==1.3
     docker:
       - image: circleci/python:3.7
-  "python-3.7-sympy-1.4":
+
+  # make sure to keep setup.py in sync with these
+  "python-3.8":
     <<: *defaults
-    environment:
-      PIP_EXTRA_INSTALLATION: sympy==1.3
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
   "python-3.7":
     <<: *defaults
     docker:
@@ -62,6 +78,7 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/python:3.5
+
   "publish":
     docker:
       - image: circleci/python:3.7
@@ -76,18 +93,30 @@ workflows:
   version: 2
   build:
     jobs:
-      - "python-3.7-symengine"
-      - "python-3.7-sympy-1.3"
-      - "python-3.7-sympy-1.4"
-      - python-3.7:
+      - "flake8":
           filters:
             tags:
               only: /^v.*$/
-      - "python-3.6"
-      - "python-3.5"
+
+      - "python-3.8":
+          filters:
+            tags:
+              only: /^v.*$/
+          requires: ["flake8"]
+      - "python-3.7":
+          requires: ["flake8"]
+      - "python-3.6":
+          requires: ["flake8"]
+      - "python-3.5":
+          requires: ["flake8"]
+      - "python-3.7-symengine":
+          requires: ["flake8"]
+      - "python-3.7-sympy-1.3":
+          requires: ["flake8"]
+
       - publish:
           requires:
-            - "python-3.7"
+            - "python-3.8"
           filters:
             branches:
               ignore: /.*/

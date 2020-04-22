@@ -6,6 +6,7 @@ For multivector-customized differential operators, see :class:`galgebra.mv.Dop`.
 import copy
 import numbers
 import warnings
+from typing import List, Tuple, Any, Iterable
 
 from sympy import Symbol, S, Add, simplify, diff, Expr, Dummy
 
@@ -188,18 +189,35 @@ class Sdop(_BaseDop):
     def __repr__(self):
         return str(self)
 
+    def __init_from_symbol(self, symbol: Symbol) -> None:
+        self.terms = ((S(1), Pdop(symbol)),)
+
+    def __init_from_coef_and_pdiffs(self, coefs: List[Any], pdiffs: List['Pdop']) -> None:
+        if not isinstance(coefs, list) or not isinstance(pdiffs, list):
+            raise TypeError("coefs and pdiffs must be lists")
+        if len(coefs) != len(pdiffs):
+            raise ValueError('In Sdop.__init__ coefficent list and Pdop list must be same length.')
+        self.terms = tuple(zip(coefs, pdiffs))
+
+    def __init_from_terms(self, terms: Iterable[Tuple[Any, 'Pdop']]) -> None:
+        self.terms = tuple(terms)
+
     def __init__(self, *args):
-        if len(args) == 1 and isinstance(args[0],Symbol):  # Simple Pdop of order 1
-            self.terms = ((S(1), Pdop(args[0])),)
-        else:
-            if len(args) == 2 and isinstance(args[0],list) and isinstance(args[1],list):
-                if len(args[0]) != len(args[1]):
-                    raise ValueError('In Sdop.__init__ coefficent list and Pdop list must be same length.')
-                self.terms = tuple(zip(args[0], args[1]))
-            elif len(args) == 1 and isinstance(args[0], (list, tuple)):
-                self.terms = tuple(args[0])
+        if len(args) == 1:
+            if isinstance(args[0], Symbol):
+                self.__init_from_symbol(*args)
+            elif isinstance(args[0], (list, tuple)):
+                self.__init_from_terms(*args)
             else:
-                raise ValueError('In Sdop.__init__ length of args must be 1 or 2 args = '+str(args))
+                raise TypeError(
+                    "A symbol or sequence is required (got type {})"
+                    .format(type(args[0]).__name__))
+        elif len(args) == 2:
+            self.__init_from_coef_and_pdiffs(*args)
+        else:
+            raise TypeError(
+                "Sdop() takes from 1 to 2 positional arguments but {} were "
+                "given".format(len(args)))
 
     def __call__(self, arg):
         # Ensure that we return the right type even when there are no terms - we
