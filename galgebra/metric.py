@@ -1,7 +1,5 @@
 """
 Metric Tensor and Derivatives of Basis Vectors.
-
-
 """
 
 import copy
@@ -11,7 +9,6 @@ from sympy import (
     Add, simplify, Expr, Function
 )
 
-from . import mv
 from . import printer
 
 half = Rational(1, 2)
@@ -41,7 +38,7 @@ def linear_expand(expr):
     
     expr = expand(expr)
 
-    if expr == 0: #expr is the scalar 0
+    if expr == 0:
         coefs = [expr]
         bases = [S(1)]
         return (coefs, bases)

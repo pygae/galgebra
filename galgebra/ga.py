@@ -1,17 +1,5 @@
 """
 Geometric Algebra (inherits Metric)
-
-    If s is a sympy expression then s.args_cnc is used as follows:
-
-    args_cnc(cset=False, warn=True)[source]
-    Return [commutative factors, non-commutative factors] of self.
-    self is treated as a Mul and the ordering of the factors is
-    maintained. If cset is True the commutative factors will be returned
-    in a set. If there were repeated factors (as may happen with an
-    unevaluated Mul) then an error will be raised unless it is
-    explicitly supressed by setting warn to False.
-
-    Note: -1 is always separated from a Number.
 """
 import warnings
 import operator
