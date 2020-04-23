@@ -2,7 +2,6 @@
 Multivector Linear Transformation
 """
 
-import sys
 import inspect
 import types
 import itertools
@@ -17,12 +16,14 @@ from . import printer
 from . import metric
 from . import mv
 
+
 def aprint(a):
     out = ''
     for ai in a:
         out += str(ai)+','
     print('['+out[:-1]+']')
     return
+
 
 def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
     if sub:
@@ -95,6 +96,7 @@ def Matrix_to_dictionary(mat_rep,basis):
             dict_rep[basis[row]] += mat_rep[col,row]*basis[col]
     return dict_rep
 
+
 def Dictionary_to_Matrix(dict_rep, ga):
     """ Convert dictionary representation of linear transformation to matrix """
     basis = list(dict_rep.keys())
@@ -116,6 +118,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
 
         lst_mat.append(lst_mat_row)
     return Transpose(Matrix(lst_mat))
+
 
 class Lt(object):
     r"""
@@ -151,7 +154,7 @@ class Lt(object):
 
     @staticmethod
     def setup(ga):
-        #coords = [Symbol('mu_' + str(x)) for x in ga.coords]
+        # coords = [Symbol('mu_' + str(x)) for x in ga.coords]
         coords = ga.coords
         x = sum([coords[i] * ga.basis[i] for i in ga.n_range])
         return coords, x
@@ -199,7 +202,7 @@ class Lt(object):
                 for (lt_i, base) in zip(mat_rep, self.Ga.basis):
                     self.lt_dict[base] = lt_i
             else:
-                #mat_rep = map(list, zip(*mat_rep))  # Transpose list of lists
+                # mat_rep = map(list, zip(*mat_rep))  # Transpose list of lists
                 for (row, base1) in zip(mat_rep, self.Ga.basis):
                     tmp = 0
                     for (col, base2) in zip(row, self.Ga.basis):
@@ -592,7 +595,7 @@ class Mlt(object):
         expr_lst = Mlt.expand_expr(self.fvalue,self.Ga)
         latex_str = '\\begin{align*} '
         first = True
-        cnt = 1 #  Component count on line
+        cnt = 1  # Component count on line
         for term in expr_lst:
             coef_str = str(term[0])
             coef_latex = printer.latex(term[0])
@@ -610,7 +613,7 @@ class Mlt(object):
                 latex_str += ' & ' + coef_latex
             else:
                 latex_str += coef_latex
-            if cnt%self.lcnt == 0:
+            if cnt % self.lcnt == 0:
                 latex_str += '\\\\ '
                 cnt = 1
             else:
@@ -618,7 +621,7 @@ class Mlt(object):
         if self.lcnt == len(expr_lst) or self.lcnt == 1:
             latex_str = latex_str[:-3]
         latex_str = latex_str + ' \\end{align*} \n'
-        return  latex_str
+        return latex_str
 
     def Fmt(self, lcnt=1, title=None):
         """
@@ -710,17 +713,17 @@ class Mlt(object):
         self.nargs = len(args)
         self.lcnt = 1
         if isinstance(f, mv.Mv):
-            if f.is_vector(): # f is vector T = f | a1
+            if f.is_vector():  # f is vector T = f | a1
                 if self.nargs != 1:
                     raise ValueError('For mlt nargs != 1 for vector!\n')
                 Ga.make_grad(self.args)
                 self.fvalue = (f | self.args[0]).obj
                 self.f = None
-            else: #  To be inplemented for f a general pure grade mulitvector
+            else:  # To be inplemented for f a general pure grade mulitvector
                 self.nargs = len(args)
                 self.fvalue = f
                 self.f = None
-        elif isinstance(f, Lt): #  f is linear transformation T = a1 | f(a2)
+        elif isinstance(f, Lt):  # f is linear transformation T = a1 | f(a2)
             if self.nargs != 2:
                 raise ValueError('For mlt nargs != 2 for linear transformation!\n')
             Ga.make_grad(self.args)
@@ -734,35 +737,35 @@ class Mlt(object):
             else:
                 self.args = [args]
                 self.nargs = 1
-            if self.nargs > 1: #  General tensor of rank > 1
+            if self.nargs > 1:  # General tensor of rank > 1
                 t_indexes = self.nargs * [Mlt.extact_basis_indexes(self.Ga)]
                 print(t_indexes)
                 print(self.Ga.Pdiffs)
                 self.fvalue = 0
                 for (t_index,a_prod) in zip(itertools.product(*t_indexes),
                                             itertools.product(*self.Ga.Pdiffs)):
-                    if fct: #  Tensor field
+                    if fct:  # Tensor field
                         coef = Function(f+'_'+''.join(map(str,t_index)),real=True)(*self.Ga.coords)
-                    else: #  Constant Tensor
+                    else:  # Constant Tensor
                         coef = symbols(f+'_'+''.join(map(str,t_index)),real=True)
                     coef *= reduce(lambda x, y: x*y, a_prod)
                     self.fvalue += coef
-            else: #  General tensor of rank = 1
+            else:  # General tensor of rank = 1
                 self.fvalue = 0
                 for (t_index,a_prod) in zip(Mlt.extact_basis_indexes(self.Ga),self.Ga.pdiffs[0]):
-                    if fct: #  Tensor field
+                    if fct:  # Tensor field
                         coef = Function(f+'_'+''.join(map(str,t_index)),real=True)(*self.Ga.coords)
-                    else: #  Constant Tensor
+                    else:  # Constant Tensor
                         coef = symbols(f+'_'+''.join(map(str,t_index)),real=True)
                     self.fvalue += coef * a_prod
         else:
-            if isinstance(f, types.FunctionType): #  Tensor defined by general multi-linear function
+            if isinstance(f, types.FunctionType):  # Tensor defined by general multi-linear function
                 args, _varargs, _kwargs, _defaults = inspect.getargspec(f)
                 self.nargs = len(args)
                 self.f = f
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f(*tuple(Ga.a[0:self.nargs]))
-            else: # Tensor defined by component expression
+            else:  # Tensor defined by component expression
                 self.f = None
                 self.nargs = len(args)
                 Mlt.increment_slots(self.nargs, Ga)
@@ -897,6 +900,7 @@ class Mlt(object):
         indexes = itertools.product(basis, repeat=rank)
         output = ''
         for i, (e, i_index) in enumerate(zip(indexes, i_indexes)):
-            if i_index[-1] % ndim == 0: print('')
+            if i_index[-1] % ndim == 0:
+                print('')
             output += str(i)+':'+str(i_index)+':'+str(self(*e)) + '\n'
         return output

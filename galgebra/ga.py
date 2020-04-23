@@ -26,6 +26,7 @@ half = Rational(1, 2)
 one = S(1)
 zero = S(0)
 
+
 def all_same(items):
     return all(x == items[0] for x in items)
 
@@ -137,6 +138,7 @@ def nc_subs(expr, base_keys, base_values=None):
 
 _T = TypeVar('T')
 _U = TypeVar('T')
+
 
 class GradedTuple(Tuple[Tuple[_T, ...], ...]):
     """ A nested tuple grouped by grade.
@@ -352,7 +354,6 @@ class Ga(metric.Metric):
                'sph3d': 'r,theta,phi:[1,X[0]**2,X[0]**2*cos(X[1])**2]:[1,1,0]:norm=True',
                'para3d': 'u,v,z:[u**2+v**2,u**2+v**2,1]:[1,1,0]:norm=True'}
 
-
     @staticmethod
     def dual_mode(mode='I+'):
         """
@@ -476,7 +477,7 @@ class Ga(metric.Metric):
             if self.e_sq == S(0):
                 self.sing_flg = True
                 print('!!!!If I**2 = 0, I cannot be normalized!!!!')
-                #raise ValueError('!!!!If I**2 = 0, I cannot be normalized!!!!')
+                # raise ValueError('!!!!If I**2 = 0, I cannot be normalized!!!!')
             if self.e_sq > S(0):
                 self.i = self.e/sqrt(self.e_sq)
                 self.i_inv = self.i
@@ -484,7 +485,7 @@ class Ga(metric.Metric):
                 self.i = self.e/sqrt(-self.e_sq)
                 self.i_inv = -self.i
         else:
-            if self.Isq == '+': # I**2 = 1
+            if self.Isq == '+':  # I**2 = 1
                 self.i = self.e/sqrt(self.e_sq)
                 self.i_inv = self.i
             else:  # I**2 = -1
@@ -675,7 +676,7 @@ class Ga(metric.Metric):
         >>> locals().update(ga.bases())
         '''
         if prefix is None:
-            prefix='e'
+            prefix = 'e'
         bl = self.blades.flat[1:]  # do not include the scalar, which is not named
         var_names = [prefix+''.join([k for k in str(b) if k.isdigit()]) for b in bl]
 
@@ -950,7 +951,7 @@ class Ga(metric.Metric):
 
     ######## Functions for Calculation products of blades/bases ########
 
-    #******************** Geometric Product (*) ***********************#
+    # ******************* Geometric Product (*) ********************** #
 
     def geometric_product_basis_blades(self, blade12):
         # geometric (*) product for orthogonal basis
@@ -1036,9 +1037,9 @@ class Ga(metric.Metric):
                         blst_flg[i] = tmp[2]
                     else:  # blst_expand[i] revised
                         blst_coef[i] = -blst_coef[i]
-                        #if revision force one more pass in case revision
-                        #causes repeated index previous to revised pair of
-                        #indexes
+                        # if revision force one more pass in case revision
+                        # causes repeated index previous to revised pair of
+                        # indexes
                         blst_flg[i] = False
                         blst_expand[i] = tmp[3]
                         blst_coef.append(-blst_coef[i] * tmp[0])
@@ -1106,10 +1107,10 @@ class Ga(metric.Metric):
                 else:
                     blst1_flg = False  # more revision needed
                 return a1, blst1, blst1_flg, blst
- 
+
         return True  # revision complete, blst in normal order
 
-    #******************* Outer/wedge (^) product **********************#
+    # ****************** Outer/wedge (^) product ********************* #
 
     @staticmethod
     def blade_reduce(lst):
@@ -1151,7 +1152,7 @@ class Ga(metric.Metric):
         else:
             return S(0)
 
-    #****** Dot (|) product, reft (<) and right (>) contractions ******#
+    # ***** Dot (|) product, reft (<) and right (>) contractions ***** #
 
     def _dot_product_grade(self, grade1, grade2, mode):
         """
@@ -1456,7 +1457,6 @@ class Ga(metric.Metric):
                 else:
                     return (0, A)
 
-
     def remove_scalar_part(self, A):
         """
         Return non-commutative part (sympy object) of ``A.obj``.
@@ -1478,7 +1478,6 @@ class Ga(metric.Metric):
                 else:
                     return A
 
-
     def scalar_part(self, A):
 
         if isinstance(A, mv.Mv):
@@ -1497,7 +1496,6 @@ class Ga(metric.Metric):
                     return A
                 else:
                     return 0
-
 
     """
         else:
@@ -1955,6 +1953,7 @@ class Ga(metric.Metric):
     def Mlt(self,*args,**kwargs):
         return lt.Mlt(args[0], self, *args[1:], **kwargs)
 
+
 class Sm(Ga):
     """
     Submanifold is a geometric algebra defined on a submanifold of a
@@ -2011,7 +2010,7 @@ class Sm(Ga):
             Base Geometric Algebra
         """
 
-        #print '!!!Enter Sm!!!'
+        # print '!!!Enter Sm!!!'
 
         if printer.GaLatexPrinter.latex_flg:
             printer.GaLatexPrinter.restore()
@@ -2034,19 +2033,19 @@ class Sm(Ga):
         basis_str = basis_str[:-1]
         """
 
-        #print 'u =', u
+        # print 'u =', u
 
-        if isinstance(u,mv.Mv):  #Define vector manifold
+        if isinstance(u,mv.Mv):  # Define vector manifold
             self.ebasis = []
             for coord in coords:
-                #Partial derivation of vector function to get basis vectors
+                # Partial derivation of vector function to get basis vectors
                 self.ebasis.append(u.diff(coord))
 
-            #print 'sm ebasis =', self.ebasis
+            # print 'sm ebasis =', self.ebasis
 
             self.g = []
             for b1 in self.ebasis:
-                #Metric tensor from dot products of basis vectors
+                # Metric tensor from dot products of basis vectors
                 tmp = []
                 for b2 in self.ebasis:
                     tmp.append(b1 | b2)
@@ -2064,12 +2063,12 @@ class Sm(Ga):
                     tmp.append(diff(x_i, u_j))
                 dxdu.append(tmp)
 
-            #print 'dxdu =', dxdu
+            # print 'dxdu =', dxdu
 
             sub_pairs = list(zip(ga.coords, u))
 
-            #Construct metric tensor form coordinate maps
-            g = eye(n_sub)  #Zero n_sub x n_sub sympy matrix
+            # Construct metric tensor form coordinate maps
+            g = eye(n_sub)  # Zero n_sub x n_sub sympy matrix
             n_range = list(range(n_sub))
             for i in n_range:
                 for j in n_range:
@@ -2084,8 +2083,8 @@ class Sm(Ga):
 
         Ga.__init__(self, root, g=g, coords=coords, norm=norm, debug=debug)
 
-        if isinstance(u,mv.Mv):  #Construct additional functions for vector manifold
-            #self.r_basis_mv under construction
+        if isinstance(u,mv.Mv):  # Construct additional functions for vector manifold
+            # self.r_basis_mv under construction
 
             pass
 

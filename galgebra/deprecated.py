@@ -3,6 +3,7 @@ from .mv import Mv
 
 ################################# MV class for backward compatibility ###################
 
+
 class MV(Mv):
 
     @staticmethod
@@ -32,7 +33,6 @@ class MV(Mv):
             return list(MV.GA.mv()) + [MV.grad]
         else:
             return list(MV.GA.mv())
-
 
     def __init__(self, base, mvtype, fct=None, blade_rep=True):
         kwargs = {}

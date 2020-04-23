@@ -13,6 +13,7 @@ from . import printer
 
 half = Rational(1, 2)
 
+
 def apply_function_list(f, x):
     if isinstance(f, (tuple, list)):
         fx = x
@@ -35,7 +36,7 @@ def linear_expand(expr):
     """
     if not isinstance(expr, Expr):
         raise TypeError('{!r} is not a SymPy Expr'.format(expr))
-    
+
     expr = expand(expr)
 
     if expr == 0:
@@ -481,7 +482,7 @@ class Metric(object):
             if self.gsym is None:
                 self.g_inv = simplify(self.g.inv())
             else:
-                self.detg = Function('|' +self.gsym +'|',real=True)(*self.coords)
+                self.detg = Function('|' + self.gsym + '|', real=True)(*self.coords)
                 self.g_adj = simplify(self.g.adjugate())
                 self.g_inv = self.g_adj/self.detg
 
@@ -540,7 +541,7 @@ class Metric(object):
 
             return Gamma2
         else:
-            raise ValueError('In Christoffle_symobols mode = ' + str(mode) +' is not allowed\n')
+            raise ValueError('In Christoffle_symobols mode = ' + str(mode) + ' is not allowed\n')
 
     def normalize_metric(self):
 
@@ -608,17 +609,17 @@ class Metric(object):
             return
         raise ValueError(str(self.sig) + ' is not allowed value for self.sig')
 
-
-    def __init__(self, basis, *,
-            g=None,
-            coords=None,
-            X=None,
-            norm=False,
-            debug=False,
-            gsym=None,
-            sig='e',
-            Isq='-'
-        ):
+    def __init__(
+        self, basis, *,
+        g=None,
+        coords=None,
+        X=None,
+        norm=False,
+        debug=False,
+        gsym=None,
+        sig='e',
+        Isq='-'
+    ):
         """
         Parameters
         ----------
@@ -787,7 +788,7 @@ class Metric(object):
             self.signature()
             # Sign of square of pseudo scalar
             self.e_sq_sgn = '+'
-            if ((self.n*(self.n-1))//2+self.sig[1])%2 == 1:
+            if ((self.n*(self.n-1))//2+self.sig[1]) % 2 == 1:
                 self.e_sq_sgn = '-'
 
         if self.debug:
