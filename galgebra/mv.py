@@ -121,7 +121,7 @@ class Mv(object):
         if isinstance(obj, Add):
             args = obj.args
         else:
-            if obj in self.Ga._all_blades_lst:
+            if obj in self.Ga.blades.flat:
                 self.is_blade_rep = True
                 self.i_grade = self.Ga.blades_to_grades_dict[obj]
                 self.grades = [self.i_grade]
@@ -142,7 +142,7 @@ class Mv(object):
                 c, nc = term.args_cnc(split_1=False)
                 blade = nc[0]
                 #print 'blade =',blade
-                if blade in self.Ga._all_blades_lst:
+                if blade in self.Ga.blades.flat:
                     grade = self.Ga.blades_to_grades_dict[blade]
                     if not grade in grades:
                         grades.append(grade)
@@ -599,10 +599,10 @@ class Mv(object):
         self = Mv(obj, ga=self.Ga)
 
         if self.is_blade_rep or self.Ga.is_ortho:
-            base_keys = self.Ga._all_blades_lst
+            base_keys = self.Ga.blades.flat
             grade_keys = self.Ga.blades_to_grades_dict
         else:
-            base_keys = self.Ga._all_bases_lst
+            base_keys = self.Ga.bases.flat
             grade_keys = self.Ga.bases_to_grades_dict
         if isinstance(self.obj, Add):  # collect coefficients of bases
             if self.obj.is_commutative:
@@ -685,10 +685,10 @@ class Mv(object):
             return ZERO_STR
 
         if self.is_blade_rep or self.Ga.is_ortho:
-            base_keys = self.Ga._all_blades_lst
+            base_keys = self.Ga.blades.flat
             grade_keys = self.Ga.blades_to_grades_dict
         else:
-            base_keys = self.Ga._all_bases_lst
+            base_keys = self.Ga.bases.flat
             grade_keys = self.Ga.bases_to_grades_dict
         if isinstance(self.obj, Add):
             args = self.obj.args
@@ -873,9 +873,9 @@ class Mv(object):
         """ # dead code
         self.obj = expand(self.obj)
         if self.is_blade_rep or Mv.Ga.is_ortho:
-            c = self.Ga.blades_lst
+            c = self.Ga.blades.flat
         else:
-            c = self.Ga.bases_lst
+            c = self.Ga.bases.flat
         self.obj = self.obj.collect(c)
         return self
         """
@@ -970,7 +970,7 @@ class Mv(object):
 
     def components(self):
         cb = metric.linear_expand_terms(self.obj)
-        cb = sorted(cb, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
+        cb = sorted(cb, key=lambda x: self.Ga.blades.flat.index(x[1]))
         return [self.Ga.mv(coef * base) for (coef, base) in cb]
 
     def get_coefs(self, grade):
@@ -987,7 +987,7 @@ class Mv(object):
         """
 
         if blade_lst is None:
-            blade_lst = self.Ga._all_mv_blades_lst
+            blade_lst = self.Ga.mv_blades.flat
 
         #print 'Enter blade_coefs blade_lst =', blade_lst, type(blade_lst), [i.is_blade() for i in blade_lst]
 
@@ -1725,7 +1725,7 @@ class Dop(dop._BaseDop):
             for i in range(len(coefs)):
                 coefs[i] = coefs[i].simplify(modes)
         terms = list(zip(coefs, bases))
-        return sorted(terms, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
+        return sorted(terms, key=lambda x: self.Ga.blades.flat.index(x[1]))
 
     def Dop_str(self):
         if len(self.terms) == 0:
