@@ -308,9 +308,11 @@ def oprint(*args, dict_mode=False):
             print(ostr(arg, dict_mode))
     return
 
+
 def hline():
     print('\n\\noindent\\rule{\\textwidth}{1pt}')
     return
+
 
 class Eprint:
 
@@ -1028,6 +1030,7 @@ class GaLatexPrinter(LatexPrinter):
 def latex(expr, **settings):
     return GaLatexPrinter(settings).doprint(expr)
 
+
 def latex_print(*s,**kws):
 
     s = list(s)
@@ -1075,6 +1078,7 @@ def latex_print(*s,**kws):
             printer.latex_str += r'\begin{equation} ' +latex_str + r'\nonumber\end{equation}' + '\n'
             #GaLatexPrinter.text_printer('latex string length =',len(printer.latex_str))
         return
+
 
 def print_latex(expr, **settings):
     """Prints LaTeX representation of the given expression."""
@@ -1336,7 +1340,7 @@ def xtex(tex='file',filename=None, paper=(14, 11), crop=False, png=False, prog=F
 
     GaLatexPrinter.restore()
 
-    """
+    r"""
     Each line in the latex_str is interpreted to be an equation or align
     environment.  If the line does not begin with '\begin{aligned}' then
     'begin{equation*}' will be added to the beginning of the line and
@@ -1412,7 +1416,6 @@ def xtex(tex='file',filename=None, paper=(14, 11), crop=False, png=False, prog=F
     return
 
 
-
 def xdvi(filename=None, debug=False, paper=(14, 11)):
     xpdf(filename=filename, paper=paper, crop=False, png=False, prog=False, debug=debug, pt='10pt')
     return
@@ -1428,6 +1431,7 @@ def LatexFormat(Fmode=True, Dmode=True, ipy=False):
 prog_str = ''
 off_mode = False
 
+
 def Get_Program(off=False):
     global prog_str, off_mode
     off_mode = off
@@ -1437,6 +1441,7 @@ def Get_Program(off=False):
     prog_str = prog_file.read()
     prog_file.close()
     return
+
 
 def Print_Function():
     global prog_str, off_mode
@@ -1449,7 +1454,7 @@ def Print_Function():
     fct_name = fct_name.replace('_', ' ')
     if GaLatexPrinter.latex_flg:
         printer.latex_str += '\\begin{lstlisting}[language=Python,showspaces=false,' + \
-              'showstringspaces=false,backgroundcolor=\color{gray},frame=single]'+'\n'
+              'showstringspaces=false,backgroundcolor=\\color{gray},frame=single]'+'\n'
         printer.latex_str += tmp_str+'\n'
         printer.latex_str += '\\end{lstlisting}'+'\n'
         printer.latex_str += r'\T{Code Output:}'+'\n'
@@ -1459,7 +1464,7 @@ def Print_Function():
         print('Code output:\n')
     return
 
-"""
+r"""
 def Print_Function():
     global prog_str, off_mode
     if off_mode:
@@ -1656,6 +1661,7 @@ def parse_line(line):
     line = unparse_paren(level_lst)
     return line
 
+
 def GAeval(s, pstr=False):
     """
     GAeval converts a string to a multivector expression where the
@@ -1741,6 +1747,7 @@ def Fmt(obj,fmt=0):
         return
     else:
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
+
 
 def tprint(s):
     """
