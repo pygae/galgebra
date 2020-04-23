@@ -10,7 +10,7 @@ from typing import List, Any, Tuple, Union
 
 from sympy import (
     Symbol, Function, S, expand, Add,
-    sin, cos, sinh, cosh, sqrt, trigsimp, expand,
+    sin, cos, sinh, cosh, sqrt, trigsimp,
     simplify, diff, Rational, Expr, Abs, collect,
 )
 from sympy import exp as sympy_exp
@@ -113,7 +113,7 @@ class Mv(object):
             self.is_blade_rep = True
             self.grades = [0]
             return
-        if  obj.is_commutative:
+        if obj.is_commutative:
             self.i_grade = 0
             self.is_blade_rep = True
             self.grades = [0]
@@ -121,7 +121,7 @@ class Mv(object):
         if isinstance(obj, Add):
             args = obj.args
         else:
-            if obj in self.Ga._all_blades_lst:
+            if obj in self.Ga.blades.flat:
                 self.is_blade_rep = True
                 self.i_grade = self.Ga.blades_to_grades_dict[obj]
                 self.grades = [self.i_grade]
@@ -132,7 +132,7 @@ class Mv(object):
                 args = [obj]
 
         grades = []
-        #print 'args =', args
+        # print 'args =', args
         self.is_blade_rep = True
         for term in args:
             if term.is_commutative:
@@ -141,10 +141,10 @@ class Mv(object):
             else:
                 c, nc = term.args_cnc(split_1=False)
                 blade = nc[0]
-                #print 'blade =',blade
-                if blade in self.Ga._all_blades_lst:
+                # print 'blade =',blade
+                if blade in self.Ga.blades.flat:
                     grade = self.Ga.blades_to_grades_dict[blade]
-                    if not grade in grades:
+                    if grade not in grades:
                         grades.append(grade)
                 else:
                     self.char_Mv = True
@@ -193,7 +193,8 @@ class Mv(object):
             coeffs = __name_or_coeffs
             kw.reject_remaining()
             if len(coeffs) <= len(ga.blades[grade]):
-                return sum([coef * base
+                return sum([
+                    coef * base
                     for (coef, base) in zip(coeffs, ga.blades[grade][:len(coeffs)])])
             else:
                 raise ValueError("Too many coefficients")
@@ -348,9 +349,9 @@ class Mv(object):
                 self.is_blade_rep = x.is_blade_rep
                 self.i_grade = x.i_grade
             else:
-                if isinstance(x, Expr):  #copy constructor for obj expression
+                if isinstance(x, Expr):  # copy constructor for obj expression
                     self.obj = x
-                else:  #copy constructor for scalar obj expression
+                else:  # copy constructor for scalar obj expression
                     self.obj = S(x)
                 self.is_blade_rep = True
                 self.characterise_Mv()
@@ -442,7 +443,7 @@ class Mv(object):
     def __eq__(self, A):
         if isinstance(A, Mv):
             diff = (self - A).expand().simplify()
-            #diff = (self - A).expand()
+            # diff = (self - A).expand()
             if diff.obj == S(0):
                 return True
             else:
@@ -560,7 +561,6 @@ class Mv(object):
         else:
             return Mv(self.Ga.mul(self.obj, A.obj), ga=self.Ga)
 
-
     def __rmul__(self, A):
         if isinstance(A, dop._BaseDop):
             return NotImplemented
@@ -599,10 +599,10 @@ class Mv(object):
         self = Mv(obj, ga=self.Ga)
 
         if self.is_blade_rep or self.Ga.is_ortho:
-            base_keys = self.Ga._all_blades_lst
+            base_keys = self.Ga.blades.flat
             grade_keys = self.Ga.blades_to_grades_dict
         else:
-            base_keys = self.Ga._all_bases_lst
+            base_keys = self.Ga.bases.flat
             grade_keys = self.Ga.bases_to_grades_dict
         if isinstance(self.obj, Add):  # collect coefficients of bases
             if self.obj.is_commutative:
@@ -685,10 +685,10 @@ class Mv(object):
             return ZERO_STR
 
         if self.is_blade_rep or self.Ga.is_ortho:
-            base_keys = self.Ga._all_blades_lst
+            base_keys = self.Ga.blades.flat
             grade_keys = self.Ga.blades_to_grades_dict
         else:
-            base_keys = self.Ga._all_bases_lst
+            base_keys = self.Ga.bases.flat
             grade_keys = self.Ga.bases_to_grades_dict
         if isinstance(self.obj, Add):
             args = self.obj.args
@@ -724,7 +724,7 @@ class Mv(object):
         s = ''
         for (index, (coef, base, grade)) in sorted_terms:
             coef = printer.coef_simplify(coef)
-            #coef = simplify(coef)
+            # coef = simplify(coef)
             l_coef = printer.latex(coef)
             if l_coef == '1' and base != S(1):
                 l_coef = ''
@@ -813,16 +813,16 @@ class Mv(object):
             result *= self
         return result
 
-    def __lshift__(self, A): # anti-comutator (<<)
+    def __lshift__(self, A):  # anti-comutator (<<)
         return half * (self * A + A * self)
 
-    def __rshift__(self, A): # comutator (>>)
+    def __rshift__(self, A):  # comutator (>>)
         return half * (self * A - A * self)
 
-    def __rlshift__(self, A): # anti-comutator (<<)
+    def __rlshift__(self, A):  # anti-comutator (<<)
         return half * (A * self + self * A)
 
-    def __rrshift__(self, A): # comutator (>>)
+    def __rrshift__(self, A):  # comutator (>>)
         return half * (A * self - self * A)
 
     def __lt__(self, A):  # left contraction (<)
@@ -873,9 +873,9 @@ class Mv(object):
         """ # dead code
         self.obj = expand(self.obj)
         if self.is_blade_rep or Mv.Ga.is_ortho:
-            c = self.Ga.blades_lst
+            c = self.Ga.blades.flat
         else:
-            c = self.Ga.bases_lst
+            c = self.Ga.bases.flat
         self.obj = self.obj.collect(c)
         return self
         """
@@ -892,7 +892,6 @@ class Mv(object):
             else:
                 obj += obj_dict[base]*base
         return Mv(obj, ga=self.Ga)
-
 
     def is_scalar(self):
         grades = self.Ga.grades(self.obj)
@@ -970,7 +969,7 @@ class Mv(object):
 
     def components(self):
         cb = metric.linear_expand_terms(self.obj)
-        cb = sorted(cb, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
+        cb = sorted(cb, key=lambda x: self.Ga.blades.flat.index(x[1]))
         return [self.Ga.mv(coef * base) for (coef, base) in cb]
 
     def get_coefs(self, grade):
@@ -987,9 +986,9 @@ class Mv(object):
         """
 
         if blade_lst is None:
-            blade_lst = self.Ga._all_mv_blades_lst
+            blade_lst = self.Ga.mv_blades.flat
 
-        #print 'Enter blade_coefs blade_lst =', blade_lst, type(blade_lst), [i.is_blade() for i in blade_lst]
+        # print 'Enter blade_coefs blade_lst =', blade_lst, type(blade_lst), [i.is_blade() for i in blade_lst]
 
         for blade in blade_lst:
             if not blade.is_base() or not blade.is_blade():
@@ -1042,7 +1041,7 @@ class Mv(object):
         self = self.blade_rep()
         return Mv(self.Ga.reverse(self.obj), ga=self.Ga)
 
-    __invert__ = rev # allow `~x` to call x.rev()
+    __invert__ = rev  # allow `~x` to call x.rev()
 
     def diff(self, coord):
         if self.Ga.coords is None:
@@ -1099,7 +1098,7 @@ class Mv(object):
                 base = bases[0]
                 base_Mv = self.Ga.mv(base)
                 base_sq = (base_Mv*base_Mv).scalar()
-                if hint == '-': # base^2 < 0
+                if hint == '-':  # base^2 < 0
                     base_n = sqrt(-base_sq)
                     return self.Ga.mv(cos(base_n*coefs[0]) + sin(base_n*coefs[0])*(bases[0]/base_n))
                 else:  # base^2 > 0
@@ -1128,7 +1127,6 @@ class Mv(object):
                 else:
                     norm = simplify(sqrt(-sq))
                     value = self.obj / norm
-                    obj = cos(norm) + sin(norm) * value
                     tmp = Mv(cos(norm) + sin(norm) * value, ga=self.Ga)
                     tmp.is_blade_rep = True
                     return tmp
@@ -1258,7 +1256,7 @@ class Mv(object):
         else:
             raise TypeError('"(' + str(product) + ')" is not a scalar in norm.')
 
-    __abs__ = norm # allow `abs(x)` to call z.norm()
+    __abs__ = norm  # allow `abs(x)` to call z.norm()
 
     def inv(self):
         if self.is_scalar():  # self is a scalar
@@ -1272,7 +1270,7 @@ class Mv(object):
             return (S(1)/self_sq.obj)*self
         self_rev = self.rev()
         self_self_rev = self * self_rev
-        if(self_self_rev.is_scalar()): # self*self.rev() is a scalar
+        if(self_self_rev.is_scalar()):  # self*self.rev() is a scalar
             """
             if self_self_rev.scalar() == S(0):
                 raise ValueError('!!!!In multivector inverse A*A.rev() is zero!!!!')
@@ -1365,11 +1363,11 @@ class Mv(object):
             self = self.Ga.pDiff(self, x)
         return self
 
-
     def odot(self,dot_flg=True):
         new_self = copy.deepcopy(self)
         new_self.dot_flg = dot_flg
         return new_self
+
 
 def compare(A,B):
     """
@@ -1403,6 +1401,7 @@ def compare(A,B):
         raise TypeError('In compare both arguments are not multivectors\n')
 
 ################# Multivector Differential Operator Class ##############
+
 
 class Dop(dop._BaseDop):
     r"""
@@ -1739,7 +1738,7 @@ class Dop(dop._BaseDop):
             for i in range(len(coefs)):
                 coefs[i] = coefs[i].simplify(modes)
         terms = list(zip(coefs, bases))
-        return sorted(terms, key=lambda x: self.Ga._all_blades_lst.index(x[1]))
+        return sorted(terms, key=lambda x: self.Ga.blades.flat.index(x[1]))
 
     def Dop_str(self):
         if len(self.terms) == 0:
@@ -2014,7 +2013,7 @@ def rot(itheta, A, hint='-'):  # Rotate by the 2-blade itheta the multivector A
         raise ValueError('A not a multivector in rotate(A,itheta)')
 
 
-def refl(B, A):  #  Project on the blade B the multivector A
+def refl(B, A):  # Project on the blade B the multivector A
     if isinstance(A,Mv):
         return A.reflect_in_blade(B)
     else:

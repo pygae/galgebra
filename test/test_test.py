@@ -1,5 +1,6 @@
 import sys
 import unittest
+import pytest
 from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
 from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter, ZERO_STR
 from galgebra.ga import Ga, one, zero
@@ -422,3 +423,15 @@ class TestTest(unittest.TestCase):
         w = (E3|e3)
         w = (w.expand()).scalar()
         assert str(simplify(w/Esq)) == '1'
+
+    def test_deprecations(self):
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+
+        # none of these have the scalar as their first element, which is why
+        # they're deprecated.
+        with pytest.warns(DeprecationWarning):
+            assert ga.blades_lst[0] == e_1.obj
+        with pytest.warns(DeprecationWarning):
+            assert ga.bases_lst[0] == e_1.obj
+        with pytest.warns(DeprecationWarning):
+            assert ga.indexes_lst[1] == (1,)

@@ -8,6 +8,7 @@ from collections import OrderedDict
 from itertools import combinations
 import functools
 from functools import reduce
+from typing import Tuple, TypeVar, Callable
 
 from sympy import (
     diff, Rational, Symbol, S, Mul, Add,
@@ -24,6 +25,7 @@ from . import lt
 half = Rational(1, 2)
 one = S(1)
 zero = S(0)
+
 
 def all_same(items):
     return all(x == items[0] for x in items)
@@ -134,6 +136,40 @@ def nc_subs(expr, base_keys, base_values=None):
     return s
 
 
+_T = TypeVar('T')
+_U = TypeVar('T')
+
+
+class GradedTuple(Tuple[Tuple[_T, ...], ...]):
+    """ A nested tuple grouped by grade.
+
+    ``self[i]`` refers to a the elements associated with grade ``i``.
+
+    .. attribute:: flat
+
+        :type: Tuple[T]
+
+        The elements flattened out in order of grade.
+    """
+    def __new__(cls, *args, **kwargs):
+        # super does not work here in Python 3.5, as Tuple.__new__ is broken
+        self = tuple.__new__(cls, *args, **kwargs)
+        self.__dict__['flat'] = tuple(x for single_grade in self for x in single_grade)
+        return self
+
+    def __setattr__(self, attr, value):
+        raise AttributeError("'GradedTuple' object has no attribute {!r}".format(attr))
+
+    def _map(self, func: Callable[[_T], _U]) -> 'GradedTuple[_U]':
+        return GradedTuple(
+            tuple(
+                func(elem)
+                for elem in elems
+            )
+            for elems in self
+        )
+
+
 class Ga(metric.Metric):
     r"""
     The vector space (basis, metric, derivatives of basis vectors) is
@@ -180,18 +216,29 @@ class Ga(metric.Metric):
 
     .. attribute:: indexes
 
-        Index list for multivector bases and blades by grade (tuple of tuples).  Tuple
-        so that indexes can be used to index dictionaries.
+        :class:`GradedTuple` of index tuples.
+
+        :type: GradedTuple[Tuple[int, ...]]
 
     .. attribute:: bases
 
-        List of bases (non-commutative sympy symbols) by grade.
+        :class:`GradedTuple` of bases (non-commutative sympy symbols) by grade.
         Only created for non-orthogonal basis vectors.
+
+        :type: GradedTuple[sympy.Symbol]
 
     .. attribute:: blades
 
-        List of basis blades (non-commutative sympy symbols) by grade.
-        For orthogonal basis vectors the same as bases.
+        :class:`GradedTuple` of basis blades (non-commutative sympy symbols) by grade.
+        For orthogonal basis vectors the same as :attr:`bases`.
+
+        :type: GradedTuple[sympy.Symbol]
+
+    .. attribute:: mv_blades
+
+        :class:`GradedTuple` of :class:`mv.Mv` instances corresponding to :attr:`blades`.
+
+        :type: GradedTuple[mv.Mv]
 
     .. attribute:: coord_vec
 
@@ -307,7 +354,6 @@ class Ga(metric.Metric):
                'sph3d': 'r,theta,phi:[1,X[0]**2,X[0]**2*cos(X[1])**2]:[1,1,0]:norm=True',
                'para3d': 'u,v,z:[u**2+v**2,u**2+v**2,1]:[1,1,0]:norm=True'}
 
-
     @staticmethod
     def dual_mode(mode='I+'):
         """
@@ -408,7 +454,7 @@ class Ga(metric.Metric):
         if self.coords is not None:
             self.coords = list(self.coords)
 
-        self.e = mv.Mv(self._all_blades_lst[-1], ga=self)  # Pseudo-scalar for geometric algebra
+        self.e = mv.Mv(self.blades.flat[-1], ga=self)  # Pseudo-scalar for geometric algebra
         self.e_sq = simplify(expand((self.e*self.e).scalar()))
 
         if self.coords is not None:
@@ -431,7 +477,7 @@ class Ga(metric.Metric):
             if self.e_sq == S(0):
                 self.sing_flg = True
                 print('!!!!If I**2 = 0, I cannot be normalized!!!!')
-                #raise ValueError('!!!!If I**2 = 0, I cannot be normalized!!!!')
+                # raise ValueError('!!!!If I**2 = 0, I cannot be normalized!!!!')
             if self.e_sq > S(0):
                 self.i = self.e/sqrt(self.e_sq)
                 self.i_inv = self.i
@@ -439,7 +485,7 @@ class Ga(metric.Metric):
                 self.i = self.e/sqrt(-self.e_sq)
                 self.i_inv = -self.i
         else:
-            if self.Isq == '+': # I**2 = 1
+            if self.Isq == '+':  # I**2 = 1
                 self.i = self.e/sqrt(self.e_sq)
                 self.i_inv = self.i
             else:  # I**2 = -1
@@ -536,6 +582,30 @@ class Ga(metric.Metric):
             DeprecationWarning, stacklevel=2)
         return dop.Pdop({})
 
+    @property
+    def blades_lst(self) -> list:
+        # galgebra 0.5.0
+        warnings.warn(
+            "ga.blades_lst is deprecated, use `ga.blades.flat[1:]` instead",
+            DeprecationWarning, stacklevel=2)
+        return list(self.blades.flat[1:])
+
+    @property
+    def bases_lst(self) -> list:
+        # galgebra 0.5.0
+        warnings.warn(
+            "ga.bases_lst is deprecated, use `ga.bases.flat[1:]` instead",
+            DeprecationWarning, stacklevel=2)
+        return list(self.bases.flat[1:])
+
+    @property
+    def indexes_lst(self) -> list:
+        # galgebra 0.5.0
+        warnings.warn(
+            "ga.blades_lst is deprecated, use `ga.indexes.flat[1:]` instead",
+            DeprecationWarning, stacklevel=2)
+        return list(self.indexes.flat[1:])
+
     def mv(self, root=None, *args, **kwargs):
         """
         Instanciate and return a multivector for this, 'self',
@@ -606,8 +676,8 @@ class Ga(metric.Metric):
         >>> locals().update(ga.bases())
         '''
         if prefix is None:
-            prefix='e'
-        bl = self._all_mv_blades_lst[1:]  # do not include the scalar, which is not named
+            prefix = 'e'
+        bl = self.blades.flat[1:]  # do not include the scalar, which is not named
         var_names = [prefix+''.join([k for k in str(b) if k.isdigit()]) for b in bl]
 
         return {key:val for key,val in zip(var_names, bl)}
@@ -751,32 +821,18 @@ class Ga(metric.Metric):
 
         # index list for multivector bases and blades by grade
         basis_indexes = tuple(self.n_range)
-        self.indexes = []
-        self._all_indexes_lst = []
-        for i in range(len(basis_indexes) + 1):
-            base_tuple = tuple(combinations(basis_indexes, i))
-            self.indexes.append(base_tuple)
-            self._all_indexes_lst += list(base_tuple)
-        self.indexes = tuple(self.indexes)
+        self.indexes = GradedTuple(
+            tuple(combinations(basis_indexes, i))
+            for i in range(len(basis_indexes) + 1)
+        )
 
-        # list of non-commutative symbols for multivector bases and blades
-        # by grade and as a flattened list
-
-        self.blades = []
-        self._all_blades_lst = []
-        for grade_index in self.indexes:
-            blades = []
-            super_scripts = []
-            for base_index in grade_index:
-                blade_symbol = self._build_basis_blade_symbol(base_index)
-
-                blades.append(blade_symbol)
-                self._all_blades_lst.append(blade_symbol)
-            self.blades.append(blades)
+        # non-commutative symbols for multivector bases and blades
+        self.blades = self.indexes._map(
+            lambda index: self._build_basis_blade_symbol(index))
 
         self.blades_to_indexes = []
         self.indexes_to_blades = []
-        for (index, blade) in zip(self._all_indexes_lst, self._all_blades_lst):
+        for (index, blade) in zip(self.indexes.flat, self.blades.flat):
             self.blades_to_indexes.append((blade, index))
             self.indexes_to_blades.append((index, blade))
         self.blades_to_indexes_dict = OrderedDict(self.blades_to_indexes)
@@ -788,19 +844,12 @@ class Ga(metric.Metric):
                 self.blades_to_grades_dict[blade] = igrade
 
         if not self.is_ortho:
-            self.bases = []
-            self._all_bases_lst = []
-            for grade_index in self.indexes:
-                bases = []
-                for base_index in grade_index:
-                    base_symbol = self._build_basis_base_symbol(base_index)
-                    bases.append(base_symbol)
-                    self._all_bases_lst.append(base_symbol)
-                self.bases.append(bases)
+            self.bases = self.indexes._map(
+                lambda index: self._build_basis_base_symbol(index))
 
             self.bases_to_indexes = []
             self.indexes_to_bases = []
-            for (index, base) in zip(self._all_indexes_lst, self._all_bases_lst):
+            for (index, base) in zip(self.indexes.flat, self.bases.flat):
                 self.bases_to_indexes.append((base, index))
                 self.indexes_to_bases.append((index, base))
             self.bases_to_indexes_dict = OrderedDict(self.bases_to_indexes)
@@ -831,36 +880,25 @@ class Ga(metric.Metric):
             self.blade_super_scripts.append(super_scripts)
 
         if self.debug:
-            printer.oprint('indexes', self.indexes, 'list(indexes)', self._all_indexes_lst,
-                           'blades', self.blades, 'list(blades)', self._all_blades_lst,
+            printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes.flat,
+                           'blades', self.blades, 'list(blades)', self.blades.flat,
                            'blades_to_indexes_dict', self.blades_to_indexes_dict,
                            'indexes_to_blades_dict', self.indexes_to_blades_dict,
                            'blades_to_grades_dict', self.blades_to_grades_dict,
                            'blade_super_scripts', self.blade_super_scripts)
             if not self.is_ortho:
-                printer.oprint('bases', self.bases, 'list(bases)', self._all_bases_lst,
+                printer.oprint('bases', self.bases, 'list(bases)', self.bases.flat,
                                'bases_to_indexes_dict', self.bases_to_indexes_dict,
                                'indexes_to_bases_dict', self.indexes_to_bases_dict,
                                'bases_to_grades_dict', self.bases_to_grades_dict)
 
         # create the Mv wrappers
-        self._all_mv_blades_lst = [
-            mv.Mv(obj, ga=self)
-            for obj in self._all_blades_lst
-        ]
-        self.mv_basis = [
+        self.mv_blades = self.blades._map(lambda blade: mv.Mv(blade, ga=self))
+
+        self.mv_basis = tuple(
             mv.Mv(obj, ga=self)
             for obj in self.basis
-        ]
-
-        # TODO[gh-64]: For compatibility with old behavior, the public
-        # properties do not include the scalar. We should consider making the
-        # breaking change such that they do.
-        self.indexes_lst = self._all_indexes_lst[1:]
-        self.blades_lst = self._all_blades_lst[1:]
-        self.mv_blades_lst = self._all_mv_blades_lst[1:]
-        if not self.is_ortho:
-            self.bases_lst = self._all_bases_lst[1:]
+        )
 
     def _build_basis_product_tables(self):
         """
@@ -913,7 +951,7 @@ class Ga(metric.Metric):
 
     ######## Functions for Calculation products of blades/bases ########
 
-    #******************** Geometric Product (*) ***********************#
+    # ******************* Geometric Product (*) ********************** #
 
     def geometric_product_basis_blades(self, blade12):
         # geometric (*) product for orthogonal basis
@@ -999,9 +1037,9 @@ class Ga(metric.Metric):
                         blst_flg[i] = tmp[2]
                     else:  # blst_expand[i] revised
                         blst_coef[i] = -blst_coef[i]
-                        #if revision force one more pass in case revision
-                        #causes repeated index previous to revised pair of
-                        #indexes
+                        # if revision force one more pass in case revision
+                        # causes repeated index previous to revised pair of
+                        # indexes
                         blst_flg[i] = False
                         blst_expand[i] = tmp[3]
                         blst_coef.append(-blst_coef[i] * tmp[0])
@@ -1069,10 +1107,10 @@ class Ga(metric.Metric):
                 else:
                     blst1_flg = False  # more revision needed
                 return a1, blst1, blst1_flg, blst
- 
+
         return True  # revision complete, blst in normal order
 
-    #******************* Outer/wedge (^) product **********************#
+    # ****************** Outer/wedge (^) product ********************* #
 
     @staticmethod
     def blade_reduce(lst):
@@ -1114,7 +1152,7 @@ class Ga(metric.Metric):
         else:
             return S(0)
 
-    #****** Dot (|) product, reft (<) and right (>) contractions ******#
+    # ***** Dot (|) product, reft (<) and right (>) contractions ***** #
 
     def _dot_product_grade(self, grade1, grade2, mode):
         """
@@ -1214,8 +1252,8 @@ class Ga(metric.Metric):
         mul_table = []
         self.basic_mul_keys = []
         self.basic_mul_values = []
-        for base1 in self._all_bases_lst:
-            for base2 in self._all_bases_lst:
+        for base1 in self.bases.flat:
+            for base2 in self.bases.flat:
                 key = base1 * base2
                 value = self.non_orthogonal_bases_products((base1, base2))
                 mul_table.append((key, value))
@@ -1245,7 +1283,7 @@ class Ga(metric.Metric):
         blade_index = []
 
         # expand blade basis in terms of base basis
-        for blade in self._all_blades_lst:
+        for blade in self.blades.flat:
             index = self.blades_to_indexes_dict[blade]
             grade = len(index)
             if grade <= 1:
@@ -1263,7 +1301,7 @@ class Ga(metric.Metric):
                 blade_expansion.append(expand(a_W_A))
 
         self.blade_expansion = blade_expansion
-        self.blade_expansion_dict = OrderedDict(list(zip(self._all_blades_lst, blade_expansion)))
+        self.blade_expansion_dict = OrderedDict(list(zip(self.blades.flat, blade_expansion)))
 
         if self.debug:
             print('blade_expansion_dict =', self.blade_expansion_dict)
@@ -1272,7 +1310,7 @@ class Ga(metric.Metric):
 
         base_expand = []
 
-        for (base, blade, index) in zip(self._all_bases_lst, self._all_blades_lst, self._all_indexes_lst):
+        for (base, blade, index) in zip(self.bases.flat, self.blades.flat, self.indexes.flat):
             grade = len(index)
             if grade <= 1:
                 base_expand.append((base, base))
@@ -1302,7 +1340,7 @@ class Ga(metric.Metric):
             return A
         else:
             # return expand(A).subs(self.blade_expansion_dict)
-            return nc_subs(expand(A), self._all_blades_lst, self.blade_expansion)
+            return nc_subs(expand(A), self.blades.flat, self.blade_expansion)
 
     ###### Products (*,^,|,<,>) for multivector representations ########
 
@@ -1419,7 +1457,6 @@ class Ga(metric.Metric):
                 else:
                     return (0, A)
 
-
     def remove_scalar_part(self, A):
         """
         Return non-commutative part (sympy object) of ``A.obj``.
@@ -1441,7 +1478,6 @@ class Ga(metric.Metric):
                 else:
                     return A
 
-
     def scalar_part(self, A):
 
         if isinstance(A, mv.Mv):
@@ -1460,7 +1496,6 @@ class Ga(metric.Metric):
                     return A
                 else:
                     return 0
-
 
     """
         else:
@@ -1613,11 +1648,11 @@ class Ga(metric.Metric):
                 # {E_n}^{-1} = \frac{E_n}{{E_n}^{2}}
                 # r_basis_j = sgn * duals[j] * E_n so it's not normalized, missing a factor of {E_n}^{-2}
                 """
-                print('blades list =',self._all_blades_lst)
+                print('blades list =',self.blades.flat)
                 print('debug =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
                 print('collect arg =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
                 """
-                r_basis_j = metric.collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))), self._all_blades_lst)
+                r_basis_j = metric.collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))), self.blades.flat)
                 self.r_basis.append(r_basis_j)
                 # sgn = (-1)**{j-1}
                 sgn = -sgn
@@ -1918,6 +1953,7 @@ class Ga(metric.Metric):
     def Mlt(self,*args,**kwargs):
         return lt.Mlt(args[0], self, *args[1:], **kwargs)
 
+
 class Sm(Ga):
     """
     Submanifold is a geometric algebra defined on a submanifold of a
@@ -1974,7 +2010,7 @@ class Sm(Ga):
             Base Geometric Algebra
         """
 
-        #print '!!!Enter Sm!!!'
+        # print '!!!Enter Sm!!!'
 
         if printer.GaLatexPrinter.latex_flg:
             printer.GaLatexPrinter.restore()
@@ -1997,19 +2033,19 @@ class Sm(Ga):
         basis_str = basis_str[:-1]
         """
 
-        #print 'u =', u
+        # print 'u =', u
 
-        if isinstance(u,mv.Mv):  #Define vector manifold
+        if isinstance(u,mv.Mv):  # Define vector manifold
             self.ebasis = []
             for coord in coords:
-                #Partial derivation of vector function to get basis vectors
+                # Partial derivation of vector function to get basis vectors
                 self.ebasis.append(u.diff(coord))
 
-            #print 'sm ebasis =', self.ebasis
+            # print 'sm ebasis =', self.ebasis
 
             self.g = []
             for b1 in self.ebasis:
-                #Metric tensor from dot products of basis vectors
+                # Metric tensor from dot products of basis vectors
                 tmp = []
                 for b2 in self.ebasis:
                     tmp.append(b1 | b2)
@@ -2027,12 +2063,12 @@ class Sm(Ga):
                     tmp.append(diff(x_i, u_j))
                 dxdu.append(tmp)
 
-            #print 'dxdu =', dxdu
+            # print 'dxdu =', dxdu
 
             sub_pairs = list(zip(ga.coords, u))
 
-            #Construct metric tensor form coordinate maps
-            g = eye(n_sub)  #Zero n_sub x n_sub sympy matrix
+            # Construct metric tensor form coordinate maps
+            g = eye(n_sub)  # Zero n_sub x n_sub sympy matrix
             n_range = list(range(n_sub))
             for i in n_range:
                 for j in n_range:
@@ -2047,8 +2083,8 @@ class Sm(Ga):
 
         Ga.__init__(self, root, g=g, coords=coords, norm=norm, debug=debug)
 
-        if isinstance(u,mv.Mv):  #Construct additional functions for vector manifold
-            #self.r_basis_mv under construction
+        if isinstance(u,mv.Mv):  # Construct additional functions for vector manifold
+            # self.r_basis_mv under construction
 
             pass
 
