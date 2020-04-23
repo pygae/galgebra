@@ -453,21 +453,19 @@ class Metric(object):
             self.de = None
             return
 
-        de = []  # de[i][j] = \partial_{x_{i}}e^{x_{j}}
-
         # Christoffel symbols of the first kind, \Gamma_{ijk}
         # TODO handle None
         dG = self.Christoffel_symbols(mode=1)
 
+        # de[i][j] = \partial_{x_{i}}e^{x_{j}}
         # \frac{\partial e_{j}}{\partial x^{i}} = \Gamma_{ijk} e^{k}
-        de = [[
+        self.de = [[
             sum([Gamma_ijk * e__k for Gamma_ijk, e__k in zip(dG[i][j], self.r_symbols)])
             for j in n_range
         ] for i in n_range]
 
         if self.debug:
-            printer.oprint('D_{i}e^{j}', de)
-        self.de = de
+            printer.oprint('D_{i}e^{j}', self.de)
 
     def inverse_metric(self):
 
@@ -503,14 +501,13 @@ class Metric(object):
 
         if mode == 1:
 
-            dG = []  # dG[i][j][k] = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
-
             # Christoffel symbols of the first kind, \Gamma_{ijk}
             # \partial_{x^{i}}e_{j} = \Gamma_{ijk}e^{k}
 
             def Gamma_ijk(i, j, k):
                 return half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
 
+            # dG[i][j][k] = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
             dG = [[[
                 Simp.apply(Gamma_ijk(i, j, k))
                 for k in n_range]
