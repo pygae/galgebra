@@ -25,12 +25,12 @@ def aprint(a):
     return
 
 
-def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
+def Symbolic_Matrix(root, coords=None, mode='g', f=False, sub=True):
     if sub:
         pos = '_'
     else:
         pos = '__'
-    if isinstance(coords,(list,tuple)):
+    if isinstance(coords, (list, tuple)):
         n = len(coords)
         n_range = range(n)
         mat = zeros(n)
@@ -41,9 +41,9 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
                     col_index = str(coords[col])
                     element = root + pos + row_index + col_index
                     if not f:
-                        mat[row,col] = Symbol(element,real=True)
+                        mat[row, col] = Symbol(element, real=True)
                     else:
-                        mat[row,col] = Function(element)(*coords)
+                        mat[row, col] = Function(element)(*coords)
 
         elif mode == 's':  # Symmetric symbolic matrix
             for row in n_range:
@@ -55,9 +55,9 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
                     else:
                         element = root + pos + col_index + row_index
                     if not f:
-                        mat[row,col] = Symbol(element,real=True)
+                        mat[row, col] = Symbol(element, real=True)
                     else:
-                        mat[row,col] = Function(element)(*coords)
+                        mat[row, col] = Function(element)(*coords)
 
         elif mode == 'a':  # Asymmetric symbolic matrix
             for row in n_range:
@@ -73,9 +73,9 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
                     if row == col:
                         sign = S(0)
                     if not f:
-                        mat[row,col] = sign * Symbol(element,real=True)
+                        mat[row, col] = sign * Symbol(element, real=True)
                     else:
-                        mat[row,col] = sign * Function(element)(*coords)
+                        mat[row, col] = sign * Function(element)(*coords)
         else:
             raise ValueError('In Symbolic_Matrix mode = ' + str(mode))
     else:
@@ -83,7 +83,7 @@ def Symbolic_Matrix(root,coords=None,mode='g',f=False,sub=True):
     return mat
 
 
-def Matrix_to_dictionary(mat_rep,basis):
+def Matrix_to_dictionary(mat_rep, basis):
     """ Convert matrix representation of linear transformation to dictionary """
     dict_rep = {}
     n = len(basis)
@@ -93,7 +93,7 @@ def Matrix_to_dictionary(mat_rep,basis):
     for row in n_range:
         dict_rep[basis[row]] = S(0)
         for col in n_range:
-            dict_rep[basis[row]] += mat_rep[col,row]*basis[col]
+            dict_rep[basis[row]] += mat_rep[col, row]*basis[col]
     return dict_rep
 
 
@@ -112,7 +112,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
             if isinstance(element, mv.Mv):
                 element = element.obj
             coefs, bases = metric.linear_expand(element)
-            for (coef,base) in zip(coefs,bases):
+            for coef, base in zip(coefs, bases):
                 index = ga.basis.index(base)
                 lst_mat_row[index] = coef
 
@@ -199,13 +199,13 @@ class Lt(object):
 
         elif isinstance(mat_rep, list):  # List of lists input
             if not isinstance(mat_rep[0], list):
-                for (lt_i, base) in zip(mat_rep, self.Ga.basis):
+                for lt_i, base in zip(mat_rep, self.Ga.basis):
                     self.lt_dict[base] = lt_i
             else:
                 # mat_rep = map(list, zip(*mat_rep))  # Transpose list of lists
-                for (row, base1) in zip(mat_rep, self.Ga.basis):
+                for row, base1 in zip(mat_rep, self.Ga.basis):
                     tmp = 0
-                    for (col, base2) in zip(row, self.Ga.basis):
+                    for col, base2 in zip(row, self.Ga.basis):
                         tmp += col * base2
                     self.lt_dict[base1] = tmp
 
@@ -227,7 +227,7 @@ class Lt(object):
                 raise ValueError('In Spinor input for Lt, S*S.rev() not a scalar!\n')
 
         elif isinstance(mat_rep, str):  # String input
-            Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords,mode=self.mode,f=self.fct_flg)
+            Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords, mode=self.mode, f=self.fct_flg)
             self.__init__(Amat, ga=self.Ga)
 
         else:  # Linear multivector function input
@@ -325,7 +325,7 @@ class Lt(object):
             for base in LT.lt_dict:
                 self_mul_LT[base] = self(LT(base, obj=True), obj=True)
             for key in self_mul_LT:
-                self_mul_LT[key] = metric.collect(expand(self_mul_LT[key]),self.Ga.basis)
+                self_mul_LT[key] = metric.collect(expand(self_mul_LT[key]), self.Ga.basis)
             return Lt(self_mul_LT, ga=self.Ga)
         else:
             self_mul_LT = {}
@@ -373,7 +373,7 @@ class Lt(object):
         self_adj = []
         for e_j in self.Ga.basis:
             s = S(0)
-            for (e_i, er_i) in zip(self.Ga.basis, self.Ga.r_basis):
+            for e_i, er_i in zip(self.Ga.basis, self.Ga.r_basis):
                 s += er_i * self.Ga.hestenes_dot(e_j, self(e_i, obj=True))
             if self.Ga.is_ortho:
                 self_adj.append(expand(s))
@@ -383,7 +383,7 @@ class Lt(object):
 
     def inv(self):
         if self.spinor:
-            Lt_inv = Lt(self.Rrev,ga=self.Ga)
+            Lt_inv = Lt(self.Rrev, ga=self.Ga)
             Lt_inv.rho_sq = S(1)/(self.rho_sq**2)
         else:
             raise ValueError('Lt inverse currently implemented only for spinor!\n')
@@ -484,7 +484,7 @@ class Lt(object):
                         image = (self.lt_dict[base])
                         if isinstance(image, mv.Mv):
                             image = image.obj
-                        (coefs, bases) = metric.linear_expand(image)
+                        coefs, bases = metric.linear_expand(image)
                         for base in self.Ga.basis:
                             try:
                                 i = bases.index(base)
@@ -574,9 +574,9 @@ class Mlt(object):
         base_indexes = []
         for base in Ga.basis:
             base_str = str(base)
-            base_str = base_str.replace(r'\boldsymbol','')
-            base_str = base_str.replace('{','')
-            base_str = base_str.replace('}','')
+            base_str = base_str.replace(r'\boldsymbol', '')
+            base_str = base_str.replace('{', '')
+            base_str = base_str.replace('}', '')
             i = base_str.find('_') + 1
             if i == 0:
                 base_indexes.append(base_str)
@@ -592,14 +592,14 @@ class Mlt(object):
     def Mlt_latex_str(self):
         if self.nargs <= 1:
             return printer.latex(self.fvalue)
-        expr_lst = Mlt.expand_expr(self.fvalue,self.Ga)
+        expr_lst = Mlt.expand_expr(self.fvalue, self.Ga)
         latex_str = '\\begin{align*} '
         first = True
         cnt = 1  # Component count on line
         for term in expr_lst:
             coef_str = str(term[0])
             coef_latex = printer.latex(term[0])
-            term_add_flg = isinstance(term[0],Add)
+            term_add_flg = isinstance(term[0], Add)
             if term_add_flg:
                 coef_latex = r'\left ( ' + coef_latex + r'\right ) '
             if first:
@@ -636,7 +636,7 @@ class Mlt(object):
         -----
         Usage for tensor T example is::
 
-            T.fmt('2','T')
+            T.fmt('2', 'T')
 
         output is::
 
@@ -668,7 +668,7 @@ class Mlt(object):
                 print(latex_str)
 
     @staticmethod
-    def expand_expr(expr,ga):
+    def expand_expr(expr, ga):
         lst_expr = []
         expr = expand(expr)
         for term in expr.args:
@@ -681,7 +681,7 @@ class Mlt(object):
                     coef *= factor
             a_lst = tuple([x for x in a_lst if x in ga.acoefs])
             b_lst = tuple([ga.acoefs.index(x) for x in a_lst])
-            lst_expr.append((coef,a_lst,b_lst))
+            lst_expr.append((coef, a_lst, b_lst))
         lst_expr = sorted(lst_expr, key=lambda x: x[2])
         new_lst_expr = []
         previous = (-1,)
@@ -731,7 +731,7 @@ class Mlt(object):
             self.f = None
         elif isinstance(f, str) and args is not None:
             self.f = None
-            if isinstance(args,(list,tuple)):
+            if isinstance(args, (list, tuple)):
                 self.args = args
                 self.nargs = len(args)
             else:
@@ -742,21 +742,21 @@ class Mlt(object):
                 print(t_indexes)
                 print(self.Ga.Pdiffs)
                 self.fvalue = 0
-                for (t_index,a_prod) in zip(itertools.product(*t_indexes),
-                                            itertools.product(*self.Ga.Pdiffs)):
+                for t_index, a_prod in zip(itertools.product(*t_indexes),
+                                           itertools.product(*self.Ga.Pdiffs)):
                     if fct:  # Tensor field
-                        coef = Function(f+'_'+''.join(map(str,t_index)),real=True)(*self.Ga.coords)
+                        coef = Function(f+'_'+''.join(map(str, t_index)), real=True)(*self.Ga.coords)
                     else:  # Constant Tensor
-                        coef = symbols(f+'_'+''.join(map(str,t_index)),real=True)
+                        coef = symbols(f+'_'+''.join(map(str, t_index)), real=True)
                     coef *= reduce(lambda x, y: x*y, a_prod)
                     self.fvalue += coef
             else:  # General tensor of rank = 1
                 self.fvalue = 0
-                for (t_index,a_prod) in zip(Mlt.extact_basis_indexes(self.Ga),self.Ga.pdiffs[0]):
+                for t_index, a_prod in zip(Mlt.extact_basis_indexes(self.Ga), self.Ga.pdiffs[0]):
                     if fct:  # Tensor field
-                        coef = Function(f+'_'+''.join(map(str,t_index)),real=True)(*self.Ga.coords)
+                        coef = Function(f+'_'+''.join(map(str, t_index)), real=True)(*self.Ga.coords)
                     else:  # Constant Tensor
-                        coef = symbols(f+'_'+''.join(map(str,t_index)),real=True)
+                        coef = symbols(f+'_'+''.join(map(str, t_index)), real=True)
                     self.fvalue += coef * a_prod
         else:
             if isinstance(f, types.FunctionType):  # Tensor defined by general multi-linear function
@@ -785,10 +785,10 @@ class Mlt(object):
             return self.f(*args)
         else:
             sub_lst = []
-            for (x, ai) in zip(args, self.Ga.pdiffs):
-                for (r_base, aij) in zip(self.Ga.r_basis_mv, ai):
+            for x, ai in zip(args, self.Ga.pdiffs):
+                for r_base, aij in zip(self.Ga.r_basis_mv, ai):
                     sub_lst.append((aij, (r_base | x).scalar()))
-            return self.fvalue.subs(sub_lst,simultaneous=True)
+            return self.fvalue.subs(sub_lst, simultaneous=True)
 
     def __add__(self, X):
         if isinstance(Mlt, X):
