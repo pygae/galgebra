@@ -1026,7 +1026,7 @@ class Ga(metric.Metric):
             base1 = self.blade_to_base_rep(blade1)
             base2 = self.blade_to_base_rep(blade2)
             base12 = expand(base1 * base2)
-            base12 = nc_subs(base12, self.basic_mul_keys, self.basic_mul_values)
+            base12 = nc_subs(base12, self.basic_mul_table_dict.items())
             return self.base_to_blade_rep(base12)
 
     def reduce_basis(self, blst):
@@ -1290,21 +1290,38 @@ class Ga(metric.Metric):
     ############# Non-Orthogonal Tables and Dictionaries ###############
 
     def _build_non_orthogonal_mul_table(self):
-        mul_table = []
-        self.basic_mul_keys = []
-        self.basic_mul_values = []
-        for base1 in self.bases.flat:
-            for base2 in self.bases.flat:
-                key = base1 * base2
-                value = self.non_orthogonal_bases_products((base1, base2))
-                mul_table.append((key, value))
-                self.basic_mul_keys.append(key)
-                self.basic_mul_values.append(value)
-        self.basic_mul_table = mul_table
-        self.basic_mul_table_dict = OrderedDict(mul_table)
+        self.basic_mul_table_dict = OrderedDict(
+            (base1 * base2, self.non_orthogonal_bases_products((base1, base2)))
+            for base1 in self.bases.flat
+            for base2 in self.bases.flat
+        )
 
         if self.debug:
-            print('basic_mul_table =\n', self.basic_mul_table)
+            print('basic_mul_table =\n', self.basic_mul_table_dict)
+
+    @property
+    def basic_mul_table(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.basic_mul_table` is deprecated, use `ga.basic_mul_table_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.basic_mul_table_dict.items())
+
+    @property
+    def basic_mul_keys(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.basic_mul_keys` is deprecated, use `ga.basic_mul_table_dict.keys()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.basic_mul_table_dict.keys())
+
+    @property
+    def basic_mul_values(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.basic_mul_values` is deprecated, use `ga.basic_mul_table_dict.values()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.basic_mul_table_dict.values())
 
     def non_orthogonal_bases_products(self, base12):  # base12 = (base1, base2)
         # geometric product of bases for non-orthogonal basis vectors
@@ -1388,7 +1405,7 @@ class Ga(metric.Metric):
     def basic_mul(self, A, B):  # geometric product (*) of base representations
         # only multiplicative operation to assume A and B are in base representation
         AxB = expand(A * B)
-        AxB = nc_subs(AxB, self.basic_mul_keys, self.basic_mul_values)
+        AxB = nc_subs(AxB, self.basic_mul_table_dict.items())
         return expand(AxB)
 
     def Mul(self, A, B, mode='*'):  # Unifies all products into one function

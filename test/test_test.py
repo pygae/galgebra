@@ -454,3 +454,14 @@ class TestTest(unittest.TestCase):
         # deprecated
         ga.indexes_to_blades_dict
         ga.indexes_to_bases_dict
+
+        # deprecated to reduce the number of similar members
+        with pytest.warns(DeprecationWarning):
+            ga.basic_mul_table
+        with pytest.warns(DeprecationWarning):
+            ga.basic_mul_keys
+        with pytest.warns(DeprecationWarning):
+            ga.basic_mul_values
+
+        # all derived from
+        ga.basic_mul_table_dict
