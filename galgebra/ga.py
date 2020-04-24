@@ -1337,52 +1337,63 @@ class Ga(metric.Metric):
 
     def _build_base_blade_conversions(self):
 
-        blade_expansion = []
-        blade_index = []
+        blade_expansion_dict = OrderedDict()
 
         # expand blade basis in terms of base basis
-        for blade in self.blades.flat:
-            index = self.indexes_to_blades_dict.inverse[blade]
+        for blade, index in zip(self.blades.flat, self.indexes.flat):
             grade = len(index)
             if grade <= 1:
-                blade_expansion.append(blade)
-                blade_index.append(index)
+                blade_expansion_dict[blade] = blade
             else:
-                a = self.indexes_to_blades_dict[(index[0],)]
-                Aexpand = blade_expansion[blade_index.index(index[1:])]
+                a = self.indexes_to_blades_dict[index[:1]]
+                A = self.indexes_to_blades_dict[index[1:]]
+                Aexpand = blade_expansion_dict[A]
                 # Formula for outer (^) product of a vector and grade-r multivector
                 # a^A_{r} = (a*A + (-1)^{r}*A*a)/2
                 # The folowing evaluation takes the most time for setup it is the due to
                 # the substitution required for the multiplications
                 a_W_A = half * (self.basic_mul(a, Aexpand) - ((-1) ** grade) * self.basic_mul(Aexpand, a))
-                blade_index.append(index)
-                blade_expansion.append(expand(a_W_A))
+                blade_expansion_dict[blade] = expand(a_W_A)
 
-        self.blade_expansion = blade_expansion
-        self.blade_expansion_dict = OrderedDict(list(zip(self.blades.flat, blade_expansion)))
+        self.blade_expansion_dict = blade_expansion_dict
 
         if self.debug:
             print('blade_expansion_dict =', self.blade_expansion_dict)
 
         # expand base basis in terms of blade basis
 
-        base_expand = []
+        base_expansion_dict = OrderedDict()
 
         for base, blade, index in zip(self.bases.flat, self.blades.flat, self.indexes.flat):
             grade = len(index)
             if grade <= 1:
-                base_expand.append((base, base))
+                base_expansion_dict[base] = base
             else:  # back substitution of tridiagonal system
                 tmp = self.blade_expansion_dict[blade]
                 tmp = tmp.subs(base, -blade)
-                tmp = -tmp.subs(base_expand)
-                base_expand.append((base, expand(tmp)))
+                tmp = -tmp.subs(base_expansion_dict)
+                base_expansion_dict[base] = expand(tmp)
 
-        self.base_expand = base_expand
-        self.base_expansion_dict = OrderedDict(base_expand)
+        self.base_expansion_dict = base_expansion_dict
 
         if self.debug:
             print('base_expansion_dict =', self.base_expansion_dict)
+
+    @property
+    def base_expansion(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.base_expansion` is deprecated, use `ga.base_expansion_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.base_expansion_dict.items())
+
+    @property
+    def blade_expansion(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.blade_expansion` is deprecated, use `ga.blade_expansion_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.blade_expansion_dict.items())
 
     def base_to_blade_rep(self, A):
 
@@ -1390,7 +1401,7 @@ class Ga(metric.Metric):
             return A
         else:
             # return expand(A).subs(self.base_expansion_dict)
-            return nc_subs(expand(A), self.base_expand)
+            return nc_subs(expand(A), self.base_expansion_dict.items())
 
     def blade_to_base_rep(self, A):
 
@@ -1398,7 +1409,7 @@ class Ga(metric.Metric):
             return A
         else:
             # return expand(A).subs(self.blade_expansion_dict)
-            return nc_subs(expand(A), self.blades.flat, self.blade_expansion)
+            return nc_subs(expand(A), self.blade_expansion_dict.items())
 
     ###### Products (*,^,|,<,>) for multivector representations ########
 

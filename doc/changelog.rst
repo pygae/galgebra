@@ -4,6 +4,14 @@ Changelog
 
 - :support:`245` (also :issue:`248`) The following attributes have been deprecated to reduce the number of similar members in :class:`~galgebra.ga.Ga`.
 
+  * Unified into :attr:`galgebra.ga.Ga.blade_expansion_dict`:
+
+    * :attr:`galgebra.ga.Ga.blade_expansion` |rarr| ``blade_expansion_dict.items()``
+
+  * Unified into :attr:`galgebra.ga.Ga.base_expansion_dict`:
+
+    * :attr:`galgebra.ga.Ga.base_expansion` |rarr| ``base_expansion_dict.items()``
+
   * Unified into :attr:`galgebra.ga.Ga.basic_mul_table_dict`:
 
     * :attr:`galgebra.ga.Ga.basic_mul_table` |rarr| ``basic_mul_table_dict.items()``

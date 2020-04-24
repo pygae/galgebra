@@ -465,3 +465,13 @@ class TestTest(unittest.TestCase):
 
         # all derived from
         ga.basic_mul_table_dict
+
+        # deprecated to reduce the number of similar members
+        with pytest.warns(DeprecationWarning):
+            ga.blade_expansion
+        with pytest.warns(DeprecationWarning):
+            ga.base_expansion
+
+        # all derived from
+        ga.blade_expansion_dict
+        ga.base_expansion_dict
