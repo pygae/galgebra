@@ -2,6 +2,20 @@
 Changelog
 =========
 
+- :support:`245` The following attributes have been deprecated to reduce the number of similar members in :class:`~galgebra.ga.Ga`.
+
+  * Unified into :attr:`galgebra.ga.Ga.indexes_to_bases_dict`:
+
+    * :attr:`galgebra.ga.Ga.indexes_to_bases` |rarr| ``indexes_to_bases_dict.items()``
+    * :attr:`galgebra.ga.Ga.bases_to_indexes` |rarr| ``indexes_to_bases_dict.inverse.items()``
+    * :attr:`galgebra.ga.Ga.bases_to_indexes_dict` |rarr| ``indexes_to_bases_dict.inverse``
+
+  * Unified into :attr:`galgebra.ga.Ga.indexes_to_bases_dict`:
+
+    * :attr:`galgebra.ga.Ga.indexes_to_blades` |rarr| ``indexes_to_blades_dict.items()``
+    * :attr:`galgebra.ga.Ga.blades_to_indexes` |rarr| ``indexes_to_blades_dict.inverse.items()``
+    * :attr:`galgebra.ga.Ga.blades_to_indexes_dict` |rarr| ``indexes_to_blades_dict.inverse``
+
 - :support:`64` The following attributes have been deprecated in favor of using the new :attr:`~galgebra.ga.GradedTuple.flat` attribute:
 
   * :attr:`galgebra.ga.Ga.indexes_lst` |rarr| :attr:`galgebra.ga.Ga.indexes` ``.flat``

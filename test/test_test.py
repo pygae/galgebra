@@ -435,3 +435,22 @@ class TestTest(unittest.TestCase):
             assert ga.bases_lst[0] == e_1.obj
         with pytest.warns(DeprecationWarning):
             assert ga.indexes_lst[1] == (1,)
+
+        # deprecated to reduce the number of similar members
+        with pytest.warns(DeprecationWarning):
+            ga.blades_to_indexes
+        with pytest.warns(DeprecationWarning):
+            ga.bases_to_indexes
+        with pytest.warns(DeprecationWarning):
+            ga.blades_to_indexes_dict
+        with pytest.warns(DeprecationWarning):
+            ga.bases_to_indexes_dict
+        with pytest.warns(DeprecationWarning):
+            ga.indexes_to_blades
+        with pytest.warns(DeprecationWarning):
+            ga.indexes_to_bases
+
+        # all the above are deprecated in favor of these two, which are _not_
+        # deprecated
+        ga.indexes_to_blades_dict
+        ga.indexes_to_bases_dict

@@ -277,7 +277,7 @@ class Lt(object):
             self.mv_dict = copy(self.lt_dict)
             for key in self.Ga.blades[2:]:
                 for blade in key:
-                    index = self.Ga.blades_to_indexes_dict[blade]
+                    index = self.Ga.indexes_to_blades_dict.inverse[blade]
                     lt_blade = self(self.Ga.basis[index[0]], obj=True)
                     for i in index[1:]:
                         lt_blade = self.Ga.wedge(lt_blade, self(self.Ga.basis[i], obj=True))
