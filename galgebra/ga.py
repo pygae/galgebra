@@ -838,10 +838,11 @@ class Ga(metric.Metric):
         self.blades_to_indexes_dict = OrderedDict(self.blades_to_indexes)
         self.indexes_to_blades_dict = OrderedDict(self.indexes_to_blades)
 
-        self.blades_to_grades_dict = {}
-        for igrade, grade in enumerate(self.blades):
-            for blade in grade:
-                self.blades_to_grades_dict[blade] = igrade
+        self.blades_to_grades_dict = {
+            blade: igrade
+            for igrade, grade in enumerate(self.blades)
+            for blade in grade
+        }
 
         if not self.is_ortho:
             self.bases = self.indexes._map(
@@ -855,10 +856,11 @@ class Ga(metric.Metric):
             self.bases_to_indexes_dict = OrderedDict(self.bases_to_indexes)
             self.indexes_to_bases_dict = OrderedDict(self.indexes_to_bases)
 
-            self.bases_to_grades_dict = {}
-            for igrade, grade in enumerate(self.bases):
-                for base in grade:
-                    self.bases_to_grades_dict[base] = igrade
+            self.bases_to_grades_dict = {
+                base: igrade
+                for igrade, grade in enumerate(self.bases)
+                for base in grade
+            }
 
         if self.coords is None:
             base0 = str(self.basis[0])
