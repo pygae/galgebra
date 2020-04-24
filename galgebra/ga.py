@@ -4,7 +4,7 @@ Geometric Algebra (inherits Metric)
 import warnings
 import operator
 import copy
-from itertools import combinations
+import itertools
 import functools
 from functools import reduce
 from typing import Tuple, TypeVar, Callable, Dict, Sequence
@@ -790,7 +790,7 @@ class Ga(metric.Metric):
         """ Index tuples of basis blades """
         basis_indexes = tuple(self.n_range)
         return GradedTuple(
-            tuple(combinations(basis_indexes, i))
+            tuple(itertools.combinations(basis_indexes, i))
             for i in range(len(basis_indexes) + 1)
         )
 
@@ -1998,41 +1998,33 @@ class Ga(metric.Metric):
                 Arbitrary strings are interpreted as ``"append"``, but in
                 future will be an error
         """
-        dim = len(basis)
 
-        indexes = tuple(range(dim))
-        index = [()]
+        def wedge_reduce(mvs):
+            """ wedge together a list of multivectors """
+            if not mvs:
+                return self.mv(S(1), 'scalar')
+            return functools.reduce(operator.xor, mvs).trigsimp()
 
-        for i in indexes[-2:]:
-            index.append(tuple(combinations(indexes, i + 1)))
+        E = wedge_reduce(basis)
 
-        MFbasis = []
+        # elements are such that `basis[i] ^ co_basis[i] == E`
+        co_basis = [
+            sign * wedge_reduce(basis_subset)
+            for sign, basis_subset in zip(
+                # alternating signs
+                itertools.cycle([S(1), S(-1)]),
+                # tuples with one basis missing
+                itertools.combinations(basis, len(basis) - 1),
+            )
+        ]
 
-        for igrade in index[-2:]:
-            grade = []
-            for iblade in igrade:
-                blade = self.mv(S(1), 'scalar')
-                for ibasis in iblade:
-                    blade ^= basis[ibasis]
-                blade = blade.trigsimp()
-                grade.append(blade)
-            MFbasis.append(grade)
-        E = MFbasis[-1][0]
+        # take the dual without normalization
+        r_basis = [(co_base * E).trigsimp() for co_base in co_basis]
+
+        # normalize
         E_sq = trigsimp((E * E).scalar())
-
-        duals = copy.copy(MFbasis[-2])
-
-        duals.reverse()
-        sgn = S(1)
-        rbasis = []
-        for dual in duals:
-            recpv = (sgn * dual * E).trigsimp()
-            rbasis.append(recpv)
-            sgn = -sgn
-
         if mode == 'norm':
-            for i in range(dim):
-                rbasis[i] = rbasis[i] / E_sq
+            r_basis = [r_base / E_sq for r_base in r_basis]
         else:
             if mode != 'append':
                 # galgebra 0.5.0
@@ -2040,9 +2032,9 @@ class Ga(metric.Metric):
                     "Mode {!r} not understood, falling back to {!r} but this "
                     "is deprecated".format(mode, 'append'),
                     DeprecationWarning, stacklevel=2)
-            rbasis.append(E_sq)
+            r_basis.append(E_sq)
 
-        return tuple(rbasis)
+        return tuple(r_basis)
 
     def Mlt(self, *args, **kwargs):
         return lt.Mlt(args[0], self, *args[1:], **kwargs)
