@@ -138,3 +138,14 @@ class TestMv(unittest.TestCase):
         assert d[e_1 + 0] == 1
         d[10] = 3  # note: not a multivector key!
         assert d[e_1 * 0 + 10] == 3
+
+    def test_subs(self):
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1])
+        B = ga.mv('B', 'bivector')
+        B_inv = B.inv()
+
+        B_mag = Symbol('|B|')
+
+        # both of the sympy subs syntaxes work:
+        assert (-B / B_mag**2).subs(B_mag, abs(B)) == B_inv
+        assert (-B / B_mag**2).subs({B_mag: abs(B)}) == B_inv
