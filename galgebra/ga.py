@@ -870,14 +870,9 @@ class Ga(metric.Metric):
         else:
             self.basis_super_scripts = [str(coord) for coord in self.coords]
 
-        self.blade_super_scripts = []
-
-        for grade_index in self.indexes:
-            super_scripts = []
-            for base_index in grade_index:
-                super_scripts.append(''.join([self.basis_super_scripts[i]
-                                     for i in base_index]))
-            self.blade_super_scripts.append(super_scripts)
+        self.blade_super_scripts = self.indexes._map(lambda base_index: ''.join(
+            self.basis_super_scripts[i] for i in base_index
+        ))
 
         if self.debug:
             printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes.flat,
