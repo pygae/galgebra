@@ -129,6 +129,11 @@ class TestMv(unittest.TestCase):
         with self.assertRaises(TypeError):
             ga.mv([1, 2, 3], 'vector', f=True)  # can't pass f with coefficients
 
+    def test_abs(self):
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1])
+        B = ga.mv('B', 'bivector')
+        assert abs(B*B) == -(B*B).scalar()
+
     def test_hashable(self):
         ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 

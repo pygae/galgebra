@@ -129,7 +129,7 @@ def square_root_of_expr(expr):
             if n % 2 != 0:
                 return sqrt(abs(expr))  # Product not all even powers
             else:
-                coef *= f ** (n / 2)  # Positive sqrt of the square of an expression
+                coef *= f ** (n / S(2))  # Positive sqrt of the square of an expression
         return coef
 
 
