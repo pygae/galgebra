@@ -2,7 +2,21 @@
 Changelog
 =========
 
-- :support:`245` The following attributes have been deprecated to reduce the number of similar members in :class:`~galgebra.ga.Ga`.
+- :support:`245` (also :issue:`248`) The following attributes have been deprecated to reduce the number of similar members in :class:`~galgebra.ga.Ga`.
+
+  * Unified into :attr:`galgebra.ga.Ga.blade_expansion_dict`:
+
+    * :attr:`galgebra.ga.Ga.blade_expansion` |rarr| ``blade_expansion_dict.items()``
+
+  * Unified into :attr:`galgebra.ga.Ga.base_expansion_dict`:
+
+    * :attr:`galgebra.ga.Ga.base_expansion` |rarr| ``base_expansion_dict.items()``
+
+  * Unified into :attr:`galgebra.ga.Ga.basic_mul_table_dict`:
+
+    * :attr:`galgebra.ga.Ga.basic_mul_table` |rarr| ``basic_mul_table_dict.items()``
+    * :attr:`galgebra.ga.Ga.basic_mul_keys` |rarr| ``basic_mul_table_dict.keys()``
+    * :attr:`galgebra.ga.Ga.basic_mul_values` |rarr| ``basic_mul_table_dict.values()``
 
   * Unified into :attr:`galgebra.ga.Ga.indexes_to_bases_dict`:
 

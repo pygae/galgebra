@@ -1026,7 +1026,7 @@ class Ga(metric.Metric):
             base1 = self.blade_to_base_rep(blade1)
             base2 = self.blade_to_base_rep(blade2)
             base12 = expand(base1 * base2)
-            base12 = nc_subs(base12, self.basic_mul_keys, self.basic_mul_values)
+            base12 = nc_subs(base12, self.basic_mul_table_dict.items())
             return self.base_to_blade_rep(base12)
 
     def reduce_basis(self, blst):
@@ -1290,21 +1290,38 @@ class Ga(metric.Metric):
     ############# Non-Orthogonal Tables and Dictionaries ###############
 
     def _build_non_orthogonal_mul_table(self):
-        mul_table = []
-        self.basic_mul_keys = []
-        self.basic_mul_values = []
-        for base1 in self.bases.flat:
-            for base2 in self.bases.flat:
-                key = base1 * base2
-                value = self.non_orthogonal_bases_products((base1, base2))
-                mul_table.append((key, value))
-                self.basic_mul_keys.append(key)
-                self.basic_mul_values.append(value)
-        self.basic_mul_table = mul_table
-        self.basic_mul_table_dict = OrderedDict(mul_table)
+        self.basic_mul_table_dict = OrderedDict(
+            (base1 * base2, self.non_orthogonal_bases_products((base1, base2)))
+            for base1 in self.bases.flat
+            for base2 in self.bases.flat
+        )
 
         if self.debug:
-            print('basic_mul_table =\n', self.basic_mul_table)
+            print('basic_mul_table =\n', self.basic_mul_table_dict)
+
+    @property
+    def basic_mul_table(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.basic_mul_table` is deprecated, use `ga.basic_mul_table_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.basic_mul_table_dict.items())
+
+    @property
+    def basic_mul_keys(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.basic_mul_keys` is deprecated, use `ga.basic_mul_table_dict.keys()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.basic_mul_table_dict.keys())
+
+    @property
+    def basic_mul_values(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.basic_mul_values` is deprecated, use `ga.basic_mul_table_dict.values()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.basic_mul_table_dict.values())
 
     def non_orthogonal_bases_products(self, base12):  # base12 = (base1, base2)
         # geometric product of bases for non-orthogonal basis vectors
@@ -1320,52 +1337,63 @@ class Ga(metric.Metric):
 
     def _build_base_blade_conversions(self):
 
-        blade_expansion = []
-        blade_index = []
+        blade_expansion_dict = OrderedDict()
 
         # expand blade basis in terms of base basis
-        for blade in self.blades.flat:
-            index = self.indexes_to_blades_dict.inverse[blade]
+        for blade, index in zip(self.blades.flat, self.indexes.flat):
             grade = len(index)
             if grade <= 1:
-                blade_expansion.append(blade)
-                blade_index.append(index)
+                blade_expansion_dict[blade] = blade
             else:
-                a = self.indexes_to_blades_dict[(index[0],)]
-                Aexpand = blade_expansion[blade_index.index(index[1:])]
+                a = self.indexes_to_blades_dict[index[:1]]
+                A = self.indexes_to_blades_dict[index[1:]]
+                Aexpand = blade_expansion_dict[A]
                 # Formula for outer (^) product of a vector and grade-r multivector
                 # a^A_{r} = (a*A + (-1)^{r}*A*a)/2
                 # The folowing evaluation takes the most time for setup it is the due to
                 # the substitution required for the multiplications
                 a_W_A = half * (self.basic_mul(a, Aexpand) - ((-1) ** grade) * self.basic_mul(Aexpand, a))
-                blade_index.append(index)
-                blade_expansion.append(expand(a_W_A))
+                blade_expansion_dict[blade] = expand(a_W_A)
 
-        self.blade_expansion = blade_expansion
-        self.blade_expansion_dict = OrderedDict(list(zip(self.blades.flat, blade_expansion)))
+        self.blade_expansion_dict = blade_expansion_dict
 
         if self.debug:
             print('blade_expansion_dict =', self.blade_expansion_dict)
 
         # expand base basis in terms of blade basis
 
-        base_expand = []
+        base_expansion_dict = OrderedDict()
 
         for base, blade, index in zip(self.bases.flat, self.blades.flat, self.indexes.flat):
             grade = len(index)
             if grade <= 1:
-                base_expand.append((base, base))
+                base_expansion_dict[base] = base
             else:  # back substitution of tridiagonal system
                 tmp = self.blade_expansion_dict[blade]
                 tmp = tmp.subs(base, -blade)
-                tmp = -tmp.subs(base_expand)
-                base_expand.append((base, expand(tmp)))
+                tmp = -tmp.subs(base_expansion_dict)
+                base_expansion_dict[base] = expand(tmp)
 
-        self.base_expand = base_expand
-        self.base_expansion_dict = OrderedDict(base_expand)
+        self.base_expansion_dict = base_expansion_dict
 
         if self.debug:
             print('base_expansion_dict =', self.base_expansion_dict)
+
+    @property
+    def base_expansion(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.base_expansion` is deprecated, use `ga.base_expansion_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.base_expansion_dict.items())
+
+    @property
+    def blade_expansion(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.blade_expansion` is deprecated, use `ga.blade_expansion_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.blade_expansion_dict.items())
 
     def base_to_blade_rep(self, A):
 
@@ -1373,7 +1401,7 @@ class Ga(metric.Metric):
             return A
         else:
             # return expand(A).subs(self.base_expansion_dict)
-            return nc_subs(expand(A), self.base_expand)
+            return nc_subs(expand(A), self.base_expansion_dict.items())
 
     def blade_to_base_rep(self, A):
 
@@ -1381,14 +1409,14 @@ class Ga(metric.Metric):
             return A
         else:
             # return expand(A).subs(self.blade_expansion_dict)
-            return nc_subs(expand(A), self.blades.flat, self.blade_expansion)
+            return nc_subs(expand(A), self.blade_expansion_dict.items())
 
     ###### Products (*,^,|,<,>) for multivector representations ########
 
     def basic_mul(self, A, B):  # geometric product (*) of base representations
         # only multiplicative operation to assume A and B are in base representation
         AxB = expand(A * B)
-        AxB = nc_subs(AxB, self.basic_mul_keys, self.basic_mul_values)
+        AxB = nc_subs(AxB, self.basic_mul_table_dict.items())
         return expand(AxB)
 
     def Mul(self, A, B, mode='*'):  # Unifies all products into one function
