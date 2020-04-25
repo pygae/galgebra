@@ -828,7 +828,24 @@ class Ga(metric.Metric):
         another.  For the case of an orthogonal set of basis vectors the
         bases and blades are identical.
         """
+        self._build_indices()
+        self._build_blade_info()
+        self._build_base_info()
+        self._build_super_script_strings()
+        self._build_mv_wrappers()
 
+        if self.debug:
+            printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes.flat,
+                           'blades', self.blades, 'list(blades)', self.blades.flat,
+                           'indexes_to_blades_dict', self.indexes_to_blades_dict,
+                           'blades_to_grades_dict', self.blades_to_grades_dict,
+                           'blade_super_scripts', self.blade_super_scripts)
+            if not self.is_ortho:
+                printer.oprint('bases', self.bases, 'list(bases)', self.bases.flat,
+                               'indexes_to_bases_dict', self.indexes_to_bases_dict,
+                               'bases_to_grades_dict', self.bases_to_grades_dict)
+
+    def _build_indices(self):
         # index list for multivector bases and blades by grade
         basis_indexes = tuple(self.n_range)
         self.indexes = GradedTuple(
@@ -836,7 +853,8 @@ class Ga(metric.Metric):
             for i in range(len(basis_indexes) + 1)
         )
 
-        # non-commutative symbols for multivector bases and blades
+    def _build_blade_info(self):
+        # non-commutative symbols for multivector blades
         self.blades = self.indexes._map(
             lambda index: self._build_basis_blade_symbol(index))
 
@@ -848,6 +866,8 @@ class Ga(metric.Metric):
             for blade in grade
         }
 
+    def _build_base_info(self):
+        # non-commutative symbols for multivector bases
         if not self.is_ortho:
             self.bases = self.indexes._map(
                 lambda index: self._build_basis_base_symbol(index))
@@ -860,6 +880,7 @@ class Ga(metric.Metric):
                 for base in grade
             }
 
+    def _build_super_script_strings(self):
         if self.coords is None:
             base0 = str(self.basis[0])
             if '_' in base0:
@@ -874,17 +895,7 @@ class Ga(metric.Metric):
             self.basis_super_scripts[i] for i in base_index
         ))
 
-        if self.debug:
-            printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes.flat,
-                           'blades', self.blades, 'list(blades)', self.blades.flat,
-                           'indexes_to_blades_dict', self.indexes_to_blades_dict,
-                           'blades_to_grades_dict', self.blades_to_grades_dict,
-                           'blade_super_scripts', self.blade_super_scripts)
-            if not self.is_ortho:
-                printer.oprint('bases', self.bases, 'list(bases)', self.bases.flat,
-                               'indexes_to_bases_dict', self.indexes_to_bases_dict,
-                               'bases_to_grades_dict', self.bases_to_grades_dict)
-
+    def _build_mv_wrappers(self):
         # create the Mv wrappers
         self.mv_blades = self.blades._map(lambda blade: mv.Mv(blade, ga=self))
 
