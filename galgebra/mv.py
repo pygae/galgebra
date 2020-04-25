@@ -1306,10 +1306,10 @@ class Mv(object):
             obj += coef * base
         return Mv(obj, ga=self.Ga)
 
-    def subs(self, d):
-        # For each scalar coef of the multivector apply substitution argument d
+    def subs(self, *args, **kwargs):
+        """ Perform a substitution on each coefficient separately """
         obj = sum((
-            coef.subs(d) * base for coef, base in metric.linear_expand_terms(self.obj)
+            coef.subs(*args, **kwargs) * base for coef, base in metric.linear_expand_terms(self.obj)
         ), S(0))
         return Mv(obj, ga=self.Ga)
 
