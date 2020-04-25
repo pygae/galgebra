@@ -18,18 +18,18 @@ class MV(Mv):
             return gstr
 
     @staticmethod
-    def setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None)):
+    def setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None, None)):
 
         if isinstance(metric, str):
             metric = MV.convert_metric(metric)
-        if curv != (None,None):
+        if curv != (None, None):
             MV.GA = ga.Ga(basis, g=None, coords=coords, X=curv[0], debug=debug)
         else:
             MV.GA = ga.Ga(basis, g=metric, coords=coords, X=curv[0], debug=debug)
         MV.I = MV.GA.i
         MV.metric = MV.GA.g
         if coords is not None:
-            (MV.grad,MV.rgrad) = MV.GA.grads()
+            MV.grad, MV.rgrad = MV.GA.grads()
             return list(MV.GA.mv()) + [MV.grad]
         else:
             return list(MV.GA.mv())

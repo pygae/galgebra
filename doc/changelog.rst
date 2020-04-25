@@ -2,8 +2,42 @@
 Changelog
 =========
 
-- :support:`64` :attr:`galgebra.ga.Ga.indexes_lst`, :attr:`galgebra.ga.Ga.bases_lst`, :attr:`galgebra.ga.Ga.blades_lst`, and :attr:`galgebra.ga.Ga.mv_blades_lst` are deprecated in favor of the new :attr:`~galgebra.ga.GradedTuple.flat` attribute of :attr:`galgebra.ga.Ga.indexes`, :attr:`galgebra.ga.Ga.bases`, :attr:`galgebra.ga.Ga.blades`, and :attr:`galgebra.ga.Ga.mv_blades`.
-  Since the new properties also include the scalar element, so ``ga.blades_lst`` is equivalent to ``ga.blades.flat[1:]`` (and likewise for the other two properties).
+- :support:`245` (also :issue:`248`) The following attributes have been deprecated to reduce the number of similar members in :class:`~galgebra.ga.Ga`.
+
+  * Unified into :attr:`galgebra.ga.Ga.blade_expansion_dict`:
+
+    * :attr:`galgebra.ga.Ga.blade_expansion` |rarr| ``blade_expansion_dict.items()``
+
+  * Unified into :attr:`galgebra.ga.Ga.base_expansion_dict`:
+
+    * :attr:`galgebra.ga.Ga.base_expansion` |rarr| ``base_expansion_dict.items()``
+
+  * Unified into :attr:`galgebra.ga.Ga.basic_mul_table_dict`:
+
+    * :attr:`galgebra.ga.Ga.basic_mul_table` |rarr| ``basic_mul_table_dict.items()``
+    * :attr:`galgebra.ga.Ga.basic_mul_keys` |rarr| ``basic_mul_table_dict.keys()``
+    * :attr:`galgebra.ga.Ga.basic_mul_values` |rarr| ``basic_mul_table_dict.values()``
+
+  * Unified into :attr:`galgebra.ga.Ga.indexes_to_bases_dict`:
+
+    * :attr:`galgebra.ga.Ga.indexes_to_bases` |rarr| ``indexes_to_bases_dict.items()``
+    * :attr:`galgebra.ga.Ga.bases_to_indexes` |rarr| ``indexes_to_bases_dict.inverse.items()``
+    * :attr:`galgebra.ga.Ga.bases_to_indexes_dict` |rarr| ``indexes_to_bases_dict.inverse``
+
+  * Unified into :attr:`galgebra.ga.Ga.indexes_to_bases_dict`:
+
+    * :attr:`galgebra.ga.Ga.indexes_to_blades` |rarr| ``indexes_to_blades_dict.items()``
+    * :attr:`galgebra.ga.Ga.blades_to_indexes` |rarr| ``indexes_to_blades_dict.inverse.items()``
+    * :attr:`galgebra.ga.Ga.blades_to_indexes_dict` |rarr| ``indexes_to_blades_dict.inverse``
+
+- :support:`64` The following attributes have been deprecated in favor of using the new :attr:`~galgebra.ga.GradedTuple.flat` attribute:
+
+  * :attr:`galgebra.ga.Ga.indexes_lst` |rarr| :attr:`galgebra.ga.Ga.indexes` ``.flat``
+  * :attr:`galgebra.ga.Ga.bases_lst` |rarr| :attr:`galgebra.ga.Ga.bases` ``.flat``
+  * :attr:`galgebra.ga.Ga.blades_lst` |rarr| :attr:`galgebra.ga.Ga.blades` ``.flat``
+  * :attr:`galgebra.ga.Ga.mv_blades_lst` |rarr| :attr:`galgebra.ga.Ga.mv_blades` ``.flat``
+
+  Since the replacement properties also include the scalar element, ``ga.blades_lst`` is equivalent to ``ga.blades.flat[1:]`` (and likewise for the other properties).
 
 - :release:`0.4.5 <2019.12.31>`
 - :support:`83` This is the last release to support Python 2.7.
@@ -144,3 +178,5 @@ Changelog
 - :support:`2` Clean up obsolete code in setup.py and make it simple
 - :bug:`2` Fixes `brombo/galgebra#19 <https://github.com/brombo/galgebra/issues/19>`_: Failures in `test_noneuclidian_distance_calculation`
 - :bug:`2` Fixes `brombo/galgebra#20 <https://github.com/brombo/galgebra/issues/20>`_: Incorrect LaTeX output in `test_derivatives_in_spherical_coordinates`
+
+.. include:: <isonum.txt>

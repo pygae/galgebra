@@ -21,7 +21,7 @@ def _consolidate_terms(terms):
     """
     new_coefs = []
     new_pdiffs = []
-    for (coef, pd) in terms:
+    for coef, pd in terms:
         if coef != S(0):
             if pd in new_pdiffs:
                 index = new_pdiffs.index(pd)
@@ -93,7 +93,7 @@ class Sdop(_BaseDop):
 
     def TSimplify(self):
         return Sdop([
-            (metric.Simp.apply(coef), pdiff) for (coef, pdiff) in self.terms
+            (metric.Simp.apply(coef), pdiff) for coef, pdiff in self.terms
         ])
 
     @staticmethod
@@ -122,7 +122,7 @@ class Sdop(_BaseDop):
 
         self = self._with_sorted_terms()
         s = ''
-        for (coef, pdop) in self.terms:
+        for coef, pdop in self.terms:
             coef_str = printer.latex(coef)
             pd_str = printer.latex(pdop)
 
@@ -137,7 +137,7 @@ class Sdop(_BaseDop):
                     s += coef_str + '*' + pd_str
             s += ' + '
 
-        s = s.replace('+ -','- ')
+        s = s.replace('+ -', '- ')
         s = s[:-3]
         if Sdop.str_mode:
             if len(self.terms) > 1 or isinstance(self.terms[0][0], Add):
@@ -151,7 +151,7 @@ class Sdop(_BaseDop):
         self = self._with_sorted_terms()
 
         s = ''
-        for (coef, pdop) in self.terms:
+        for coef, pdop in self.terms:
             coef_str = printer.latex(coef)
             pd_str = printer.latex(pdop)
             if coef == S(1):
@@ -171,7 +171,7 @@ class Sdop(_BaseDop):
                     s += coef_str + ' ' + pd_str
             s += ' + '
 
-        s = s.replace('+ -','- ')
+        s = s.replace('+ -', '- ')
         return s[:-3]
 
     def _repr_latex_(self):
@@ -324,7 +324,7 @@ class Pdop(_BaseDop):
             ])
         )
 
-    def __eq__(self,A):
+    def __eq__(self, A):
         if isinstance(A, Pdop) and self.pdiffs == A.pdiffs:
             return True
         else:

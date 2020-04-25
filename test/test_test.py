@@ -35,16 +35,16 @@ class TestTest(unittest.TestCase):
     def test_basic_multivector_operations(self):
 
         g3d = Ga('e*x|y|z')
-        (ex,ey,ez) = g3d.mv()
+        ex, ey, ez = g3d.mv()
 
-        A = g3d.mv('A','mv')
+        A = g3d.mv('A', 'mv')
 
         assert str(A) == 'A + A__x*e_x + A__y*e_y + A__z*e_z + A__xy*e_x^e_y + A__xz*e_x^e_z + A__yz*e_y^e_z + A__xyz*e_x^e_y^e_z'
         assert str(A) == 'A + A__x*e_x + A__y*e_y + A__z*e_z + A__xy*e_x^e_y + A__xz*e_x^e_z + A__yz*e_y^e_z + A__xyz*e_x^e_y^e_z'
         assert str(A) == 'A + A__x*e_x + A__y*e_y + A__z*e_z + A__xy*e_x^e_y + A__xz*e_x^e_z + A__yz*e_y^e_z + A__xyz*e_x^e_y^e_z'
 
-        X = g3d.mv('X','vector')
-        Y = g3d.mv('Y','vector')
+        X = g3d.mv('X', 'vector')
+        Y = g3d.mv('Y', 'vector')
 
         assert str(X) == 'X__x*e_x + X__y*e_y + X__z*e_z'
         assert str(Y) == 'Y__x*e_x + Y__y*e_y + Y__z*e_z'
@@ -55,10 +55,10 @@ class TestTest(unittest.TestCase):
 
 
         g2d = Ga('e*x|y')
-        (ex,ey) = g2d.mv()
+        ex, ey = g2d.mv()
 
-        X = g2d.mv('X','vector')
-        A = g2d.mv('A','spinor')
+        X = g2d.mv('X', 'vector')
+        A = g2d.mv('A', 'spinor')
 
         assert str(X) == 'X__x*e_x + X__y*e_y'
         assert str(A) == 'A + A__xy*e_x^e_y'
@@ -69,7 +69,7 @@ class TestTest(unittest.TestCase):
 
 
         o2d = Ga('e*x|y', g=[1, 1])
-        (ex, ey) = o2d.mv()
+        ex, ey = o2d.mv()
 
         X = o2d.mv('X', 'vector')
         A = o2d.mv('A', 'spinor')
@@ -89,7 +89,7 @@ class TestTest(unittest.TestCase):
 
     def test_check_generalized_BAC_CAB_formulas(self):
 
-        (a,b,c,d,e) = Ga('a b c d e').mv()
+        a, b, c, d, e = Ga('a b c d e').mv()
 
         assert str(a|(b*c)) == '-(a.c)*b + (a.b)*c'
         assert str(a|(b^c)) == '-(a.c)*b + (a.b)*c'
@@ -102,14 +102,14 @@ class TestTest(unittest.TestCase):
         assert str(a*(b^c^d)-b*(a^c^d)+c*(a^b^d)-d*(a^b^c)) == '4*a^b^c^d'
         assert str((a^b)|(c^d)) == '-(a.c)*(b.d) + (a.d)*(b.c)'
         assert str(((a^b)|c)|d) == '-(a.c)*(b.d) + (a.d)*(b.c)'
-        assert str(Ga.com(a^b,c^d)) == '-(b.d)*a^c + (b.c)*a^d + (a.d)*b^c - (a.c)*b^d'
+        assert str(Ga.com(a^b, c^d)) == '-(b.d)*a^c + (b.c)*a^d + (a.d)*b^c - (a.c)*b^d'
         assert str((a|(b^c))|(d^e)) == '(-(a.b)*(c.e) + (a.c)*(b.e))*d + ((a.b)*(c.d) - (a.c)*(b.d))*e'
 
     def test_derivatives_in_rectangular_coordinates(self):
 
-        X = (x, y, z) = symbols('x y z')
+        X = x, y, z = symbols('x y z')
         o3d = Ga('e_x e_y e_z', g=[1, 1, 1], coords=X)
-        (ex, ey, ez) = o3d.mv()
+        ex, ey, ez = o3d.mv()
         grad = o3d.grad
 
         f = o3d.mv('f', 'scalar', f=True)
@@ -140,9 +140,9 @@ class TestTest(unittest.TestCase):
 
     def test_derivatives_in_spherical_coordinates(self):
 
-        X = (r, th, phi) = symbols('r theta phi')
+        X = r, th, phi = symbols('r theta phi')
         s3d = Ga('e_r e_theta e_phi', g=[1, r ** 2, r ** 2 * sin(th) ** 2], coords=X, norm=True)
-        (er, eth, ephi) = s3d.mv()
+        er, eth, ephi = s3d.mv()
         grad = s3d.grad
 
         f = s3d.mv('f', 'scalar', f=True)
@@ -165,22 +165,22 @@ class TestTest(unittest.TestCase):
     def test_rounding_numerical_components(self):
 
         o3d = Ga('e_x e_y e_z', g=[1, 1, 1])
-        (ex, ey, ez) = o3d.mv()
+        ex, ey, ez = o3d.mv()
 
         X = 1.2*ex+2.34*ey+0.555*ez
         Y = 0.333*ex+4*ey+5.3*ez
 
         assert str(X) == '1.2*e_x + 2.34*e_y + 0.555*e_z'
-        assert str(Nga(X,2)) == '1.2*e_x + 2.3*e_y + 0.55*e_z'
+        assert str(Nga(X, 2)) == '1.2*e_x + 2.3*e_y + 0.55*e_z'
         assert str(X*Y) == '12.7011000000000 + 4.02078*e_x^e_y + 6.175185*e_x^e_z + 10.182*e_y^e_z'
-        assert str(Nga(X*Y,2)) == '13. + 4.0*e_x^e_y + 6.2*e_x^e_z + 10.0*e_y^e_z'
+        assert str(Nga(X*Y, 2)) == '13. + 4.0*e_x^e_y + 6.2*e_x^e_z + 10.0*e_y^e_z'
 
     def test_noneuclidian_distance_calculation(self):
-        from sympy import solve,sqrt
+        from sympy import solve, sqrt
 
         g = '0 # #,# 0 #,# # 1'
         necl = Ga('X Y e',g=g)
-        (X,Y,e) = necl.mv()
+        X, Y, e = necl.mv()
 
         assert str((X^Y)*(X^Y)) == '(X.Y)**2'
 
@@ -197,11 +197,11 @@ class TestTest(unittest.TestCase):
         assert str(B*B) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e)'
         assert str(L*L) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e)' # D&L 10.153
 
-        (s,c,Binv,M,S,C,alpha) = symbols('s c (1/B) M S C alpha')
+        s, c, Binv, M, S, C, alpha = symbols('s c (1/B) M S C alpha')
 
-        XdotY = necl.g[0,1]
-        Xdote = necl.g[0,2]
-        Ydote = necl.g[1,2]
+        XdotY = necl.g[0, 1]
+        Xdote = necl.g[0, 2]
+        Ydote = necl.g[1, 2]
 
         Bhat = Binv*B # D&L 10.154
         R = c+s*Bhat # Rotor R = exp(alpha*Bhat/2)
@@ -209,7 +209,7 @@ class TestTest(unittest.TestCase):
 
         Z = R*X*R.rev() # D&L 10.155
         Z.obj = expand(Z.obj)
-        Z.obj = Z.obj.collect([Binv,s,c,XdotY])
+        Z.obj = Z.obj.collect([Binv, s, c, XdotY])
         assert str(Z) == '((1/B)**2*(X.Y)**2*s**2 - 2*(1/B)**2*(X.Y)*(X.e)*(Y.e)*s**2 + 2*(1/B)*(X.Y)*c*s - 2*(1/B)*(X.e)*(Y.e)*c*s + c**2)*X + 2*(1/B)*(X.e)**2*c*s*Y + 2*(1/B)*(X.Y)*(X.e)*s*(-(1/B)*(X.Y)*s + 2*(1/B)*(X.e)*(Y.e)*s - c)*e'
         W = Z|Y
         # From this point forward all calculations are with sympy scalars
@@ -220,24 +220,24 @@ class TestTest(unittest.TestCase):
         W = W.collect([s*Binv])
 
         M = 1/Bsq
-        W = W.subs(Binv**2,M)
+        W = W.subs(Binv**2, M)
         W = simplify(W)
         Bmag = sqrt(XdotY**2-2*XdotY*Xdote*Ydote)
-        W = W.collect([Binv*c*s,XdotY])
+        W = W.collect([Binv*c*s, XdotY])
 
         #Double angle substitutions
 
-        W = W.subs(2*XdotY**2-4*XdotY*Xdote*Ydote,2/(Binv**2))
-        W = W.subs(2*c*s,S)
-        W = W.subs(c**2,(C+1)/2)
-        W = W.subs(s**2,(C-1)/2)
+        W = W.subs(2*XdotY**2-4*XdotY*Xdote*Ydote, 2/(Binv**2))
+        W = W.subs(2*c*s, S)
+        W = W.subs(c**2, (C+1)/2)
+        W = W.subs(s**2, (C-1)/2)
         W = simplify(W)
-        W = W.subs(Binv,1/Bmag)
+        W = W.subs(Binv, 1/Bmag)
         W = expand(W)
 
         assert str(W.simplify()) == '(X.Y)*C - (X.e)*(Y.e)*C + (X.e)*(Y.e) + S*sqrt((X.Y)*((X.Y) - 2*(X.e)*(Y.e)))'
 
-        Wd = collect(W,[C,S],exact=True,evaluate=False)
+        Wd = collect(W, [C, S], exact=True, evaluate=False)
 
         Wd_1 = Wd[one]
         Wd_C = Wd[C]
@@ -249,18 +249,18 @@ class TestTest(unittest.TestCase):
         assert str(Wd_S) == 'sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
         assert str(Bmag) == 'sqrt((X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e))'
 
-        Wd_1 = Wd_1.subs(Binv,1/Bmag)
-        Wd_C = Wd_C.subs(Binv,1/Bmag)
-        Wd_S = Wd_S.subs(Binv,1/Bmag)
+        Wd_1 = Wd_1.subs(Binv, 1/Bmag)
+        Wd_C = Wd_C.subs(Binv, 1/Bmag)
+        Wd_S = Wd_S.subs(Binv, 1/Bmag)
 
         lhs = Wd_1+Wd_C*C
         rhs = -Wd_S*S
         lhs = lhs**2
         rhs = rhs**2
         W = expand(lhs-rhs)
-        W = expand(W.subs(1/Binv**2,Bmag**2))
-        W = expand(W.subs(S**2,C**2-1))
-        W = W.collect([C,C**2],evaluate=False)
+        W = expand(W.subs(1/Binv**2, Bmag**2))
+        W = expand(W.subs(S**2, C**2-1))
+        W = W.collect([C, C**2], evaluate=False)
 
         a = simplify(W[C**2])
         b = simplify(W[C])
@@ -271,27 +271,27 @@ class TestTest(unittest.TestCase):
         assert str(c) == '(X.Y)**2 - 2*(X.Y)*(X.e)*(Y.e) + (X.e)**2*(Y.e)**2'
 
         x = Symbol('x')
-        C =  solve(a*x**2+b*x+c,x)[0]
+        C =  solve(a*x**2+b*x+c, x)[0]
         assert str(expand(simplify(expand(C)))) == '-(X.Y)/((X.e)*(Y.e)) + 1'
 
     def test_conformal_representations_of_circles_lines_spheres_and_planes(self):
-        global n,nbar
+        global n, nbar
 
         g = '1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 0 2,0 0 0 2 0'
 
-        cnfml3d = Ga('e_1 e_2 e_3 n nbar',g=g)
+        cnfml3d = Ga('e_1 e_2 e_3 n nbar', g=g)
 
-        (e1,e2,e3,n,nbar) = cnfml3d.mv()
+        e1, e2, e3, n, nbar = cnfml3d.mv()
 
         e = n+nbar
 
         #conformal representation of points
 
-        A = make_vector(e1,ga=cnfml3d)    # point a = (1,0,0)  A = F(a)
-        B = make_vector(e2,ga=cnfml3d)    # point b = (0,1,0)  B = F(b)
-        C = make_vector(-e1,ga=cnfml3d)   # point c = (-1,0,0) C = F(c)
-        D = make_vector(e3,ga=cnfml3d)    # point d = (0,0,1)  D = F(d)
-        X = make_vector('x',3,ga=cnfml3d)
+        A = make_vector(e1, ga=cnfml3d)    # point a = (1, 0, 0)  A = F(a)
+        B = make_vector(e2, ga=cnfml3d)    # point b = (0, 1, 0)  B = F(b)
+        C = make_vector(-e1, ga=cnfml3d)   # point c = (-1, 0, 0) C = F(c)
+        D = make_vector(e3, ga=cnfml3d)    # point d = (0, 0, 1)  D = F(d)
+        X = make_vector('x', 3, ga=cnfml3d)
 
         assert str(A) == 'e_1 + n/2 - nbar/2'
         assert str(B) == 'e_2 + n/2 - nbar/2'
@@ -318,9 +318,9 @@ class TestTest(unittest.TestCase):
             '0 0 0 0 2,'+ \
             '0 0 0 2 0'
 
-        c3d = Ga('p1 p2 p3 n nbar',g=g)
+        c3d = Ga('p1 p2 p3 n nbar', g=g)
 
-        (p1,p2,p3,n,nbar) = c3d.mv()
+        p1, p2, p3, n, nbar = c3d.mv()
 
         P1 = F(p1)
         P2 = F(p2)
@@ -341,9 +341,9 @@ class TestTest(unittest.TestCase):
             '-1 0 #,'+ \
             '# # #'
 
-        e2b = Ga('P1 P2 a',g=g)
+        e2b = Ga('P1 P2 a', g=g)
 
-        (P1,P2,a) = e2b.mv()
+        P1, P2, a = e2b.mv()
 
         B = P1^P2
         Bsq = B*B
@@ -369,9 +369,9 @@ class TestTest(unittest.TestCase):
             '# 1 #,'+ \
             '# # 1'
 
-        g3dn = Ga('e1 e2 e3',g=g)
+        g3dn = Ga('e1 e2 e3', g=g)
 
-        (e1,e2,e3) = g3dn.mv()
+        e1, e2, e3 = g3dn.mv()
 
         E = e1^e2^e3
         Esq = (E*E).scalar()
@@ -435,3 +435,43 @@ class TestTest(unittest.TestCase):
             assert ga.bases_lst[0] == e_1.obj
         with pytest.warns(DeprecationWarning):
             assert ga.indexes_lst[1] == (1,)
+
+        # deprecated to reduce the number of similar members
+        with pytest.warns(DeprecationWarning):
+            ga.blades_to_indexes
+        with pytest.warns(DeprecationWarning):
+            ga.bases_to_indexes
+        with pytest.warns(DeprecationWarning):
+            ga.blades_to_indexes_dict
+        with pytest.warns(DeprecationWarning):
+            ga.bases_to_indexes_dict
+        with pytest.warns(DeprecationWarning):
+            ga.indexes_to_blades
+        with pytest.warns(DeprecationWarning):
+            ga.indexes_to_bases
+
+        # all the above are deprecated in favor of these two, which are _not_
+        # deprecated
+        ga.indexes_to_blades_dict
+        ga.indexes_to_bases_dict
+
+        # deprecated to reduce the number of similar members
+        with pytest.warns(DeprecationWarning):
+            ga.basic_mul_table
+        with pytest.warns(DeprecationWarning):
+            ga.basic_mul_keys
+        with pytest.warns(DeprecationWarning):
+            ga.basic_mul_values
+
+        # all derived from
+        ga.basic_mul_table_dict
+
+        # deprecated to reduce the number of similar members
+        with pytest.warns(DeprecationWarning):
+            ga.blade_expansion
+        with pytest.warns(DeprecationWarning):
+            ga.base_expansion
+
+        # all derived from
+        ga.blade_expansion_dict
+        ga.base_expansion_dict

@@ -8,7 +8,7 @@ from collections import OrderedDict
 from itertools import combinations
 import functools
 from functools import reduce
-from typing import Tuple, TypeVar, Callable
+from typing import Tuple, TypeVar, Callable, Mapping
 
 from sympy import (
     diff, Rational, Symbol, S, Mul, Add,
@@ -95,11 +95,11 @@ def update_and_substitute(expr1, expr2, mul_dict):
     product of ``bases1[i]*bases2[j]`` as a linear combination of scalars and
     bases of the geometric algebra.
     """
-    (coefs1, bases1) = metric.linear_expand(expr1)
-    (coefs2, bases2) = metric.linear_expand(expr2)
+    coefs1, bases1 = metric.linear_expand(expr1)
+    coefs2, bases2 = metric.linear_expand(expr2)
     expr = S(0)
-    for (coef1, base1) in zip(coefs1, bases1):
-        for (coef2, base2) in zip(coefs2, bases2):
+    for coef1, base1 in zip(coefs1, bases1):
+        for coef2, base2 in zip(coefs2, bases2):
             expr += coef1 * coef2 * mul_dict[base1, base2]
     return expr
 
@@ -137,7 +137,7 @@ def nc_subs(expr, base_keys, base_values=None):
 
 
 _T = TypeVar('T')
-_U = TypeVar('T')
+_U = TypeVar('U')
 
 
 class GradedTuple(Tuple[Tuple[_T, ...], ...]):
@@ -168,6 +168,20 @@ class GradedTuple(Tuple[Tuple[_T, ...], ...]):
             )
             for elems in self
         )
+
+
+class OrderedBiMap(OrderedDict, Mapping):
+    """ A dict with an ``.inverse`` attribute mapping in the other direction """
+    def __init__(self, items):
+        # set up the inverse mapping, bypassing our __init__
+        self.inverse = OrderedBiMap.__new__(type(self))
+
+        # populate both
+        OrderedDict.__init__(self, items)
+        OrderedDict.__init__(self.inverse, [(v, k) for k, v in items])
+
+        # and complete the inverse loop
+        self.inverse.inverse = self
 
 
 class Ga(metric.Metric):
@@ -245,21 +259,17 @@ class Ga(metric.Metric):
         Linear combination of coordinates and basis vectors.  For
         example in orthogonal 3D :math:`x*e_x+y*e_y+z*e_z`.
 
-    .. attribute:: blades_to_indexes_dict
-
-        Map basis blades to index tuples (dictionary).
-
     .. attribute:: indexes_to_blades_dict
 
-        Map index tuples to basis blades (dictionary).
+        Bidirectional map from index tuples (:attr:`indices`) to basis blades (:attr:`blades`)
 
-    .. attribute:: bases_to_indexes_dict
-
-        Map basis bases to index tuples (dictionary).
+        :type: OrderedBiMap[Tuple[int, ...], sympy.Symbol]
 
     .. attribute:: indexes_to_bases_dict
 
-        Map index tuples to basis bases (dictionary).
+        Bidirectional map from index tuples (:attr:`indices`) to basis bases (:attr:`bases`)
+
+        :type: OrderedBiMap[Tuple[int, ...], sympy.Symbol]
 
     .. rubric:: Multiplication tables data structures
 
@@ -269,23 +279,23 @@ class Ga(metric.Metric):
 
     .. attribute:: mul_table_dict
 
-        Geometric products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1*base2,...}``
+        Geometric products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1*base2, ...}``
 
     .. attribute:: wedge_table_dict
 
-        Outer products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1^base2,...}``
+        Outer products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1^base2, ...}``
 
     .. attribute:: dot_table_dict
 
-        Hestenes inner products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1|base2,...}``
+        Hestenes inner products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1|base2, ...}``
 
     .. attribute:: left_contract_table_dict
 
-        Left contraction of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1<base2,...}``
+        Left contraction of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1<base2, ...}``
 
     .. attribute:: right_contract_table_dict
 
-        Right contraction of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1>base2,...}``
+        Right contraction of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1>base2, ...}``
 
     .. rubric:: Reciprocal basis data structures
 
@@ -458,7 +468,7 @@ class Ga(metric.Metric):
         self.e_sq = simplify(expand((self.e*self.e).scalar()))
 
         if self.coords is not None:
-            self.coord_vec = sum([coord * base for (coord, base) in zip(self.coords, self.basis)])
+            self.coord_vec = sum([coord * base for coord, base in zip(self.coords, self.basis)])
             self._build_reciprocal_basis(self.gsym)
             self._build_grads()
         else:
@@ -501,11 +511,11 @@ class Ga(metric.Metric):
         self.a = []  # List of dummy vectors for Mlt calculations
         self._agrads = {}  # cache of gradient operator with respect to vector a
         self.dslot = -1  # args slot for dervative, -1 for coordinates
-        self._XOX = self.mv('XOX','vector')  # cached vector for use in is_versor
+        self._XOX = self.mv('XOX', 'vector')  # cached vector for use in is_versor
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
 
-        if isinstance(a,(list,tuple)):
+        if isinstance(a, (list, tuple)):
             for ai in a:
                 self.make_grad(ai)
             return
@@ -519,7 +529,7 @@ class Ga(metric.Metric):
             ai = a
         coefs = []
         pdiffs = []
-        for (base, coord) in zip(self.r_basis_mv, ai):
+        for base, coord in zip(self.r_basis_mv, ai):
             coefs.append(base)
             pdiffs.append(dop.Pdop({coord: 1}, ga=self))
         self._agrads[a] = mv.Dop(coefs, pdiffs, ga=self, cmpflg=cmpflg)
@@ -556,7 +566,7 @@ class Ga(metric.Metric):
         return mv.Mv('XxXx', 'vector', ga=self)
 
     def X(self):
-        return self.mv(sum([coord*base for (coord, base) in zip(self.coords, self.basis)]))
+        return self.mv(sum([coord*base for coord, base in zip(self.coords, self.basis)]))
 
     @property
     def Pdiffs(self):
@@ -636,7 +646,7 @@ class Ga(metric.Metric):
                                  str(root_lst) + ' and ' + str(mvtype_lst))
 
             mv_lst = []
-            for (root, mv_type) in zip(root_lst, mvtype_lst):
+            for root, mv_type in zip(root_lst, mvtype_lst):
                 args = list(args)
                 args[0] = mv_type
                 args = tuple(args)
@@ -645,7 +655,7 @@ class Ga(metric.Metric):
 
         return mv.Mv(root, *args, **kwargs)
 
-    def mvr(self,norm=True):
+    def mvr(self, norm=True):
         r"""
         Returns tumple of reciprocal basis vectors.  If norm=True or
         basis vectors are orthogonal the reciprocal basis is normalized
@@ -680,7 +690,7 @@ class Ga(metric.Metric):
         bl = self.blades.flat[1:]  # do not include the scalar, which is not named
         var_names = [prefix+''.join([k for k in str(b) if k.isdigit()]) for b in bl]
 
-        return {key:val for key,val in zip(var_names, bl)}
+        return {key: val for key, val in zip(var_names, bl)}
 
     def _build_grads(self):
         if not self.is_ortho:
@@ -688,7 +698,7 @@ class Ga(metric.Metric):
         else:
             r_basis = self.r_basis_mv
         if self.norm:
-            r_basis = [x / e_norm for (x, e_norm) in zip(self.r_basis_mv, self.e_norm)]
+            r_basis = [x / e_norm for x, e_norm in zip(self.r_basis_mv, self.e_norm)]
 
         pdx = [dop.Pdop(x) for x in self.coords]
 
@@ -727,7 +737,7 @@ class Ga(metric.Metric):
         """
         if not self._lt_flg:
             self._lt_flg = True
-            (self.lt_coords, self.lt_x) = lt.Lt.setup(ga=self)
+            self.lt_coords, self.lt_x = lt.Lt.setup(ga=self)
 
         return lt.Lt(*args, ga=self, **kwargs)
 
@@ -748,7 +758,7 @@ class Ga(metric.Metric):
 
         self.par_coords = {}
 
-        for (coord, par_coord) in zip(self.coords, coords):
+        for coord, par_coord in zip(self.coords, coords):
             self.par_coords[coord] = par_coord
 
     def basis_vectors(self):
@@ -818,7 +828,24 @@ class Ga(metric.Metric):
         another.  For the case of an orthogonal set of basis vectors the
         bases and blades are identical.
         """
+        self._build_indices()
+        self._build_blade_info()
+        self._build_base_info()
+        self._build_super_script_strings()
+        self._build_mv_wrappers()
 
+        if self.debug:
+            printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes.flat,
+                           'blades', self.blades, 'list(blades)', self.blades.flat,
+                           'indexes_to_blades_dict', self.indexes_to_blades_dict,
+                           'blades_to_grades_dict', self.blades_to_grades_dict,
+                           'blade_super_scripts', self.blade_super_scripts)
+            if not self.is_ortho:
+                printer.oprint('bases', self.bases, 'list(bases)', self.bases.flat,
+                               'indexes_to_bases_dict', self.indexes_to_bases_dict,
+                               'bases_to_grades_dict', self.bases_to_grades_dict)
+
+    def _build_indices(self):
         # index list for multivector bases and blades by grade
         basis_indexes = tuple(self.n_range)
         self.indexes = GradedTuple(
@@ -826,40 +853,34 @@ class Ga(metric.Metric):
             for i in range(len(basis_indexes) + 1)
         )
 
-        # non-commutative symbols for multivector bases and blades
+    def _build_blade_info(self):
+        # non-commutative symbols for multivector blades
         self.blades = self.indexes._map(
             lambda index: self._build_basis_blade_symbol(index))
 
-        self.blades_to_indexes = []
-        self.indexes_to_blades = []
-        for (index, blade) in zip(self.indexes.flat, self.blades.flat):
-            self.blades_to_indexes.append((blade, index))
-            self.indexes_to_blades.append((index, blade))
-        self.blades_to_indexes_dict = OrderedDict(self.blades_to_indexes)
-        self.indexes_to_blades_dict = OrderedDict(self.indexes_to_blades)
+        self.indexes_to_blades_dict = OrderedBiMap(list(zip(self.indexes.flat, self.blades.flat)))
 
-        self.blades_to_grades_dict = {}
-        for igrade, grade in enumerate(self.blades):
-            for blade in grade:
-                self.blades_to_grades_dict[blade] = igrade
+        self.blades_to_grades_dict = {
+            blade: igrade
+            for igrade, grade in enumerate(self.blades)
+            for blade in grade
+        }
 
+    def _build_base_info(self):
+        # non-commutative symbols for multivector bases
         if not self.is_ortho:
             self.bases = self.indexes._map(
                 lambda index: self._build_basis_base_symbol(index))
 
-            self.bases_to_indexes = []
-            self.indexes_to_bases = []
-            for (index, base) in zip(self.indexes.flat, self.bases.flat):
-                self.bases_to_indexes.append((base, index))
-                self.indexes_to_bases.append((index, base))
-            self.bases_to_indexes_dict = OrderedDict(self.bases_to_indexes)
-            self.indexes_to_bases_dict = OrderedDict(self.indexes_to_bases)
+            self.indexes_to_bases_dict = OrderedBiMap(list(zip(self.indexes.flat, self.bases.flat)))
 
-            self.bases_to_grades_dict = {}
-            for igrade, grade in enumerate(self.bases):
-                for base in grade:
-                    self.bases_to_grades_dict[base] = igrade
+            self.bases_to_grades_dict = {
+                base: igrade
+                for igrade, grade in enumerate(self.bases)
+                for base in grade
+            }
 
+    def _build_super_script_strings(self):
         if self.coords is None:
             base0 = str(self.basis[0])
             if '_' in base0:
@@ -870,28 +891,11 @@ class Ga(metric.Metric):
         else:
             self.basis_super_scripts = [str(coord) for coord in self.coords]
 
-        self.blade_super_scripts = []
+        self.blade_super_scripts = self.indexes._map(lambda base_index: ''.join(
+            self.basis_super_scripts[i] for i in base_index
+        ))
 
-        for grade_index in self.indexes:
-            super_scripts = []
-            for base_index in grade_index:
-                super_scripts.append(''.join([self.basis_super_scripts[i]
-                                     for i in base_index]))
-            self.blade_super_scripts.append(super_scripts)
-
-        if self.debug:
-            printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes.flat,
-                           'blades', self.blades, 'list(blades)', self.blades.flat,
-                           'blades_to_indexes_dict', self.blades_to_indexes_dict,
-                           'indexes_to_blades_dict', self.indexes_to_blades_dict,
-                           'blades_to_grades_dict', self.blades_to_grades_dict,
-                           'blade_super_scripts', self.blade_super_scripts)
-            if not self.is_ortho:
-                printer.oprint('bases', self.bases, 'list(bases)', self.bases.flat,
-                               'bases_to_indexes_dict', self.bases_to_indexes_dict,
-                               'indexes_to_bases_dict', self.indexes_to_bases_dict,
-                               'bases_to_grades_dict', self.bases_to_grades_dict)
-
+    def _build_mv_wrappers(self):
         # create the Mv wrappers
         self.mv_blades = self.blades._map(lambda blade: mv.Mv(blade, ga=self))
 
@@ -899,6 +903,54 @@ class Ga(metric.Metric):
             mv.Mv(obj, ga=self)
             for obj in self.basis
         )
+
+    @property
+    def indexes_to_bases(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.indexes_to_bases` is deprecated, use `ga.indexes_to_bases_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return self.indexes_to_bases_dict.items()
+
+    @property
+    def indexes_to_blades(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.indexes_to_blades` is deprecated, use `ga.indexes_to_blades_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return self.indexes_to_blades_dict.items()
+
+    @property
+    def bases_to_indexes(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.bases_to_indexes` is deprecated, use `ga.indexes_to_bases_dict.inverse.items()`",
+            DeprecationWarning, stacklevel=2)
+        return self.indexes_to_bases_dict.inverse.items()
+
+    @property
+    def blades_to_indexes(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.blades_to_indexes` is deprecated, use `ga.indexes_to_blades_dict.inverse.items()`",
+            DeprecationWarning, stacklevel=2)
+        return self.indexes_to_blades_dict.inverse.items()
+
+    @property
+    def bases_to_indexes_dict(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.bases_to_indexes_dict` is deprecated, use `ga.indexes_to_bases_dict.inverse.`",
+            DeprecationWarning, stacklevel=2)
+        return self.indexes_to_bases_dict.inverse
+
+    @property
+    def blades_to_indexes_dict(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.blades_to_indexes_dict` is deprecated, use `ga.indexes_to_blades_dict.inverse`",
+            DeprecationWarning, stacklevel=2)
+        return self.indexes_to_blades_dict.inverse
 
     def _build_basis_product_tables(self):
         """
@@ -956,9 +1008,9 @@ class Ga(metric.Metric):
     def geometric_product_basis_blades(self, blade12):
         # geometric (*) product for orthogonal basis
         if self.is_ortho:
-            (blade1, blade2) = blade12
-            index1 = self.blades_to_indexes_dict[blade1]
-            index2 = self.blades_to_indexes_dict[blade2]
+            blade1, blade2 = blade12
+            index1 = self.indexes_to_blades_dict.inverse[blade1]
+            index2 = self.indexes_to_blades_dict.inverse[blade2]
             blade_index = list(index1 + index2)
             repeats = []
             sgn = 1
@@ -981,11 +1033,11 @@ class Ga(metric.Metric):
                 result *= self.indexes_to_blades_dict[tuple(blade_index)]
             return result
         else:
-            (blade1, blade2) = blade12
+            blade1, blade2 = blade12
             base1 = self.blade_to_base_rep(blade1)
             base2 = self.blade_to_base_rep(blade2)
             base12 = expand(base1 * base2)
-            base12 = nc_subs(base12, self.basic_mul_keys, self.basic_mul_values)
+            base12 = nc_subs(base12, self.basic_mul_table_dict.items())
             return self.base_to_blade_rep(base12)
 
     def reduce_basis(self, blst):
@@ -1047,7 +1099,7 @@ class Ga(metric.Metric):
                         blst_flg.append(tmp[2])
         new_blst_coef = []
         new_blst_expand = []
-        for (coef, xpand) in zip(blst_coef, blst_expand):
+        for coef, xpand in zip(blst_coef, blst_expand):
             if xpand in new_blst_expand:
                 i = new_blst_expand.index(xpand)
                 new_blst_coef[i] += coef
@@ -1139,14 +1191,14 @@ class Ga(metric.Metric):
     def wedge_product_basis_blades(self, blade12):  # blade12 = blade1*blade2
         # outer (^) product of basis blades
         # this method works for both orthogonal and non-orthogonal basis
-        (blade1, blade2) = blade12
-        index1 = self.blades_to_indexes_dict[blade1]
-        index2 = self.blades_to_indexes_dict[blade2]
+        blade1, blade2 = blade12
+        index1 = self.indexes_to_blades_dict.inverse[blade1]
+        index2 = self.indexes_to_blades_dict.inverse[blade2]
         index12 = list(index1 + index2)
 
         if len(index12) > self.n:
             return S(0)
-        (sgn, wedge12) = Ga.blade_reduce(index12)
+        sgn, wedge12 = Ga.blade_reduce(index12)
         if sgn != 0:
             return sgn * self.indexes_to_blades_dict[tuple(wedge12)]
         else:
@@ -1179,9 +1231,9 @@ class Ga(metric.Metric):
     def dot_product_basis_blades(self, blade12, mode):
         # dot (|), left (<), and right (>) products
         # dot product for orthogonal basis
-        (blade1, blade2) = blade12
-        index1 = self.blades_to_indexes_dict[blade1]
-        index2 = self.blades_to_indexes_dict[blade2]
+        blade1, blade2 = blade12
+        index1 = self.indexes_to_blades_dict.inverse[blade1]
+        index2 = self.indexes_to_blades_dict.inverse[blade2]
         index = list(index1 + index2)
 
         grade = self._dot_product_grade(len(index1), len(index2), mode=mode)
@@ -1223,11 +1275,11 @@ class Ga(metric.Metric):
             else:
                 return sgn * result * self.indexes_to_blades_dict[tuple(index)]
 
-    def non_orthogonal_dot_product_basis_blades(self, blade12, mode):  # blade12 = (blade1,blade2)
+    def non_orthogonal_dot_product_basis_blades(self, blade12, mode):  # blade12 = (blade1, blade2)
         # dot product of basis blades if basis vectors are non-orthogonal
         # inner (|), left (<), and right (>) products of basis blades
         # blade12 is the sympy product of two basis blades
-        (blade1, blade2) = blade12
+        blade1, blade2 = blade12
         # Need base rep for blades since that is all we can multiply
         base1 = self.blade_expansion_dict[blade1]
         base2 = self.blade_expansion_dict[blade2]
@@ -1249,82 +1301,110 @@ class Ga(metric.Metric):
     ############# Non-Orthogonal Tables and Dictionaries ###############
 
     def _build_non_orthogonal_mul_table(self):
-        mul_table = []
-        self.basic_mul_keys = []
-        self.basic_mul_values = []
-        for base1 in self.bases.flat:
-            for base2 in self.bases.flat:
-                key = base1 * base2
-                value = self.non_orthogonal_bases_products((base1, base2))
-                mul_table.append((key, value))
-                self.basic_mul_keys.append(key)
-                self.basic_mul_values.append(value)
-        self.basic_mul_table = mul_table
-        self.basic_mul_table_dict = OrderedDict(mul_table)
+        self.basic_mul_table_dict = OrderedDict(
+            (base1 * base2, self.non_orthogonal_bases_products((base1, base2)))
+            for base1 in self.bases.flat
+            for base2 in self.bases.flat
+        )
 
         if self.debug:
-            print('basic_mul_table =\n', self.basic_mul_table)
+            print('basic_mul_table =\n', self.basic_mul_table_dict)
 
-    def non_orthogonal_bases_products(self, base12):  # base12 = (base1,base2)
+    @property
+    def basic_mul_table(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.basic_mul_table` is deprecated, use `ga.basic_mul_table_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.basic_mul_table_dict.items())
+
+    @property
+    def basic_mul_keys(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.basic_mul_keys` is deprecated, use `ga.basic_mul_table_dict.keys()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.basic_mul_table_dict.keys())
+
+    @property
+    def basic_mul_values(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.basic_mul_values` is deprecated, use `ga.basic_mul_table_dict.values()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.basic_mul_table_dict.values())
+
+    def non_orthogonal_bases_products(self, base12):  # base12 = (base1, base2)
         # geometric product of bases for non-orthogonal basis vectors
-        (base1, base2) = base12
-        index = self.bases_to_indexes_dict[base1] + self.bases_to_indexes_dict[base2]
+        base1, base2 = base12
+        index = self.indexes_to_bases_dict.inverse[base1] + self.indexes_to_bases_dict.inverse[base2]
 
-        (coefs, indexes) = self.reduce_basis(index)
+        coefs, indexes = self.reduce_basis(index)
 
         return sum((
             coef * self.indexes_to_bases_dict[tuple(index)]
-            for (coef, index) in zip(coefs, indexes)
+            for coef, index in zip(coefs, indexes)
         ), S(0))
 
     def _build_base_blade_conversions(self):
 
-        blade_expansion = []
-        blade_index = []
+        blade_expansion_dict = OrderedDict()
 
         # expand blade basis in terms of base basis
-        for blade in self.blades.flat:
-            index = self.blades_to_indexes_dict[blade]
+        for blade, index in zip(self.blades.flat, self.indexes.flat):
             grade = len(index)
             if grade <= 1:
-                blade_expansion.append(blade)
-                blade_index.append(index)
+                blade_expansion_dict[blade] = blade
             else:
-                a = self.indexes_to_blades_dict[(index[0],)]
-                Aexpand = blade_expansion[blade_index.index(index[1:])]
+                a = self.indexes_to_blades_dict[index[:1]]
+                A = self.indexes_to_blades_dict[index[1:]]
+                Aexpand = blade_expansion_dict[A]
                 # Formula for outer (^) product of a vector and grade-r multivector
                 # a^A_{r} = (a*A + (-1)^{r}*A*a)/2
                 # The folowing evaluation takes the most time for setup it is the due to
                 # the substitution required for the multiplications
                 a_W_A = half * (self.basic_mul(a, Aexpand) - ((-1) ** grade) * self.basic_mul(Aexpand, a))
-                blade_index.append(index)
-                blade_expansion.append(expand(a_W_A))
+                blade_expansion_dict[blade] = expand(a_W_A)
 
-        self.blade_expansion = blade_expansion
-        self.blade_expansion_dict = OrderedDict(list(zip(self.blades.flat, blade_expansion)))
+        self.blade_expansion_dict = blade_expansion_dict
 
         if self.debug:
             print('blade_expansion_dict =', self.blade_expansion_dict)
 
         # expand base basis in terms of blade basis
 
-        base_expand = []
+        base_expansion_dict = OrderedDict()
 
-        for (base, blade, index) in zip(self.bases.flat, self.blades.flat, self.indexes.flat):
+        for base, blade, index in zip(self.bases.flat, self.blades.flat, self.indexes.flat):
             grade = len(index)
             if grade <= 1:
-                base_expand.append((base, base))
+                base_expansion_dict[base] = base
             else:  # back substitution of tridiagonal system
                 tmp = self.blade_expansion_dict[blade]
                 tmp = tmp.subs(base, -blade)
-                tmp = -tmp.subs(base_expand)
-                base_expand.append((base, expand(tmp)))
+                tmp = -tmp.subs(base_expansion_dict)
+                base_expansion_dict[base] = expand(tmp)
 
-        self.base_expand = base_expand
-        self.base_expansion_dict = OrderedDict(base_expand)
+        self.base_expansion_dict = base_expansion_dict
 
         if self.debug:
             print('base_expansion_dict =', self.base_expansion_dict)
+
+    @property
+    def base_expansion(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.base_expansion` is deprecated, use `ga.base_expansion_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.base_expansion_dict.items())
+
+    @property
+    def blade_expansion(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.blade_expansion` is deprecated, use `ga.blade_expansion_dict.items()`",
+            DeprecationWarning, stacklevel=2)
+        return list(self.blade_expansion_dict.items())
 
     def base_to_blade_rep(self, A):
 
@@ -1332,7 +1412,7 @@ class Ga(metric.Metric):
             return A
         else:
             # return expand(A).subs(self.base_expansion_dict)
-            return nc_subs(expand(A), self.base_expand)
+            return nc_subs(expand(A), self.base_expansion_dict.items())
 
     def blade_to_base_rep(self, A):
 
@@ -1340,14 +1420,14 @@ class Ga(metric.Metric):
             return A
         else:
             # return expand(A).subs(self.blade_expansion_dict)
-            return nc_subs(expand(A), self.blades.flat, self.blade_expansion)
+            return nc_subs(expand(A), self.blade_expansion_dict.items())
 
     ###### Products (*,^,|,<,>) for multivector representations ########
 
     def basic_mul(self, A, B):  # geometric product (*) of base representations
         # only multiplicative operation to assume A and B are in base representation
         AxB = expand(A * B)
-        AxB = nc_subs(AxB, self.basic_mul_keys, self.basic_mul_values)
+        AxB = nc_subs(AxB, self.basic_mul_table_dict.items())
         return expand(AxB)
 
     def Mul(self, A, B, mode='*'):  # Unifies all products into one function
@@ -1408,15 +1488,15 @@ class Ga(metric.Metric):
         (in this case a linear combination of non-commutative symbols) the
         dictionary entries are sympy expressions.
         """
-        if isinstance(A,mv.Mv):
+        if isinstance(A, mv.Mv):
             A.blade_rep()
             A.characterise_Mv()
             Aobj = expand(A.obj)
         else:
             Aobj = A
-        coefs,blades = metric.linear_expand(Aobj)
+        coefs, blades = metric.linear_expand(Aobj)
         grade_dict = {}
-        for (coef,blade) in zip(coefs,blades):
+        for coef, blade in zip(coefs, blades):
             if blade == one:
                 if 0 in list(grade_dict.keys()):
                     grade_dict[0] += coef
@@ -1590,7 +1670,7 @@ class Ga(metric.Metric):
 
     ##################### Multivector derivatives ######################
 
-    def _build_reciprocal_basis(self,gsym):
+    def _build_reciprocal_basis(self, gsym):
         r"""
         Calculate reciprocal basis vectors :math:`e^{j}` where
 
@@ -1628,10 +1708,10 @@ class Ga(metric.Metric):
                 # determinant
                 n = self.n
                 if self.coords is None:  # Metric tensor is constant
-                    self.e_sq = (-1) ** (n*(n - 1)/2) * Symbol(det_str,real=True)
+                    self.e_sq = (-1) ** (n*(n - 1)/2) * Symbol(det_str, real=True)
                 else:  # Metric tensor is function of coordinates
                     n = len(self.coords)
-                    self.e_sq = (-1) ** (n*(n - 1)/2) * Function(det_str,real=True)(*self.coords)
+                    self.e_sq = (-1) ** (n*(n - 1)/2) * Function(det_str, real=True)(*self.coords)
             else:
                 self.e_sq = simplify((self.e * self.e).obj)
             if self.debug:
@@ -1648,9 +1728,9 @@ class Ga(metric.Metric):
                 # {E_n}^{-1} = \frac{E_n}{{E_n}^{2}}
                 # r_basis_j = sgn * duals[j] * E_n so it's not normalized, missing a factor of {E_n}^{-2}
                 """
-                print('blades list =',self.blades.flat)
-                print('debug =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
-                print('collect arg =',expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
+                print('blades list =', self.blades.flat)
+                print('debug =', expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
+                print('collect arg =', expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
                 """
                 r_basis_j = metric.collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))), self.blades.flat)
                 self.r_basis.append(r_basis_j)
@@ -1673,7 +1753,7 @@ class Ga(metric.Metric):
 
         self.r_basis_dict = {}
         self.r_basis_mv = []
-        for (r_symbol, r_base) in zip(self.r_symbols, self.r_basis):
+        for r_symbol, r_base in zip(self.r_symbols, self.r_basis):
             self.r_basis_dict[r_symbol] = r_base
             self.r_basis_mv.append(mv.Mv(r_base, ga=self))
 
@@ -1769,7 +1849,7 @@ class Ga(metric.Metric):
         if key in self._dbases:
             return self._dbases[key]
 
-        index = self.blades_to_indexes_dict[blade]
+        index = self.indexes_to_blades_dict.inverse[blade]
         grade = len(index)
         if grade == 1:
             db = self.de[ib][index[0]]
@@ -1836,7 +1916,7 @@ class Ga(metric.Metric):
         where ``grad_sqr_mode`` = :math:`*_{1}` = ``*``, ``^``, or ``|`` and
         ``mode`` = :math:`*_{2}` = ``*``, ``^``, or ``|``.
         """
-        (Sop, Bop) = Ga.DopFop[(grad_sqr_mode, mode)]
+        Sop, Bop = Ga.DopFop[(grad_sqr_mode, mode)]
         print('(Sop, Bop) =', Sop, Bop)
 
         print('grad_sqr:A =', A)
@@ -1950,7 +2030,7 @@ class Ga(metric.Metric):
 
         return tuple(rbasis)
 
-    def Mlt(self,*args,**kwargs):
+    def Mlt(self, *args, **kwargs):
         return lt.Mlt(args[0], self, *args[1:], **kwargs)
 
 
@@ -1969,10 +2049,10 @@ class Sm(Ga):
     'sm' can be used to instantiate the submanifold via (o3d is the base
     manifold)::
 
-        coords = (u,v) = symbols(',v',real=True)
-        sm_example = o3d.sm([sin(u)*cos(v),sin(u)*sin(v),cos(u)],coords)
+        coords = u, v = symbols('u, v', real=True)
+        sm_example = o3d.sm([sin(u)*cos(v), sin(u)*sin(v), cos(u)], coords)
 
-        (eu,ev) = sm_example.mv()
+        eu, ev = sm_example.mv()
         sm_grad = sm_example.grad
     """
     # __u is to emulate a Python 3.8 positional-only argument, with a clearer
@@ -1986,7 +2066,7 @@ class Sm(Ga):
             which is a list of functions of coordinates of the base
             manifold in terms of the coordinates of the submanifold.
             for example if the manifold is a unit sphere then -
-            ``u = [sin(u)*cos(v),sin(u)*sin(v),cos(u)]``.
+            ``u = [sin(u)*cos(v), sin(u)*sin(v), cos(u)]``.
 
             Alternatively, a parametric vector function
             of the basis vectors of the base manifold.  The
@@ -2035,7 +2115,7 @@ class Sm(Ga):
 
         # print 'u =', u
 
-        if isinstance(u,mv.Mv):  # Define vector manifold
+        if isinstance(u, mv.Mv):  # Define vector manifold
             self.ebasis = []
             for coord in coords:
                 # Partial derivation of vector function to get basis vectors
@@ -2083,7 +2163,7 @@ class Sm(Ga):
 
         Ga.__init__(self, root, g=g, coords=coords, norm=norm, debug=debug)
 
-        if isinstance(u,mv.Mv):  # Construct additional functions for vector manifold
+        if isinstance(u, mv.Mv):  # Construct additional functions for vector manifold
             # self.r_basis_mv under construction
 
             pass
@@ -2100,7 +2180,7 @@ class Sm(Ga):
         else:
             r_basis = self.r_basis_mv
         if self.norm:
-            r_basis = [x / e_norm for (x, e_norm) in zip(self.r_basis_mv, self.e_norm)]
+            r_basis = [x / e_norm for x, e_norm in zip(self.r_basis_mv, self.e_norm)]
 
         pdx = [self.Pdiffs[x] for x in self.coords]
 

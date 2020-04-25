@@ -3,7 +3,7 @@ numpy
 ipython
 matplotlib
 scipy
-sphinx>=1.4
+sphinx~=3.0
 ipykernel
 nbsphinx
 numba
