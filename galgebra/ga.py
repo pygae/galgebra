@@ -4,11 +4,11 @@ Geometric Algebra (inherits Metric)
 import warnings
 import operator
 import copy
-from collections import OrderedDict
 from itertools import combinations
 import functools
 from functools import reduce
-from typing import Tuple, TypeVar, Callable, Mapping
+from typing import Tuple, TypeVar, Callable
+from ._backports.typing import OrderedDict
 
 from sympy import (
     diff, Rational, Symbol, S, Mul, Add,
@@ -170,15 +170,19 @@ class GradedTuple(Tuple[Tuple[_T, ...], ...]):
         )
 
 
-class OrderedBiMap(OrderedDict, Mapping):
+_K = TypeVar('K')
+_V = TypeVar('V')
+
+
+class OrderedBiMap(OrderedDict[_K, _V]):
     """ A dict with an ``.inverse`` attribute mapping in the other direction """
     def __init__(self, items):
         # set up the inverse mapping, bypassing our __init__
         self.inverse = OrderedBiMap.__new__(type(self))
 
         # populate both
-        OrderedDict.__init__(self, items)
-        OrderedDict.__init__(self.inverse, [(v, k) for k, v in items])
+        super(OrderedBiMap, self).__init__(items)
+        super(OrderedBiMap, self.inverse).__init__([(v, k) for k, v in items])
 
         # and complete the inverse loop
         self.inverse.inverse = self
