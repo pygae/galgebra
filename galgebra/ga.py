@@ -359,8 +359,6 @@ class Ga(metric.Metric):
     dual_mode_value = 'I+'
     dual_mode_lst = ['+I', 'I+', '-I', 'I-', '+Iinv', 'Iinv+', '-Iinv', 'Iinv-']
 
-    restore = False
-
     a = []
 
     presets = {'o3d': 'x,y,z:[1,1,1]:[1,1,0]',
@@ -447,16 +445,7 @@ class Ga(metric.Metric):
             See :class:`galgebra.metric.Metric`.
         """
 
-        # Each time a geometric algebra is intialized in setup of append
-        # the printer must be restored to the simple text mode (not
-        # enhanced text of latex printing) so that when 'str' is used to
-        # create symbol names the names are not mangled.
-
         self.wedge_print = wedge
-
-        if printer.GaLatexPrinter.latex_flg:
-            printer.GaLatexPrinter.restore()
-            Ga.restore = True
 
         metric.Metric.__init__(self, bases, **kwargs)
 
@@ -505,9 +494,6 @@ class Ga(metric.Metric):
             else:  # I**2 = -1
                 self.i = self.e/sqrt(-self.e_sq)
                 self.i_inv = -self.i
-
-        if Ga.restore:  # restore printer to appropriate enhanced mode after ga is instantiated
-            printer.GaLatexPrinter.redirect()
 
         if self.debug:
             print('Exit Ga.__init__()')
@@ -2090,10 +2076,6 @@ class Sm(Ga):
 
         # print '!!!Enter Sm!!!'
 
-        if printer.GaLatexPrinter.latex_flg:
-            printer.GaLatexPrinter.restore()
-            Ga.restore = True
-
         u = __u
         coords = __coords
         if ga is None:
@@ -2155,9 +2137,6 @@ class Sm(Ga):
                         for l in ga.n_range:
                             s += dxdu[k][i] * dxdu[l][j] * g_base[k, l].subs(sub_pairs)
                     g[i, j] = trigsimp(s)
-
-        if Ga.restore:  # restore printer to appropriate enhanced mode after sm is instantiated
-            printer.GaLatexPrinter.redirect()
 
         Ga.__init__(self, root, g=g, coords=coords, norm=norm, debug=debug)
 
