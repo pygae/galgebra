@@ -64,7 +64,6 @@ class Mv(object):
     # sets it.
     fmt = 1
 
-    latex_flg = False
     dual_mode_lst = ['+I', 'I+', '+Iinv', 'Iinv+', '-I', 'I-', '-Iinv', 'Iinv-']
 
     @staticmethod
@@ -1173,21 +1172,12 @@ class Mv(object):
         if printer.isinteractive():
             return self
 
-        if Mv.latex_flg:
-            latex_str = printer.GaLatexPrinter.latex(self)
-            printer.GaLatexPrinter.fmt = printer.GaLatexPrinter.prev_fmt
-
-            if title is not None:
-                return title + ' = ' + latex_str
-            else:
-                return latex_str
+        s = str(self)
+        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
+        if title is not None:
+            return title + ' = ' + s
         else:
-            s = str(self)
-            printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-            if title is not None:
-                return title + ' = ' + s
-            else:
-                return s
+            return s
 
     def _repr_latex_(self):
         latex_str = printer.GaLatexPrinter.latex(self)
@@ -1814,24 +1804,14 @@ class Dop(dop._BaseDop):
         if printer.isinteractive():
             return self
 
-        if Mv.latex_flg:
-            latex_str = printer.GaLatexPrinter.latex(self)
-            printer.GaLatexPrinter.fmt = printer.GaLatexPrinter.prev_fmt
-            printer.GaLatexPrinter.dop_fmt = printer.GaLatexPrinter.prev_dop_fmt
+        s = str(self)
+        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
+        printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
 
-            if title is not None:
-                return title + ' = ' + latex_str
-            else:
-                return latex_str
+        if title is not None:
+            return title + ' = ' + s
         else:
-            s = str(self)
-            printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-            printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
-
-            if title is not None:
-                return title + ' = ' + s
-            else:
-                return s
+            return s
 
     def _eval_derivative_n_times(self, x, n):
         return Dop(dop._eval_derivative_n_times_terms(self.terms, x, n), cmpflg=self.cmpflg, ga=self.Ga)
