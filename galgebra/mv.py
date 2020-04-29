@@ -1172,7 +1172,11 @@ class Mv(object):
         if printer.isinteractive():
             return self
 
-        s = str(self)
+        if printer.GaLatexPrinter.latex_flg:
+            s = printer.GaLatexPrinter().doprint(self)
+        else:
+            s = printer.GaPrinter().doprint(self)
+
         printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
         if title is not None:
             return title + ' = ' + s
@@ -1804,7 +1808,11 @@ class Dop(dop._BaseDop):
         if printer.isinteractive():
             return self
 
-        s = str(self)
+        if printer.GaLatexPrinter.latex_flg:
+            s = printer.GaLatexPrinter().doprint(self)
+        else:
+            s = printer.GaPrinter().doprint(self)
+
         printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
         printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
 
