@@ -1792,12 +1792,6 @@ class Ga(metric.Metric):
         if self.debug:
             print('reciprocal basis dictionary =\n', self.r_basis_dict)
 
-        # True is for left derivative and False is for right derivative
-        self.deriv = {('*', True): [], ('^', True): [], ('|', True): [],
-                      ('<', True): [], ('>', True): [], ('*', False): [],
-                      ('^', False): [], ('|', False): [], ('<', False): [],
-                      ('>', False): []}
-
     def er_blade(self, er, blade, mode='*', left=True):
         r"""
         Product (``*``, ``^``, ``|``, ``<``, ``>``) of reciprocal basis vector
