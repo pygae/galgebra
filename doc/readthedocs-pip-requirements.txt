@@ -3,7 +3,11 @@ numpy
 ipython
 matplotlib
 scipy
-sphinx~=3.0
+
+# an unreleased commit that will eventually make the 3.1.0 release, with
+# type annotations which work on cached_property
+-e git+https://git@github.com/sphinx-doc/sphinx.git@5460ad6925199b57b27b7d059825d3560872edbb#egg=sphinx
+
 ipykernel
 nbsphinx
 numba
