@@ -62,7 +62,6 @@ class Mv(object):
 
     fmt = 1
     latex_flg = False
-    restore = False
     dual_mode_lst = ['+I', 'I+', '+Iinv', 'Iinv+', '-I', 'I-', '-Iinv', 'Iinv-']
 
     @staticmethod
