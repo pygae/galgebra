@@ -60,7 +60,10 @@ class Mv(object):
 
     ################### Multivector initialization #####################
 
+    # This is read by one code path in `galgebra.printer.Fmt`. Only one example
+    # sets it.
     fmt = 1
+
     latex_flg = False
     dual_mode_lst = ['+I', 'I+', '+Iinv', 'Iinv+', '-I', 'I-', '-Iinv', 'Iinv-']
 
@@ -70,14 +73,8 @@ class Mv(object):
         Set up constant multivectors required for multivector class for
         a given geometric algebra, `ga`.
         """
-        Mv.fmt = 1
         # copy basis in case the caller wanted to change it
         return ga.mv_I, list(ga.mv_basis), ga.mv_x
-
-    @staticmethod
-    def Format(mode=1):
-        Mv.latex_flg = True
-        Mv.fmt = mode
 
     @staticmethod
     def Mul(A, B, op):
