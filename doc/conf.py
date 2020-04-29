@@ -89,6 +89,7 @@ autodoc_default_options = {
         # Make sure that any autodoc declarations show the right members
         "members": True,
         "inherited-members": True,
+        "member-order": "bysource",
         # "undoc-members": True,
         # "special-members": True,
         # "private-members": True,
