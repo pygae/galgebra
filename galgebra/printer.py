@@ -611,27 +611,6 @@ class GaLatexPrinter(LatexPrinter):
     special_alphabet = list(reversed(sorted(list(greek) + list(other), key=len)))
 
     @staticmethod
-    def redirect():
-        GaLatexPrinter.latex_str = ''
-        GaLatexPrinter.text_printer = print   #Save original print function
-        builtins.print = printer.latex_print  #Redefine original print function
-        GaLatexPrinter.latex_flg = True
-        GaLatexPrinter.Basic__str__ = Basic.__str__
-        GaLatexPrinter.Matrix__str__ = Matrix.__str__
-        Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        return
-
-    @staticmethod
-    def restore():
-        if GaLatexPrinter.latex_flg:
-            builtins.print = GaLatexPrinter.text_printer  #Redefine orginal print function
-            GaLatexPrinter.latex_flg = False
-            Basic.__str__ = GaLatexPrinter.Basic__str__
-            Matrix.__str__ = GaLatexPrinter.Matrix__str__
-        return
-
-    @staticmethod
     def split_super_sub(text):
         """Split a symbol name into a name, superscripts and subscripts
 
@@ -710,6 +689,27 @@ class GaLatexPrinter(LatexPrinter):
             subs_lst.append(subs)
 
         return split_flg, name_lst, supers_lst, subs_lst
+
+    @staticmethod
+    def redirect():
+        GaLatexPrinter.latex_str = ''
+        GaLatexPrinter.text_printer = print   #Save original print function
+        builtins.print = printer.latex_print  #Redefine original print function
+        GaLatexPrinter.latex_flg = True
+        GaLatexPrinter.Basic__str__ = Basic.__str__
+        GaLatexPrinter.Matrix__str__ = Matrix.__str__
+        Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
+        Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
+        return
+
+    @staticmethod
+    def restore():
+        if GaLatexPrinter.latex_flg:
+            builtins.print = GaLatexPrinter.text_printer  #Redefine orginal print function
+            GaLatexPrinter.latex_flg = False
+            Basic.__str__ = GaLatexPrinter.Basic__str__
+            Matrix.__str__ = GaLatexPrinter.Matrix__str__
+        return
 
     def _print_Pow(self, expr):
         base = self._print(expr.base)
