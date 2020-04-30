@@ -11,7 +11,7 @@ from typing import Tuple, TypeVar, Callable
 from ._backports.typing import OrderedDict
 
 from sympy import (
-    diff, Rational, Symbol, S, Mul, Add,
+    diff, Symbol, S, Mul, Add,
     expand, simplify, eye, trigsimp,
     symbols, sqrt, Function
 )
@@ -21,10 +21,6 @@ from . import metric
 from . import mv
 from . import dop
 from . import lt
-
-half = Rational(1, 2)
-one = S(1)
-zero = S(0)
 
 
 def all_same(items):
@@ -120,7 +116,7 @@ def nc_subs(expr, base_keys, base_values=None):
         args = expr.args
     else:
         args = [expr]
-    s = zero
+    s = S.Zero
     for term in args:
         if term.is_commutative:
             s += term
@@ -396,7 +392,7 @@ class Ga(metric.Metric):
 
     @staticmethod
     def com(A, B):
-        return half * (A * B - B * A)
+        return S.Half * (A * B - B * A)
 
     @staticmethod
     def build(*args, **kwargs):
@@ -1242,7 +1238,7 @@ class Ga(metric.Metric):
 
         grade = self._dot_product_grade(len(index1), len(index2), mode=mode)
         if grade is None:
-            return zero
+            return S.Zero
 
         n = len(index)
         sgn = S(1)
@@ -1258,7 +1254,7 @@ class Ga(metric.Metric):
                 if index1 == index2:
                     n -= 2
                     if n < grade:
-                        return zero
+                        return S.Zero
                     result *= self.g[index1, index1]
                     index = index[:i1] + index[i2 + 1:]
                 elif index1 > index2:
@@ -1272,7 +1268,7 @@ class Ga(metric.Metric):
             if ordered:
                 break
         if n > grade:
-            return zero
+            return S.Zero
         else:
             if index == []:
                 return sgn * result
@@ -1299,8 +1295,8 @@ class Ga(metric.Metric):
 
         grade = self._dot_product_grade(grade1, grade2, mode=mode)
         if grade is None:
-            return zero
-        return grade_dict.get(grade, zero)
+            return S.Zero
+        return grade_dict.get(grade, S.Zero)
 
     ############# Non-Orthogonal Tables and Dictionaries ###############
 
@@ -1367,7 +1363,7 @@ class Ga(metric.Metric):
                 # a^A_{r} = (a*A + (-1)^{r}*A*a)/2
                 # The folowing evaluation takes the most time for setup it is the due to
                 # the substitution required for the multiplications
-                a_W_A = half * (self.basic_mul(a, Aexpand) - ((-1) ** grade) * self.basic_mul(Aexpand, a))
+                a_W_A = S.Half * (self.basic_mul(a, Aexpand) - ((-1) ** grade) * self.basic_mul(Aexpand, a))
                 blade_expansion_dict[blade] = expand(a_W_A)
 
         self.blade_expansion_dict = blade_expansion_dict
@@ -1501,7 +1497,7 @@ class Ga(metric.Metric):
         coefs, blades = metric.linear_expand(Aobj)
         grade_dict = {}
         for coef, blade in zip(coefs, blades):
-            if blade == one:
+            if blade == S.One:
                 if 0 in list(grade_dict.keys()):
                     grade_dict[0] += coef
                 else:
@@ -1586,7 +1582,7 @@ class Ga(metric.Metric):
             if A.is_commutative:
                 return A
             else:
-                return zero
+                return S.Zero
     """
 
     def grades(self, A):  # Return list of grades present in A
@@ -1603,7 +1599,7 @@ class Ga(metric.Metric):
             if l_blade > 0:
                 blades.add(blade[0])
             else:
-                blades.add(one)
+                blades.add(S.One)
         return sorted({
             self.blades_to_grades_dict[blade]
             for blade in blades
@@ -1633,7 +1629,7 @@ class Ga(metric.Metric):
                     blades[grade] += term
                 else:
                     blades[grade] = term
-        s = zero
+        s = S.Zero
         for grade in blades:
             if (grade * (grade - 1)) / 2 % 2 == 0:
                 s += blades[grade]
@@ -1657,7 +1653,7 @@ class Ga(metric.Metric):
             args = A.args
         else:
             args = [A]
-        s = zero
+        s = S.Zero
         for term in args:
             if term.is_commutative:
                 if even:
@@ -1747,7 +1743,7 @@ class Ga(metric.Metric):
                 for ei in self.basis:
                     for ej in self.r_basis:
                         ei_dot_ej = self.hestenes_dot(ei, ej)
-                        if ei_dot_ej == zero:
+                        if ei_dot_ej == S.Zero:
                             print('e_{i}|e_{j} = ' + str(ei_dot_ej))
                         else:
                             print('e_{i}|e_{j} = ' + str(expand(ei_dot_ej / self.e_sq)))
@@ -1894,7 +1890,7 @@ class Ga(metric.Metric):
 
         if self.connect_flg and self.dslot == -1 and not A.is_scalar():  # Basis blades are function of coordinates
             B = self.remove_scalar_part(A)
-            if B != zero:
+            if B != S.Zero:
                 if isinstance(B, Add):
                     args = B.args
                 else:
@@ -1903,7 +1899,7 @@ class Ga(metric.Metric):
                     if not term.is_commutative:
                         c, nc = term.args_cnc(split_1=False)
                         x = self.blade_derivation(nc[0], coord)
-                        if x != zero:
+                        if x != S.Zero:
                             dA += reduce(operator.mul, c, x)
 
         return dA
@@ -1919,7 +1915,7 @@ class Ga(metric.Metric):
 
         print('grad_sqr:A =', A)
 
-        s = zero
+        s = S.Zero
 
         if Sop is False and Bop is False:
             return s
@@ -1977,7 +1973,7 @@ class Ga(metric.Metric):
             key = key_base * rbase
         if key not in keys:
             keys.append(key)
-            C = zero
+            C = S.Zero
             for ib in self.n_range:
                 x = self.blade_derivation(key_base, ib)
                 if self.norm:
@@ -2150,7 +2146,7 @@ class Sm(Ga):
             n_range = list(range(n_sub))
             for i in n_range:
                 for j in n_range:
-                    s = zero
+                    s = S.Zero
                     for k in ga.n_range:
                         for l in ga.n_range:
                             s += dxdu[k][i] * dxdu[l][j] * g_base[k, l].subs(sub_pairs)

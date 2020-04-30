@@ -11,7 +11,7 @@ from typing import List, Any, Tuple, Union
 from sympy import (
     Symbol, Function, S, expand, Add,
     sin, cos, sinh, cosh, sqrt, trigsimp,
-    simplify, diff, Rational, Expr, Abs, collect,
+    simplify, diff, Expr, Abs, collect,
 )
 from sympy import exp as sympy_exp
 from sympy import N as Nsympy
@@ -22,11 +22,6 @@ from .printer import ZERO_STR
 from .utils import _KwargParser
 from . import dop
 
-ONE = S(1)
-ZERO = S(0)
-HALF = Rational(1, 2)
-
-half = Rational(1, 2)
 
 ########################### Multivector Class ##########################
 
@@ -812,16 +807,16 @@ class Mv(object):
         return result
 
     def __lshift__(self, A):  # anti-comutator (<<)
-        return half * (self * A + A * self)
+        return S.Half * (self * A + A * self)
 
     def __rshift__(self, A):  # comutator (>>)
-        return half * (self * A - A * self)
+        return S.Half * (self * A - A * self)
 
     def __rlshift__(self, A):  # anti-comutator (<<)
-        return half * (A * self + self * A)
+        return S.Half * (A * self + self * A)
 
     def __rrshift__(self, A):  # comutator (>>)
-        return half * (A * self - self * A)
+        return S.Half * (A * self - self * A)
 
     def __lt__(self, A):  # left contraction (<)
         if isinstance(A, Dop):
@@ -927,7 +922,7 @@ class Mv(object):
         if len(coefs) > 1:
             return False
         else:
-            return coefs[0] == ONE
+            return coefs[0] == S.One
 
     def is_versor(self):
         """
@@ -998,7 +993,7 @@ class Mv(object):
             if blade in bases:
                 coef_lst.append(coefs[bases.index(blade)])
             else:
-                coef_lst.append(ZERO)
+                coef_lst.append(S.Zero)
         return coef_lst
 
     def proj(self, bases_lst):

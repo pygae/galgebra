@@ -1,12 +1,15 @@
 from __future__ import print_function
 import sys
-from sympy import Symbol,symbols,sin,cos,Rational,expand,simplify,collect
+from sympy import Symbol,symbols,sin,cos,Rational,expand,simplify,collect,S
 from galgebra.printer import xpdf, Get_Program, Print_Function, Format
 from galgebra.ga import Ga
-from galgebra.mv import Nga,ONE,ZERO
+from galgebra.mv import Nga
 from galgebra.deprecated import MV
 
-HALF = Rational(1,2)
+HALF = S.Half
+ONE = S.One
+ZERO = S.Zero
+
 
 def F(x):
     global n,nbar

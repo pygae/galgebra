@@ -1,11 +1,14 @@
 #!/usr/bin/python
 from __future__ import print_function
 import sys
-from sympy import Symbol,symbols,sin,cos,Rational,expand,simplify,collect
+from sympy import Symbol,symbols,sin,cos,Rational,expand,simplify,collect,S
 from galgebra.printer import enhance_print,Get_Program,Print_Function,Format
 from galgebra.deprecated import MV
-from galgebra.mv import Nga,ONE,ZERO
+from galgebra.mv import Nga
 from galgebra.ga import Ga
+
+ONE = S.One
+ZERO = S.Zero
 
 def basic_multivector_operations():
     Print_Function()

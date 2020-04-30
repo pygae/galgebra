@@ -1,22 +1,24 @@
 import sys
 import unittest
 import pytest
-from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
+from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol, S
 from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter, ZERO_STR
-from galgebra.ga import Ga, one, zero
+from galgebra.ga import Ga
 from galgebra.mv import Mv, Nga
 # for backward compatibility
-from galgebra.mv import ONE, ZERO, HALF
 from galgebra import ga
+
+one = S.One
+
 
 def F(x):
     global n, nbar
-    Fx =  HALF * ((x * x) * n + 2 * x - nbar)
+    Fx =  S.Half * ((x * x) * n + 2 * x - nbar)
     return Fx
 
 def make_vector(a, n=3, ga=None):
     if isinstance(a, str):
-        v = zero
+        v = S.Zero
         for i in range(n):
             a_i = Symbol(a+str(i+1))
             v += a_i*ga.basis[i]
