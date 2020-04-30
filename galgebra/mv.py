@@ -584,8 +584,6 @@ class Mv(object):
         return self.grade(key)
 
     def Mv_str(self, print_obj):
-        global print_replace_old, print_replace_new
-
         if self.obj == S.Zero:
             return ZERO_STR
 
