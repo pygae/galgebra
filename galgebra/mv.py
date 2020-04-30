@@ -60,9 +60,10 @@ class Mv(object):
 
     ################### Multivector initialization #####################
 
+    # This is read by one code path in `galgebra.printer.Fmt`. Only one example
+    # sets it.
     fmt = 1
-    latex_flg = False
-    restore = False
+
     dual_mode_lst = ['+I', 'I+', '+Iinv', 'Iinv+', '-I', 'I-', '-Iinv', 'Iinv-']
 
     @staticmethod
@@ -71,14 +72,8 @@ class Mv(object):
         Set up constant multivectors required for multivector class for
         a given geometric algebra, `ga`.
         """
-        Mv.fmt = 1
         # copy basis in case the caller wanted to change it
         return ga.mv_I, list(ga.mv_basis), ga.mv_x
-
-    @staticmethod
-    def Format(mode=1):
-        Mv.latex_flg = True
-        Mv.fmt = mode
 
     @staticmethod
     def Mul(A, B, op):
@@ -1177,21 +1172,16 @@ class Mv(object):
         if printer.isinteractive():
             return self
 
-        if Mv.latex_flg:
-            latex_str = printer.GaLatexPrinter.latex(self)
-            printer.GaLatexPrinter.fmt = printer.GaLatexPrinter.prev_fmt
-
-            if title is not None:
-                return title + ' = ' + latex_str
-            else:
-                return latex_str
+        if printer.GaLatexPrinter.latex_flg:
+            s = printer.GaLatexPrinter().doprint(self)
         else:
-            s = str(self)
-            printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-            if title is not None:
-                return title + ' = ' + s
-            else:
-                return s
+            s = printer.GaPrinter().doprint(self)
+
+        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
+        if title is not None:
+            return title + ' = ' + s
+        else:
+            return s
 
     def _repr_latex_(self):
         latex_str = printer.GaLatexPrinter.latex(self)
@@ -1818,24 +1808,18 @@ class Dop(dop._BaseDop):
         if printer.isinteractive():
             return self
 
-        if Mv.latex_flg:
-            latex_str = printer.GaLatexPrinter.latex(self)
-            printer.GaLatexPrinter.fmt = printer.GaLatexPrinter.prev_fmt
-            printer.GaLatexPrinter.dop_fmt = printer.GaLatexPrinter.prev_dop_fmt
-
-            if title is not None:
-                return title + ' = ' + latex_str
-            else:
-                return latex_str
+        if printer.GaLatexPrinter.latex_flg:
+            s = printer.GaLatexPrinter().doprint(self)
         else:
-            s = str(self)
-            printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-            printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
+            s = printer.GaPrinter().doprint(self)
 
-            if title is not None:
-                return title + ' = ' + s
-            else:
-                return s
+        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
+        printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
+
+        if title is not None:
+            return title + ' = ' + s
+        else:
+            return s
 
     def _eval_derivative_n_times(self, x, n):
         return Dop(dop._eval_derivative_n_times_terms(self.terms, x, n), cmpflg=self.cmpflg, ga=self.Ga)
