@@ -1263,12 +1263,10 @@ def Print_Function():
     return
 
 
-import re as regrep
-
-op_cntrct = regrep.compile(r'(([A-Za-z0-9\_\#]+)(\||<|>)([A-Za-z0-9\_\#]+))')
-op_wedge = regrep.compile(r'(([A-Za-z0-9\_\#]+)[\^]{1}([A-Za-z0-9\_\#]+)([\^]{1}([A-Za-z0-9\_\#]+))*)')
+op_cntrct = re.compile(r'(([A-Za-z0-9\_\#]+)(\||<|>)([A-Za-z0-9\_\#]+))')
+op_wedge = re.compile(r'(([A-Za-z0-9\_\#]+)[\^]{1}([A-Za-z0-9\_\#]+)([\^]{1}([A-Za-z0-9\_\#]+))*)')
 ops = r'[\^\|\<\>]+'
-ops_search = regrep.compile(r'(\^|\||<|>)+')
+ops_search = re.compile(r'(\^|\||<|>)+')
 parse_paren_calls = 0
 global_dict = {}
 op_dict = {}
@@ -1285,7 +1283,7 @@ def def_prec(gd, op_ord='<>|,^,*'):  # Default is Doran and Lasenby convention
     op_lst = op_ord.split(',')
     op_dict = {}
     for op in op_lst:
-        op_dict[op] = regrep.compile(OPS[op])
+        op_dict[op] = re.compile(OPS[op])
     return
 
 
@@ -1405,13 +1403,13 @@ def add_paren(line, re_exprs):
         for level in line_levels:
             igroup = 0
             for group in level:
-                group[-1] = regrep.sub(re_exprs, sub_paren, group[-1])
+                group[-1] = re.sub(re_exprs, sub_paren, group[-1])
                 line_levels[ilevel][igroup] = group
                 igroup += 1
             ilevel += 1
         line = unparse_paren(line_levels)
     else:
-        line = regrep.sub(re_exprs, sub_paren, line)
+        line = re.sub(re_exprs, sub_paren, line)
     if paren_flg:
         line = '(' + line + ')'
     return line
