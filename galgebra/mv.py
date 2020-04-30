@@ -585,6 +585,10 @@ class Mv(object):
 
     def Mv_str(self, print_obj):
         global print_replace_old, print_replace_new
+
+        if self.obj == S.Zero:
+            return ZERO_STR
+
         if self.i_grade == 0:
             return print_obj.doprint(self.obj)
 
@@ -653,7 +657,7 @@ class Mv(object):
 
     def Mv_latex_str(self, print_obj):
 
-        if self.obj == 0:
+        if self.obj == S.Zero:
             return ZERO_STR
 
         first_line = True

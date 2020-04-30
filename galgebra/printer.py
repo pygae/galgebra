@@ -371,10 +371,7 @@ class GaPrinter(StrPrinter):
         return out_str
 
     def _print_Mv(self, expr):
-        if expr.obj == S(0):
-            return ZERO_STR
-        else:
-            return expr.Mv_str(self)
+        return expr.Mv_str(self)
 
     def _print_Pdop(self, expr):
         return expr.Pdop_str(self)
@@ -937,10 +934,7 @@ class GaLatexPrinter(LatexPrinter):
         return s
 
     def _print_Mv(self, expr):
-        if expr.obj == S(0):
-            return ZERO_STR
-        else:
-            return expr.Mv_latex_str(self)
+        return expr.Mv_latex_str(self)
 
     def _print_Pdop(self, expr):
         return expr.Pdop_latex_str(self)
