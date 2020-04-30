@@ -11,7 +11,7 @@ from typing import List, Any, Tuple, Union, TYPE_CHECKING
 from sympy import (
     Symbol, Function, S, expand, Add,
     sin, cos, sinh, cosh, sqrt, trigsimp,
-    simplify, diff, Rational, Expr, Abs, collect, SympifyError,
+    simplify, diff, Expr, Abs, collect, SympifyError,
 )
 from sympy import exp as sympy_exp
 from sympy import N as Nsympy
@@ -27,11 +27,11 @@ from . import dop
 if TYPE_CHECKING:
     from galgebra.ga import Ga
 
-ONE = S(1)
-ZERO = S(0)
-HALF = Rational(1, 2)
-
-half = Rational(1, 2)
+# This file does not and should not use these.
+# Unfortunately, some of our examples do.
+ONE = S.One
+ZERO = S.Zero
+HALF = S.Half
 
 
 # Add custom settings to the builtin latex printer
@@ -264,7 +264,7 @@ class Mv(printer.GaPrintable):
         return reduce(operator.add, (
             Mv._make_grade(ga, __name, grade, **kwargs)
             for grade in range(1, ga.n + 1, 2)
-        ), S(0))  # base case needed in case n == 0
+        ), S.Zero)  # base case needed in case n == 0
 
     # aliases
     _make_grade2 = _make_bivector
@@ -355,7 +355,7 @@ class Mv(printer.GaPrintable):
         self.title = None
 
         if len(args) == 0:  # default constructor 0
-            self.obj = S(0)
+            self.obj = S.Zero
             self.i_grade = 0
             kw.reject_remaining()
         elif len(args) == 1 and not isinstance(args[0], str):  # copy constructor
@@ -469,7 +469,7 @@ class Mv(printer.GaPrintable):
         if isinstance(A, Mv):
             diff = (self - A).expand().simplify()
             # diff = (self - A).expand()
-            return diff.obj == S(0)
+            return diff.obj == S.Zero
         else:
             return self.is_scalar() and self.obj == A
 
@@ -582,7 +582,7 @@ class Mv(printer.GaPrintable):
         if isinstance(A, Mv):
             return self * A.inv()
         else:
-            return self * (S(1)/A)
+            return self * (S.One/A)
 
     def __str__(self):
         return printer.GaPrinter()._print(self)
@@ -614,10 +614,10 @@ class Mv(printer.GaPrintable):
                 return self.obj
             args = self.obj.args
             terms = {}  # dictionary with base indexes as keys
-            grade0 = S(0)
+            grade0 = S.Zero
             for arg in args:
                 c, nc = arg.args_cnc()
-                c = reduce(operator.mul, c, S(1))
+                c = reduce(operator.mul, c, S.One)
                 if len(nc) > 0:
                     base = nc[0]
                     if base in base_keys:
@@ -629,8 +629,8 @@ class Mv(printer.GaPrintable):
                             terms[index] = (c, base, grade_keys[base])
                 else:
                     grade0 += c
-            if grade0 != S(0):
-                terms[-1] = (grade0, S(1), -1)
+            if grade0 != S.Zero:
+                terms[-1] = (grade0, S.One, -1)
             terms = list(terms.items())
             sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
@@ -684,7 +684,7 @@ class Mv(printer.GaPrintable):
         obj = metric.Simp.apply(obj)
         self = Mv(obj, ga=self.Ga)
 
-        if self.obj == S(0):
+        if self.obj == S.Zero:
             return ZERO_STR
 
         if self.is_blade_rep or self.Ga.is_ortho:
@@ -698,10 +698,10 @@ class Mv(printer.GaPrintable):
         else:
             args = [self.obj]
         terms = {}  # dictionary with base indexes as keys
-        grade0 = S(0)
+        grade0 = S.Zero
         for arg in args:
             c, nc = arg.args_cnc(split_1=False)
-            c = reduce(operator.mul, c, S(1))
+            c = reduce(operator.mul, c, S.One)
             if len(nc) > 0:
                 base = nc[0]
                 if base in base_keys:
@@ -713,8 +713,8 @@ class Mv(printer.GaPrintable):
                         terms[index] = (c, base, grade_keys[base])
             else:
                 grade0 += c
-        if grade0 != S(0):
-            terms[-1] = (grade0, S(1), 0)
+        if grade0 != S.Zero:
+            terms[-1] = (grade0, S.One, 0)
         terms = list(terms.items())
 
         sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
@@ -729,11 +729,11 @@ class Mv(printer.GaPrintable):
             coef = printer.coef_simplify(coef)
             # coef = simplify(coef)
             l_coef = print_obj._print(coef)
-            if l_coef == '1' and base != S(1):
+            if l_coef == '1' and base != S.One:
                 l_coef = ''
-            if l_coef == '-1' and base != S(1):
+            if l_coef == '-1' and base != S.One:
                 l_coef = '-'
-            if base == S(1):
+            if base == S.One:
                 l_base = ''
             else:
                 l_base = print_obj._print(base)
@@ -811,22 +811,22 @@ class Mv(printer.GaPrintable):
         if not isinstance(n, int):
             raise ValueError('!!!!Multivector power can only be to integer power!!!!')
 
-        result = S(1)
+        result = S.One
         for x in range(n):
             result *= self
         return result
 
     def __lshift__(self, A):  # anti-comutator (<<)
-        return half * (self * A + A * self)
+        return S.Half * (self * A + A * self)
 
     def __rshift__(self, A):  # comutator (>>)
-        return half * (self * A - A * self)
+        return S.Half * (self * A - A * self)
 
     def __rlshift__(self, A):  # anti-comutator (<<)
-        return half * (A * self + self * A)
+        return S.Half * (A * self + self * A)
 
     def __rrshift__(self, A):  # comutator (>>)
-        return half * (A * self - self * A)
+        return S.Half * (A * self - self * A)
 
     def __lt__(self, A):  # left contraction (<)
         if isinstance(A, Dop):
@@ -888,7 +888,7 @@ class Mv(printer.GaPrintable):
                 obj_dict[base] += coef
             else:
                 obj_dict[base] = coef
-        obj = S(0)
+        obj = S.Zero
         for base in list(obj_dict.keys()):
             if deep:
                 obj += collect(obj_dict[base])*base
@@ -923,7 +923,7 @@ class Mv(printer.GaPrintable):
 
     def is_base(self) -> bool:
         coefs, _bases = metric.linear_expand(self.obj)
-        return coefs == [ONE]
+        return coefs == [S.One]
 
     def is_versor(self) -> bool:
         """
@@ -1009,7 +1009,7 @@ class Mv(printer.GaPrintable):
             if blade in bases:
                 coef_lst.append(coefs[bases.index(blade)])
             else:
-                coef_lst.append(ZERO)
+                coef_lst.append(S.Zero)
         return coef_lst
 
     def proj(self, bases_lst: List['Mv']) -> 'Mv':
@@ -1026,7 +1026,7 @@ class Mv(printer.GaPrintable):
 
     def dual(self) -> 'Mv':
         mode = self.Ga.dual_mode_value
-        sign = S(1)
+        sign = S.One
         if '-' in mode:
             sign = -sign
         if 'Iinv' in mode:
@@ -1064,7 +1064,7 @@ class Mv(printer.GaPrintable):
                 obj = diff(self.obj, coord)
                 for x_coord in self.Ga.coords:
                     f = self.Ga.par_coords[x_coord]
-                    if f != S(0):
+                    if f != S.Zero:
                         tmp1 = self.Ga.pDiff(self.obj, x_coord)
                         tmp2 = diff(f, coord)
                         obj += tmp1 * tmp2
@@ -1102,8 +1102,8 @@ class Mv(printer.GaPrintable):
         self_sq = self * self
         if self_sq.is_scalar():
             sq = simplify(self_sq.obj)  # sympy expression for self**2
-            if sq == S(0):  # sympy expression for self**2 = 0
-                return self + S(1)
+            if sq == S.Zero:  # sympy expression for self**2 = 0
+                return self + S.One
             coefs, bases = metric.linear_expand(self.obj)
             if len(coefs) == 1:  # Exponential of scalar * base
                 base = bases[0]
@@ -1116,7 +1116,7 @@ class Mv(printer.GaPrintable):
                     base_n = sqrt(base_sq)
                     return self.Ga.mv(cosh(base_n*coefs[0]) + sinh(base_n*coefs[0])*(bases[0]/base_n))
             if sq.is_number:  # Square is number, can test for sign
-                if sq > S(0):
+                if sq > S.Zero:
                     norm = sqrt(sq)
                     value = self.obj / norm
                     tmp = Mv(cosh(norm) + sinh(norm) * value, ga=self.Ga)
@@ -1224,7 +1224,7 @@ class Mv(printer.GaPrintable):
         if product.is_scalar():
             product = product.scalar()
             if product.is_number:
-                if product >= S(0):
+                if product >= S.Zero:
                     return sqrt(product)
                 else:
                     return sqrt(-product)
@@ -1242,26 +1242,26 @@ class Mv(printer.GaPrintable):
 
     def inv(self) -> 'Mv':
         if self.is_scalar():  # self is a scalar
-            return self.Ga.mv(S(1)/self.obj)
+            return self.Ga.mv(S.One/self.obj)
         self_sq = self * self
         if self_sq.is_scalar():  # self*self is a scalar
             """
-            if self_sq.scalar() == S(0):
+            if self_sq.scalar() == S.Zero:
                 raise ValueError('!!!!In multivector inverse, A*A is zero!!!!')
             """
-            return (S(1)/self_sq.obj)*self
+            return (S.One/self_sq.obj)*self
         self_rev = self.rev()
         self_self_rev = self * self_rev
         if(self_self_rev.is_scalar()):  # self*self.rev() is a scalar
             """
-            if self_self_rev.scalar() == S(0):
+            if self_self_rev.scalar() == S.Zero:
                 raise ValueError('!!!!In multivector inverse A*A.rev() is zero!!!!')
             """
-            return (S(1)/self_self_rev.obj) * self_rev
+            return (S.One/self_self_rev.obj) * self_rev
         raise TypeError('In inv() for self =' + str(self) + 'self, or self*self or self*self.rev() is not a scalar')
 
     def func(self, fct) -> 'Mv':  # Apply function, fct, to each coefficient of multivector
-        s = S(0)
+        s = S.Zero
         for coef, base in metric.linear_expand_terms(self.obj):
             s += fct(coef) * base
         fct_self = Mv(s, ga=self.Ga)
@@ -1281,7 +1281,7 @@ class Mv(printer.GaPrintable):
         if not isinstance(modes, (list, tuple)):
             modes = [modes]
 
-        obj = S(0)
+        obj = S.Zero
         for coef, base in metric.linear_expand_terms(self.obj):
             for mode in modes:
                 coef = mode(coef)
@@ -1292,13 +1292,13 @@ class Mv(printer.GaPrintable):
         """ Perform a substitution on each coefficient separately """
         obj = sum((
             coef.subs(*args, **kwargs) * base for coef, base in metric.linear_expand_terms(self.obj)
-        ), S(0))
+        ), S.Zero)
         return Mv(obj, ga=self.Ga)
 
     def expand(self) -> 'Mv':
         obj = sum((
             expand(coef) * base for coef, base in metric.linear_expand_terms(self.obj)
-        ), S(0))
+        ), S.Zero)
         return Mv(obj, ga=self.Ga)
 
     def list(self) -> List[Expr]:
@@ -1655,11 +1655,11 @@ class Dop(dop._BaseDop):
                     mv_coef = coef.obj
                 else:
                     mv_coef = coef
-                if S(1) in bases:
-                    index = bases.index(S(1))
+                if S.One in bases:
+                    index = bases.index(S.One)
                     coefs[index] += dop.Sdop([(mv_coef, pdiff)])
                 else:
-                    bases.append(S(1))
+                    bases.append(S.One)
                     coefs.append(dop.Sdop([(mv_coef, pdiff)]))
         if modes is not None:
             for i in range(len(coefs)):
@@ -1677,7 +1677,7 @@ class Dop(dop._BaseDop):
         for sdop, base in mv_terms:
             str_base = print_obj._print(base)
             str_sdop = print_obj._print(sdop)
-            if base == S(1):
+            if base == S.One:
                 s += str_sdop
             else:
                 if len(sdop.terms) > 1:
@@ -1713,7 +1713,7 @@ class Dop(dop._BaseDop):
         for sdop, base in mv_terms:
             str_base = print_obj._print(base)
             str_sdop = print_obj._print(sdop)
-            if base == S(1):
+            if base == S.One:
                 s += str_sdop
             else:
                 if str_sdop == '1':

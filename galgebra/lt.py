@@ -70,13 +70,13 @@ def Symbolic_Matrix(root, coords=None, mode='g', f=False, sub=True):
                 for col in n_range:
                     col_index = str(coords[col])
                     if row <= col:
-                        sign = S(1)
+                        sign = S.One
                         element = root + pos + row_index + col_index
                     else:
-                        sign = -S(1)
+                        sign = -S.One
                         element = root + pos + col_index + row_index
                     if row == col:
-                        sign = S(0)
+                        sign = S.Zero
                     if not f:
                         mat[row, col] = sign * Symbol(element, real=True)
                     else:
@@ -96,7 +96,7 @@ def Matrix_to_dictionary(mat_rep, basis):
         raise ValueError('Matrix and Basis dimensions not equal for Matrix = ' + str(mat_rep))
     n_range = list(range(n))
     for row in n_range:
-        dict_rep[basis[row]] = S(0)
+        dict_rep[basis[row]] = S.Zero
         for col in n_range:
             dict_rep[basis[row]] += mat_rep[col, row]*basis[col]
     return dict_rep
@@ -110,7 +110,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
     lst_mat = []  # list representation of sympy matrix
     for row in n_range:
         e_row = ga.basis[row]
-        lst_mat_row = n * [S(0)]
+        lst_mat_row = n * [S.Zero]
 
         if e_row in basis:  # If not in basis row all zeros
             element = dict_rep[e_row]
@@ -225,7 +225,7 @@ class Lt(printer.GaPrintable):
             self.rho_sq = self.R * self.Rrev
             if self.rho_sq.is_scalar():
                 self.rho_sq = self.rho_sq.scalar()
-                if self.rho_sq == S(1):
+                if self.rho_sq == S.One:
                     self.rho_sq = None
             else:
                 raise ValueError('In Spinor input for Lt, S*S.rev() not a scalar!\n')
@@ -361,7 +361,7 @@ class Lt(printer.GaPrintable):
         """
 
         lt_I = self(self.Ga.i, obj=True)
-        det_lt_I = lt_I.subs(self.Ga.i.obj, S(1))
+        det_lt_I = lt_I.subs(self.Ga.i.obj, S.One)
         return det_lt_I
 
     def tr(self) -> Expr:  # tr(L) defined by tr(L) = grad|L(x)
@@ -389,7 +389,7 @@ class Lt(printer.GaPrintable):
 
         self_adj = []
         for e_j in self.Ga.basis:
-            s = S(0)
+            s = S.Zero
             for e_i, er_i in zip(self.Ga.basis, self.Ga.r_basis):
                 s += er_i * self.Ga.hestenes_dot(e_j, self(e_i, obj=True))
             if self.Ga.is_ortho:
@@ -401,7 +401,7 @@ class Lt(printer.GaPrintable):
     def inv(self):
         if self.spinor:
             Lt_inv = Lt(self.Rrev, ga=self.Ga)
-            Lt_inv.rho_sq = S(1)/(self.rho_sq**2)
+            Lt_inv.rho_sq = S.One/(self.rho_sq**2)
         else:
             raise ValueError('Lt inverse currently implemented only for spinor!\n')
         return Lt_inv
@@ -630,7 +630,7 @@ class Mlt(printer.GaPrintable):
         lst_expr = []
         expr = expand(expr)
         for term in expr.args:
-            coef = S(1)
+            coef = S.One
             a_lst = []
             for factor in term.args:
                 if factor in ga._mlt_acoefs:
@@ -686,7 +686,7 @@ class Mlt(printer.GaPrintable):
             self.f = None
             self.nargs = nargs
             Mlt.increment_slots(nargs, Ga)
-            self.fvalue = S(0)
+            self.fvalue = S.Zero
             for t_index, a_prod in zip(itertools.product(self.Ga.basis_super_scripts, repeat=self.nargs),
                                        itertools.product(*self.Ga._mlt_pdiffs)):
                 name = '{}_{}'.format(f, ''.join(map(str, t_index)))

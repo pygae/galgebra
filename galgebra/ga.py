@@ -10,7 +10,7 @@ from typing import Tuple, TypeVar, Callable, Dict, Sequence, List, Optional, Uni
 from ._backports.typing import OrderedDict
 
 from sympy import (
-    diff, Rational, Symbol, S, Mul, Add, Expr,
+    diff, Symbol, S, Mul, Add, Expr,
     expand, simplify, eye, trigsimp,
     symbols, sqrt, Matrix,
 )
@@ -25,9 +25,11 @@ from .atoms import (
 )
 from ._utils import cached_property as _cached_property
 
-half = Rational(1, 2)
-one = S(1)
-zero = S(0)
+# This file does not and should not use these.
+# Unfortunately, some of our examples do.
+one = S.One
+zero = S.Zero
+half = S.Half
 
 
 # Needed to avoid ambiguity with the methods of the same name, when used in
@@ -111,7 +113,7 @@ def update_and_substitute(expr1, expr2, mul_dict):
     """
     coefs1, bases1 = metric.linear_expand(expr1)
     coefs2, bases2 = metric.linear_expand(expr2)
-    expr = S(0)
+    expr = S.Zero
     for coef1, base1 in zip(coefs1, bases1):
         for coef2, base2 in zip(coefs2, bases2):
             expr += coef1 * coef2 * mul_dict[base1, base2]
@@ -134,7 +136,7 @@ def nc_subs(expr, base_keys, base_values=None):
         args = expr.args
     else:
         args = [expr]
-    s = zero
+    s = S.Zero
     for term in args:
         if term.is_commutative:
             s += term
@@ -251,8 +253,8 @@ class _SingleGradeProductFunction(BladeProductFunction):
             return zero
 
         n = len(index)
-        sgn = S(1)
-        result = S(1)
+        sgn = S.One
+        result = S.One
         ordered = False
         while n > grade:
             ordered = True
@@ -370,7 +372,7 @@ class _WedgeProductFunction(_SingleGradeProductFunction):
         if sgn != 0:
             return sgn * self._ga.indexes_to_blades_dict[tuple(wedge12)]
         else:
-            return S(0)
+            return S.Zero
 
 
 class _GeometricProductFunction(BladeProductFunction):
@@ -424,7 +426,7 @@ class _BaseGeometricProductFunction(BaseProductFunction):
         return sum((
             coef * self._ga.indexes_to_bases_dict[tuple(index)]
             for coef, index in zip(coefs, indexes)
-        ), S(0))
+        ), S.Zero)
 
     @_cached_property
     def table_dict(self) -> OrderedDict[Mul, Expr]:
@@ -611,7 +613,7 @@ class Ga(metric.Metric):
                 \texttt{A << B} \equiv & {\displaystyle\frac{AB + BA}{2}}.
             \end{aligned}
         """
-        return half * (A * B - B * A)
+        return S.Half * (A * B - B * A)
 
     @staticmethod
     def build(*args, **kwargs):
@@ -690,11 +692,11 @@ class Ga(metric.Metric):
         self.sing_flg = False
 
         if self.e_sq.is_number:
-            if self.e_sq == S(0):
+            if self.e_sq == S.Zero:
                 self.sing_flg = True
                 print('!!!!If I**2 = 0, I cannot be normalized!!!!')
                 # raise ValueError('!!!!If I**2 = 0, I cannot be normalized!!!!')
-            if self.e_sq > S(0):
+            if self.e_sq > S.Zero:
                 self.i = self.e/sqrt(self.e_sq)
                 self.i_inv = self.i
             else:  # I**2 = -1
@@ -1022,7 +1024,7 @@ class Ga(metric.Metric):
     def _build_basis_base_symbol(self, base_index: Tuple[int, ...]) -> Symbol:
         """ Build a symbol used for the `base_rep` from the given tuple """
         if not base_index:
-            return S(1)
+            return S.One
         return BasisBaseSymbol(*(self.basis[i] for i in base_index))
 
     def _build_basis_blade_symbol(self, base_index: Tuple[int, ...]) -> Symbol:
@@ -1403,7 +1405,7 @@ class Ga(metric.Metric):
         indicies in list are equal (wedge product is zero) ``sgn = 0`` and
         ``lst = None`` are returned.
         """
-        sgn = S(1)
+        sgn = S.One
         for i in range(1, len(lst)):
             save = lst[i]
             j = i
@@ -1413,7 +1415,7 @@ class Ga(metric.Metric):
                 j -= 1
             lst[j] = save
             if lst[j] == lst[j - 1]:
-                return S(0), None
+                return S.Zero, None
         return sgn, lst
 
     def wedge_product_basis_blades(self, blade12: Tuple[Symbol, Symbol]) -> Expr:
@@ -1510,7 +1512,7 @@ class Ga(metric.Metric):
                 # a^A_{r} = (a*A + (-1)^{r}*A*a)/2
                 # The folowing evaluation takes the most time for setup it is the due to
                 # the substitution required for the multiplications
-                a_W_A = half * (self.basic_mul(a, Aexpand) - ((-1) ** grade) * self.basic_mul(Aexpand, a))
+                a_W_A = S.Half * (self.basic_mul(a, Aexpand) - ((-1) ** grade) * self.basic_mul(Aexpand, a))
                 blade_expansion_dict[blade] = expand(a_W_A)
 
         if self.debug:
@@ -1656,7 +1658,7 @@ class Ga(metric.Metric):
         coefs, blades = metric.linear_expand(Aobj)
         grade_dict = {}
         for coef, blade in zip(coefs, blades):
-            if blade == one:
+            if blade == S.One:
                 if 0 in list(grade_dict.keys()):
                     grade_dict[0] += coef
                 else:
@@ -1741,7 +1743,7 @@ class Ga(metric.Metric):
             if A.is_commutative:
                 return A
             else:
-                return zero
+                return S.Zero
     """
 
     def grades(self, A: Expr) -> List[int]:  # Return list of grades present in A
@@ -1758,7 +1760,7 @@ class Ga(metric.Metric):
             if l_blade > 0:
                 blades.add(blade[0])
             else:
-                blades.add(one)
+                blades.add(S.One)
         return sorted({
             self.blades_to_grades_dict[blade]
             for blade in blades
@@ -1788,7 +1790,7 @@ class Ga(metric.Metric):
                     blades[grade] += term
                 else:
                     blades[grade] = term
-        s = zero
+        s = S.Zero
         for grade in blades:
             if (grade * (grade - 1)) / 2 % 2 == 0:
                 s += blades[grade]
@@ -1802,7 +1804,7 @@ class Ga(metric.Metric):
             coef * base
             for coef, base in zip(coefs, bases)
             if self.blades_to_grades_dict[base] == r
-        ), S(0))
+        ), S.Zero)
 
     def even_odd(self, A: Expr, even: bool = True) -> Expr:  # Return even or odd part of A
         A = expand(A)
@@ -1812,7 +1814,7 @@ class Ga(metric.Metric):
             args = A.args
         else:
             args = [A]
-        s = zero
+        s = S.Zero
         for term in args:
             if term.is_commutative:
                 if even:
@@ -2051,7 +2053,7 @@ class Ga(metric.Metric):
 
         if self.connect_flg and self.dslot == -1 and not A.is_scalar():  # Basis blades are function of coordinates
             B = self.remove_scalar_part(A)
-            if B != zero:
+            if B != S.Zero:
                 if isinstance(B, Add):
                     args = B.args
                 else:
@@ -2060,7 +2062,7 @@ class Ga(metric.Metric):
                     if not term.is_commutative:
                         c, nc = term.args_cnc(split_1=False)
                         x = self.blade_derivation(nc[0], coord)
-                        if x != zero:
+                        if x != S.Zero:
                             dA += reduce(operator.mul, c, x)
 
         return dA
@@ -2076,7 +2078,7 @@ class Ga(metric.Metric):
 
         print('grad_sqr:A =', A)
 
-        s = zero
+        s = S.Zero
 
         if Sop is False and Bop is False:
             return s
@@ -2134,7 +2136,7 @@ class Ga(metric.Metric):
             key = key_base * rbase
         if key not in keys:
             keys.append(key)
-            C = zero
+            C = S.Zero
             for ib in self.n_range:
                 x = self.blade_derivation(key_base, ib)
                 if self.norm:
@@ -2179,7 +2181,7 @@ class Ga(metric.Metric):
         for igrade in index[-2:]:
             grade = []
             for iblade in igrade:
-                blade = self.mv(S(1), 'scalar')
+                blade = self.mv(S.One, 'scalar')
                 for ibasis in iblade:
                     blade ^= basis[ibasis]
                 blade = blade.trigsimp()
@@ -2191,7 +2193,7 @@ class Ga(metric.Metric):
         duals = copy.copy(MFbasis[-2])
 
         duals.reverse()
-        sgn = S(1)
+        sgn = S.One
         rbasis = []
         for dual in duals:
             recpv = (sgn * dual * E).trigsimp()
@@ -2330,7 +2332,7 @@ class Sm(Ga):
             n_range = list(range(n_sub))
             for i in n_range:
                 for j in n_range:
-                    s = zero
+                    s = S.Zero
                     for k in ga.n_range:
                         for l in ga.n_range:
                             s += dxdu[k][i] * dxdu[l][j] * g_base[k, l].subs(sub_pairs)

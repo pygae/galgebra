@@ -18,8 +18,6 @@ from .atoms import (
     BasisVectorSymbol, DotProductSymbol, MatrixFunction, Determinant,
 )
 
-half = Rational(1, 2)
-
 
 def apply_function_list(f, x):
     if isinstance(f, (tuple, list)):
@@ -48,24 +46,24 @@ def linear_expand(expr):
 
     if expr == 0:
         coefs = [expr]
-        bases = [S(1)]
+        bases = [S.One]
         return (coefs, bases)
 
     if isinstance(expr, Add):
         args = expr.args
     else:
         if expr.is_commutative:
-            return ([expr], [S(1)])
+            return ([expr], [S.One])
         else:
             args = [expr]
     coefs = []
     bases = []
     for term in args:
         if term.is_commutative:
-            if S(1) in bases:
-                coefs[bases.index(S(1))] += term
+            if S.One in bases:
+                coefs[bases.index(S.One)] += term
             else:
-                bases.append(S(1))
+                bases.append(S.One)
                 coefs.append(term)
         else:
             c, nc = term.args_cnc()
@@ -102,7 +100,7 @@ def collect(A, nc_list):
         are combined into a single coefficient.
     """
     coefs, bases = linear_expand(A)
-    C = S(0)
+    C = S.Zero
     for x in nc_list:
         if x in bases:
             i = bases.index(x)
@@ -132,7 +130,7 @@ def square_root_of_expr(expr):
     else:
         expr = trigsimp(expr)
         coef, pow_lst = sqf_list(expr)
-        if coef != S(1):
+        if coef != S.One:
             if coef.is_number:
                 coef = square_root_of_expr(coef)
             else:
@@ -278,7 +276,7 @@ class Simp:
 
     @staticmethod
     def apply(expr):
-        obj = S(0)
+        obj = S.Zero
         for coef, base in linear_expand_terms(expr):
             obj += apply_function_list(Simp.modes, coef) * base
         return obj
@@ -501,7 +499,7 @@ class Metric(object):
         if self.is_ortho:  # Orthogonal metric
             g_inv = eye(self.n)
             for i in range(self.n):
-                g_inv[i, i] = S(1)/self.g(i, i)
+                g_inv[i, i] = S.One/self.g(i, i)
             return g_inv
         elif self.gsym is None:
             return simplify(self.g.inv())
@@ -534,9 +532,9 @@ class Metric(object):
             # \partial_{x^{i}}e_{j} = \Gamma_{ijk}e^{k}
 
             def Gamma_ijk(i, j, k):
-                return half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
+                return S.Half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
 
-            # dG[i][j][k] = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
+            # dG[i][j][k] = S.Half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
             dG = [[[
                 Simp.apply(Gamma_ijk(i, j, k))
                 for k in n_range]
