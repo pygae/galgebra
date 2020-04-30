@@ -172,8 +172,8 @@ class TestTest(unittest.TestCase):
 
         assert str(X) == '1.2*e_x + 2.34*e_y + 0.555*e_z'
         assert str(Nga(X, 2)) == '1.2*e_x + 2.3*e_y + 0.55*e_z'
-        assert str(X*Y) == '12.7011000000000 + 4.02078*e_x^e_y + 6.175185*e_x^e_z + 10.182*e_y^e_z'
-        assert str(Nga(X*Y, 2)) == '13. + 4.0*e_x^e_y + 6.2*e_x^e_z + 10.0*e_y^e_z'
+        assert str(X*Y) == '12.7011 + 4.02078*e_x^e_y + 6.175185*e_x^e_z + 10.182*e_y^e_z'
+        assert str(Nga(X*Y, 2)) == '13.0 + 4.0*e_x^e_y + 6.2*e_x^e_z + 10.0*e_y^e_z'
 
     def test_noneuclidian_distance_calculation(self):
         from sympy import solve, sqrt

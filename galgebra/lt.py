@@ -389,35 +389,35 @@ class Lt(object):
             raise ValueError('Lt inverse currently implemented only for spinor!\n')
         return Lt_inv
 
-    def Lt_str(self):
+    def Lt_str(self, print_obj):
 
         if self.spinor:
-            return 'R = ' + str(self.R)
+            return 'R = ' + print_obj.doprint(self.R)
         else:
             pre = 'Lt('
             s = ''
             for base in self.Ga.basis:
                 if base in self.lt_dict:
-                    s += pre + str(base) + ') = ' + str(mv.Mv(self.lt_dict[base], ga=self.Ga)) + '\n'
+                    s += pre + print_obj.doprint(base) + ') = ' + print_obj.doprint(mv.Mv(self.lt_dict[base], ga=self.Ga)) + '\n'
                 else:
-                    s += pre + str(base) + ') = 0\n'
+                    s += pre + print_obj.doprint(base) + ') = 0\n'
             return s[:-1]
 
-    def Lt_latex_str(self):
+    def Lt_latex_str(self, print_obj):
 
         if self.spinor:
             s = '\\left \\{ \\begin{array}{ll} '
             for base in self.Ga.basis:
-                str_base = printer.latex(base)
-                s += 'L \\left ( ' + str_base + '\\right ) =& ' + printer.latex(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
+                str_base = print_obj.doprint(base)
+                s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj.doprint(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
         else:
             s = '\\left \\{ \\begin{array}{ll} '
             for base in self.Ga.basis:
-                str_base = printer.latex(base)
+                str_base = print_obj.doprint(base)
                 if base in self.lt_dict:
-                    s += 'L \\left ( ' + str_base + '\\right ) =& ' + printer.latex(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
+                    s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj.doprint(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
                 else:
                     s += 'L \\left ( ' + str_base + '\\right ) =& 0 \\\\ '
             s = s[:-3] + ' \\end{array} \\right \\} \n'
@@ -586,19 +586,19 @@ class Mlt(object):
                 base_indexes.append(base_str[i:])
         return base_indexes
 
-    def Mlt_str(self):
-        return str(self.fvalue)
+    def Mlt_str(self, print_obj):
+        return print_obj.doprint(self.fvalue)
 
-    def Mlt_latex_str(self):
+    def Mlt_latex_str(self, print_obj):
         if self.nargs <= 1:
-            return printer.latex(self.fvalue)
+            return print_obj.doprint(self.fvalue)
         expr_lst = Mlt.expand_expr(self.fvalue, self.Ga)
         latex_str = '\\begin{align*} '
         first = True
         cnt = 1  # Component count on line
         for term in expr_lst:
             coef_str = str(term[0])
-            coef_latex = printer.latex(term[0])
+            coef_latex = print_obj.doprint(term[0])
             term_add_flg = isinstance(term[0], Add)
             if term_add_flg:
                 coef_latex = r'\left ( ' + coef_latex + r'\right ) '
@@ -608,7 +608,7 @@ class Mlt(object):
                 if coef_str[0].strip() != '-' or term_add_flg:
                     coef_latex = ' + ' + coef_latex
             for aij in term[1]:
-                coef_latex += printer.latex(aij) + ' '
+                coef_latex += print_obj.doprint(aij) + ' '
             if cnt == 1:
                 latex_str += ' & ' + coef_latex
             else:

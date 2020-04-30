@@ -116,15 +116,15 @@ class Sdop(_BaseDop):
         new_terms = sorted(self.terms, key=lambda term: Pdop.sort_key(term[1]))
         return Sdop(new_terms)
 
-    def Sdop_str(self):
+    def Sdop_str(self, print_obj):
         if len(self.terms) == 0:
             return ZERO_STR
 
         self = self._with_sorted_terms()
         s = ''
         for coef, pdop in self.terms:
-            coef_str = printer.latex(coef)
-            pd_str = printer.latex(pdop)
+            coef_str = print_obj.doprint(coef)
+            pd_str = print_obj.doprint(pdop)
 
             if coef == S(1):
                 s += pd_str
@@ -144,7 +144,7 @@ class Sdop(_BaseDop):
                 s = '(' + s + ')'
         return s
 
-    def Sdop_latex_str(self):
+    def Sdop_latex_str(self, print_obj):
         if len(self.terms) == 0:
             return ZERO_STR
 
@@ -152,8 +152,8 @@ class Sdop(_BaseDop):
 
         s = ''
         for coef, pdop in self.terms:
-            coef_str = printer.latex(coef)
-            pd_str = printer.latex(pdop)
+            coef_str = print_obj.doprint(coef)
+            pd_str = print_obj.doprint(pdop)
             if coef == S(1):
                 if pd_str == '':
                     s += '1'
@@ -378,31 +378,31 @@ class Pdop(_BaseDop):
         assert not isinstance(other, Pdop)
         return Sdop([(other, self)])
 
-    def Pdop_str(self):
+    def Pdop_str(self, print_obj):
         if self.order == 0:
             return 'D{}'
         s = 'D'
         for x in self.pdiffs:
-            s += '{' + str(x) + '}'
+            s += '{' + print_obj.doprint(x) + '}'
             n = self.pdiffs[x]
             if n > 1:
-                s += '^' + str(n)
+                s += '^' + print_obj.doprint(n)
         return s
 
-    def Pdop_latex_str(self):
+    def Pdop_latex_str(self, print_obj):
         if self.order == 0:
             return ''
         s = r'\frac{\partial'
         if self.order > 1:
-            s += '^{' + printer.latex(self.order) + '}'
+            s += '^{' + print_obj.doprint(self.order) + '}'
         s += '}{'
         keys = list(self.pdiffs.keys())
         keys.sort(key=lambda x: x.sort_key())
         for key in keys:
             i = self.pdiffs[key]
-            s += r'\partial ' + printer.latex(key)
+            s += r'\partial ' + print_obj.doprint(key)
             if i > 1:
-                s += '^{' + printer.latex(i) + '}'
+                s += '^{' + print_obj.doprint(i) + '}'
         s += '}'
         return s
 
