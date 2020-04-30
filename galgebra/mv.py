@@ -712,7 +712,7 @@ class Mv(object):
         sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
         if len(sorted_terms) == 1 and sorted_terms[0][1][2] == 0:  # scalar
-            return printer.latex(printer.coef_simplify(sorted_terms[0][1][0]))
+            return print_obj.doprint(printer.coef_simplify(sorted_terms[0][1][0]))
 
         lines = []
         old_grade = -1
@@ -720,7 +720,7 @@ class Mv(object):
         for (index, (coef, base, grade)) in sorted_terms:
             coef = printer.coef_simplify(coef)
             # coef = simplify(coef)
-            l_coef = printer.latex(coef)
+            l_coef = print_obj.doprint(coef)
             if l_coef == '1' and base != S(1):
                 l_coef = ''
             if l_coef == '-1' and base != S(1):
@@ -728,14 +728,14 @@ class Mv(object):
             if base == S(1):
                 l_base = ''
             else:
-                l_base = printer.latex(base)
+                l_base = print_obj.doprint(base)
             if isinstance(coef, Add):
                 cb_str = '\\left ( ' + l_coef + '\\right ) ' + l_base
             else:
                 cb_str = l_coef + ' ' + l_base
-            if printer.GaLatexPrinter.fmt == 3:  # One base per line
+            if print_obj.fmt == 3:  # One base per line
                 lines.append(append_plus(cb_str))
-            elif printer.GaLatexPrinter.fmt == 2:  # One grade per line
+            elif print_obj.fmt == 2:  # One grade per line
                 if grade != old_grade:
                     old_grade = grade
                     if not first_line:
@@ -745,9 +745,9 @@ class Mv(object):
                     s += append_plus(cb_str)
             else:  # One multivector per line
                 s += append_plus(cb_str)
-        if printer.GaLatexPrinter.fmt == 2:
+        if print_obj.fmt == 2:
             lines.append(s)
-        if printer.GaLatexPrinter.fmt >= 2:
+        if print_obj.fmt >= 2:
             if len(lines) == 1:
                 return lines[0]
             s = ' \\begin{align*} '
@@ -1724,8 +1724,8 @@ class Dop(dop._BaseDop):
         s = ''
 
         for sdop, base in mv_terms:
-            str_base = printer.latex(base)
-            str_sdop = printer.latex(sdop)
+            str_base = print_obj.doprint(base)
+            str_sdop = print_obj.doprint(sdop)
             if base == S(1):
                 s += str_sdop
             else:
@@ -1760,8 +1760,8 @@ class Dop(dop._BaseDop):
         s = ''
 
         for sdop, base in mv_terms:
-            str_base = printer.latex(base)
-            str_sdop = printer.latex(sdop)
+            str_base = print_obj.doprint(base)
+            str_sdop = print_obj.doprint(sdop)
             if base == S(1):
                 s += str_sdop
             else:

@@ -916,22 +916,22 @@ class GaLatexPrinter(LatexPrinter):
         if expr.obj == S(0):
             return ZERO_STR
         else:
-            return expr.Mv_latex_str()
+            return expr.Mv_latex_str(self)
 
     def _print_Pdop(self, expr):
-        return expr.Pdop_latex_str()
+        return expr.Pdop_latex_str(self)
 
     def _print_Dop(self, expr):
-        return expr.Dop_latex_str()
+        return expr.Dop_latex_str(self)
 
     def _print_Sdop(self, expr):
-        return expr.Sdop_latex_str()
+        return expr.Sdop_latex_str(self)
 
     def _print_Lt(self, expr):
-        return expr.Lt_latex_str()
+        return expr.Lt_latex_str(self)
 
     def _print_Mlt(self, expr):
-        return expr.Mlt_latex_str()
+        return expr.Mlt_latex_str(self)
 
     def _print_MatrixBase(self, expr):
         rows = expr.rows
