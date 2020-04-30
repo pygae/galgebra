@@ -584,9 +584,12 @@ class Mv(object):
         return self.grade(key)
 
     def Mv_str(self):
+        # todo: make this an argument?
+        print_obj = printer.GaPrinter()
+
         global print_replace_old, print_replace_new
         if self.i_grade == 0:
-            return str(self.obj)
+            return print_obj.doprint(self.obj)
 
         # note: this just replaces `self` for the rest of this function
         obj = expand(self.obj)
@@ -624,22 +627,22 @@ class Mv(object):
             terms = list(terms.items())
             sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
-            s = str(sorted_terms[0][1][0] * sorted_terms[0][1][1])
-            if printer.GaPrinter.fmt == 3:
+            s = print_obj.doprint(sorted_terms[0][1][0] * sorted_terms[0][1][1])
+            if print_obj.fmt == 3:
                 s = ' ' + s + '\n'
-            if printer.GaPrinter.fmt == 2:
+            if print_obj.fmt == 2:
                 s = ' ' + s
             old_grade = sorted_terms[0][1][2]
             for (key, (c, base, grade)) in sorted_terms[1:]:
-                term = str(c * base)
-                if printer.GaPrinter.fmt == 2 and old_grade != grade:  # one grade per line
+                term = print_obj.doprint(c * base)
+                if print_obj.fmt == 2 and old_grade != grade:  # one grade per line
                     old_grade = grade
                     s += '\n'
                 if term[0] == '-':
                     term = ' - ' + term[1:]
                 else:
                     term = ' + ' + term
-                if printer.GaPrinter.fmt == 3:  # one base per line
+                if print_obj.fmt == 3:  # one base per line
                     s += term + '\n'
                 else:  # one multivector per line
                     s += term
@@ -649,7 +652,7 @@ class Mv(object):
                 s = s.replace(printer.print_replace_old, printer.print_replace_new)
             return s
         else:
-            return str(self.obj)
+            return print_obj.doprint(self.obj)
 
     def Mv_latex_str(self):
 
