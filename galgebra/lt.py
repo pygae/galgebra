@@ -389,7 +389,7 @@ class Lt(object):
             raise ValueError('Lt inverse currently implemented only for spinor!\n')
         return Lt_inv
 
-    def Lt_str(self):
+    def Lt_str(self, print_obj):
 
         if self.spinor:
             return 'R = ' + str(self.R)
@@ -403,7 +403,7 @@ class Lt(object):
                     s += pre + str(base) + ') = 0\n'
             return s[:-1]
 
-    def Lt_latex_str(self):
+    def Lt_latex_str(self, print_obj):
 
         if self.spinor:
             s = '\\left \\{ \\begin{array}{ll} '
@@ -586,10 +586,10 @@ class Mlt(object):
                 base_indexes.append(base_str[i:])
         return base_indexes
 
-    def Mlt_str(self):
+    def Mlt_str(self, print_obj):
         return str(self.fvalue)
 
-    def Mlt_latex_str(self):
+    def Mlt_latex_str(self, print_obj):
         if self.nargs <= 1:
             return printer.latex(self.fvalue)
         expr_lst = Mlt.expand_expr(self.fvalue, self.Ga)
