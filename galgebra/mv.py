@@ -1184,7 +1184,7 @@ class Mv(object):
             return s
 
     def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
         if r'\begin{align*}' not in latex_str:
             if self.title is None:
                 latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
@@ -1662,7 +1662,7 @@ class Dop(dop._BaseDop):
         return str(self)
 
     def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
         if r'\begin{align*}' not in latex_str:
             if self.title is None:
                 latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'

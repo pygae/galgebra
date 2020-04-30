@@ -175,7 +175,7 @@ class Sdop(_BaseDop):
         return s[:-3]
 
     def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
         return ' ' + latex_str + ' '
 
     def __str__(self):
@@ -407,7 +407,7 @@ class Pdop(_BaseDop):
         return s
 
     def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
         return ' ' + latex_str + ' '
 
     def __str__(self):

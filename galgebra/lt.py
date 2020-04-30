@@ -347,7 +347,7 @@ class Lt(object):
         return str(self)
 
     def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
         if r'\begin{align*}' not in latex_str:
             latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
         return latex_str
@@ -428,7 +428,7 @@ class Lt(object):
         if printer.isinteractive():
             return self
 
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
 
         r"""
         if printer.GaLatexPrinter.ipy:
@@ -646,7 +646,7 @@ class Mlt(object):
         for latex.
         """
         self.lcnt = lcnt
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
         self.lcnt = 1
 
         if printer.GaLatexPrinter.ipy:
@@ -838,7 +838,7 @@ class Mlt(object):
             return Mlt(X * self.fvalue, self.Ga, self.nargs)
 
     def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
         if r'\begin{align*}' not in latex_str:
             latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
         return latex_str
