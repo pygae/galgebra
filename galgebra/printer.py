@@ -6,6 +6,8 @@ import os
 import sys
 import io
 import re
+import builtins
+import functools
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
 from itertools import islice
 from sympy.printing.str import StrPrinter
@@ -390,10 +392,32 @@ class GaPrinter(StrPrinter):
         return expr.Mlt_str(self)
 
 
-Basic.__str__ = lambda self: GaPrinter().doprint(self)
-Matrix.__str__ = lambda self: GaPrinter().doprint(self)
+Basic.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
+Matrix.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
 Basic.__repr__ = lambda self: GaPrinter().doprint(self)
 Matrix.__repr__ = lambda self: GaPrinter().doprint(self)
+
+
+# This is the lesser of two evils. Previously, we overwrote `Basic.__str__` in
+# order to customise `print(sympy)`. This broke a bunch of assumptions inside
+# sympy, so isn't safe. Instead of clobbering `__str__`, we add a
+# `__ga_print_str__` attribute, and have `print` use it if present.
+_old_print = builtins.print
+
+
+@functools.wraps(_old_print)
+def _print(*values, **kwargs):
+    values_new = []
+    for v in values:
+        try:
+            f = type(v).__ga_print_str__
+        except AttributeError:
+            values_new.append(v)
+        else:
+            values_new.append(f(v))
+    _old_print(*values_new, **kwargs)
+
+builtins.print = _print
 
 
 def enhance_print():
@@ -622,10 +646,10 @@ class GaLatexPrinter(LatexPrinter):
     @staticmethod
     def redirect():
         GaLatexPrinter.latex_flg = True
-        GaLatexPrinter.Basic__str__ = Basic.__str__
-        GaLatexPrinter.Matrix__str__ = Matrix.__str__
-        Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
+        GaLatexPrinter.Basic__ga_print_str__ = Basic.__ga_print_str__
+        GaLatexPrinter.Matrix__ga_print_str__ = Matrix.__ga_print_str__
+        Basic.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
+        Matrix.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
         if GaLatexPrinter.ipy:
             pass
         else:
@@ -640,8 +664,8 @@ class GaLatexPrinter(LatexPrinter):
             GaLatexPrinter.latex_flg = False
             if not GaLatexPrinter.ipy:
                 sys.stdout = GaLatexPrinter.stdout
-            Basic.__str__ = GaLatexPrinter.Basic__str__
-            Matrix.__str__ = GaLatexPrinter.Matrix__str__
+            Basic.__ga_print_str__ = GaLatexPrinter.Basic__ga_print_str__
+            Matrix.__ga_print_str__ = GaLatexPrinter.Matrix__ga_print_str__
 
     def _print_Pow(self, expr):
         base = self._print(expr.base)
@@ -990,8 +1014,8 @@ def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
         GaLatexPrinter.latex_flg = True
         GaLatexPrinter.redirect()
 
-        Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
+        Basic.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
+        Matrix.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
         Basic.__repr__ = lambda self: GaLatexPrinter().doprint(self)
         Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
 
