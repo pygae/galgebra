@@ -1159,13 +1159,6 @@ class Mv(object):
         with one grade per line.  Works for both standard printing and
         for latex.
         """
-        if printer.GaLatexPrinter.latex_flg:
-            printer.GaLatexPrinter.prev_fmt = printer.GaLatexPrinter.fmt
-            printer.GaLatexPrinter.fmt = fmt
-        else:
-            printer.GaPrinter.prev_fmt = printer.GaPrinter.fmt
-            printer.GaPrinter.fmt = fmt
-
         if title is not None:
             self.title = title
 
@@ -1173,11 +1166,12 @@ class Mv(object):
             return self
 
         if printer.GaLatexPrinter.latex_flg:
-            s = printer.GaLatexPrinter().doprint(self)
+            p = printer.GaLatexPrinter()
         else:
-            s = printer.GaPrinter().doprint(self)
+            p = printer.GaPrinter()
+        p.fmt = fmt
+        s = p.doprint(self)
 
-        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
         if title is not None:
             return title + ' = ' + s
         else:
@@ -1795,12 +1789,6 @@ class Dop(dop._BaseDop):
         return s[:-3]
 
     def Fmt(self, fmt=1, title=None, dop_fmt=None):
-        if printer.GaLatexPrinter.latex_flg:
-            printer.GaLatexPrinter.prev_fmt = printer.GaLatexPrinter.fmt
-            printer.GaLatexPrinter.prev_dop_fmt = printer.GaLatexPrinter.dop_fmt
-        else:
-            printer.GaPrinter.prev_fmt = printer.GaPrinter.fmt
-            printer.GaPrinter.prev_dop_fmt = printer.GaPrinter.dop_fmt
 
         if title is not None:
             self.title = title
@@ -1809,12 +1797,12 @@ class Dop(dop._BaseDop):
             return self
 
         if printer.GaLatexPrinter.latex_flg:
-            s = printer.GaLatexPrinter().doprint(self)
+            p = printer.GaLatexPrinter()
         else:
-            s = printer.GaPrinter().doprint(self)
-
-        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-        printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
+            p = printer.GaPrinter()
+        p.fmt = fmt
+        p.dop_fmt = dop_fmt
+        s = p.doprint(self)
 
         if title is not None:
             return title + ' = ' + s
