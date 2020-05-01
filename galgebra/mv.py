@@ -982,12 +982,10 @@ class Mv(object):
 
         if blade_lst is None:
             blade_lst = self.Ga.mv_blades.flat
-
-        # print 'Enter blade_coefs blade_lst =', blade_lst, type(blade_lst), [i.is_blade() for i in blade_lst]
-
-        for blade in blade_lst:
-            if not blade.is_base() or not blade.is_blade():
-                raise ValueError("%s expression isn't a basis blade" % blade)
+        else:
+            for blade in blade_lst:
+                if not blade.is_base() or not blade.is_blade():
+                    raise ValueError("%s expression isn't a basis blade" % blade)
         blade_lst = [x.obj for x in blade_lst]
         coefs, bases = metric.linear_expand(self.obj)
         coef_lst = []
