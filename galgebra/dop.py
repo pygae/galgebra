@@ -116,7 +116,7 @@ class Sdop(_BaseDop):
         new_terms = sorted(self.terms, key=lambda term: Pdop.sort_key(term[1]))
         return Sdop(new_terms)
 
-    def Sdop_str(self, print_obj):
+    def _sympystr(self, print_obj):
         if len(self.terms) == 0:
             return ZERO_STR
 
@@ -144,7 +144,7 @@ class Sdop(_BaseDop):
                 s = '(' + s + ')'
         return s
 
-    def Sdop_latex_str(self, print_obj):
+    def _latex(self, print_obj):
         if len(self.terms) == 0:
             return ZERO_STR
 
@@ -378,7 +378,7 @@ class Pdop(_BaseDop):
         assert not isinstance(other, Pdop)
         return Sdop([(other, self)])
 
-    def Pdop_str(self, print_obj):
+    def _sympystr(self, print_obj):
         if self.order == 0:
             return 'D{}'
         s = 'D'
@@ -389,7 +389,7 @@ class Pdop(_BaseDop):
                 s += '^' + print_obj.doprint(n)
         return s
 
-    def Pdop_latex_str(self, print_obj):
+    def _latex(self, print_obj):
         if self.order == 0:
             return ''
         s = r'\frac{\partial'
