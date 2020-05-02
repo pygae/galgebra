@@ -432,14 +432,12 @@ class Metric(object):
     def _init_connect_flg(self):
         # See if metric is flat
 
-        self.connect_flg = False
-
-        for i in self.n_range:
-            for j in self.n_range:
-                for k in self.n_range:
-                    if self.dg[i][j][k] != 0:
-                        self.connect_flg = True
-                        break
+        self.connect_flg = any(
+            self.dg[i][j][k] != 0
+            for i in self.n_range
+            for j in self.n_range
+            for k in self.n_range
+        )
 
     def _build_derivatives_of_basis(self):  # Derivatives of basis vectors from Christoffel symbols
 
@@ -744,23 +742,19 @@ class Metric(object):
 
         # Determine if metric is orthogonal
 
-        self.is_ortho = True
+        self.is_ortho = all(
+            self.g[i, j] == 0
+            for i in self.n_range
+            for j in self.n_range
+            if i < j
+        )
 
-        for i in self.n_range:
-            for j in self.n_range:
-                if i < j:
-                    if self.g[i, j] != 0:
-                        self.is_ortho = False
-                        break
-
-        self.g_is_numeric = True
-
-        for i in self.n_range:
-            for j in self.n_range:
-                if i < j:
-                    if not self.g[i, j].is_number:
-                        self.g_is_numeric = False
-                        break
+        self.g_is_numeric = all(
+            self.g[i, j].is_number
+            for i in self.n_range
+            for j in self.n_range
+            if i < j
+        )
 
         if self.coords is not None:
             self._build_derivatives_of_basis()  # calculate derivatives of basis
