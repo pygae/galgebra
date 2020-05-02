@@ -583,7 +583,7 @@ class Mv(object):
         '''
         return self.grade(key)
 
-    def Mv_str(self, print_obj):
+    def _sympystr(self, print_obj):
         if self.obj == S.Zero:
             return ZERO_STR
 
@@ -653,7 +653,7 @@ class Mv(object):
         else:
             return print_obj.doprint(self.obj)
 
-    def Mv_latex_str(self, print_obj):
+    def _latex(self, print_obj):
 
         if self.obj == S.Zero:
             return ZERO_STR
@@ -1718,7 +1718,7 @@ class Dop(dop._BaseDop):
         terms = list(zip(coefs, bases))
         return sorted(terms, key=lambda x: self.Ga.blades.flat.index(x[1]))
 
-    def Dop_str(self, print_obj):
+    def _sympystr(self, print_obj):
         if len(self.terms) == 0:
             return ZERO_STR
 
@@ -1752,7 +1752,7 @@ class Dop(dop._BaseDop):
         s = s.replace('+ -', '-')
         return s[:-3]
 
-    def Dop_latex_str(self, print_obj):
+    def _latex(self, print_obj):
         if len(self.terms) == 0:
             return ZERO_STR
 

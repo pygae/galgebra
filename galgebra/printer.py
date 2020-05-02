@@ -370,24 +370,6 @@ class GaPrinter(StrPrinter):
         out_str = ostr(list(expr))
         return out_str
 
-    def _print_Mv(self, expr):
-        return expr.Mv_str(self)
-
-    def _print_Pdop(self, expr):
-        return expr.Pdop_str(self)
-
-    def _print_Dop(self, expr):
-        return expr.Dop_str(self)
-
-    def _print_Sdop(self, expr):
-        return expr.Sdop_str(self)
-
-    def _print_Lt(self, expr):
-        return expr.Lt_str(self)
-
-    def _print_Mlt(self, expr):
-        return expr.Mlt_str(self)
-
 
 Basic.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
 Matrix.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
@@ -932,24 +914,6 @@ class GaLatexPrinter(LatexPrinter):
         else:
             s = r"%s %s" % (tex, self._print(expr.expr))
         return s
-
-    def _print_Mv(self, expr):
-        return expr.Mv_latex_str(self)
-
-    def _print_Pdop(self, expr):
-        return expr.Pdop_latex_str(self)
-
-    def _print_Dop(self, expr):
-        return expr.Dop_latex_str(self)
-
-    def _print_Sdop(self, expr):
-        return expr.Sdop_latex_str(self)
-
-    def _print_Lt(self, expr):
-        return expr.Lt_latex_str(self)
-
-    def _print_Mlt(self, expr):
-        return expr.Mlt_latex_str(self)
 
     def _print_MatrixBase(self, expr):
         rows = expr.rows
