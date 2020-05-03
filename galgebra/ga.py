@@ -7,11 +7,11 @@ import copy
 from itertools import combinations
 import functools
 from functools import reduce
-from typing import Tuple, TypeVar, Callable
+from typing import Tuple, TypeVar, Callable, Dict
 from ._backports.typing import OrderedDict
 
 from sympy import (
-    diff, Rational, Symbol, S, Mul, Add,
+    diff, Rational, Symbol, S, Mul, Add, Expr,
     expand, simplify, eye, trigsimp,
     symbols, sqrt, Function
 )
@@ -21,10 +21,15 @@ from . import metric
 from . import mv
 from . import dop
 from . import lt
+from ._utils import cached_property as _cached_property
 
 half = Rational(1, 2)
 one = S(1)
 zero = S(0)
+
+
+# needed to avoid ambiguity with the `Ga.mv` method in type annotations
+_mv = mv
 
 
 def all_same(items):
@@ -232,74 +237,36 @@ class Ga(metric.Metric):
 
     .. rubric:: Basis, basis bases, and basis blades data structures
 
-    .. attribute:: indexes
-
-        :class:`GradedTuple` of index tuples.
-
-        :type: GradedTuple[Tuple[int, ...]]
-
-    .. attribute:: bases
-
-        :class:`GradedTuple` of bases (non-commutative sympy symbols) by grade.
-        Only created for non-orthogonal basis vectors.
-
-        :type: GradedTuple[sympy.Symbol]
-
-    .. attribute:: blades
-
-        :class:`GradedTuple` of basis blades (non-commutative sympy symbols) by grade.
-        For orthogonal basis vectors the same as :attr:`bases`.
-
-        :type: GradedTuple[sympy.Symbol]
-
-    .. attribute:: mv_blades
-
-        :class:`GradedTuple` of :class:`mv.Mv` instances corresponding to :attr:`blades`.
-
-        :type: GradedTuple[mv.Mv]
-
-    .. attribute:: coord_vec
-
-        Linear combination of coordinates and basis vectors.  For
-        example in orthogonal 3D :math:`x*e_x+y*e_y+z*e_z`.
-
-    .. attribute:: indexes_to_blades_dict
-
-        Bidirectional map from index tuples (:attr:`indices`) to basis blades (:attr:`blades`)
-
-        :type: OrderedBiMap[Tuple[int, ...], sympy.Symbol]
-
-    .. attribute:: indexes_to_bases_dict
-
-        Bidirectional map from index tuples (:attr:`indices`) to basis bases (:attr:`bases`)
-
-        :type: OrderedBiMap[Tuple[int, ...], sympy.Symbol]
+    .. autosummary::
+        ~galgebra.ga.Ga.indexes
+        ~galgebra.ga.Ga.bases
+        ~galgebra.ga.Ga.blades
+        ~galgebra.ga.Ga.mv_blades
+        ~galgebra.ga.Ga.coord_vec
+        ~galgebra.ga.Ga.indexes_to_blades_dict
+        ~galgebra.ga.Ga.indexes_to_bases_dict
 
     .. rubric:: Multiplication tables data structures
 
-    Keys in all multiplication tables (``*``, ``^``, ``|``, ``<``, ``>``) are always ``symbol1*symbol2``.
-    The correct operation is known by the context (name) of the relevant list or dictionary). These dictionaries are
-    lazy, meaning they may be empty until an attempt is made to index them.
+    Tables for the operators ``*``, ``^``, ``|``, ``<``, and ``>``.
+    Keys are always ``sympy.Mul(blade1, blade2)`` and values are ``f(blade1, blade2)``.
+    These dictionaries are lazy and computed on the fly, meaning they may be
+    empty until an attempt is made to index them.
 
-    .. attribute:: mul_table_dict
+    .. autosummary::
 
-        Geometric products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1*base2, ...}``
+        ~galgebra.ga.Ga.mul_table_dict
+        ~galgebra.ga.Ga.wedge_table_dict
+        ~galgebra.ga.Ga.dot_table_dict
+        ~galgebra.ga.Ga.left_contract_table_dict
+        ~galgebra.ga.Ga.right_contract_table_dict
 
-    .. attribute:: wedge_table_dict
+    For non-orthogonal algebras, there is one additional table, this one mapping
+    bases instead of blades. Unlike the others, this is pre-computed:
 
-        Outer products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1^base2, ...}``
+    .. autosummary::
 
-    .. attribute:: dot_table_dict
-
-        Hestenes inner products of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1|base2, ...}``
-
-    .. attribute:: left_contract_table_dict
-
-        Left contraction of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1<base2, ...}``
-
-    .. attribute:: right_contract_table_dict
-
-        Right contraction of basis blades as a :class:`lazy_dict`, ``{base1*base2: Expansion of base1>base2, ...}``
+        ~galgebra.ga.Ga.basic_mul_table_dict
 
     .. rubric:: Reciprocal basis data structures
 
@@ -450,9 +417,11 @@ class Ga(metric.Metric):
         metric.Metric.__init__(self, bases, **kwargs)
 
         self.par_coords = None
-        self._build_bases()
+
+        if self.debug:
+            self._print_basis_and_blade_debug()
+
         self.dot_mode = '|'
-        self._build_basis_product_tables()
 
         if self.coords is not None:
             self.coords = list(self.coords)
@@ -461,7 +430,6 @@ class Ga(metric.Metric):
         self.e_sq = simplify(expand((self.e*self.e).scalar()))
 
         if self.coords is not None:
-            self.coord_vec = sum([coord * base for coord, base in zip(self.coords, self.basis)])
             self._build_reciprocal_basis(self.gsym)
             self._build_grads()
         else:
@@ -502,6 +470,16 @@ class Ga(metric.Metric):
         self._agrads = {}  # cache of gradient operator with respect to vector a
         self.dslot = -1  # args slot for dervative, -1 for coordinates
         self._XOX = self.mv('XOX', 'vector')  # cached vector for use in is_versor
+
+    @_cached_property
+    def coord_vec(self) -> Expr:
+        """
+        Linear combination of coordinates and basis vectors.  For
+        example in orthogonal 3D :math:`x*e_x+y*e_y+z*e_z`.
+        """
+        if self.coords is None:
+            raise ValueError("Ga with no coords has no coords_vec")
+        return sum([coord * base for coord, base in zip(self.coords, self.basis)])
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
 
@@ -784,115 +762,132 @@ class Ga(metric.Metric):
                 raise ValueError('!!!!No unique root symbol for wedge_print = False!!!!')
         return Symbol(symbol_str, commutative=False)
 
-    def _build_bases(self):
-        r"""
-        The bases for the multivector (geometric) algebra are formed from
-        all combinations of the bases of the vector space and the scalars.
+    def _print_basis_and_blade_debug(self):
+        printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes.flat,
+                       'blades', self.blades, 'list(blades)', self.blades.flat,
+                       'indexes_to_blades_dict', self.indexes_to_blades_dict,
+                       'blades_to_grades_dict', self.blades_to_grades_dict,
+                       'blade_super_scripts', self.blade_super_scripts)
+        if not self.is_ortho:
+            printer.oprint('bases', self.bases, 'list(bases)', self.bases.flat,
+                           'indexes_to_bases_dict', self.indexes_to_bases_dict,
+                           'bases_to_grades_dict', self.bases_to_grades_dict)
 
-        Each base is represented as a non-commutative symbol of the form
-
-        .. math:: e_{i_{1}}e_{i_{2}}...e_{i_{r}}
-
-        where :math:`0 < i_{1} < i_{2} < ... < i_{r}` and :math:`0 < r \le n` the
-        dimension of the vector space and :math:`0 < i_{j} \le n`. The total
-        number of all symbols of this form plus the scalars is :math:`2^{n}`.
-        Any multivector can be represented as a linear combination
-        of these bases and the scalars.
-
-        If the basis vectors are not orthogonal a second set of symbols
-        is required given by -
-
-        .. math:: e_{i_{1}}\wedge e_{i_{2}}\wedge ...\wedge e_{i_{r}}.
-
-        These are called the blade basis for the geometric algebra and
-        and multivector can also be represented by a linears combination
-        of these blades and the scalars.  The number of basis vectors
-        that are in the symbol for the blade is call the grade of the
-        blade.
-
-        Representing the multivector as a linear combination of blades
-        gives a blade decomposition of the multivector.
-
-        There is a linear mapping from bases to blades and blades to
-        bases so that one can easily convert from one representation to
-        another.  For the case of an orthogonal set of basis vectors the
-        bases and blades are identical.
-        """
-        self._build_indices()
-        self._build_blade_info()
-        self._build_base_info()
-        self._build_super_script_strings()
-        self._build_mv_wrappers()
-
-        if self.debug:
-            printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes.flat,
-                           'blades', self.blades, 'list(blades)', self.blades.flat,
-                           'indexes_to_blades_dict', self.indexes_to_blades_dict,
-                           'blades_to_grades_dict', self.blades_to_grades_dict,
-                           'blade_super_scripts', self.blade_super_scripts)
-            if not self.is_ortho:
-                printer.oprint('bases', self.bases, 'list(bases)', self.bases.flat,
-                               'indexes_to_bases_dict', self.indexes_to_bases_dict,
-                               'bases_to_grades_dict', self.bases_to_grades_dict)
-
-    def _build_indices(self):
-        # index list for multivector bases and blades by grade
+    @_cached_property
+    def indexes(self) -> GradedTuple[Tuple[int, ...]]:
+        """ Index tuples of basis blades """
         basis_indexes = tuple(self.n_range)
-        self.indexes = GradedTuple(
+        return GradedTuple(
             tuple(combinations(basis_indexes, i))
             for i in range(len(basis_indexes) + 1)
         )
 
-    def _build_blade_info(self):
-        # non-commutative symbols for multivector blades
-        self.blades = self.indexes._map(
+    @_cached_property
+    def blades(self) -> GradedTuple[Symbol]:
+        r""" Basis blades symbols by grade.
+
+        The bases for the multivector (geometric) algebra are formed from
+        all combinations of the bases of the vector space, including the empty
+        combination which is the scalars.
+
+        Each base is represented as a non-commutative symbol of the form
+
+        .. math:: e_{i_{1}}\wedge e_{i_{2}}\wedge ...\wedge e_{i_{r}}.
+
+        where :math:`0 < i_{1} < i_{2} < ... < i_{r}` and :math:`0 < r \le n` the
+        dimension of the vector space and :math:`0 < i_{j} \le n`. The total
+        number of all symbols of this form is :math:`2^{n}`.
+
+        These are called the blade basis for the geometric algebra and any
+        multivector can be represented by a linears combination of these blades.
+        The number of basis vectors that are in the symbol for the blade is call
+        the grade of the blade.
+
+        Representing the multivector as a linear combination of blades
+        gives a blade decomposition of the multivector.
+
+        There is a linear mapping from :attr:`bases` to blades and blades to
+        bases so that one can easily convert from one representation to
+        another.
+        """
+        return self.indexes._map(
             lambda index: self._build_basis_blade_symbol(index))
 
-        self.indexes_to_blades_dict = OrderedBiMap(list(zip(self.indexes.flat, self.blades.flat)))
+    @_cached_property
+    def indexes_to_blades_dict(self) -> OrderedBiMap[Tuple[int, ...], Symbol]:
+        """ Bidirectional map from index tuples (:attr:`indices`) to basis blades (:attr:`blades`) """
+        return OrderedBiMap(list(zip(self.indexes.flat, self.blades.flat)))
 
-        self.blades_to_grades_dict = {
+    @_cached_property
+    def blades_to_grades_dict(self) -> Dict[Symbol, int]:
+        return {
             blade: igrade
             for igrade, grade in enumerate(self.blades)
             for blade in grade
         }
 
-    def _build_base_info(self):
-        # non-commutative symbols for multivector bases
-        if not self.is_ortho:
-            self.bases = self.indexes._map(
-                lambda index: self._build_basis_base_symbol(index))
+    @_cached_property
+    def bases(self) -> GradedTuple[Symbol]:
+        r""" Bases (non-commutative sympy symbols) by grade.
 
-            self.indexes_to_bases_dict = OrderedBiMap(list(zip(self.indexes.flat, self.bases.flat)))
+        If the basis vectors are not orthogonal a second set of symbols
+        is required in addition to the :attr:`blades`, given by:
 
-            self.bases_to_grades_dict = {
-                base: igrade
-                for igrade, grade in enumerate(self.bases)
-                for base in grade
-            }
+        .. math:: e_{i_{1}}e_{i_{2}}...e_{i_{r}}
 
-    def _build_super_script_strings(self):
+        where :math:`0 < i_{1} < i_{2} < ... < i_{r}` and :math:`0 < r \le n` the
+        dimension of the vector space and :math:`0 < i_{j} \le n`. The total
+        number of all symbols of this form is :math:`2^{n}`.
+        Any multivector can be represented as a linear combination of these bases.
+
+        For the case of an orthogonal set of basis vectors the bases and blades
+        are identical, and so this attribute raises :exc:`ValueError`.
+        """
+        if self.is_ortho:
+            raise ValueError("There is no need for bases in orthogonal algebras")
+        return self.indexes._map(
+            lambda index: self._build_basis_base_symbol(index))
+
+    @_cached_property
+    def indexes_to_bases_dict(self) -> OrderedBiMap[Tuple[int, ...], Symbol]:
+        """ Bidirectional map from index tuples (:attr:`indices`) to basis bases (:attr:`bases`) """
+        return OrderedBiMap(list(zip(self.indexes.flat, self.bases.flat)))
+
+    @_cached_property
+    def bases_to_grades_dict(self) -> Dict[Symbol, int]:
+        return {
+            blade: igrade
+            for igrade, grade in enumerate(self.bases)
+            for blade in grade
+        }
+
+    @_cached_property
+    def basis_super_scripts(self):
         if self.coords is None:
             base0 = str(self.basis[0])
             if '_' in base0:
                 sub_index = base0.index('_')
-                self.basis_super_scripts = [str(base)[sub_index + 1:] for base in self.basis]
+                return [str(base)[sub_index + 1:] for base in self.basis]
             else:
-                self.basis_super_scripts = [str(i + 1) for i in self.n_range]
+                return [str(i + 1) for i in self.n_range]
         else:
-            self.basis_super_scripts = [str(coord) for coord in self.coords]
+            return [str(coord) for coord in self.coords]
 
-        self.blade_super_scripts = self.indexes._map(lambda base_index: ''.join(
+    @_cached_property
+    def blade_super_scripts(self):
+        return self.indexes._map(lambda base_index: ''.join(
             self.basis_super_scripts[i] for i in base_index
         ))
 
-    def _build_mv_wrappers(self):
-        # create the Mv wrappers
-        self.mv_blades = self.blades._map(lambda blade: mv.Mv(blade, ga=self))
+    @_cached_property
+    def mv_blades(self) -> GradedTuple[_mv.Mv]:
+        """ :class:`mv.Mv` instances corresponding to :attr:`blades`. """
+        return self.blades._map(lambda blade: mv.Mv(blade, ga=self))
 
-        self.mv_basis = tuple(
-            mv.Mv(obj, ga=self)
-            for obj in self.basis
-        )
+    @_cached_property
+    def mv_basis(self) -> Tuple[_mv.Mv]:
+        """ :class:`mv.Mv` instances corresponding to :attr:`basis`. """
+        return tuple(mv.Mv(obj, ga=self) for obj in self.basis)
 
     @property
     def indexes_to_bases(self):
@@ -942,44 +937,40 @@ class Ga(metric.Metric):
             DeprecationWarning, stacklevel=2)
         return self.indexes_to_blades_dict.inverse
 
-    def _build_basis_product_tables(self):
-        """
-        For the different products of geometric algebra bases/blade
-        initialize auto-updating of bases/blades product lists.  For
-        orthogonal bases all basis product lists are generated on the
-        fly using functions and the base and blade representations
-        are identical.  For a non-orthogonal basis the multiplication
-        table for the geometric product is pre-calcuated for base pairs.
-        The tables for all other products (including the geometric
-        product) are calulated on the fly and updated and are for blade
-        pairs.
+    @_cached_property
+    def mul_table_dict(self) -> lazy_dict:
+        """ Geometric products of basis blades, ``{base1*base2: Expansion of base1*base2, ...}`` """
+        return lazy_dict({}, f_value=self.geometric_product_basis_blades)  # Geometric product (*) of blades
 
-        All tables are of the form::
+    @_cached_property
+    def wedge_table_dict(self) -> lazy_dict:
+        """ Outer products of basis blades, ``{base1*base2: Expansion of base1^base2, ...}`` """
+        return lazy_dict({}, f_value=self.wedge_product_basis_blades)  # Outer product (^)
 
-            [(blade1*blade2, f(blade1, blade1)), ...]
-        """
-        self.mul_table_dict = lazy_dict({}, f_value=self.geometric_product_basis_blades)  # Geometric product (*) of blades
-
-        if not self.is_ortho:
-            self._build_non_orthogonal_mul_table()  # Fully populated geometric product (*) multiplication table
-            self._build_base_blade_conversions()  # Generates conversion dictionaries between bases and blades
-
-        self.wedge_table_dict = lazy_dict({}, f_value=self.wedge_product_basis_blades)  # Outer product (^)
-
+    @property
+    def _dot_product_basis_blades(self):
         # All three (|,<,>) types of contractions use the same generation function
         # self.dot_product_basis_blades.  The type of dictionary entry generated depend
         # on self.dot_mode = '|', '<', or '>' as set in self.dot.
         if self.is_ortho:
-            dot_product_basis_blades = self.dot_product_basis_blades
+            return self.dot_product_basis_blades
         else:
-            dot_product_basis_blades = self.non_orthogonal_dot_product_basis_blades
+            return self.non_orthogonal_dot_product_basis_blades
 
-        self.dot_table_dict = lazy_dict({}, f_value=functools.partial(dot_product_basis_blades, mode='|'))
-        self.left_contract_table_dict = lazy_dict({}, f_value=functools.partial(dot_product_basis_blades, mode='<'))
-        self.right_contract_table_dict = lazy_dict({}, f_value=functools.partial(dot_product_basis_blades, mode='>'))
+    @_cached_property
+    def dot_table_dict(self) -> lazy_dict:
+        """ Hestenes inner products of basis blades, ``{base1*base2: Expansion of base1|base2, ...}`` """
+        return lazy_dict({}, f_value=functools.partial(self._dot_product_basis_blades, mode='|'))
 
-        if self.debug:
-            print('Exit _build_basis_product_tables.\n')
+    @_cached_property
+    def left_contract_table_dict(self) -> lazy_dict:
+        """ Left contraction of basis blades, ``{base1*base2: Expansion of base1<base2, ...}`` """
+        return lazy_dict({}, f_value=functools.partial(self._dot_product_basis_blades, mode='<'))
+
+    @_cached_property
+    def right_contract_table_dict(self) -> lazy_dict:
+        """ Right contraction of basis blades, ``{base1*base2: Expansion of base1>base2, ...}`` """
+        return lazy_dict({}, f_value=functools.partial(self._dot_product_basis_blades, mode='>'))
 
     def _build_connection(self):
         # Partial derivatives of multivector bases multiplied (*,^,|,<,>)
@@ -1290,15 +1281,15 @@ class Ga(metric.Metric):
 
     ############# Non-Orthogonal Tables and Dictionaries ###############
 
-    def _build_non_orthogonal_mul_table(self):
-        self.basic_mul_table_dict = OrderedDict(
+    @_cached_property
+    def basic_mul_table_dict(self) -> OrderedDict[Mul, Expr]:
+        if self.is_ortho:
+            raise ValueError("No need for this table for orthogonal algebras")
+        return OrderedDict(
             (base1 * base2, self.non_orthogonal_bases_products((base1, base2)))
             for base1 in self.bases.flat
             for base2 in self.bases.flat
         )
-
-        if self.debug:
-            print('basic_mul_table =\n', self.basic_mul_table_dict)
 
     @property
     def basic_mul_table(self):
@@ -1336,11 +1327,12 @@ class Ga(metric.Metric):
             for coef, index in zip(coefs, indexes)
         ), S(0))
 
-    def _build_base_blade_conversions(self):
+    @_cached_property
+    def blade_expansion_dict(self) -> OrderedDict[Symbol, Expr]:
+        """ dictionary expanding blade basis in terms of base basis """
 
         blade_expansion_dict = OrderedDict()
 
-        # expand blade basis in terms of base basis
         for blade, index in zip(self.blades.flat, self.indexes.flat):
             grade = len(index)
             if grade <= 1:
@@ -1356,13 +1348,14 @@ class Ga(metric.Metric):
                 a_W_A = half * (self.basic_mul(a, Aexpand) - ((-1) ** grade) * self.basic_mul(Aexpand, a))
                 blade_expansion_dict[blade] = expand(a_W_A)
 
-        self.blade_expansion_dict = blade_expansion_dict
-
         if self.debug:
-            print('blade_expansion_dict =', self.blade_expansion_dict)
+            print('blade_expansion_dict =', blade_expansion_dict)
 
-        # expand base basis in terms of blade basis
+        return blade_expansion_dict
 
+    @_cached_property
+    def base_expansion_dict(self) -> OrderedDict[Symbol, Expr]:
+        """ dictionary expanding base basis in terms of blade basis """
         base_expansion_dict = OrderedDict()
 
         for base, blade, index in zip(self.bases.flat, self.blades.flat, self.indexes.flat):
@@ -1375,10 +1368,10 @@ class Ga(metric.Metric):
                 tmp = -tmp.subs(base_expansion_dict)
                 base_expansion_dict[base] = expand(tmp)
 
-        self.base_expansion_dict = base_expansion_dict
-
         if self.debug:
             print('base_expansion_dict =', self.base_expansion_dict)
+
+        return base_expansion_dict
 
     @property
     def base_expansion(self):
