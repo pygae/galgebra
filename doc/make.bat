@@ -37,7 +37,6 @@ if errorlevel 9009 (
 	exit /b 1
 )
 
-notedown galgebra.md > galgebra_guide.ipynb
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS%
 goto end
 
