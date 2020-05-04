@@ -54,7 +54,7 @@ $$\newcommand{\bm}[1]{\boldsymbol{#1}}
 Basics of Geometric Algebra
 ---------------------------
 
-Geometric algebra is the Clifford algebra of a real finite dimensional vector space or the algebra that results when the vector space is extended with a product of vectors (geometric product) that is associative, left and right distributive, and yields a real number for the square (geometric product) of any vector , . The elements of the geometric algebra are called multivectors and consist of the linear combination of scalars, vectors, and the geometric product of two or more vectors. The additional axioms for the geometric algebra are that for any vectors $a$, $b$, and $c$ in the base vector space (,p85):
+Geometric algebra is the Clifford algebra of a real finite dimensional vector space or the algebra that results when the vector space is extended with a product of vectors (geometric product) that is associative, left and right distributive, and yields a real number for the square (geometric product) of any vector <cite data-cite="Hestenes" />, <cite data-cite="Doran" />. The elements of the geometric algebra are called multivectors and consist of the linear combination of scalars, vectors, and the geometric product of two or more vectors. The additional axioms for the geometric algebra are that for any vectors $a$, $b$, and $c$ in the base vector space (<cite data-cite="Doran" />,p85):
 
 $$\begin{array}{c}
   a\lp bc \rp = \lp ab \rp c \\
@@ -63,7 +63,7 @@ $$\begin{array}{c}
   aa = a^{2} \in \Re.
   \end{array}$$
 
-If the dot (inner) product of two vectors is defined by (,p86)
+If the dot (inner) product of two vectors is defined by (<cite data-cite="Doran" />,p86)
 
 $$\be a\cdot b \equiv (ab+ba)/2, \ee$$
 
@@ -103,7 +103,7 @@ $$\begin{aligned}
 
 which results from repeated application of eq. ($\ref{reduce}$). If the product of basis vectors contains repeated factors eq. ($\ref{reduce}$) can be used to bring the repeated factors next to one another so that if ${{\eb}}_{i_{j}} = {{\eb}}_{i_{j+1}}$ then ${{\eb}}_{i_{j}}{{\eb}}_{i_{j+1}} = {{\eb}}_{i_{j}}\cdot {{\eb}}_{i_{j+1}}$ which is a scalar that commutes with all the terms in the product and can be brought to the front of the product. Since every repeated pair of vectors in a geometric product of $r$ factors reduces the number of non-commutative factors in the product by $r-2$. The number of bases in the multivector algebra is $2^{n}$ and the number containing $r$ factors is ${n\choose r}$ which is the number of combinations or $n$ things taken $r$ at a time (binomial coefficient).
 
-The other construction required for formulating the geometric algebra is the outer or wedge product (symbol ${\wedge}$) of $r$ vectors denoted by $a_{1}{\wedge}\dots{\wedge}a_{r}$. The wedge product of $r$ vectors is called an $r$-blade and is defined by (,p86)
+The other construction required for formulating the geometric algebra is the outer or wedge product (symbol ${\wedge}$) of $r$ vectors denoted by $a_{1}{\wedge}\dots{\wedge}a_{r}$. The wedge product of $r$ vectors is called an $r$-blade and is defined by (<cite data-cite="Doran" />,p86)
 
 $$\be a_{1}{\wedge}\dots{\wedge}a_{r} \equiv \sum_{i_{j_{1}}\dots i_{j_{r}}} \epsilon^{i_{j_{1}}\dots i_{j_{r}}}a_{i_{j_{1}}}\dots a_{i_{j_{1}}} \ee$$
 
@@ -135,7 +135,7 @@ Then if ${\boldsymbol{A}}_{r}$ is an $r$-grade multivector and ${\boldsymbol{B}}
 $$\be {\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s} = {\left <{{\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s}} \right >_{{\left |{r-s}\right |}}}+{\left <{{\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s}} \right >_{{\left |{r-s}\right |}+2}}+\cdots
                              {\left <{{\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s}} \right >_{r+s}} \ee$$
 
-and define (,p6)
+and define (<cite data-cite="Hestenes" />,p6)
 
 $$\begin{aligned}
       {\boldsymbol{A}}_{r}{\wedge}{\boldsymbol{B}}_{s} &\equiv {\left <{{\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s}} \right >_{r+s}} \\
@@ -1395,7 +1395,7 @@ A^{2} > 0 : & & &\\
 
 `project_in_blade(self,blade)`
 
-> Return the projection of the mutivector $A$ in subspace defined by the blade, $B$, using the formula ${\lp {A\rfloor B} \rp }B^{-1}$ in , page 121.
+> Return the projection of the mutivector $A$ in subspace defined by the blade, $B$, using the formula ${\lp {A\rfloor B} \rp }B^{-1}$ in <cite data-cite="Macdonald1" />, page 121.
 
 `pure_grade(self)`
 
@@ -1407,7 +1407,7 @@ A^{2} > 0 : & & &\\
 
 `reflect_in_blade(self,blade)`
 
-> Return the reflection of the mutivector $A$ in the subspace defined by the $r$-grade blade, $B_{r}$, using the formula (extended to multivectors) $\sum_{i} {\lp {-1} \rp }^{r{\lp {i+1} \rp }}{B}_{r}{\left < {A} \right >}_{i}B_{r}^{-1}$ in , page 129.
+> Return the reflection of the mutivector $A$ in the subspace defined by the $r$-grade blade, $B_{r}$, using the formula (extended to multivectors) $\sum_{i} {\lp {-1} \rp }^{r{\lp {i+1} \rp }}{B}_{r}{\left < {A} \right >}_{i}B_{r}^{-1}$ in <cite data-cite="Macdonald1" />, page 129.
 
 `rev(self)`
 
@@ -1463,7 +1463,7 @@ Basic Multivector Functions
 
 `def_prec(gd,op_ord='<>|,^,*')`[19]
 
-> This is used with the `GAeval()` function to evaluate a string representing a multivector expression with a revised operator precedence. `def_prec()` redefines the operator precedence for multivectors. `def_prec()` must be called in the main program an the argument `gd` must be `globals()`. The argument `op_ord` defines the order of operator precedence from high to low with groups of equal precedence separated by commas. the default precedence `op_ord='<>|,^,\*'` is that used by Hestenes (,p7,,p38).
+> This is used with the `GAeval()` function to evaluate a string representing a multivector expression with a revised operator precedence. `def_prec()` redefines the operator precedence for multivectors. `def_prec()` must be called in the main program an the argument `gd` must be `globals()`. The argument `op_ord` defines the order of operator precedence from high to low with groups of equal precedence separated by commas. the default precedence `op_ord='<>|,^,\*'` is that used by Hestenes (<cite data-cite="Hestenes" />,p7,<cite data-cite="Doran" />,p38).
 
 `dual(A,mode=’I+’)`
 
@@ -1893,17 +1893,7 @@ Since the expressions for multivectors or differential operators can be very lon
 > Fmt(l,1) # All elements of l on one line
 > ```
 
-Bibliography
-================
-
-1. Chris Doran and Anthony Lasenby, “Geometric Algebra for Physicists,” Cambridge University Press, 2003. <http://www.mrao.cam.ac.uk/~clifford>
-2. David Hestenes and Garret Sobczyk, “Clifford Algebra to Geometric Calculus,” Kluwer Academic Publishers, 1984. <http://geocalc.clas.asu.edu/html/CA_to_GC.html>
-3. Alan Macdonald, “Linear and Geometric Algebra,” 2010. <http://faculty.luther.edu/~macdonal/laga>
-4. Alan Macdonald, “Vector and Geometric Calculus,” 2012. <http://faculty.luther.edu/~macdonal/vagc>
-5. D. Hestenes, “*New Foundations for Classical Mechanics*,” Kluwer Academic Publishers, 1999. <http://geocalc.clas.asu.edu/html/NFCM.html>
-6. L. Dorst, D. Fontijne, S. Mann, “*Geometric Algebra for Computer Science*: An Object-Oriented Approach to Geometry*,” Morgan Kaufmann, $2^{\text{nd}}$ printing, 2009. <http://www.geometricalgebra.net/>
-7. Christian Perwass, “*Geometric Algebra with Applications in Engineering*,” Springer, 2008
-8. John W. Arthur, “*Understanding Geometric Algebra for Electromagnetic Theory*,” Wiley-IEEE Press, 2011.
+-----
 
 [4] By the manifold embedding theorem any $m$-dimensional manifold is isomorphic to a $m$-dimensional vector manifold
 
@@ -1929,13 +1919,13 @@ could also be used to calculate the derivatives in term of the original basis ve
 
 [9] For example in three dimensions ${\left \{{3} \rbrc} = (0,1,2,3,(1,2),(2,3),(1,3),(1,2,3))$ and as an example of how the superscript would work with each grade ${{\eb}}^{0}=1$, ${{\eb}}^{1}={{\eb}}^{1}$, ${{\eb}}^{{\lp {1,2} \rp }}={{\eb}}^{1}{\wedge}{{\eb}}^{2}$, and ${{\eb}}^{{\lp {1,2,3} \rp }}={{\eb}}^{1}{\wedge}{{\eb}}^{2}{\wedge}{{\eb}}^{3}$.
 
-[10] We are following the treatment of Tensors in section 3–10 of .
+[10] We are following the treatment of Tensors in section 3–10 of <cite data-cite="Hestenes" />.
 
 [11] We assume that the arguments are elements of a vector space or more generally a geometric algebra so that the concept of linearity is meaningful.
 
 [12] Since `X` or the metric tensor can be functions of coordinates the vector space that the geometric algebra is constructed from is not necessarily flat so that the geometric algebra is actually constructed on the tangent space of the manifold which is a vector space.
 
-[13] The signature of the vector space, $(p,q)$, is required to determine whether the square of the normalized pseudoscalar, $I$, is $+1$ or $-1$. In the future the metric tensor would be required to create a generalized spinor .
+[13] The signature of the vector space, $(p,q)$, is required to determine whether the square of the normalized pseudoscalar, $I$, is $+1$ or $-1$. In the future the metric tensor would be required to create a generalized spinor (<cite data-cite="Hestenes" />, pg106).
 
 [14] Using LaTeX output if a basis vector is denoted by ${{\eb}}_{x}$ then ${{\eb}}$ is the root symbol and $x$ is the subscript
 
