@@ -379,9 +379,10 @@ class Metric(object):
 
             if n_rows == 1:  # orthogonal metric
                 m_lst = s.split(' ')
-                m = []
-                for i, s in enumerate(m_lst):
-                    m.append(self._build_metric_element(s, i, i))
+                m = [
+                    self._build_metric_element(s, i, i)
+                    for i, s in enumerate(m_lst)
+                ]
 
                 if len(m) != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
@@ -402,18 +403,17 @@ class Metric(object):
                     if n_rows != n_cols:  # non square metric
                         raise ValueError("'" + s + "' does not represent square metric")
                     m_lst.append(cols)
-                m = []
                 n = len(m_lst)
                 if n != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
                                      ' different rank than bases "' + str(self.basis) + '"')
-                for i1, row in enumerate(m_lst):
-                    row_symbols = []
-                    for i2, s in enumerate(row):
-                        row_symbols.append(self._build_metric_element(s, i1, i2))
-                    m.append(row_symbols)
-                m = Matrix(m)
-                return m
+                return Matrix([
+                    [
+                        self._build_metric_element(s, i1, i2)
+                        for i2, s in enumerate(row)
+                    ]
+                    for i1, row in enumerate(m_lst)
+                ])
 
     def derivatives_of_g(self):
         # dg[i][j][k] = \partial_{x_{k}}g_{ij}
@@ -540,10 +540,11 @@ class Metric(object):
         if self.de is None:
             return
 
-        renorm = []
         #  Generate mapping for renormalizing reciprocal basis vectors
-        for ib in self.n_range:  # e^{ib} --> e^{ib}/|e_{ib}|
-            renorm.append((self.r_symbols[ib], self.r_symbols[ib] / self.e_norm[ib]))
+        renorm = [
+            (self.r_symbols[ib], self.r_symbols[ib] / self.e_norm[ib])
+            for ib in self.n_range  # e^{ib} --> e^{ib}/|e_{ib}|
+        ]
 
         # Normalize derivatives of basis vectors
 
@@ -687,37 +688,38 @@ class Metric(object):
                     raise ValueError('For metric derived from vector field ' +
                                      ' coordinates must be defined.')
                 else:  # Vector manifold defined by vector field
-                    dX = []
-                    for coord in coords:  # Get basis vectors by differentiating vector field
-                        dX.append([diff(x, coord) for x in X])
-                    g_tmp = []
-                    for dx1 in dX:
-                        g_row = []
-                        for dx2 in dX:
-                            dx1_dot_dx2 = trigsimp(Metric.dot_orthogonal(dx1, dx2, g))
-                            g_row.append(dx1_dot_dx2)
-                        g_tmp.append(g_row)
-                    self.g = Matrix(g_tmp)
+                    # Get basis vectors by differentiating vector field
+                    dX = [
+                        [diff(x, coord) for x in X]
+                        for coord in coords
+                    ]
+                    self.g = Matrix([
+                        [
+                            trigsimp(Metric.dot_orthogonal(dx1, dx2, g))
+                            for dx2 in dX
+                        ]
+                        for dx1 in dX
+                    ])
                     if self.debug:
                         printer.oprint('X_{i}', X, 'D_{i}X_{j}', dX)
 
         else:  # metric is symbolic or list of lists of functions of coordinates
             if isinstance(g, str):  # metric elements are symbols or constants
                 if g == 'g':  # general symbolic metric tensor (g_ij functions of position)
-                    g_lst = []
-                    g_inv_lst = []
-                    for coord in self.coords:
-                        i1 = str(coord)
-                        tmp = []
-                        tmp_inv = []
-                        for coord2 in self.coords:
-                            i2 = str(coord2)
-                            tmp.append(Function('g_'+i1+'_'+i2)(*self.coords))
-                            tmp_inv.append(Function('g__'+i1+'__'+i2)(*self.coords))
-                        g_lst.append(tmp)
-                        g_inv_lst.append(tmp_inv)
-                    self.g = Matrix(g_lst)
-                    self.g_inv = Matrix(g_inv_lst)
+                    self.g = Matrix([
+                        [
+                            Function('g_{}_{}'.format(coord, coord2))(*self.coords)
+                            for coord2 in self.coords
+                        ]
+                        for coord in self.coords
+                    ])
+                    self.g_inv = Matrix([
+                        [
+                            Function('g__{}__{}'.format(coord, coord2))(*self.coords)
+                            for coord2 in self.coords
+                        ]
+                        for coord in self.coords
+                    ])
                 else:  # specific symbolic metric tensor (g_ij are symbolic or numerical constants)
                     self.g = self.metric_symbols_list(g)  # construct symbolic metric from string and basis
             else:  # metric is given as list of function or list of lists of function or matrix of functions
@@ -758,9 +760,10 @@ class Metric(object):
             if self.norm:  # normalize basis, metric, and derivatives of normalized basis
                 if not self.is_ortho:
                     raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
-                self.e_norm = []
-                for i in self.n_range:
-                    self.e_norm.append(square_root_of_expr(self.g[i, i]))
+                self.e_norm = [
+                    square_root_of_expr(self.g[i, i])
+                    for i in self.n_range
+                ]
                 if debug:
                     printer.oprint('|e_{i}|', self.e_norm)
             else:
