@@ -1828,17 +1828,15 @@ class Ga(metric.Metric):
 
         index = self.indexes_to_blades_dict.inverse[blade]
         grade = len(index)
-        if grade == 1:
-            db = self.de[ib][index[0]]
-        elif grade == 2:
-            db = self.wedge(self.de[ib][index[0]], self.basis[index[1]]) + \
-                self.wedge(self.basis[index[0]], self.de[ib][index[1]])
-        else:
-            db = self.wedge(self.de[ib][index[0]], self.indexes_to_blades_dict[index[1:]]) + \
-                self.wedge(self.indexes_to_blades_dict[index[:-1]], self.de[ib][index[-1]])
-            for i in range(1, grade - 1):
-                db += self.wedge(self.wedge(self.indexes_to_blades_dict[index[:i]], self.de[ib][index[i]]),
-                                 self.indexes_to_blades_dict[index[i + 1:]])
+
+        # differentiate each basis vector separately and sum
+        db = S.Zero
+        for i in range(grade):
+            db += reduce(self.wedge, [
+                self.indexes_to_blades_dict[index[:i]],
+                self.de[ib][index[i]],
+                self.indexes_to_blades_dict[index[i + 1:]]
+            ])
         self._dbases[key] = db
         return db
 
