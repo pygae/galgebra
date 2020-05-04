@@ -95,6 +95,8 @@ Changelog
 
 - :support:`286` The :mod:`galgebra.deprecated` module, which provides old-style APIs, now emits :exc:`DeprecationWarning`\ s.
 
+- :support:`284` (also :issue:`317`) :meth:`galgebra.lt.Lt.setup` has been deprecated, along with the attributes it populated :attr:`galgebra.ga.Ga.lt_x` (the same as :attr:`~galgebra.ga.Ga.coords_vec`) and :attr:`galgebra.ga.Ga.lt_coords` (the same as :attr:`~galgebra.ga.Ga.coords`).
+
 - :bug:`264` :class:`~galgebra.mv.Dop` no longer emits latex strings when printed in non-latex mode.
 
 - :support:`259` ``galgebra.printer.oprint`` now aligns results in columns
@@ -137,7 +139,6 @@ Changelog
 
 - :support:`335` The undocumented method :meth:`galgebra.ga.Ga.X` (the same as :attr:`~galgebra.ga.Ga.coords_vec`) has been deprecated.
 
-- :support:`317` The undocumented attributes :attr:`galgebra.ga.Ga.lt_x` (the same as :attr:`~galgebra.ga.Ga.coords_vec`) and :attr:`galgebra.ga.Ga.lt_coords` (the same as :attr:`~galgebra.ga.Ga.coords`) have been deprecated.
 
 - :support:`280` The ``galgebra.utils`` module, which provided Python 2 compatibility helpers, has been deprecated.
 
