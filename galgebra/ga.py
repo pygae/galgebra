@@ -1834,11 +1834,11 @@ class Ga(metric.Metric):
             db = self.wedge(self.de[ib][index[0]], self.basis[index[1]]) + \
                 self.wedge(self.basis[index[0]], self.de[ib][index[1]])
         else:
-            db = self.wedge(self.de[ib][index[0]], self.indexes_to_blades[index[1:]]) + \
-                self.wedge(self.indexes_to_blades[index[:-1]], self.de[ib][index[-1]])
+            db = self.wedge(self.de[ib][index[0]], self.indexes_to_blades_dict[index[1:]]) + \
+                self.wedge(self.indexes_to_blades_dict[index[:-1]], self.de[ib][index[-1]])
             for i in range(1, grade - 1):
-                db += self.wedge(self.wedge(self.indexes_to_blades[index[:i]], self.de[ib][index[i]]),
-                                 self.indexes_to_blades[index[i + 1:]])
+                db += self.wedge(self.wedge(self.indexes_to_blades_dict[index[:i]], self.de[ib][index[i]]),
+                                 self.indexes_to_blades_dict[index[i + 1:]])
         self._dbases[key] = db
         return db
 
