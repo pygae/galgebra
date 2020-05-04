@@ -475,3 +475,6 @@ class TestTest(unittest.TestCase):
         # all derived from
         ga.blade_expansion_dict
         ga.base_expansion_dict
+
+        with pytest.warns(DeprecationWarning):
+            import galgebra.utils

@@ -2,6 +2,8 @@
 Changelog
 =========
 
+- :support:`280` The ``galgebra.utils`` module, which provided Python 2 compatibility helpers, has been deprecated.
+
 - :support:`245` (also :issue:`248`) The following attributes have been deprecated to reduce the number of similar members in :class:`~galgebra.ga.Ga`.
 
   * Unified into :attr:`galgebra.ga.Ga.blade_expansion_dict`:
