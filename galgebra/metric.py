@@ -357,10 +357,7 @@ class Metric(object):
             else:
                 return Symbol('(' + str(self.basis[i2]) +
                               '.' + str(self.basis[i1]) + ')', real=True)
-        elif '/' in s:  # element is fraction
-            num, dem = s.split('/')
-            return Rational(num, dem)
-        else:  # element is integer
+        else:  # element is fraction or integer
             return Rational(s)
 
     def metric_symbols_list(self, s=None):  # input metric tensor as string
