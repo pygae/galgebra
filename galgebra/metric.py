@@ -440,7 +440,7 @@ class Metric(object):
 
         n_range = self.n_range
 
-        self.dg = dg = self.derivatives_of_g()
+        self.dg = self.derivatives_of_g()
 
         self._init_connect_flg()
 
