@@ -19,7 +19,7 @@ from sympy import N as Nsympy
 from . import printer
 from . import metric
 from .printer import ZERO_STR
-from .utils import _KwargParser
+from ._utils import KwargParser as _KwargParser
 from . import dop
 
 ONE = S(1)
