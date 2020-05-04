@@ -425,7 +425,8 @@ class TestTest(unittest.TestCase):
         assert str(simplify(w/Esq)) == '1'
 
     def test_deprecations(self):
-        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        coords = symbols('x y z')
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', coords=coords)
 
         # none of these have the scalar as their first element, which is why
         # they're deprecated.
@@ -478,3 +479,9 @@ class TestTest(unittest.TestCase):
 
         with pytest.warns(DeprecationWarning):
             import galgebra.utils
+
+        # aliases
+        with pytest.warns(DeprecationWarning):
+            ga.lt_x
+        with pytest.warns(DeprecationWarning):
+            ga.lt_coords

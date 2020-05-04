@@ -438,8 +438,6 @@ class Ga(metric.Metric):
         if self.connect_flg:
             self._build_connection()
 
-        self._lt_flg = False  # cache for `self.lt`
-
         # Calculate normalized pseudo scalar (I**2 = +/-1)
 
         self.sing_flg = False
@@ -478,7 +476,7 @@ class Ga(metric.Metric):
         example in orthogonal 3D :math:`x*e_x+y*e_y+z*e_z`.
         """
         if self.coords is None:
-            raise ValueError("Ga with no coords has no coords_vec")
+            raise ValueError("Ga with no coords has no coord_vec")
         return sum([coord * base for coord, base in zip(self.coords, self.basis)])
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
@@ -698,15 +696,27 @@ class Ga(metric.Metric):
             DeprecationWarning, stacklevel=2)
         return dop.Sdop(*args, **kwargs)
 
+    @property
+    def lt_coords(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.lt_coords` is deprecated, use the identical `ga.coords`.",
+            DeprecationWarning, stacklevel=2)
+        return self.coords
+
+    @property
+    def lt_x(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.lt_x` is deprecated, use the identical `ga.coords_vec`.",
+            DeprecationWarning, stacklevel=2)
+        return self.coord_vec
+
     def lt(self, *args, **kwargs):
         """
         Instanciate and return a linear transformation for this, 'self',
         geometric algebra.
         """
-        if not self._lt_flg:
-            self._lt_flg = True
-            self.lt_coords, self.lt_x = lt.Lt.setup(ga=self)
-
         return lt.Lt(*args, ga=self, **kwargs)
 
     def sm(self, *args, **kwargs):
