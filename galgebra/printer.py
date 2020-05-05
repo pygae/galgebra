@@ -1195,7 +1195,18 @@ OPS = {'<>|': r'(([A-Za-z0-9\_\#]+)(\||<|>)([A-Za-z0-9\_\#]+))',
        '*': r'(([A-Za-z0-9\_\#]+)[\*]{1}([A-Za-z0-9\_\#]+)([\*]{1}([A-Za-z0-9\_\#]+))*)'}
 
 
-def def_prec(gd, op_ord='<>|,^,*'):  # Default is Doran and Lasenby convention
+def def_prec(gd: dict, op_ord: str = '<>|,^,*') -> None:
+    """
+    This is used with the ``GAeval()`` function to evaluate a string representing a multivector expression with a revised operator precedence.
+
+    Parameters
+    ----------
+    gd :
+        The ``globals()`` dictionary to lookup variable names in.
+    op_ord :
+        The order of operator precedence from high to low with groups of equal precedence separated by commas.
+        The default precedence, ``'<>|,^,*'``, is that used by Hestenes (:cite:`Hestenes`, p7, :cite:`Doran`, p38).
+    """
     global global_dict, op_dict, op_lst
     global_dict = gd
     op_lst = op_ord.split(',')
@@ -1351,14 +1362,21 @@ def parse_line(line):
     return line
 
 
-def GAeval(s, pstr=False):
+def GAeval(s: str, pstr: bool = False):
     """
-    GAeval converts a string to a multivector expression where the
-    user can control the precedence of the of the multivector operators so
-    that one does not need to put parenthesis around every multivector
-    operation.  The default precedence used (high to low) is <,>, and | have
-    an have the highest precedence, then comes ^, and finally *.  The
-    default precedence can be changed with the def_prec function.
+    Evaluate a multivector expression string ``s``.
+
+    The operator precedence and variable values within the string are
+    controlled by :func:`def_prec`. The documentation for that function
+    describes the default precedence.
+
+    Parameters
+    ----------
+    s :
+        The string to evaluate.
+    pstr :
+        If ``True``, the values of ``s`` and ``s`` with parenthesis added to
+        enforce operator precedence are printed.
     """
 
     seval = parse_line(s)

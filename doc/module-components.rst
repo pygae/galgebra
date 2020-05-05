@@ -466,105 +466,59 @@ If we can instantiate multivectors we can use all the multivector class function
 Basic Multivector Functions
 ---------------------------
 
-.. function:: com(A,B)
+.. automethod:: galgebra.ga.Ga.com
    :noindex:
 
-   Calculate commutator of multivectors :math:`A` and :math:`B`. Returns :math:`(AB-BA)/2`.
-
-   Additionally, commutator and anti-commutator operators are defined by
-
-   .. math::
-
-      $\begin{aligned}
-                  \texttt{A >> B} \equiv & {\displaystyle\frac{AB - BA}{2}} \\
-                  \texttt{A << B} \equiv & {\displaystyle\frac{AB + BA}{2}}.
-          \end{aligned}
-
-.. function:: cross(v1,v2)
+.. autofunction:: galgebra.mv.cross
    :noindex:
 
-   If ``v1`` and ``v2`` are 3-dimensional Euclidean vectors the vector cross product is returned, :math:`v_{1}\times v_{2} = -I{\lp {v_{1}{\wedge}v_{2}} \rp }`.
-
-.. function:: printer.def_prec(gd,op_ord='<>|,^,*')
+.. autofunction:: galgebra.printer.def_prec
    :noindex:
 
-   This is used with the ``GAeval()`` function to evaluate a string representing a multivector expression with a revised operator precedence. ``def_prec()`` redefines the operator precedence for multivectors. ``def_prec()`` must be called in the main program an the argument ``gd`` must be ``globals()``. The argument ``op_ord`` defines the order of operator precedence from high to low with groups of equal precedence separated by commas. the default precedence ``op_ord='<>|,^,\*'`` is that used by
-   Hestenes (:cite:`Hestenes`,p7,:cite:`Doran`,p38).
-
-.. function:: dual(A,mode='I+')
+.. autofunction:: galgebra.mv.dual
    :noindex:
 
-   Return the dual of the multivector ``A``. The default operation is :math:`AI`. For other modes see member function ``Mv.dual(mode)``
-
-.. function:: even(A)
+.. autofunction:: galgebra.mv.even
    :noindex:
 
-   Return even part of :math:`A`.
-
-.. function:: exp(A,hint='-')
+.. autofunction:: galgebra.mv.exp
    :noindex:
 
-   If :math:`A` is a multivector then ``A.exp(hint)`` is returned. If :math:`A` is a *sympy* expression the *sympy* expression :math:`e^{A}` is returned (see ``sympy.exp(A)`` member function).
-
-.. function:: printer.GAeval(s,pstr=False)
+.. autofunction:: galgebra.printer.GAeval
    :noindex:
 
-   Returns multivector expression for string ``s`` with operator precedence for string ``s`` defined by inputs to function ``def_prec()``. if ``pstr=True`` ``s`` and ``s`` with parenthesis added to enforce operator precedence are printed.
-
-.. function:: grade(A,r=0)
+.. autofunction:: galgebra.mv.grade
    :noindex:
 
-   If :math:`A` is a multivector :math:`{\left < {A} \right >}_{r}` is returned.
-
-.. function:: inv(A)
+.. autofunction:: galgebra.mv.inv
    :noindex:
 
-   If :math:`A` is a multivector and :math:`AA^{{\dagger}}` is a non-zero scalar then :math:`A^{-1} = A^{{\dagger}}/(AA^{{\dagger}})` is returned otherwise an exception is returned.
-
-.. function:: Nga(x,prec=5)
+.. autofunction:: galgebra.mv.Nga
    :noindex:
 
-   If ``x`` is a multivector with coefficients that contain floating point numbers, ``Nga()`` rounds all these numbers to a precision of ``prec`` and returns the rounded multivector.
-
-.. function:: norm(A,hint='-')
+.. autofunction:: galgebra.mv.norm
    :noindex:
 
-   If :math:`A` is a multivector and :math:`AA^{{\dagger}}` is a number (not a scalar function) then :math:`\sqrt{{\left |{AA^{{\dagger}}}\right |}}` is returned. If :math:`AA^{{\dagger}}` is a scalar *sympy* expression, but not a number, and ``hint='-'`` then return :math:`\sqrt{-AA^{{\dagger}}}` otherwise return :math:`\sqrt{AA^{{\dagger}}}`.
-
-.. function:: norm2(A)
+.. autofunction:: galgebra.mv.norm2
    :noindex:
 
-   If :math:`A` is a multivector and :math:`AA^{{\dagger}}` is a scalar return :math:`{\left |{AA^{{\dagger}}}\right |}`.
-
-.. function:: odd(A)
+.. autofunction:: galgebra.mv.odd
    :noindex:
 
-   Return odd part of :math:`A`.
-
-.. function:: proj(B,A)
+.. autofunction:: galgebra.mv.proj
    :noindex:
 
-   Project blade ``A`` on blade ``B`` returning :math:`{\lp {A\rfloor B} \rp }B^{-1}`.
-
-.. function:: ReciprocalFrame(basis,mode='norm')
+.. automethod:: galgebra.ga.Ga.ReciprocalFrame(basis,mode='norm')
    :noindex:
 
-   If ``basis`` is a list/tuple of vectors, ``ReciprocalFrame()`` returns a tuple of reciprocal vectors. If ``mode=norm`` the vectors are normalized. If ``mode`` is anything other than ``norm`` the vectors are unnormalized and the normalization coefficient is added to the end of the tuple. One must divide by this coefficient to normalize the vectors.
-
-.. function:: refl(B,A)
+.. autofunction:: galgebra.mv.refl(B,A)
    :noindex:
 
-   Reflect multivector :math:`A` in blade :math:`B`. If :math:`s` is grade of :math:`B` returns :math:`\sum_{r}(-1)^{s(r+1)}B{\left < {A} \right >}_{r}B^{-1}`.
-
-.. function:: rev(A)
+.. autofunction:: galgebra.mv.rev(A)
    :noindex:
 
-   If :math:`A` is a multivector return :math:`A^{{\dagger}}`.
-
-.. function:: rot(itheta,A,hint='-')
+.. autofunction:: galgebra.mv.rot(itheta,A,hint='-')
    :noindex:
-
-   If ``A`` is a multivector return ``A.rotate_multivector(itheta,hint)`` where ``itheta`` is the bi-vector blade defining the rotation. For the use of ``hint`` see the member function ``Mv.rotate_multivector(self,itheta,hint)``.
 
 .. _makeMVD:
 

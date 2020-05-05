@@ -361,6 +361,18 @@ class Ga(metric.Metric):
 
     @staticmethod
     def com(A, B):
+        r"""
+        Calculate commutator of multivectors :math:`A` and :math:`B`. Returns :math:`(AB-BA)/2`.
+
+        Additionally, commutator and anti-commutator operators are defined by
+
+        .. math::
+
+            \begin{aligned}
+                \texttt{A >> B} \equiv & {\displaystyle\frac{AB - BA}{2}} \\
+                \texttt{A << B} \equiv & {\displaystyle\frac{AB + BA}{2}}.
+            \end{aligned}
+        """
         return half * (A * B - B * A)
 
     @staticmethod
@@ -1965,6 +1977,14 @@ class Ga(metric.Metric):
         return C
 
     def ReciprocalFrame(self, basis, mode='norm'):
+        """
+        If ``basis`` is a list/tuple of vectors, ``ReciprocalFrame()`` returns a tuple of reciprocal vectors.
+
+        If ``mode=norm`` the vectors are normalized.
+        If ``mode`` is anything other than ``norm`` the vectors are unnormalized
+        and the normalization coefficient is added to the end of the tuple.
+        One must divide by this coefficient to normalize the vectors.
+        """
         dim = len(basis)
 
         indexes = tuple(range(dim))
