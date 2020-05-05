@@ -97,9 +97,9 @@ Each base of the complete basis is represented by a non-commutative symbol (exce
 The critical operation in setting up the geometric algebra is reducing the geometric product of any two bases to a linear combination of bases so that we can calculate a multiplication table for the bases. Since the geometric product is associative we can use the operation (by definition for two vectors :math:`a\cdot b \equiv (ab+ba)/2` which is a scalar)
 
 .. math::
+   :label: reduce
 
-   \label{reduce}
-         {{\eb}}_{i_{j+1}}{{\eb}}_{i_{j}} = 2{{\eb}}_{i_{j+1}}\cdot {{\eb}}_{i_{j}} - {{\eb}}_{i_{j}}{{\eb}}_{i_{j+1}}
+   {{\eb}}_{i_{j+1}}{{\eb}}_{i_{j}} = 2{{\eb}}_{i_{j+1}}\cdot {{\eb}}_{i_{j}} - {{\eb}}_{i_{j}}{{\eb}}_{i_{j+1}}
 
 These processes are repeated until every basis list in :math:`{\boldsymbol{A}}` is in normal (ascending) order with no repeated elements. As an example consider the following
 
@@ -114,7 +114,7 @@ These processes are repeated until every basis list in :math:`{\boldsymbol{A}}` 
                             {\lp {{{\eb}}_{1}\cdot {{\eb}}_{2}} \rp }{{\eb}}_{3}} \rp }-{{\eb}}_{1}{{\eb}}_{2}{{\eb}}_{3}
       \end{aligned}
 
-which results from repeated application of eq. (:math:`\ref{reduce}`). If the product of basis vectors contains repeated factors eq. (:math:`\ref{reduce}`) can be used to bring the repeated factors next to one another so that if :math:`{{\eb}}_{i_{j}} = {{\eb}}_{i_{j+1}}` then :math:`{{\eb}}_{i_{j}}{{\eb}}_{i_{j+1}} = {{\eb}}_{i_{j}}\cdot {{\eb}}_{i_{j+1}}` which is a scalar that commutes with all the terms in the product and can be brought to the front of the product. Since every repeated pair
+which results from repeated application of eq. (:eq:`reduce`). If the product of basis vectors contains repeated factors eq. (:eq:`reduce`) can be used to bring the repeated factors next to one another so that if :math:`{{\eb}}_{i_{j}} = {{\eb}}_{i_{j+1}}` then :math:`{{\eb}}_{i_{j}}{{\eb}}_{i_{j+1}} = {{\eb}}_{i_{j}}\cdot {{\eb}}_{i_{j+1}}` which is a scalar that commutes with all the terms in the product and can be brought to the front of the product. Since every repeated pair
 of vectors in a geometric product of :math:`r` factors reduces the number of non-commutative factors in the product by :math:`r-2`. The number of bases in the multivector algebra is :math:`2^{n}` and the number containing :math:`r` factors is :math:`{n\choose r}` which is the number of combinations or :math:`n` things taken :math:`r` at a time (binomial coefficient).
 
 The other construction required for formulating the geometric algebra is the outer or wedge product (symbol :math:`{\wedge}`) of :math:`r` vectors denoted by :math:`a_{1}{\wedge}\dots{\wedge}a_{r}`. The wedge product of :math:`r` vectors is called an :math:`r`-blade and is defined by (:cite:`Doran`,p86)
@@ -124,11 +124,11 @@ The other construction required for formulating the geometric algebra is the out
 where :math:`\epsilon^{i_{j_{1}}\dots i_{j_{r}}}` is the contravariant permutation symbol which is :math:`+1` for an even permutation of the superscripts, :math:`0` if any superscripts are repeated, and :math:`-1` for an odd permutation of the superscripts. From the definition :math:`a_{1}{\wedge}\dots{\wedge}a_{r}` is antisymmetric in all its arguments and the following relation for the wedge product of a vector :math:`a` and an :math:`r`-blade :math:`B_{r}` can be derived
 
 .. math::
+   :label: wedge
 
-   \label{wedge}
-         a{\wedge}B_{r} = (aB_{r}+(-1)^{r}B_{r}a)/2
+   a{\wedge}B_{r} = (aB_{r}+(-1)^{r}B_{r}a)/2
 
-Using eq. (:math:`\ref{wedge}`) one can represent the wedge product of all the basis vectors in terms of the geometric product of all the basis vectors so that one can solve (the system of equations is lower diagonal) for the geometric product of all the basis vectors in terms of the wedge product of all the basis vectors. Thus a general multivector :math:`{\boldsymbol{B}}` can be represented as a linear combination of a scalar and the basis blades.
+Using eq. (:eq:`wedge`) one can represent the wedge product of all the basis vectors in terms of the geometric product of all the basis vectors so that one can solve (the system of equations is lower diagonal) for the geometric product of all the basis vectors in terms of the wedge product of all the basis vectors. Thus a general multivector :math:`{\boldsymbol{B}}` can be represented as a linear combination of a scalar and the basis blades.
 
 .. math:: {\boldsymbol{B}} = B + \sum_{r=1}^{n}\sum_{i_{1},\dots,i_{r},\;\forall\; 0\le i_{j} \le n} B^{i_{1},\dots,i_{r}}{{\eb}}_{i_{1}}{\wedge}{{\eb}}_{i_{2}}{\wedge}\dots{\wedge}{{\eb}}_{r}
 
@@ -252,10 +252,8 @@ A :math:`n`-dimensional (:math:`n\le m`) submanifold :math:`\mathcal{N}` of :mat
 
 and a differentiable mapping
 
-.. math::
-
-   \label{eq_79}
-       \f{\vec{x}}{\vec{u}}\colon U^{n}\subseteq\Re^{n}\rightarrow U^{m}\subseteq\Re^{m},
+.. math:: \f{\vec{x}}{\vec{u}}\colon U^{n}\subseteq\Re^{n}\rightarrow U^{m}\subseteq\Re^{m},
+   :label: eq_79
 
 Then the basis vectors for the tangent space :math:`{{{\mathcal{T}_{\vec{u}}}\lp {\mathcal{N}} \rp }}` are (using :math:`{{{{\eb}}^{\mathcal{N}}}\lp {\vec{u}} \rp } = {{{{\eb}}^{\mathcal{M}}}\lp {{{\vec{x}}\lp {\vec{u}} \rp }} \rp }` and the chain rule)\ [6]_
 
@@ -268,9 +266,9 @@ Then the basis vectors for the tangent space :math:`{{{\mathcal{T}_{\vec{u}}}\lp
 and
 
 .. math::
+   :label: eq_81
 
-   \label{eq_81}
-       \f{g_{ij}^{\mathcal{N}}}{\vec{u}} = \pdiff{x^{k}}{u^{i}}\pdiff{x^{l}}{u^{j}}
+   \f{g_{ij}^{\mathcal{N}}}{\vec{u}} = \pdiff{x^{k}}{u^{i}}\pdiff{x^{l}}{u^{j}}
                                                \f{g_{kl}^{\mathcal{M}}}{\f{\vec{x}}{\vec{u}}}.
 
 Going back to the base manifold, :math:`\mathcal{M}`, note that the mapping :math:`{{{\eb}^{\mathcal{M}}}\lp {\vec{x}} \rp }\colon U^{n}\subseteq\Re^{n}\rightarrow \mathcal{V}` allows us to calculate an unnormalized pseudo-scalar for :math:`{{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}`,
@@ -303,7 +301,7 @@ vectors are given by
 
 .. math:: \pdiff{\bm{e}_{j}^{\mathcal{M}}}{x^{i}} =\f{\Gamma_{ij}^{k}}{\vec{u}}\bm{e}_{k}^{\mathcal{M}}.
 
-If we have a submanifold, :math:`\mathcal{N}`, defined by eq. (:math:`\ref{eq_79}`) we can calculate the metric of :math:`\mathcal{N}` from eq. (:math:`\ref{eq_81}`) and hence construct the geometric algebra and calculus of the tangent space, :math:`{{{\mathcal{T}_{\vec{u}}}\lp {\mathcal{N}} \rp }}\subseteq {{{\mathcal{T}_{{{\vec{x}}\lp {\vec{u}} \rp }}}\lp {\mathcal{M}} \rp }}`.
+If we have a submanifold, :math:`\mathcal{N}`, defined by eq. (:eq:`eq_79`) we can calculate the metric of :math:`\mathcal{N}` from eq. (:eq:`eq_81`) and hence construct the geometric algebra and calculus of the tangent space, :math:`{{{\mathcal{T}_{\vec{u}}}\lp {\mathcal{N}} \rp }}\subseteq {{{\mathcal{T}_{{{\vec{x}}\lp {\vec{u}} \rp }}}\lp {\mathcal{M}} \rp }}`.
 
 **Note:**
 
@@ -315,9 +313,10 @@ Geometric Derivative
 
 The directional derivative of a multivector field :math:`{{F}\lp {x} \rp }` is defined by (:math:`a` is a vector and :math:`h` is a scalar)
 
-.. math:: \paren{a\cdot\nabla_{x}}F \equiv \lim_{h\rightarrow 0}\bfrac{\f{F}{x+ah}-\f{F}{x}}{h}. \label{eq_50}
+.. math:: \paren{a\cdot\nabla_{x}}F \equiv \lim_{h\rightarrow 0}\bfrac{\f{F}{x+ah}-\f{F}{x}}{h}.
+   :label: eq_50
 
-Note that :math:`a\cdot\nabla_{x}` is a scalar operator. It will give a result containing only those grades that are already in :math:`F`. :math:`{\lp {a\cdot\nabla_{x}} \rp }F` is the best linear approximation of :math:`{{F}\lp {x} \rp }` in the direction :math:`a`. Equation (:math:`\ref{eq_50}`) also defines the operator :math:`\nabla_{x}` which for the basis vectors, :math:`{\left \{{{\eb}_{i}} \rbrc}`, has the representation (note that the :math:`{\left \{{{\eb}^{j}} \rbrc}` are reciprocal
+Note that :math:`a\cdot\nabla_{x}` is a scalar operator. It will give a result containing only those grades that are already in :math:`F`. :math:`{\lp {a\cdot\nabla_{x}} \rp }F` is the best linear approximation of :math:`{{F}\lp {x} \rp }` in the direction :math:`a`. Equation (:eq:`eq_50`) also defines the operator :math:`\nabla_{x}` which for the basis vectors, :math:`{\left \{{{\eb}_{i}} \rbrc}`, has the representation (note that the :math:`{\left \{{{\eb}^{j}} \rbrc}` are reciprocal
 basis vectors)
 
 .. math:: \nabla_{x} F = {\eb}^{j}{\displaystyle\frac{\partial F}{\partial x^{j}}}
@@ -423,38 +422,38 @@ Linear Differential Operators
 First a note on partial derivative notation. We shall use the following notation for a partial derivative where the manifold coordinates are :math:`x_{1},\dots,x_{n}`:
 
 .. math::
+   :label: eq_66a
 
-   \label{eq_66a}
-       \bfrac{\partial^{j_{1}+\cdots+j_{n}}}{\partial x_{1}^{j_{1}}\dots\partial x_{n}^{j_{n}}} = \partial_{j_{1}\dots j_{n}}.
+   \bfrac{\partial^{j_{1}+\cdots+j_{n}}}{\partial x_{1}^{j_{1}}\dots\partial x_{n}^{j_{n}}} = \partial_{j_{1}\dots j_{n}}.
 
 If :math:`j_{k}=0` the partial derivative with respect to the :math:`k^{th}` coordinate is not taken. If :math:`j_{k} = 0` for all :math:`1 \le k \le n` then the partial derivative operator is the scalar one. If we consider a partial derivative where the :math:`x`\ ’s are not in normal order such as
 
 .. math:: {\displaystyle\frac{\partial^{j_{1}+\cdots+j_{n}}}{\partial x_{i_{1}}^{j_{1}}\dots\partial x_{i_{n}}^{j_{n}}}},
 
-and the :math:`i_{k}`\ ’s are not in ascending order. The derivative can always be put in the form in eq (:math:`\ref{eq_66a}`) since the order of differentiation does not change the value of the partial derivative (for the smooth functions we are considering). Additionally, using our notation the product of two partial derivative operations is given by
+and the :math:`i_{k}`\ ’s are not in ascending order. The derivative can always be put in the form in eq (:eq:`eq_66a`) since the order of differentiation does not change the value of the partial derivative (for the smooth functions we are considering). Additionally, using our notation the product of two partial derivative operations is given by
 
 .. math:: \partial_{i_{1}\dots i_{n}}\partial_{j_{1}\dots j_{n}} = \partial_{i_{1}+j_{1},\dots, i_{n}+j_{n}}.
 
 A general general multivector linear differential operator is a linear combination of multivectors and partial derivative operators denoted by
 
-.. math::
+.. math:: D \equiv D^{i_{1}\dots i_{n}}\partial_{i_{1}\dots i_{n}}.
+   :label: eq_66b
 
-   \label{eq_66b}
-       D \equiv D^{i_{1}\dots i_{n}}\partial_{i_{1}\dots i_{n}}.
-
-Equation (:math:`\ref{eq_66b}`) is the normal form of the differential operator in that the partial derivative operators are written to the right of the multivector coefficients and do not operate upon the multivector coefficients. The operator of eq (:math:`\ref{eq_66b}`) can operate on mulitvector functions, returning a multivector function via the following definitions.
+Equation (:eq:`eq_66b`) is the normal form of the differential operator in that the partial derivative operators are written to the right of the multivector coefficients and do not operate upon the multivector coefficients. The operator of eq (:eq:`eq_66b`) can operate on mulitvector functions, returning a multivector function via the following definitions.
 
 :math:`F` as
 
-.. math:: D\circ F = D^{j_{1}\dots j_{n}}\circ\partial_{j_{1}\dots j_{n}}F,\label{eq_67a}
+.. math:: D\circ F = D^{j_{1}\dots j_{n}}\circ\partial_{j_{1}\dots j_{n}}F,
+   :label: eq_67a
 
 , or
 
-.. math:: F\circ D = \partial_{j_{1}\dots j_{n}}F\circ D^{j_{1}\dots j_{n}},\label{eq_68a}
+.. math:: F\circ D = \partial_{j_{1}\dots j_{n}}F\circ D^{j_{1}\dots j_{n}},
+   :label: eq_68a
 
 where the :math:`D^{j_{1}\dots j_{n}}` are multivector functions and :math:`\circ` is any of the multivector multiplicative operations.
 
-Equations (:math:`\ref{eq_67a}`) and (:math:`\ref{eq_68a}`) are not the most general multivector linear differential operators, the most general would be
+Equations (:eq:`eq_67a`) and (:eq:`eq_68a`) are not the most general multivector linear differential operators, the most general would be
 
 .. math:: D \left( F \right) = {D^{j_{1}\dots j_{n}}}\left({\partial_{j_{1}\dots j_{n}}F}\right),
 
@@ -483,16 +482,17 @@ where we have used the fact that the :math:`\partial` operator is a scalar opera
 Thus for a pure operator product :math:`D_{A}\circ D_{B}` we have
 
 .. math::
+   :label: eq_71a
 
    D_{A}\circ D_{B} = \paren{D_{A}^{i_{1}\dots i_{n}}\circ\paren{\partial_{i_{1}\dots i_{n}}D_{B}^{j_{1}\dots j_{n}}}}
                                                 \partial_{j_{1}\dots j_{n}}+
                                                 \paren{D_{A}^{i_{1}\dots i_{n}}\circ_{1}D_{B}^{j_{1}\dots j_{n}}}
-                                                \partial_{i_{1}+j_{1},\dots, i_{n}+j_{n}} \label{eq_71a}
+                                                \partial_{i_{1}+j_{1},\dots, i_{n}+j_{n}}
 
-and the form of eq (:math:`\ref{eq_71a}`) is the same as eq (:math:`\ref{eq_67a}`). The basis of eq (:math:`\ref{eq_71a}`) is that the :math:`\partial` operator operates on all object to the right of it as products so that the product rule must be used in all differentiations. Since eq (:math:`\ref{eq_71a}`) puts the product of two differential operators in standard form we also evaluate :math:`F\circ_{2}{\lp {D_{A}\circ_{1}D_{B}} \rp }`.
+and the form of eq (:eq:`eq_71a`) is the same as eq (:eq:`eq_67a`). The basis of eq (:eq:`eq_71a`) is that the :math:`\partial` operator operates on all object to the right of it as products so that the product rule must be used in all differentiations. Since eq (:eq:`eq_71a`) puts the product of two differential operators in standard form we also evaluate :math:`F\circ_{2}{\lp {D_{A}\circ_{1}D_{B}} \rp }`.
 
 We now must distinguish between the following cases. If :math:`D` is a differential operator and :math:`F` a multivector function should :math:`D\circ F` and :math:`F\circ D` return a differential operator or a multivector. In order to be consistent with the standard vector analysis we have :math:`D\circ F` return a multivector and :math:`F\circ D` return a differential operator. Then we define the complementary differential operator :math:`\bar{D}` which is identical to :math:`D` except that
-:math:`\bar{D}\circ F` returns a differential operator according to eq (:math:`\ref{eq_71a}`)\ [8]_ and :math:`F\circ\bar{D}` returns a multivector according to eq (:math:`\ref{eq_68a}`).
+:math:`\bar{D}\circ F` returns a differential operator according to eq (:eq:`eq_71a`)\ [8]_ and :math:`F\circ\bar{D}` returns a multivector according to eq (:eq:`eq_68a`).
 
 A general differential operator is built from repeated applications of the basic operator building blocks :math:`{\lp {\bar{\nabla}\circ A} \rp }`, :math:`{\lp {A\circ\bar{\nabla}} \rp }`, :math:`{\lp {\bar{\nabla}\circ\bar{\nabla}} \rp }`, and :math:`{\lp {A\pm \bar{\nabla}} \rp }`. Both :math:`\nabla` and :math:`\bar{\nabla}` are represented by the operator
 
@@ -524,7 +524,9 @@ Split Differential Operator
 To implement the general “dot” notation for differential operators in python is not possible. Another type of symbolic notation is required. I propose what one could call the “split differential operator.” For :math:`\nabla` denote the corresponding split operator by two operators :math:`{{\nabla}_{\mathcal{G}}}` and :math:`{{\nabla}_{\mathcal{D}}}` where in practice :math:`{{\nabla}_{\mathcal{G}}}` is a tuple of vectors and :math:`{{\nabla}_{\mathcal{D}}}` is a tuple of corresponding partial
 derivatives. Then the equivalent of the “dot” notation would be
 
-.. math:: \dot{\nabla}{\lp {A\dot{B}C} \rp } = {{\nabla}_{\mathcal{G}}}{\lp {A{\lp {{{\nabla}_{\mathcal{D}}}B} \rp }C} \rp }.\label{splitopV}
+.. math:: \dot{\nabla}{\lp {A\dot{B}C} \rp } = {{\nabla}_{\mathcal{G}}}{\lp {A{\lp {{{\nabla}_{\mathcal{D}}}B} \rp }C} \rp }.
+   :label: splitopV
+
 
 We are using the :math:`\mathcal{G}` subscript to indicate the geometric algebra parts of the multivector differential operator and the :math:`\mathcal{D}` subscript to indicate the scalar differential operator parts of the multivector differential operator. An example of this notation in 3D Euclidean space is
 
@@ -551,7 +553,8 @@ which could be called the “dot” product of two tuples. Note that :math:`\nab
 
 For the general multivector differential operator, :math:`D`, the split operator parts are :math:`{{D}_{\mathcal{G}}}`, a tuple of basis blade multivectors and :math:`{{D}_{\mathcal{D}}}`, a tuple of scalar differential operators that correspond to the coefficients of the basis-blades in the total operator :math:`D` so that
 
-.. math:: \dot{D}{\lp {A\dot{B}C} \rp } = {{D}_{\mathcal{G}}}{\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp }. \label{splitopM}
+.. math:: \dot{D}{\lp {A\dot{B}C} \rp } = {{D}_{\mathcal{G}}}{\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp }.
+   :label: splitopM
 
 If the index set for the basis blades of a geometric algebra is denoted by :math:`{\left \{{n} \rbrc}` where :math:`{\left \{{n} \rbrc}` contains :math:`2^{n}` indices for an :math:`n` dimensional geometric algebra then the most general multivector differential operator can be written\ [9]_
 
@@ -573,7 +576,7 @@ or
    {\lp {A\dot{B}C} \rp }\dot{D} = {\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp }{{D}_{\mathcal{G}}} = {{\displaystyle}\sum_{l\in{\left \{
    {n} \rbrc}}{\lp {A{\lp {D_{l}B} \rp }C} \rp }{{\eb}}^{l}}.
 
-The implementation of equations :math:`\ref{splitopV}` and :math:`\ref{splitopM}` is described in sections :ref:`makeMV` and :ref:`makeMVD`.
+The implementation of equations :eq:`splitopV` and :eq:`splitopM` is described in sections :ref:`makeMV` and :ref:`makeMVD`.
 
 .. _Ltrans:
 
@@ -608,11 +611,13 @@ If :math:`I` is the pseudo scalar for :math:`{{{\mathcal{T}_{\vec{x}}}\lp {\math
 
 If :math:`{\left \{{{{\eb}}_{i}} \rbrc}` is a basis for :math:`{{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}` then we can represent :math:`\underline{T}` with the matrix :math:`\underline{T}_{i}^{j}` used as follows (Einstein summation convention as usual) -
 
-.. math:: \f{\underline{T}}{\eb_{i}} = \underline{T}_{i}^{j}\eb_{j}, \label{eq_85}
+.. math:: \f{\underline{T}}{\eb_{i}} = \underline{T}_{i}^{j}\eb_{j},
+   :label: eq_85
 
 The let :math:`{\lp {\underline{T}^{-1}} \rp }_{m}^{n}` be the inverse matrix of :math:`\underline{T}_{i}^{j}` so that :math:`{\lp {\underline{T}^{-1}} \rp }_{m}^{k}\underline{T}_{k}^{j} = \delta^{j}_{m}` and
 
-.. math:: \underline{T}^{-1}{\lp {a^{i}{{\eb}}_{i}} \rp } = a^{i}{\lp {\underline{T}^{-1}} \rp }_{i}^{j}{{\eb}}_{j} \label{eq_85a}
+.. math:: \underline{T}^{-1}{\lp {a^{i}{{\eb}}_{i}} \rp } = a^{i}{\lp {\underline{T}^{-1}} \rp }_{i}^{j}{{\eb}}_{j}
+   :label: eq_85a
 
 and calculate
 
@@ -624,9 +629,9 @@ and calculate
            &= a^{i}{\lp {\underline{T}^{-1}} \rp }_{i}^{j} \underline{T}_{j}^{k}{{\eb}}_{k} \nonumber \\
            &= a^{i}\delta_{i}^{j}{{\eb}}_{j} = a^{i}{{\eb}}_{i} = a.\end{aligned}
 
-Thus if eq :math:`\ref{eq_85a}` is used to define the :math:`\underline{T}_{i}^{j}` then the linear transformation defined by the matrix :math:`{\lp {\underline{T}^{-1}} \rp }_{m}^{n}` is the inverse of :math:`\underline{T}`.
+Thus if eq :eq:`eq_85a` is used to define the :math:`\underline{T}_{i}^{j}` then the linear transformation defined by the matrix :math:`{\lp {\underline{T}^{-1}} \rp }_{m}^{n}` is the inverse of :math:`\underline{T}`.
 
-In eq. (:math:`\ref{eq_85}`) the matrix, :math:`\underline{T}_{i}^{j}`, only has it’s usual meaning if the :math:`{\left \{{{{\eb}}_{i}} \rbrc}` form an orthonormal Euclidean basis (Minkowski spaces not allowed). Equations (:math:`\ref{eq_82}`) through (:math:`\ref{eq_84}`) become
+In eq. (:eq:`eq_85`) the matrix, :math:`\underline{T}_{i}^{j}`, only has it’s usual meaning if the :math:`{\left \{{{{\eb}}_{i}} \rbrc}` form an orthonormal Euclidean basis (Minkowski spaces not allowed). Equations (:math:`\ref{eq_82}`) through (:math:`\ref{eq_84}`) become
 
 .. math::
 
@@ -846,9 +851,10 @@ Parallel Transport and Covariant Derivatives
 The covariant derivative of a tensor field :math:`{{T}\lp {a_{1},\dots,a_{r};x} \rp }` (:math:`x` is the coordinate vector of which :math:`T` can be a non-linear function) in the direction :math:`a_{r+1}` is (remember :math:`a_{j} = a_{j}^{k}{{\eb}}_{k}` and the :math:`{{\eb}}_{k}` can be functions of :math:`x`) the directional derivative of :math:`{{T}\lp {a_{1},\dots,a_{r};x} \rp }` where all the arguments of :math:`T` are parallel transported. The definition of parallel transport is if
 :math:`a` and :math:`b` are tangent vectors in the tangent spaced of the manifold then
 
-.. math:: \paren{a\cdot\nabla_{x}}b = 0 \label{eq108a}
+.. math:: \paren{a\cdot\nabla_{x}}b = 0
+   :label: eq108a
 
-if :math:`b` is parallel transported. Since :math:`b = b^{i}{{\eb}}_{i}` and the derivatives of :math:`{{\eb}}_{i}` are functions of the :math:`x^{i}`\ ’s then the :math:`b^{i}`\ ’s are also functions of the :math:`x^{i}`\ ’s so that in order for eq (:math:`\ref{eq108a}`) to be satisfied we have
+if :math:`b` is parallel transported. Since :math:`b = b^{i}{{\eb}}_{i}` and the derivatives of :math:`{{\eb}}_{i}` are functions of the :math:`x^{i}`\ ’s then the :math:`b^{i}`\ ’s are also functions of the :math:`x^{i}`\ ’s so that in order for eq (:eq:`eq108a`) to be satisfied we have
 
 .. math::
 
@@ -861,11 +867,12 @@ if :math:`b` is parallel transported. Since :math:`b = b^{i}{{\eb}}_{i}` and the
 
 Thus for :math:`b` to be parallel transported we must have
 
-.. math:: \partial_{x^{i}}b^{j} = -b^{k}\Gamma_{ik}^{j}. \label{eq121a}
+.. math:: \partial_{x^{i}}b^{j} = -b^{k}\Gamma_{ik}^{j}.
+   :label: eq121a
 
 The geometric meaning of parallel transport is that for an infinitesimal rotation and dilation of the basis vectors (cause by infinitesimal changes in the :math:`x^{i}`\ ’s) the direction and magnitude of the vector :math:`b` does not change.
 
-If we apply eq (:math:`\ref{eq121a}`) along a parametric curve defined by :math:`{{x^{j}}\lp {s} \rp }` we have
+If we apply eq (:eq:`eq121a`) along a parametric curve defined by :math:`{{x^{j}}\lp {s} \rp }` we have
 
 .. math::
 
@@ -905,9 +912,10 @@ If the tensor component representation is contra-variant (superscripts instead o
 
 and we need
 
-.. math:: \paren{\partial_{x^{i}}b_{j}}\eb^{j} + b_{j}\partial_{x^{i}}\eb^{j} = 0. \label{eq111a}
+.. math:: \paren{\partial_{x^{i}}b_{j}}\eb^{j} + b_{j}\partial_{x^{i}}\eb^{j} = 0.
+   :label: eq111a
 
-To satisfy equation (:math:`\ref{eq111a}`) consider the following
+To satisfy equation (:eq:`eq111a`) consider the following
 
 .. math::
 
@@ -919,7 +927,7 @@ To satisfy equation (:math:`\ref{eq111a}`) consider the following
        {\lp {\partial_{x^{i}}{{\eb}}^{j}} \rp }\cdot{{\eb}}_{k} + \Gamma_{ik}^{j} =& 0 \nonumber \\
        {\lp {\partial_{x^{i}}{{\eb}}^{j}} \rp }\cdot{{\eb}}_{k} =& -\Gamma_{ik}^{j}\end{aligned}
 
-Now dot eq (:math:`\ref{eq111a}`) into :math:`{{\eb}}_{k}` giving
+Now dot eq (:eq:`eq111a`) into :math:`{{\eb}}_{k}` giving
 
 .. math::
 
@@ -1054,8 +1062,9 @@ The two structures that define the ``metric`` class (inherited by the geometric 
 that would be input into the geometric algebra class instantiation function, ``Ga()``. The next step would be to define the symbolic metric for the geometric algebra of the basis we have defined. The default metric is the most general and is the matrix of the following symbols
 
 .. math::
+   :label: metric
 
-   \begin{equation}\label{metric}
+   \begin{equation}
      g = \lbrk
      \begin{array}{ccc}
        (a0.a0)   & (a0.a1)  & (a0.a2) \\
