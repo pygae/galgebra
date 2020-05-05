@@ -1,8 +1,6 @@
 Module Components
 =================
 
-.. include:: math-config.txt
-
 The geometric algebra module consists of the following files and classes
 
 +----------------+--------------------+------------------------------------------------------------------------------------------------------------------------------------------------------+
