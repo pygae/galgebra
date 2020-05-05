@@ -804,24 +804,8 @@ Latex Printing
 
 For latex printing one uses one functions from the ``ga`` module and one function from the ``printer`` module. The functions are
 
-.. function:: Format(Fmode=True,Dmode=True)
+.. autofunction:: galgebra.printer.Format
    :noindex:
-
-   This function from the ``ga`` module turns on latex printing with the following options
-
-   +-----------+-----------+-----------------------------------------------------------------------------------------+
-   | Argument  | Value     | Result                                                                                  |
-   +===========+===========+=========================================================================================+
-   | ``Fmode`` | ``True``  | Print functions without argument list, :math:`f`                                        |
-   +-----------+-----------+-----------------------------------------------------------------------------------------+
-   |           | ``False`` | Print functions with standard *sympy* latex formatting, :math:`{{f}\lp {x,y,z} \rp }`   |
-   +-----------+-----------+-----------------------------------------------------------------------------------------+
-   | ``Dmode`` | ``True``  | Print partial derivatives with condensed notation, :math:`\partial_{x}f`                |
-   +-----------+-----------+-----------------------------------------------------------------------------------------+
-   |           | ``False`` | Print partial derivatives with standard *sympy* latex formatting, :math:`\pdiff{f}{x}`  |
-   +-----------+-----------+-----------------------------------------------------------------------------------------+
-
-   ``Format()`` is also required for printing from *ipython notebook* (note that ``xpdf()`` is not needed to print from *ipython notebook*).
 
 .. function:: Fmt(obj,fmt=1)
    :noindex:
