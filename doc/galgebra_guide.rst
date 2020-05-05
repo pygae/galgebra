@@ -1773,7 +1773,11 @@ instantiated with
 
    To define the submanifold we must def a coordinate map from the coordinates of the submanifold to each of the coordinates of the base manifold. Thus the arguments ``map`` and ``coords`` are respectively lists of functions and symbols. The list of symbols, ``coords``, are the coordinates of the submanifold and are of length equal to the dimension of the submanifold. The list of functions, ``map``, define the mapping from the coordinate space of the submanifold to the coordinate space of the
    base manifold. The length of ``map`` is equal to the dimension of the base manifold and each function in ``map`` is a function of the coordinates of the submanifold. ``root`` is the root of the string that is used to name the basis vectors of the submanifold. The default value of ``root`` is ``e``. The result of this is that if the *sympy* symbols for the coordinates are ``u`` and ``v`` (two dimensional manifold) the text symbols for the basis vectors are ``e_u`` and ``e_v`` or in LaTeX
-   :math:`e_{u}` and :math:`e_{v}`. As a concrete example consider the following code. The output of this program (using LaTeX) is
+   :math:`e_{u}` and :math:`e_{v}`. As a concrete example consider the following code.
+
+   .. literalinclude:: python/submanifold.py
+
+   The output of this program (using LaTeX) is
 
    |image0|
 
@@ -1811,7 +1815,11 @@ transformation. *Note that to instantiate linear transformations coordinates, :m
 
    ``f`` is ``True`` or ``False``. If ``True`` the symbolic coefficients of the general linear transformation are instantiated as functions of the coordinates.
 
-The different methods of instantiation are demonstrated in the code ``LtransInst.py`` with output
+The different methods of instantiation are demonstrated in the code ``LtransInst.py``
+
+.. literalinclude:: python/LtransInst.py
+
+with output
 
 |image2|
 
@@ -1842,14 +1850,22 @@ The ``Ltrans.py`` demonstrate the use of the various ``Lt`` member functions and
 
 The ``matrix()`` member function returns a *sympy* ``Matrix`` object which can be printed in IPython notebook. To directly print an linear transformation in *ipython notebook* one must implement (yet to be done) a printing method similar to ``mv.Fmt()``.
 
-Note that in ``Ltrans.py`` lines 30 and 49 are commented out since the latex output of those statements would run off the page. The use can uncomment those statements and run the code in the “LaTeX docs” directory to see the output. The output of this code is.
+Note that in ``Ltrans.py`` lines 30 and 49 are commented out since the latex output of those statements would run off the page. The use can uncomment those statements and run the code in the “LaTeX docs” directory to see the output.
+
+.. literalinclude:: python/Ltrans.py
+
+The output of this code is.
 
 |image3|
 
 Differential Operators
 ----------------------
 
-For the mathematical treatment of linear multivector differential operators see section [ldops]. The is a differential operator class ``Dop``. However, one never needs to use it directly. The operators are constructed from linear combinations of multivector products of the operators ``Ga.grad`` and ``Ga.rgrad`` as shown in the following code for both orthogonal rectangular and spherical 3-d coordinate systems. The output of this code is.
+For the mathematical treatment of linear multivector differential operators see section [ldops]. The is a differential operator class ``Dop``. However, one never needs to use it directly. The operators are constructed from linear combinations of multivector products of the operators ``Ga.grad`` and ``Ga.rgrad`` as shown in the following code for both orthogonal rectangular and spherical 3-d coordinate systems.
+
+.. literalinclude:: python/Dop.py
+
+The output of this code is.
 
 |image4|
 
@@ -1876,6 +1892,8 @@ The mathematical background for multi-linear functions is in section [MLtrans].
    | ``fct``   | If :math:`\T{f}` is a string then :math:`\T{fct=True}` forces the tensor to be a tensor field (function of the coordinates. If :math:`\T{f}` anything other than a string :math:`\T{fct}` is not required since :math:`\T{Mlt}` determines whether the  |
    |           | tensor is a tensor field from :math:`\T{f}` .                                                                                                                                                                                                           |
    +-----------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+.. literalinclude:: python/TensorDef.py
 
 Basic Multilinear Function Class Functions
 ------------------------------------------
