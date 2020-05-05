@@ -31,7 +31,8 @@ Instantiating a Geometric Algebra
 
 The geometric algebra class is instantiated with
 
-``Ga(basis,g=None,coords=None,X=None,norm=False,sig='e',Isq='-',wedge=True,debug=False)``
+.. class:: Ga(basis,g=None,coords=None,X=None,norm=False,sig='e',Isq='-',wedge=True,debug=False)
+   :noindex:
 
    The ``basis`` and ``g`` parameters were described in section :ref:`BasisMetric`. If the metric is a function of position, if we have multivector fields, or we wish to calculate geometric derivatives a coordinate set, ``coords``, is required. ``coords`` is a list of *sympy* symbols. For the case of instantiating a 3-d geometric algebra in spherical coordinates we have
 
@@ -81,7 +82,8 @@ The geometric algebra class is instantiated with
 
 To access the reciprocal basis vectors of the geometric algebra use the member function ``mvr()``
 
-``Ga.mvr(norm='True')``
+.. method:: Ga.mvr(norm='True')
+   :noindex:
 
    ``Ga.mvr(norm)`` returns the reciprocal basis vectors as a tuple. This allows the programmer to attach any python variable names to the reciprocal basis vectors that is convenient. For example (demonstrating the use of both ``mv()`` and ``mvr()``)
 
@@ -94,7 +96,8 @@ To access the reciprocal basis vectors of the geometric algebra use the member f
 
 In addition to the basis vectors, if coordinates are defined for the geometric algebra, the left and right geometric derivative operators are calculated and accessed with the ``Ga`` member function ``grads()``.
 
-``Ga.grads()``
+.. method:: Ga.grads()
+   :noindex:
 
    ``Ga.grads()`` returns a tuple with the left and right geometric derivative operators. A typical usage would be
 
@@ -106,11 +109,10 @@ In addition to the basis vectors, if coordinates are defined for the geometric a
 
 an alternative instantiation method is
 
-``Ga.build(basis, g=None, coords=None, X=None, norm=False, debug=False)``
+.. method:: Ga.build(basis, g=None, coords=None, X=None, norm=False, debug=False)
+   :noindex:
 
    The input parameters for ``Ga.build()`` are the same as for ``Ga()``. The difference is that in addition to returning the geometric algebra ``Ga.build()`` returns the basis vectors at the same time. Using ``Ga.build()`` in the previous example gives
-
-..
 
    .. code:: python
 
@@ -121,11 +123,13 @@ an alternative instantiation method is
 
 To access the pseudo scalar of the geometric algebra use the member function ``I()``.
 
-``Ga.I()``
+.. method:: Ga.I()
+   :noindex:
 
    ``Ga.I()`` returns the normalized pseudo scalar :math:`{\lp {{\left |{I^{2}}\right |}=1} \rp }` for the geometric algebra. For example :math:`I = \mbox{{\texttt{o3d.I()}}}` for the ``o3d`` geometric algebra. This function requires the signature of the vector space (see instantiating a geometric algebra).
 
-``Ga.E()``
+.. method:: Ga.E()
+   :noindex:
 
    ``Ga.E()`` returns the unnormalized pseudo scalar :math:`E_{n} = {\eb}_{1}{\wedge}\dots{\wedge}{\eb}_{n}` for the geometric algebra.
 
@@ -149,7 +153,8 @@ Instantiating a Multivector
 
 Since we need to associate each multivector with the geometric algebra that contains it we use a member function of Ga to instantiate every multivector\ [15]_ The multivector is instantiated with:
 
-``Ga.mv(name, mode, f=False)``
+.. method:: Ga.mv(name, mode, f=False)
+   :noindex:
 
    As an example of both instantiating a geometric algebra and multivectors consider the following code fragment for a 3-d Euclidean geometric algebra.
 
@@ -231,16 +236,19 @@ Backward Compatibility Class MV
 
 In order to be backward compatible with older versions of *galgebra* we introduce the class MV which is inherits it’s functions from then class Mv. To instantiate a geometric algebra using MV use the static function
 
-``MV.setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None))``
+.. method:: MV.setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None))
+   :noindex:
 
    This function allows a single geometric algebra to be created. If the function is called more than once the old geometric algebra is overwritten by the new geometric algebra. The named input ``metric`` is the same as the named input ``g`` in the current version of *galgebra*. Likewise, ``basis``, ``coords``, and ``debug`` are the same in the old and current versions of *galgebra*\ \ [17]_. Due to improvements in *sympy* the inputs ``rframe`` and ``curv[1]`` are no longer required. ``curv[0]`` is
    the vector function (list or tuple of scalar functions) of the coordinates required to define a vector manifold. For compatibility with the old version of *galgebra* if ``curv`` is used ``metric`` should be a orthonormal Euclidean metric of the same dimension as ``curv[0]``. It is strongly suggested that one use the new methods of defining a geometric algebra on a manifold.
 
-``MV(base, mvtype, fct=False, blade_rep=True)``
+.. class:: MV(base, mvtype, fct=False, blade_rep=True)
+   :noindex:
 
    For the instantiation of multivector using ``MV`` the ``base`` and ``mvtype`` arguments are the same as for new methods of multivector instantiation. The ``fct`` input is the same and the ``g`` input in the new methods. ``blade_rep`` is not used in the new methods so setting ``blade_rep=False`` will do nothing. Effectively ``blade_rep=False`` was not used in the old examples.
 
-``Fmt(self, fmt=1, title=None)``
+.. method:: MV.Fmt(self, fmt=1, title=None)
+   :noindex:
 
    ``Fmt`` in ``MV`` has inputs identical to ``Fmt`` in ``Mv`` except that if ``A`` is a multivector then ``A.Fmt(2,'A')`` executes a print statement from ``MV`` and returns ``None``, while from ``Mv``, ``A.Fmt(2,'A')`` returns a string so that the function is compatible with use in *ipython notebook*.
 
@@ -249,23 +257,28 @@ Basic Multivector Class Functions
 
 If we can instantiate multivectors we can use all the multivector class functions as described as follows.
 
-``blade_coefs(self,basis_lst)``
+.. method:: Mv.blade_coefs(self,basis_lst)
+   :noindex:
 
    Find coefficients (sympy expressions) of multivector basis blade expansion corresponding to basis blades in ``basis_lst``. For example if :math:`V = V^{x}{{\eb}}_{x}+V^{y}{{\eb}}_{x}+V^{z}{{\eb}}_{x}` Then :math:`V\text{.blade_coefs}([{{\eb}}_{z},{{\eb}}_{x}]) = [V^{z},V^{x}]` or if :math:`B = B^{xy}{{\eb}}_{x}{\wedge}{{\eb}}_{y}+V^{yz}{{\eb}}_{y}{\wedge}{{\eb}}_{z}` then :math:`B\text{.blade_coefs}([{{\eb}}_{x}{\wedge}{{\eb}}_{y}]) = [B^{xy}]`.
 
-``convert_to_blades(self)``
+.. method:: Mv.convert_to_blades(self)
+   :noindex:
 
    Convert multivector from the base representation to the blade representation. If multivector is already in blade representation nothing is done.
 
-``convert_from_blades(self)``
+.. method:: Mv.convert_from_blades(self)
+   :noindex:
 
    Convert multivector from the blade representation to the base representation. If multivector is already in base representation nothing is done.
 
-``diff(self,var)``
+.. method:: Mv.diff(self,var)
+   :noindex:
 
    Calculate derivative of each multivector coefficient with respect to variable ``var`` and form new multivector from coefficients.
 
-``dual(self)``
+.. method:: Mv.dual(self)
+   :noindex:
 
    The mode of the ``dual()`` function is set by the ``Ga`` class static member function, ``GA.dual_mode(mode='I+')`` of the ``GA`` geometric galgebra which sets the following return values (:math:`I` is the pseudo-scalar for the geometric algebra ``GA``)
 
@@ -288,11 +301,13 @@ If we can instantiate multivectors we can use all the multivector class function
 
    Note that ``Ga.dual(mode)`` used the function ``Ga.I()`` to calculate the normalized pseudoscalar. Thus if the metric tensor is not numerical and orthogonal the correct hint for then ``sig`` input of the *Ga* constructor is required.
 
-``even(self)``
+.. method:: Mv.even(self)
+   :noindex:
 
    Return the even grade components of the multivector.
 
-``exp(self,hint='-')``
+.. method:: Mv.exp(self,hint='-')
+   :noindex:
 
    If :math:`A` is a multivector then :math:`e^{A}` is defined for any :math:`A` via the series expansion for :math:`e`. However as a practical matter we only have a simple closed form formula for :math:`e^{A}` if :math:`A^{2}` is a scalar\ [18]_. If :math:`A^{2}` is a scalar and we know the sign of :math:`A^{2}` we have the following formulas for :math:`e^{A}`.
 
@@ -309,15 +324,18 @@ If we can instantiate multivectors we can use all the multivector class function
 
    The hint is required for symbolic multivectors :math:`A` since in general *sympy* cannot determine if :math:`A^{2}` is positive or negative. If :math:`A` is purely numeric the hint is ignored since the sign can be calculated.
 
-``expand(self)``
+.. method:: Mv.expand(self)
+   :noindex:
 
    Return multivector in which each coefficient has been expanded using *sympy* ``expand()`` function.
 
-``factor(self)``
+.. method:: Mv.factor(self)
+   :noindex:
 
    Apply the ``sympy`` ``factor`` function to each coefficient of the multivector.
 
-``Fmt(self, fmt=1,title=None)``
+.. method:: Mv.Fmt(self, fmt=1,title=None)
+   :noindex:
 
    Fuction to print multivectors in different formats where
 
@@ -331,66 +349,81 @@ If we can instantiate multivectors we can use all the multivector class function
 
    ``title`` appends a title string to the beginning of the output. An equal sign in the title string is not required, but is added as a default. Note that ``Fmt`` only overrides the the global multivector printing format for the particular instance being printed. To reset the global multivector printing format use the function ``Fmt()`` in the printer module.
 
-``func(self,fct)``
+.. method:: Mv.func(self,fct)
+   :noindex:
 
    Apply the ``sympy`` scalar function ``fct`` to each coefficient of the multivector.
 
-``grade(self,igrade=0)``
+.. method:: Mv.grade(self,igrade=0)
+   :noindex:
 
    Return a multivector that consists of the part of the multivector of grade equal to ``igrade``. If the multivector has no ``igrade`` part return a zero multivector.
 
-``inv(self)``
+.. method:: Mv.inv(self)
+   :noindex:
 
    Return the inverse of the multivector :math:`M` (``M.inv()``). If :math:`M` is a non-zero scalar return :math:`1/M`. If :math:`M^{2}` is a non-zero scalar return :math:`M/{\lp {M^{2}} \rp }`, If :math:`MM^{{\dagger}}` is a non-zero scalar return :math:`M^{{\dagger}}/{\lp {MM^{{\dagger}}} \rp }`. Otherwise exit the program with an error message.
 
    All division operators (``/``, ``/=``) use right multiplication by the inverse.
 
-``norm(self,hint='+')``
+.. method:: Mv.norm(self,hint='+')
+   :noindex:
 
    Return the norm of the multivector :math:`M` (``M.norm()``) defined by :math:`\sqrt{{\left |{MM^{{\dagger}}}\right |}}`. If :math:`MM^{{\dagger}}` is a scalar (a *sympy* scalar is returned). If :math:`MM^{{\dagger}}` is not a scalar the program exits with an error message. If :math:`MM^{{\dagger}}` is a number *sympy* can determine if it is positive or negative and calculate the absolute value. If :math:`MM^{{\dagger}}` is a *sympy* expression (function) *sympy* cannot determine the sign of
    the expression so that ``hint='+'`` or ``hint='-'`` is needed to determine if the program should calculate :math:`\sqrt{MM^{{\dagger}}}` or :math:`\sqrt{-MM^{{\dagger}}}`. For example if we are in a Euclidean space and ``M`` is a vector then ``hint='+'``, if ``M`` is a bivector then let ``hint='-'``. If ``hint='0'`` and :math:`MM^{{\dagger}}` is a symbolic scalar ``sqrt(Abs(M*M.rev()))`` is returned where ``Abs()`` is the *sympy* symbolic absolute value function.
 
-``norm2(self)``
+.. method:: Mv.norm2(self)
+   :noindex:
 
    Return the the scalar defined by :math:`MM^{{\dagger}}` if :math:`MM^{{\dagger}}` is a scalar. If :math:`MM^{{\dagger}}` is not a scalar the program exits with an error message.
 
-``proj(self,bases_lst)``
+.. method:: Mv.proj(self,bases_lst)
+   :noindex:
 
    Return the projection of the multivector :math:`M` (``M.proj(bases_lst)``) onto the subspace defined by the list of bases (``bases_lst``).
 
-``proj(self,lst)``
+.. method:: Mv.proj(self,lst)
+   :noindex:
 
    Return the projection of the mutivector :math:`A` onto the list, :math:`lst`, of basis blades. For example if :math:`A = A^{x}{{\eb}}_{x}+A^{y}{{\eb}}_{y}+A^{z}{{\eb}}_{z}` then :math:`A.proj{\lp {[{{\eb}}_{x},{{\eb}}_{y}]} \rp } = A^{x}{{\eb}}_{x}+A^{y}{{\eb}}_{y}`. Similarly if :math:`A = A^{xy}{{\eb}}_{x}{\wedge}{{\eb}}_{y}+A^{yz}{{\eb}}_{y}{\wedge}{{\eb}}_{z}` then :math:`A.proj{\lp {[{{\eb}}_{x}{\wedge}{{\eb}}_{y}]} \rp } = A^{xy}{{\eb}}_{x}{\wedge}{{\eb}}_{y}`.
 
-``project_in_blade(self,blade)``
+.. method:: Mv.project_in_blade(self,blade)
+   :noindex:
 
    Return the projection of the mutivector :math:`A` in subspace defined by the blade, :math:`B`, using the formula :math:`{\lp {A\rfloor B} \rp }B^{-1}` in :cite:`Macdonald1`, page 121.
 
-``pure_grade(self)``
+.. method:: Mv.pure_grade(self)
+   :noindex:
 
    If the multivector :math:`A` is pure (only contains one grade) return, :math:`A.pure\_grade()`, the index ('0' for a scalar, '1' for vector, '2' for a bi-vector, etc.) of the non-zero grade. If :math:`A` is not pure return the negative of the highest non-zero grade index.
 
-``odd(self)``
+.. method:: Mv.odd(self)
+   :noindex:
 
    Return odd part of multivector.
 
-``reflect_in_blade(self,blade)``
+.. method:: Mv.reflect_in_blade(self,blade)
+   :noindex:
 
    Return the reflection of the mutivector :math:`A` in the subspace defined by the :math:`r`-grade blade, :math:`B_{r}`, using the formula (extended to multivectors) :math:`\sum_{i} {\lp {-1} \rp }^{r{\lp {i+1} \rp }}{B}_{r}{\left < {A} \right >}_{i}B_{r}^{-1}` in :cite:`Macdonald1`, page 129.
 
-``rev(self)``
+.. method:: Mv.rev(self)
+   :noindex:
 
    Return the reverse of the multivector.
 
-``rotate_multivector(self,itheta,hint='-')``
+.. method:: Mv.rotate_multivector(self,itheta,hint='-')
+   :noindex:
 
    Rotate the multivector :math:`A` via the operation :math:`e^{-\theta i/2}Ae^{\theta i/2}` where itheta = :math:`\theta i`, :math:`\theta` is a scalar, and :math:`i` is a unit, :math:`i^{2} = \pm 1`, 2-blade. If :math:`{\lp {\theta i} \rp }^{2}` is not a number ``hint`` is required to determine the sign of the square of ``itheta``. The default chosen, ``hint='-'``, is correct for any Euclidean space.
 
-``scalar(self)``
+.. method:: Mv.scalar(self)
+   :noindex:
 
    Return the coefficient (*sympy* scalar) of the scalar part of a multivector.
 
-``simplify(self,mode=simplify)``
+.. method:: Mv.simplify(self,mode=simplify)
+   :noindex:
 
    ``mode`` is a *sympy* simplification function of a list/tuple of *sympy* simplification functions that are applied in sequence (if more than one function) each coefficient of the multivector. For example if we wished to applied ``trigsimp`` and ``ratsimp`` *sympy* functions to the multivector ``F`` the code would be
 
@@ -400,22 +433,26 @@ If we can instantiate multivectors we can use all the multivector class function
 
    Actually ``simplify`` could be used to apply any scalar *sympy* function to the coefficients of the multivector.
 
-``set_coef(self,grade,base,value)``
+.. method:: Mv.set_coef(self,grade,base,value)
+   :noindex:
 
    Set the multivector coefficient of index ``(grade,base)`` to ``value``.
 
-``subs(self,x)``
+.. method:: Mv.subs(self,x)
+   :noindex:
 
    Return multivector where *sympy* subs function has been applied to each coefficient of multivector for argument dictionary/list ``x``.
 
-``trigsimp(self,**kwargs)``
+.. method:: Mv.trigsimp(self,**kwargs)
+   :noindex:
 
    Apply the ``sympy`` trigonometric simplification function ``trigsimp`` to each coefficient of the multivector. ``**kwargs`` are the arguments of trigsimp. See ``sympy`` documentation on ``trigsimp`` for more information.
 
 Basic Multivector Functions
 ---------------------------
 
-``com(A,B)``
+.. function:: com(A,B)
+   :noindex:
 
    Calculate commutator of multivectors :math:`A` and :math:`B`. Returns :math:`(AB-BA)/2`.
 
@@ -428,72 +465,89 @@ Basic Multivector Functions
                   \texttt{A << B} \equiv & {\displaystyle\frac{AB + BA}{2}}.
           \end{aligned}
 
-``cross(v1,v2)``
+.. function:: cross(v1,v2)
+   :noindex:
 
    If ``v1`` and ``v2`` are 3-dimensional Euclidean vectors the vector cross product is returned, :math:`v_{1}\times v_{2} = -I{\lp {v_{1}{\wedge}v_{2}} \rp }`.
 
-``def_prec(gd,op_ord='<>|,^,*')``\  [19]_
+.. function:: printer.def_prec(gd,op_ord='<>|,^,*')
+   :noindex:
 
    This is used with the ``GAeval()`` function to evaluate a string representing a multivector expression with a revised operator precedence. ``def_prec()`` redefines the operator precedence for multivectors. ``def_prec()`` must be called in the main program an the argument ``gd`` must be ``globals()``. The argument ``op_ord`` defines the order of operator precedence from high to low with groups of equal precedence separated by commas. the default precedence ``op_ord='<>|,^,\*'`` is that used by
    Hestenes (:cite:`Hestenes`,p7,:cite:`Doran`,p38).
 
-``dual(A,mode='I+')``
+.. function:: dual(A,mode='I+')
+   :noindex:
 
    Return the dual of the multivector ``A``. The default operation is :math:`AI`. For other modes see member function ``Mv.dual(mode)``
 
-``even(A)``
+.. function:: even(A)
+   :noindex:
 
    Return even part of :math:`A`.
 
-``exp(A,hint='-')``
+.. function:: exp(A,hint='-')
+   :noindex:
 
    If :math:`A` is a multivector then ``A.exp(hint)`` is returned. If :math:`A` is a *sympy* expression the *sympy* expression :math:`e^{A}` is returned (see ``sympy.exp(A)`` member function).
 
-``GAeval(s,pstr=False)``\  [20]_
+.. function:: printer.GAeval(s,pstr=False)
+   :noindex:
 
    Returns multivector expression for string ``s`` with operator precedence for string ``s`` defined by inputs to function ``def_prec()``. if ``pstr=True`` ``s`` and ``s`` with parenthesis added to enforce operator precedence are printed.
 
-``grade(A,r=0)``
+.. function:: grade(A,r=0)
+   :noindex:
 
    If :math:`A` is a multivector :math:`{\left < {A} \right >}_{r}` is returned.
 
-``inv(A)``
+.. function:: inv(A)
+   :noindex:
 
    If :math:`A` is a multivector and :math:`AA^{{\dagger}}` is a non-zero scalar then :math:`A^{-1} = A^{{\dagger}}/(AA^{{\dagger}})` is returned otherwise an exception is returned.
 
-``Nga(x,prec=5)``
+.. function:: Nga(x,prec=5)
+   :noindex:
 
    If ``x`` is a multivector with coefficients that contain floating point numbers, ``Nga()`` rounds all these numbers to a precision of ``prec`` and returns the rounded multivector.
 
-``norm(A,hint='-')``
+.. function:: norm(A,hint='-')
+   :noindex:
 
    If :math:`A` is a multivector and :math:`AA^{{\dagger}}` is a number (not a scalar function) then :math:`\sqrt{{\left |{AA^{{\dagger}}}\right |}}` is returned. If :math:`AA^{{\dagger}}` is a scalar *sympy* expression, but not a number, and ``hint='-'`` then return :math:`\sqrt{-AA^{{\dagger}}}` otherwise return :math:`\sqrt{AA^{{\dagger}}}`.
 
-``norm2(A)``
+.. function:: norm2(A)
+   :noindex:
 
    If :math:`A` is a multivector and :math:`AA^{{\dagger}}` is a scalar return :math:`{\left |{AA^{{\dagger}}}\right |}`.
 
-``odd(A)``
+.. function:: odd(A)
+   :noindex:
 
    Return odd part of :math:`A`.
 
-``proj(B,A)``
+.. function:: proj(B,A)
+   :noindex:
 
    Project blade ``A`` on blade ``B`` returning :math:`{\lp {A\rfloor B} \rp }B^{-1}`.
 
-``ReciprocalFrame(basis,mode='norm')``
+.. function:: ReciprocalFrame(basis,mode='norm')
+   :noindex:
 
    If ``basis`` is a list/tuple of vectors, ``ReciprocalFrame()`` returns a tuple of reciprocal vectors. If ``mode=norm`` the vectors are normalized. If ``mode`` is anything other than ``norm`` the vectors are unnormalized and the normalization coefficient is added to the end of the tuple. One must divide by this coefficient to normalize the vectors.
 
-``refl(B,A)``
+.. function:: refl(B,A)
+   :noindex:
 
    Reflect multivector :math:`A` in blade :math:`B`. If :math:`s` is grade of :math:`B` returns :math:`\sum_{r}(-1)^{s(r+1)}B{\left < {A} \right >}_{r}B^{-1}`.
 
-``rev(A)``
+.. function:: rev(A)
+   :noindex:
 
    If :math:`A` is a multivector return :math:`A^{{\dagger}}`.
 
-``rot(itheta,A,hint='-')``
+.. function:: rot(itheta,A,hint='-')
+   :noindex:
 
    If ``A`` is a multivector return ``A.rotate_multivector(itheta,hint)`` where ``itheta`` is the bi-vector blade defining the rotation. For the use of ``hint`` see the member function ``Mv.rotate_multivector(self,itheta,hint)``.
 
@@ -554,7 +608,8 @@ Submanifolds
 In general the geometric algebra that the user defines exists on the tangent space of a manifold (see section :ref:`sect_manifold`). The submanifold class, ``Sm``, is derived from the ``Ga`` class and allows one to define a submanifold of a manifold by defining a coordinate mapping between the submanifold coordinates and the manifold coordinates. What is returned as the submanifold is the geometric algebra of the tangent space of the submanifold. The submanifold for a geometric algebra is
 instantiated with
 
-``Ga.sm(map,coords,root='e',norm=False)``
+.. method:: Ga.sm(map,coords,root='e',norm=False)
+   :noindex:
 
    To define the submanifold we must def a coordinate map from the coordinates of the submanifold to each of the coordinates of the base manifold. Thus the arguments ``map`` and ``coords`` are respectively lists of functions and symbols. The list of symbols, ``coords``, are the coordinates of the submanifold and are of length equal to the dimension of the submanifold. The list of functions, ``map``, define the mapping from the coordinate space of the submanifold to the coordinate space of the
    base manifold. The length of ``map`` is equal to the dimension of the base manifold and each function in ``map`` is a function of the coordinates of the submanifold. ``root`` is the root of the string that is used to name the basis vectors of the submanifold. The default value of ``root`` is ``e``. The result of this is that if the *sympy* symbols for the coordinates are ``u`` and ``v`` (two dimensional manifold) the text symbols for the basis vectors are ``e_u`` and ``e_v`` or in LaTeX
@@ -577,7 +632,9 @@ Linear Transformations
 
 The mathematical background for linear transformations is in section :ref:`Ltrans`. Linear transformations on the tangent space of the manifold are instantiated with the ``Ga`` member function ``lt`` (the actual class being instantiated is ``Lt``) as shown in lines 12, 20, 26, and 44 of the code listing ``Ltrans.py``. In all of the examples in ``Ltrans.py`` the default instantiation is used which produces a general (all the coefficients of the linear transformation are symbolic constants) linear
 transformation. *Note that to instantiate linear transformations coordinates, :math:`{\left \{ {{\eb}_{i}} \rbrc}`, must be defined when the geometric algebra associated with the linear transformation is instantiated. This is due to the naming conventions of the general linear transformation (coordinate names are used) and for the calculation of the trace of the linear transformation which requires taking a divergence.* To instantiate a specific linear transformation the usage of ``lt()`` is
-``Ga.lt(M,f=False,mode='g')``
+
+.. method:: Ga.lt(M,f=False,mode='g')
+   :noindex:
 
    ``M`` is an expression that can define the coefficients of the linear transformation in various ways defined as follows.
 
@@ -610,23 +667,28 @@ with output
 
 The member function of the ``Lt`` class are
 
-``Lt(A)``
+.. method:: Lt.__call__(A)
+   :noindex:
 
    Returns the image of the multivector :math:`A` under the linear transformation :math:`L` where :math:`{{L}\lp {A} \rp }` is defined by the linearity of :math:`L`, the vector values :math:`{{L}\lp {{{\eb}}_{i}} \rp }`, and the definition :math:`{{L}\lp {{{\eb}}_{i_{1}}{\wedge}\dots{\wedge}{{\eb}}_{i_{r}}} \rp } = {{L}\lp {{{\eb}}_{i_{1}}} \rp }{\wedge}\dots{\wedge}{{L}\lp {{{\eb}}_{i_{r}}} \rp }`.
 
-``Lt.det()``
+.. method:: Lt.det()
+   :noindex:
 
    Returns the determinant (a scalar) of the linear transformation, :math:`L`, defined by :math:`{{\det}\lp {L} \rp }I = {{L}\lp {I} \rp }`.
 
-``Lt.adj()``
+.. method:: Lt.adj()
+   :noindex:
 
    Returns the adjoint (a linear transformation) of the linear transformation, :math:`L`, defined by :math:`a\cdot{{L}\lp {b} \rp } = b\cdot{{\bar{L}}\lp {a} \rp }` where :math:`a` and :math:`b` are any two vectors in the tangent space and :math:`\bar{L}` is the adjoint of :math:`L`.
 
-``Lt.tr()``
+.. method:: Lt.tr()
+   :noindex:
 
    Returns the trace (a scalar) of the linear transformation, :math:`L`, defined by :math:`{{\operatorname{tr}}\lp {L} \rp }=\nabla_{a}\cdot{{L}\lp {a} \rp }` where :math:`a` is a vector in the tangent space.
 
-``Lt.matrix()``
+.. method:: Lt.matrix()
+   :noindex:
 
    Returns the matrix representation (*sympy* ``Matrix``) of the linear transformation, :math:`L`, defined by :math:`{{L}\lp {{{\eb}}_{i}} \rp } = L_{ij}{{\eb}}_{j}` where :math:`L_{ij}` is the matrix representation.
 
@@ -661,7 +723,8 @@ Instantiating a Multi-linear Functions (Tensors)
 
 The mathematical background for multi-linear functions is in section :ref:`MLtrans`. To instantiate a multi-linear function use
 
-``Mlt(self, f, Ga, nargs=None, fct=False)``
+.. class:: Mlt(self, f, Ga, nargs=None, fct=False)
+   :noindex:
 
    Where the arguments are
 
@@ -685,19 +748,23 @@ Basic Multilinear Function Class Functions
 
 If we can instantiate multilinear functions we can use all the multilinear function class functions as described as follows. See section :ref:`MLtrans` for the mathematical description of each operation.
 
-``self(kargs)``
+.. method:: Mlt.__call__(kargs)
+   :noindex:
 
    Calling function to evaluates multilinear function for ``kargs`` list of vector arguments and returns a value. Note that a sympy scalar is returned, *not* a multilinear function.
 
-``self.contract(slot1,slot2)``
+.. method:: Mlt.contract(slot1,slot2)
+   :noindex:
 
    Returns contraction of tensor between ``slot1`` and ``slot2`` where ``slot1`` is the index of the first vector argument and ``slot2`` is the index of the second vector argument of the tensor. For example if we have a rank two tensor, ``T(a1,a2)``, then ``T.contract(1,2)`` is the contraction of ``T``. For this case since there are only two slots there can only be one contraction.
 
-``self.pdiff(slot)``
+.. method:: Mlt.pdiff(slot)
+   :noindex:
 
    Returns gradient of tensor, ``T``, with respect to slot vector. For example if the tensor is :math:`{{T}\lp {a_{1},a_{2}} \rp }` then ``T.pdiff(2)`` is :math:`\nabla_{a_{2}}T`. Since ``T`` is a scalar function, ``T.pdiff(2)`` is a vector function.
 
-``self.cderiv()``
+.. method:: Mlt.cderiv()
+   :noindex:
 
    Returns covariant derivative of tensor field. If ``T`` is a tensor of rank :math:`k` then ``T.cderiv()`` is a tensor of rank :math:`k+1`. The operation performed is defined in section :ref:`MLtrans`.
 
@@ -737,7 +804,8 @@ Latex Printing
 
 For latex printing one uses one functions from the ``ga`` module and one function from the ``printer`` module. The functions are
 
-``Format(Fmode=True,Dmode=True)``
+.. function:: Format(Fmode=True,Dmode=True)
+   :noindex:
 
    This function from the ``ga`` module turns on latex printing with the following options
 
@@ -755,7 +823,8 @@ For latex printing one uses one functions from the ``ga`` module and one functio
 
    ``Format()`` is also required for printing from *ipython notebook* (note that ``xpdf()`` is not needed to print from *ipython notebook*).
 
-``Fmt(obj,fmt=1)``
+.. function:: Fmt(obj,fmt=1)
+   :noindex:
 
    ``Fmt()`` can be used to set the global multivector printing format or to print a tuple, list, of dictionary\ [24]_. The modes and operation of ``Fmt()`` are as follows:
 
@@ -771,7 +840,8 @@ For latex printing one uses one functions from the ``ga`` module and one functio
    |                     | ``fmt=2``: Print one element of ``obj`` on each line.                                                                                       |
    +---------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 
-``xpdf(filename=None,debug=False,paper=(14,11),crop=False)``
+.. function:: xpdf(filename=None,debug=False,paper=(14,11),crop=False)
+   :noindex:
 
    This function from the ``printer`` module post-processes the output captured from print statements, writes the resulting latex strings to the file ``filename``, processes the file with pdflatex, and displays the resulting pdf file. All latex files except the pdf file are deleted. If ``debug = True`` the file ``filename`` is printed to standard output for debugging purposes and ``filename`` (the tex file) is saved. If ``filename`` is not entered the default filename is the root name of the
    python program being executed with ``.tex`` appended. The ``paper`` option defines the size of the paper sheet for latex. The format for the ``paper`` is
@@ -892,7 +962,8 @@ Printing Lists/Tuples of Multivectors/Differential Operators
 
 Since the expressions for multivectors or differential operators can be very long printing lists or tuples of such items can easily exceed the page with when printing in LaTeX or in “ipython notebook.” I order to alleviate this problem the function ``Fmt`` can be used.
 
-``Fmt(obj,fmt=0)``
+.. function:: Fmt(obj,fmt=0)
+   :noindex:
 
    This function from the ``printer`` module allows the formatted printing of lists/tuples or multivectors/differential operators.
 
@@ -924,8 +995,6 @@ Since the expressions for multivectors or differential operators can be very lon
 
    or
 
-..
-
    .. code:: python
 
       Fmt(l,1) # All elements of l on one line
@@ -953,12 +1022,6 @@ Since the expressions for multivectors or differential operators can be very lon
 
 .. [18]
    In the future it should be possible to generate closed form expressions for :math:`e^{A}` if :math:`A^{r}` is a scalar for some interger :math:`r`.
-
-.. [19]
-   See footnote [6]_.
-
-.. [20]
-   ``GAeval`` is in the ``printer`` module\ [6]_.
 
 .. [21]
    Remember that normalization is currently supported only for orthogonal systems (diagonal metric tensors).
