@@ -1,0 +1,55 @@
+.. this is included in other documents which want our latex macros
+
+.. raw:: html
+
+   <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({TeX: { equationNumbers: { autoNumber: "AMS" } }});
+   </script>
+
+.. math::
+
+   \newcommand{\bm}[1]{\boldsymbol{#1}}
+   \newcommand{\ubh}{\bm{\hat{u}}}
+   \newcommand{\ebh}{\bm{\hat{e}}}
+   \newcommand{\ebf}{\bm{e}}
+   \newcommand{\mat}[1]{\left [ {#1} \right ]}
+   \newcommand{\bra}[1]{{#1}_{\mathcal{G}}}
+   \newcommand{\ket}[1]{{#1}_{\mathcal{D}}}
+   \newcommand{\ds}{\displaystyle}
+   \newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
+   \newcommand{\lp}{\left (}
+   \newcommand{\rp}{\right )}
+   \newcommand{\half}{\frac{1}{2}}
+   \newcommand{\llt}{\left <}
+   \newcommand{\rgt}{\right >}
+   \newcommand{\abs}[1]{\left |{#1}\right |}
+   \newcommand{\pdiff}[2]{\bfrac{\partial {#1}}{\partial {#2}}}
+   \newcommand{\pdifftwo}[3]{\bfrac{\partial^{2} {#1}}{\partial {#2}\partial {#3}}}
+   \newcommand{\lbrc}{\left \{}
+   \newcommand{\rbrc}{\right \}}
+   \newcommand{\set}[1]{\lbrc {#1} \rbrc}
+   \newcommand{\W}{\wedge}
+   \newcommand{\R}{\dagger}
+   \newcommand{\lbrk}{\left [}
+   \newcommand{\rbrk}{\right ]}
+   \newcommand{\com}[1]{\lbrk {#1} \rbrk}
+   \newcommand{\proj}[2]{\llt {#1} \rgt_{#2}}
+   %\newcommand{\bm}{\boldsymbol}
+   \newcommand{\braces}[1]{\left \{ {#1} \right \}}
+   \newcommand{\grade}[1]{\left < {#1} \right >}
+   \newcommand{\f}[2]{{#1}\lp {#2} \rp }
+   \newcommand{\paren}[1]{\lp {#1} \rp }
+   \newcommand{\eval}[2]{\left . {#1} \right |_{#2}}
+   \newcommand{\prm}[1]{{#1}'}
+   \newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
+   \newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
+   \newcommand{\be}{\begin{equation}}
+   \newcommand{\ee}{\end{equation}}
+   \newcommand{\eb}{\bm{e}}
+   \newcommand{\ehb}{\bm{\hat{e}}}
+   \newcommand{\Tn}[2]{\f{\mathcal{T}_{#2}}{#1}}
+   \newcommand{\tr}{\mbox{tr}}
+   \newcommand{\T}[1]{\texttt{#1}}
+   \newcommand{\grd}{\bm{\nabla}}
+   \newcommand{\indices}[1]{#1}
+   \newcommand{\xRightarrow}[1]{\overset{#1}{\Rightarrow}}
