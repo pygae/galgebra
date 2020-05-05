@@ -225,6 +225,8 @@ Then
 
 where :math:`\breve{a}_{i}` indicates that :math:`a_{i}` is to be deleted from the product. In the standard notation if a vector is denoted with a subscript the reciprocal vector is denoted with a superscript. The set of reciprocal vectors will be calculated if a coordinate set is given when a geometric algebra is instantiated since they are required for geometric differentiation when the ``Ga`` member function ``Ga.mvr()`` is called to return the reciprocal basis in terms of the basis vectors.
 
+.. _sect_manifold:
+
 Manifolds and Submanifolds
 --------------------------
 
@@ -417,6 +419,8 @@ Additionally, one can calculate the connection of the normalized basis as follow
 
 where :math:`{{\displaystyle\frac{\partial {{\eb}_{i}}}{\partial {x^{j}}}}}` is expanded in terms of the :math:`{\boldsymbol{\hat{e}}}_{i}`\ ’s.
 
+.. _ldops:
+
 Linear Differential Operators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -581,7 +585,9 @@ or
    \be {\lp {A\dot{B}C} \rp }\dot{D} = {\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp }{{D}_{\mathcal{G}}} = {{\displaystyle}\sum_{l\in{\left \{
    {n} \rbrc}}{\lp {A{\lp {D_{l}B} \rp }C} \rp }{{\eb}}^{l}}. \ee
 
-The implementation of equations [splitopV] and [splitopM] is described in sections [makeMV] and [makeMVD].
+The implementation of equations :math:`\ref{splitopV}` and :math:`\ref{splitopM}` is described in sections :ref:`makeMV` and :ref:`makeMVD`.
+
+.. _Ltrans:
 
 Linear Transformations/Outermorphisms
 -------------------------------------
@@ -685,6 +691,8 @@ that has the proper symmetry for self adjoint transformations :math:`(a\cdot{{T}
 
 Any program/code that represents :math:`T` should allow one to define :math:`T` in terms of :math:`T_{ij}` or :math:`T_{j}^{l}` and likewise given a linear transformation :math:`T` obtain both :math:`T_{ij}` and :math:`T_{j}^{l}` from it. Please note that these considerations come into play for any non-Euclidean metric with respect to the trace and adjoint of a linear transformation since calculating either requires a dot product.
 
+.. _MLtrans:
+
 Multilinear Functions
 ---------------------
 
@@ -728,7 +736,7 @@ The arguments (vectors) of the multilinear function can be represented in terms 
        a_{j} =& a^{i_{j}}{{\eb}}_{i_{j}}, \label{vrep}\\
              =& a_{i_{j}}{{\eb}}^{i_{j}}. \label{rvrep}\end{aligned}
 
-Equation ([vrep]) gives :math:`a_{j}` in terms of the basis vectors and eq ([rvrep]) in terms of the reciprocal basis vectors. The index :math:`j` refers to the argument slot and the indices :math:`i_{j}` the components of the vector in terms of the basis. The covariant representation of the tensor is defined by
+Equation (:math:`\ref{vrep}`) gives :math:`a_{j}` in terms of the basis vectors and eq (:math:`\ref{rvrep}`) in terms of the reciprocal basis vectors. The index :math:`j` refers to the argument slot and the indices :math:`i_{j}` the components of the vector in terms of the basis. The covariant representation of the tensor is defined by
 
 :math:`\newcommand{\indices}[1]{#1}\begin{aligned}  T\indices{_{i_{1}\dots i_{r}}} \equiv& {{T}\lp {{{\eb}}_{i_{1}},\dots,{{\eb}}_{i_{r}}} \rp } \\  {{T}\lp {a_{1},\dots,a_{r}} \rp } =& {{T}\lp {a^{i_{1}}{{\eb}}_{i_{1}},\dots,a^{i_{r}}{{\eb}}_{i_{r}}} \rp } \nonumber \\  =& {{T}\lp {{{\eb}}_{i_{1}},\dots,{{\eb}}_{i_{r}}} \rp }a^{i_{1}}\dots a^{i_{r}} \nonumber \\  =& T\indices{_{i_{1}\dots i_{r}}}a^{i_{1}}\dots a^{i_{r}}.\end{aligned}`\ $
 
@@ -812,7 +820,7 @@ Now contract between :math:`i_{j}` and :math:`i_{k}` and use the properties of t
                    g^{i_{j}i_{k}}g_{i_{j}k_{j}}T\indices{_{i_{1}\dots}{}^{k_{j}}{}_{\dots i_{k}\dots i_{r}}} \nonumber \\
                    =& \delta_{k_{j}}^{i_{k}}T\indices{_{i_{1}\dots}{}^{k_{j}}{}_{\dots i_{k}\dots i_{r}}}. \label{114a}\end{aligned}
 
-Equation ([114a]) is the standard formula for contraction between upper and lower indexes of a mixed tensor.
+Equation (:math:`\ref{114a}`) is the standard formula for contraction between upper and lower indexes of a mixed tensor.
 
 Finally if :math:`{{T}\lp {a_{1},\dots,a_{r}} \rp }` is a tensor field (implicitly a function of position) the tensor derivative is defined as
 
@@ -993,19 +1001,23 @@ The basic geometric algebra operations will be implemented in python by defining
 
 .. math:: \be F +\sum_{r=1}^{n}F^{i_{1}\dots i_{r}}\eb_{i_{1}}\dots\eb_{i_{r}} \ee
 
-where the :math:`F`\ ’s are *sympy* symbolic constants or functions of the coordinates and a multivector class, *Mv*, that wraps *Ga* and overloads the python operators to provide all the needed multivector operations as shown in Table [ops] where :math:`A` and :math:`B` are any two multivectors (In the case of :math:`+`, :math:`-`, :math:`*`, :math:`{\wedge}`, :math:`|`, :math:`<`, and :math:`>` the operation is also defined if :math:`A` or :math:`B` is a *sympy* symbol or a *sympy* real
+where the :math:`F`\ ’s are *sympy* symbolic constants or functions of the coordinates and a multivector class, *Mv*, that wraps *Ga* and overloads the python operators to provide all the needed multivector operations as shown in Table :ref:`ops` where :math:`A` and :math:`B` are any two multivectors (In the case of :math:`+`, :math:`-`, :math:`*`, :math:`{\wedge}`, :math:`|`, :math:`<`, and :math:`>` the operation is also defined if :math:`A` or :math:`B` is a *sympy* symbol or a *sympy* real
 number).
 
-================== =================================
-:math:`A+B`        sum of multivectors
-:math:`A-B`        difference of multivectors
-:math:`A*B`        geometric product of multivectors
-:math:`A{\wedge}B` outer product of multivectors
-:math:`A{\vert}B`  inner product of multivectors
-:math:`A{<}B`      left contraction of multivectors
-:math:`A{>}B`      right contraction of multivectors
-:math:`A{/}B`      division of multivectors
-================== =================================
+.. _ops:
+
+.. table:: Operators
+
+   ================== =================================
+   :math:`A+B`        sum of multivectors
+   :math:`A-B`        difference of multivectors
+   :math:`A*B`        geometric product of multivectors
+   :math:`A{\wedge}B` outer product of multivectors
+   :math:`A{\vert}B`  inner product of multivectors
+   :math:`A{<}B`      left contraction of multivectors
+   :math:`A{>}B`      right contraction of multivectors
+   :math:`A{/}B`      division of multivectors
+   ================== =================================
 
 Multivector operations for GA
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1039,6 +1051,8 @@ For those users who wish to define a default operator precedence the functions `
       V = GAeval('X|Y^Z*W')
 
    The *sympy* variable ``V`` would evaluate to ``((X|Y)^Z)*W``.
+
+.. _BasisMetric:
 
 Vector Basis and Metric
 -----------------------
@@ -1179,11 +1193,11 @@ Since we can now calculate the symbolic geometric product of any two multivector
 
 .. math:: \be A_{r}{\wedge}b = {\frac{1}{2}}\lp A_{r}b+\lp -1 \rp ^{r}bA_{r} \rp , \ee
 
-where :math:`A_{r}` is a multivector of grade :math:`r` and :math:`b` is a vector. For our example basis the result is shown in Table [bladexpand].
+where :math:`A_{r}` is a multivector of grade :math:`r` and :math:`b` is a vector. For our example basis the result is shown in Table :ref:`bladexpand`.
 
-[h]
-
-.. code:: python
+.. code-block:: python
+   :caption: Blade expansions
+   :name: bladexpand
 
    1 = 1
    a0 = a0
@@ -1194,11 +1208,11 @@ where :math:`A_{r}` is a multivector of grade :math:`r` and :math:`b` is a vecto
    a1^a2 = {-(a1.a2)}1+a1a2
    a0^a1^a2 = {-(a1.a2)}a0+{(a0.a2)}a1+{-(a0.a1)}a2+a0a1a2
 
-[bladexpand]
+The important thing to notice about Table :ref:`bladexpand` is that it is a triagonal (lower triangular) system of equations so that using a simple back substitution algorithm we can solve for the pseudo bases in terms of the blades giving Table :ref:`baseexpand`.
 
-The important thing to notice about Table [bladexpand] is that it is a triagonal (lower triangular) system of equations so that using a simple back substitution algorithm we can solve for the pseudo bases in terms of the blades giving Table [baseexpand].
-
-.. code:: python
+.. code-block:: python
+   :caption: Base expansions
+   :name: baseexpand
 
    1 = 1
    a0 = a0
@@ -1209,9 +1223,7 @@ The important thing to notice about Table [bladexpand] is that it is a triagona
    a1a2 = {(a1.a2)}1+a1^a2
    a0a1a2 = {(a1.a2)}a0+{-(a0.a2)}a1+{(a0.a1)}a2+a0^a1^a2
 
-[baseexpand]
-
-Using Table [baseexpand] and simple substitution we can convert from a base multivector representation to a blade representation. Likewise, using Table [bladexpand] we can convert from blades to bases.
+Using Table :ref:`baseexpand` and simple substitution we can convert from a base multivector representation to a blade representation. Likewise, using Table :ref:`bladexpand` we can convert from blades to bases.
 
 Using the blade representation it becomes simple to program functions that will calculate the grade projection, reverse, even, and odd multivector functions.
 
@@ -1252,7 +1264,7 @@ The geometric algebra class is instantiated with
 
 ``Ga(basis,g=None,coords=None,X=None,norm=False,sig='e',Isq='-',wedge=True,debug=False)``
 
-   The ``basis`` and ``g`` parameters were described in section [BasisMetric]. If the metric is a function of position, if we have multivector fields, or we wish to calculate geometric derivatives a coordinate set, ``coords``, is required. ``coords`` is a list of *sympy* symbols. For the case of instantiating a 3-d geometric algebra in spherical coordinates we have
+   The ``basis`` and ``g`` parameters were described in section :ref:`BasisMetric`. If the metric is a function of position, if we have multivector fields, or we wish to calculate geometric derivatives a coordinate set, ``coords``, is required. ``coords`` is a list of *sympy* symbols. For the case of instantiating a 3-d geometric algebra in spherical coordinates we have
 
    .. code:: python
 
@@ -1321,7 +1333,7 @@ In addition to the basis vectors, if coordinates are defined for the geometric a
 
       (grad,rgrad) = sp3d.grads()
 
-   for the spherical 3-d geometric algebra. The left derivative :math:`{\lp {{\texttt{grad}} ={\boldsymbol{\nabla}}} \rp }` and the right derivative :math:`{\lp {{\texttt{rgrad}} = {\boldsymbol{\bar{\nabla}}}} \rp }` have been explained in section [ldops]. Again the names ``grad`` and ``rgrad`` used in a program are whatever the user chooses them to be. In the previous example ``grad`` and ``rgrad`` are used.
+   for the spherical 3-d geometric algebra. The left derivative :math:`{\lp {{\texttt{grad}} ={\boldsymbol{\nabla}}} \rp }` and the right derivative :math:`{\lp {{\texttt{rgrad}} = {\boldsymbol{\bar{\nabla}}}} \rp }` have been explained in section :ref:`ldops`. Again the names ``grad`` and ``rgrad`` used in a program are whatever the user chooses them to be. In the previous example ``grad`` and ``rgrad`` are used.
 
 an alternative instantiation method is
 
@@ -1360,6 +1372,8 @@ differential operator ``Dop`` ``dop``
 ===================== ======= =============
 
 for the instantiation of various objects from the ``Ga`` class. This means that in order to instantiate any of these objects we need only to import ``Ga`` into our program.
+
+.. _makeMV:
 
 Instantiating a Multivector
 ---------------------------
@@ -1441,7 +1455,7 @@ If one wished to calculate the left and right geometric derivatives of ``F`` and
    dFrop = rgrad*F
    dBrop = rgrad*B
 
-``dFop``, ``dBop``, ``dFrop``, and ``dBrop`` are all multivector differential operators (again see section [ldops]).
+``dFop``, ``dBop``, ``dFrop``, and ``dBrop`` are all multivector differential operators (again see section :ref:`ldops`).
 
 Backward Compatibility Class MV
 -------------------------------
@@ -1714,6 +1728,8 @@ Basic Multivector Functions
 
    If ``A`` is a multivector return ``A.rotate_multivector(itheta,hint)`` where ``itheta`` is the bi-vector blade defining the rotation. For the use of ``hint`` see the member function ``Mv.rotate_multivector(self,itheta,hint)``.
 
+.. _makeMVD:
+
 Multivector Derivatives
 -----------------------
 
@@ -1766,7 +1782,7 @@ all return multivector linear differential operators.
 Submanifolds
 ------------
 
-In general the geometric algebra that the user defines exists on the tangent space of a manifold (see section [sect_manifold]). The submanifold class, ``Sm``, is derived from the ``Ga`` class and allows one to define a submanifold of a manifold by defining a coordinate mapping between the submanifold coordinates and the manifold coordinates. What is returned as the submanifold is the geometric algebra of the tangent space of the submanifold. The submanifold for a geometric algebra is
+In general the geometric algebra that the user defines exists on the tangent space of a manifold (see section :ref:`sect_manifold`). The submanifold class, ``Sm``, is derived from the ``Ga`` class and allows one to define a submanifold of a manifold by defining a coordinate mapping between the submanifold coordinates and the manifold coordinates. What is returned as the submanifold is the geometric algebra of the tangent space of the submanifold. The submanifold for a geometric algebra is
 instantiated with
 
 ``Ga.sm(map,coords,root='e',norm=False)``
@@ -1790,7 +1806,7 @@ instantiated with
 Linear Transformations
 ----------------------
 
-The mathematical background for linear transformations is in section [Ltrans]. Linear transformations on the tangent space of the manifold are instantiated with the ``Ga`` member function ``lt`` (the actual class being instantiated is ``Lt``) as shown in lines 12, 20, 26, and 44 of the code listing ``Ltrans.py``. In all of the examples in ``Ltrans.py`` the default instantiation is used which produces a general (all the coefficients of the linear transformation are symbolic constants) linear
+The mathematical background for linear transformations is in section :ref:`Ltrans`. Linear transformations on the tangent space of the manifold are instantiated with the ``Ga`` member function ``lt`` (the actual class being instantiated is ``Lt``) as shown in lines 12, 20, 26, and 44 of the code listing ``Ltrans.py``. In all of the examples in ``Ltrans.py`` the default instantiation is used which produces a general (all the coefficients of the linear transformation are symbolic constants) linear
 transformation. *Note that to instantiate linear transformations coordinates, :math:`{\left \{ {{\eb}_{i}} \rbrc}`, must be defined when the geometric algebra associated with the linear transformation is instantiated. This is due to the naming conventions of the general linear transformation (coordinate names are used) and for the calculation of the trace of the linear transformation which requires taking a divergence.* To instantiate a specific linear transformation the usage of ``lt()`` is
 ``Ga.lt(M,f=False,mode='g')``
 
@@ -1861,7 +1877,7 @@ The output of this code is.
 Differential Operators
 ----------------------
 
-For the mathematical treatment of linear multivector differential operators see section [ldops]. The is a differential operator class ``Dop``. However, one never needs to use it directly. The operators are constructed from linear combinations of multivector products of the operators ``Ga.grad`` and ``Ga.rgrad`` as shown in the following code for both orthogonal rectangular and spherical 3-d coordinate systems.
+For the mathematical treatment of linear multivector differential operators see section :ref:`ldops`. The is a differential operator class ``Dop``. However, one never needs to use it directly. The operators are constructed from linear combinations of multivector products of the operators ``Ga.grad`` and ``Ga.rgrad`` as shown in the following code for both orthogonal rectangular and spherical 3-d coordinate systems.
 
 .. literalinclude:: python/Dop.py
 
@@ -1874,7 +1890,7 @@ Note that for print an operator in the IPython notebook one must implement (yet 
 Instantiating a Multi-linear Functions (Tensors)
 ------------------------------------------------
 
-The mathematical background for multi-linear functions is in section [MLtrans]. To instantiate a multi-linear function use
+The mathematical background for multi-linear functions is in section :ref:`MLtrans`. To instantiate a multi-linear function use
 
 ``Mlt(self, f, Ga, nargs=None, fct=False)``
 
@@ -1898,7 +1914,7 @@ The mathematical background for multi-linear functions is in section [MLtrans].
 Basic Multilinear Function Class Functions
 ------------------------------------------
 
-If we can instantiate multilinear functions we can use all the multilinear function class functions as described as follows. See section [MLtrans] for the mathematical description of each operation.
+If we can instantiate multilinear functions we can use all the multilinear function class functions as described as follows. See section :ref:`MLtrans` for the mathematical description of each operation.
 
 ``self(kargs)``
 
@@ -1914,7 +1930,7 @@ If we can instantiate multilinear functions we can use all the multilinear funct
 
 ``self.cderiv()``
 
-   Returns covariant derivative of tensor field. If ``T`` is a tensor of rank :math:`k` then ``T.cderiv()`` is a tensor of rank :math:`k+1`. The operation performed is defined in section [MLtrans].
+   Returns covariant derivative of tensor field. If ``T`` is a tensor of rank :math:`k` then ``T.cderiv()`` is a tensor of rank :math:`k+1`. The operation performed is defined in section :ref:`MLtrans`.
 
 Standard Printing
 -----------------
@@ -2116,7 +2132,7 @@ Since the expressions for multivectors or differential operators can be very lon
    +-----------+---------------------------------------------------------------------------------+
    | ``fmt=0`` | ``fmt=0`` prints each element of the list/tuple on an individual lines\ [26]_.  |
    +-----------+---------------------------------------------------------------------------------+
-   |           | ``fmt=1`` prints all elements of the list/tuple on a single line.               |
+   |           | ``fmt=1`` prints all elements of the list/tuple on a single line\ [26]_.        |
    +-----------+---------------------------------------------------------------------------------+
 
    If l is a list or tuple to print in the LaTeX environment use the command
@@ -2226,7 +2242,7 @@ Since the expressions for multivectors or differential operators can be very lon
    Preprocessing do not occur for the Ipython notebook and the string post processing commands ``%`` and ``#`` are not used in this case.
 
 .. [26]
-   The formatting of each element is respected as applied by ``A.Fmt(fmt=1,2, or 3)`` where ``A`` is an element of ``obj``\ so that if multivector/differential operation have been formatted to print on multiple lines it will printed on multiple lines.[Fmt_format]
+   The formatting of each element is respected as applied by ``A.Fmt(fmt=1,2, or 3)`` where ``A`` is an element of ``obj``\ so that if multivector/differential operation have been formatted to print on multiple lines it will printed on multiple lines.
 
 .. |image0| image:: images/submanifold.svg
 .. |image1| image:: images/submanifold1.svg
