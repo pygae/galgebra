@@ -10,6 +10,7 @@
     :caption: A guide to GAlgebra
 
     galgebra_guide
+    module-components
     bibliography
 
 .. toctree::
