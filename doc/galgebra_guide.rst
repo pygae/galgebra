@@ -228,7 +228,7 @@ where :math:`\breve{a}_{i}` indicates that :math:`a_{i}` is to be deleted from t
 Manifolds and Submanifolds
 --------------------------
 
-A :math:`m`-dimensional vector manifold[4], :math:`\mathcal{M}`, is defined by a coordinate tuple (tuples are indicated by the vector accent “:math:`\vec{\;\;\;}`”)
+A :math:`m`-dimensional vector manifold\ [4]_, :math:`\mathcal{M}`, is defined by a coordinate tuple (tuples are indicated by the vector accent “:math:`\vec{\;\;\;}`”)
 
 .. math:: \be \vec{x} = \paren{x^{1},\dots,x^{m}}, \ee
 
@@ -236,7 +236,7 @@ and the differentiable mapping (:math:`U^{m}` is an :math:`m`-dimensional subset
 
 .. math:: \be \f{\bm{e}^{\mathcal{M}}}{\vec{x}}\colon U^{m}\subseteq\Re^{m}\rightarrow \mathcal{V}, \ee
 
-where :math:`\mathcal{V}` is a vector space with an inner product[5] (:math:`\cdot`) and is of :math:`{{\dim}\lp {\mathcal{V}} \rp } \ge m`.
+where :math:`\mathcal{V}` is a vector space with an inner product\ [5]_ (:math:`\cdot`) and is of :math:`{{\dim}\lp {\mathcal{V}} \rp } \ge m`.
 
 Then a set of basis vectors for the tangent space of :math:`\mathcal{M}` at :math:`\vec{x}`, :math:`{{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}`, are
 
@@ -258,7 +258,7 @@ and a differentiable mapping
        \f{\vec{x}}{\vec{u}}\colon U^{n}\subseteq\Re^{n}\rightarrow U^{m}\subseteq\Re^{m},
     \ee
 
-Then the basis vectors for the tangent space :math:`{{{\mathcal{T}_{\vec{u}}}\lp {\mathcal{N}} \rp }}` are (using :math:`{{{{\eb}}^{\mathcal{N}}}\lp {\vec{u}} \rp } = {{{{\eb}}^{\mathcal{M}}}\lp {{{\vec{x}}\lp {\vec{u}} \rp }} \rp }` and the chain rule)[6]
+Then the basis vectors for the tangent space :math:`{{{\mathcal{T}_{\vec{u}}}\lp {\mathcal{N}} \rp }}` are (using :math:`{{{{\eb}}^{\mathcal{N}}}\lp {\vec{u}} \rp } = {{{{\eb}}^{\mathcal{M}}}\lp {{{\vec{x}}\lp {\vec{u}} \rp }} \rp }` and the chain rule)\ [6]_
 
 .. math::
 
@@ -351,7 +351,7 @@ In the case of a manifold the derivatives of the :math:`{\eb}_{i}`\ ’s are fun
                     &= {{\displaystyle\frac{\partial {F_{r}^{i_{1}\dots i_{r}}}}{\partial {x^{i}}}}}{\eb}^{i}{\lp {{\eb}_{i_{1}}{\wedge}\dots{\wedge}{\eb}_{i_{r}}} \rp }
                        +F_{r}^{i_{1}\dots i_{r}}{\eb}^{i}{{\displaystyle\frac{\partial {}}{\partial {x^{i}}}}}{\lp {{\eb}_{i_{1}}{\wedge}\dots{\wedge}{\eb}_{i_{r}}} \rp }\end{aligned}
 
-where the multivector functions :math:`{\eb}^{i}{{\displaystyle\frac{\partial {}}{\partial {x^{i}}}}}{\lp {{\eb}_{i_{1}}{\wedge}\dots{\wedge}{\eb}_{i_{r}}} \rp }` are the connection for the manifold.[7]
+where the multivector functions :math:`{\eb}^{i}{{\displaystyle\frac{\partial {}}{\partial {x^{i}}}}}{\lp {{\eb}_{i_{1}}{\wedge}\dots{\wedge}{\eb}_{i_{r}}} \rp }` are the connection for the manifold\ [7]_.
 
 The directional (material/convective) derivative, :math:`{\lp {v\cdot\nabla} \rp }F_{r}` is given by
 
@@ -494,7 +494,7 @@ Thus for a pure operator product :math:`D_{A}\circ D_{B}` we have
 and the form of eq (:math:`\ref{eq_71a}`) is the same as eq (:math:`\ref{eq_67a}`). The basis of eq (:math:`\ref{eq_71a}`) is that the :math:`\partial` operator operates on all object to the right of it as products so that the product rule must be used in all differentiations. Since eq (:math:`\ref{eq_71a}`) puts the product of two differential operators in standard form we also evaluate :math:`F\circ_{2}{\lp {D_{A}\circ_{1}D_{B}} \rp }`.
 
 We now must distinguish between the following cases. If :math:`D` is a differential operator and :math:`F` a multivector function should :math:`D\circ F` and :math:`F\circ D` return a differential operator or a multivector. In order to be consistent with the standard vector analysis we have :math:`D\circ F` return a multivector and :math:`F\circ D` return a differential operator. Then we define the complementary differential operator :math:`\bar{D}` which is identical to :math:`D` except that
-:math:`\bar{D}\circ F` returns a differential operator according to eq (:math:`\ref{eq_71a}`)[8] and :math:`F\circ\bar{D}` returns a multivector according to eq (:math:`\ref{eq_68a}`).
+:math:`\bar{D}\circ F` returns a differential operator according to eq (:math:`\ref{eq_71a}`)\ [8]_ and :math:`F\circ\bar{D}` returns a multivector according to eq (:math:`\ref{eq_68a}`).
 
 A general differential operator is built from repeated applications of the basic operator building blocks :math:`{\lp {\bar{\nabla}\circ A} \rp }`, :math:`{\lp {A\circ\bar{\nabla}} \rp }`, :math:`{\lp {\bar{\nabla}\circ\bar{\nabla}} \rp }`, and :math:`{\lp {A\pm \bar{\nabla}} \rp }`. Both :math:`\nabla` and :math:`\bar{\nabla}` are represented by the operator
 
@@ -561,7 +561,7 @@ For the general multivector differential operator, :math:`D`, the split operator
 
 .. math:: \be \dot{D}{\lp {A\dot{B}C} \rp } = {{D}_{\mathcal{G}}}{\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp }. \label{splitopM} \ee
 
-If the index set for the basis blades of a geometric algebra is denoted by :math:`{\left \{{n} \rbrc}` where :math:`{\left \{{n} \rbrc}` contains :math:`2^{n}` indices for an :math:`n` dimensional geometric algebra then the most general multivector differential operator can be written[9]
+If the index set for the basis blades of a geometric algebra is denoted by :math:`{\left \{{n} \rbrc}` where :math:`{\left \{{n} \rbrc}` contains :math:`2^{n}` indices for an :math:`n` dimensional geometric algebra then the most general multivector differential operator can be written\ [9]_
 
 .. math::
 
@@ -688,7 +688,7 @@ Any program/code that represents :math:`T` should allow one to define :math:`T` 
 Multilinear Functions
 ---------------------
 
-A multivector multilinear function[10] is a multivector function :math:`{{T}\lp {A_{1},\dots,A_{r}} \rp }` that is linear in each of it arguments[11] (it could be implicitly non-linearly dependent on a set of additional arguments such as the position coordinates, but we only consider the linear arguments). :math:`T` is a *tensor* of degree :math:`r` if each variable :math:`A_{j}` is restricted to the vector space :math:`\mathcal{V}_{n}`. More generally if each
+A multivector multilinear function\ [10]_ is a multivector function :math:`{{T}\lp {A_{1},\dots,A_{r}} \rp }` that is linear in each of it arguments\ [11]_ (it could be implicitly non-linearly dependent on a set of additional arguments such as the position coordinates, but we only consider the linear arguments). :math:`T` is a *tensor* of degree :math:`r` if each variable :math:`A_{j}` is restricted to the vector space :math:`\mathcal{V}_{n}`. More generally if each
 :math:`A_{j}\in{{\mathcal{G}}\lp {\mathcal{V}_{n}} \rp }` (the geometric algebra of :math:`\mathcal{V}_{n}`), we call :math:`T` an *extensor* of degree-:math:`r` on :math:`{{\mathcal{G}}\lp {\mathcal{V}_{n}} \rp }`.
 
 If the values of :math:`{{T} \lp {a_{1},\dots,a_{r}} \rp }` :math:`\lp a_{j}\in\mathcal{V}_{n}\;\forall\; 1\le j \le r \rp` are :math:`s`-vectors (pure grade :math:`s` multivectors in :math:`{{\mathcal{G}}\lp {\mathcal{V}_{n}} \rp }`) we say that :math:`T` has grade :math:`s` and rank :math:`r+s`. A tensor of grade zero is called a *multilinear form*.
@@ -1262,13 +1262,13 @@ The geometric algebra class is instantiated with
       sp3d = Ga(basis,g=g,coords=coords,norm=True)
 
    The input ``X`` allows the metric to be input as a vector manifold. ``X`` is a list of functions of ``coords`` of dimension, :math:`m`, equal to or greater than the number of coordinates. If ``g=None`` it is assumed that ``X`` is a vector in an :math:`m`-dimensional orthonormal Euclidean vector space. If it is wished the embedding vector space to be non-Euclidean that condition is specified with ``g``. For example if we wish the embedding space to be a 5-dimensional Minkowski space then
-   ``g=[-1,1,1,1,1]``. Then the Ga class uses ``X`` to calculate the manifold basis vectors as a function of the coordinates and from them the metric tensor.[12]
+   ``g=[-1,1,1,1,1]``. Then the Ga class uses ``X`` to calculate the manifold basis vectors as a function of the coordinates and from them the metric tensor\ [12]_.
 
    If ``norm=True`` the basis vectors of the manifold are normalized so that the absolute values of the squares of the basis vectors are one. *Currently you should only use this option for diagonal metric tensors, and even there due so with caution, due to the possible problems with taking the square root of a general*\ sympy\* expression (one that has an unknown sign).\*
 
    **When a geometric algebra is created the unnormalized metric tensor is always saved so that submanifolds created from the normalized manifold can be calculated correctly.**
 
-   ``sig`` indicates the signature of the vector space in the following ways.[13]
+   ``sig`` indicates the signature of the vector space in the following ways\ [13]_.
 
    1. If the metric tensor is purely numerical (the components are not symbolic or functions of the coordinates) and is diagonal (orthogonal basis vectors) the signature is computed from the metric tensor.
 
@@ -1288,7 +1288,7 @@ The geometric algebra class is instantiated with
 
    If :math:`I^{2}` is numeric it is calculated if it is not numeric then ``Isq=’-’`` is the sign of the square of the pseudo-scalar. This is needed for some operations. The default is chosen for the case of a general 3D Euclidean metric.
 
-   If ``wedge=True`` the basis blades of a multivector are printed using the ``^`` symbol between basis vectors. If ``wedge=False`` the subscripts of each individual basis vector (assuming that the basis vector symbols are of the form root symbol with a subscript[14]). For example in three dimensions if the basis vectors are :math:`{{\eb}}_{x}`, :math:`{{\eb}}_{y}`, and :math:`{{\eb}}_{z}` the grade 3 basis blade would be printed as :math:`{{\eb}}_{xyz}`.
+   If ``wedge=True`` the basis blades of a multivector are printed using the ``^`` symbol between basis vectors. If ``wedge=False`` the subscripts of each individual basis vector (assuming that the basis vector symbols are of the form root symbol with a subscript\ [14]_). For example in three dimensions if the basis vectors are :math:`{{\eb}}_{x}`, :math:`{{\eb}}_{y}`, and :math:`{{\eb}}_{z}` the grade 3 basis blade would be printed as :math:`{{\eb}}_{xyz}`.
 
    If ``debug=True`` the data structures required to initialize the Ga class are printed out.
 
@@ -1364,7 +1364,7 @@ for the instantiation of various objects from the ``Ga`` class. This means that 
 Instantiating a Multivector
 ---------------------------
 
-Since we need to associate each multivector with the geometric algebra that contains it we use a member function of Ga to instantiate every multivector[15] The multivector is instantiated with:
+Since we need to associate each multivector with the geometric algebra that contains it we use a member function of Ga to instantiate every multivector\ [15]_ The multivector is instantiated with:
 
 ``Ga.mv(name, mode, f=False)``
 
@@ -1389,7 +1389,7 @@ Since we need to associate each multivector with the geometric algebra that cont
 
    .. math:: \be V^{x}\eb_{x} + V^{y}\eb_{y} + V^{z}\eb_{z} \ee
 
-   Where the coefficients of the basis vectors are generalized *sympy* functions of the coordinates. If ``f=(x,y)`` then the coefficients would be functions of ``x`` and ``y``. In general is ``f`` is a tuple of symbols then the coefficients of the basis would be functions of those symbols. The superscripts[16] are formed from the coordinate symbols or if there are no coordinates from the subscripts of the basis vectors. The types of name and modes available for multivector instantiation are
+   Where the coefficients of the basis vectors are generalized *sympy* functions of the coordinates. If ``f=(x,y)`` then the coefficients would be functions of ``x`` and ``y``. In general is ``f`` is a tuple of symbols then the coefficients of the basis would be functions of those symbols. The superscripts\ [16]_ are formed from the coordinate symbols or if there are no coordinates from the subscripts of the basis vectors. The types of name and modes available for multivector instantiation are
 
    ======== ========================== ===============================================
    ``name`` ``mode``                   result
@@ -1450,7 +1450,7 @@ In order to be backward compatible with older versions of *galgebra* we introduc
 
 ``MV.setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None))``
 
-   This function allows a single geometric algebra to be created. If the function is called more than once the old geometric algebra is overwritten by the new geometric algebra. The named input ``metric`` is the same as the named input ``g`` in the current version of *galgebra*. Likewise, ``basis``, ``coords``, and ``debug`` are the same in the old and current versions of *galgebra*\ [17]. Due to improvements in *sympy* the inputs ``rframe`` and ``curv[1]`` are no longer required. ``curv[0]`` is
+   This function allows a single geometric algebra to be created. If the function is called more than once the old geometric algebra is overwritten by the new geometric algebra. The named input ``metric`` is the same as the named input ``g`` in the current version of *galgebra*. Likewise, ``basis``, ``coords``, and ``debug`` are the same in the old and current versions of *galgebra*\ \ [17]_. Due to improvements in *sympy* the inputs ``rframe`` and ``curv[1]`` are no longer required. ``curv[0]`` is
    the vector function (list or tuple of scalar functions) of the coordinates required to define a vector manifold. For compatibility with the old version of *galgebra* if ``curv`` is used ``metric`` should be a orthonormal Euclidean metric of the same dimension as ``curv[0]``. It is strongly suggested that one use the new methods of defining a geometric algebra on a manifold.
 
 ``MV(base, mvtype, fct=False, blade_rep=True)``
@@ -1511,7 +1511,7 @@ If we can instantiate multivectors we can use all the multivector class function
 
 ``exp(self,hint=’-’)``
 
-   If :math:`A` is a multivector then :math:`e^{A}` is defined for any :math:`A` via the series expansion for :math:`e`. However as a practical matter we only have a simple closed form formula for :math:`e^{A}` if :math:`A^{2}` is a scalar.[18] If :math:`A^{2}` is a scalar and we know the sign of :math:`A^{2}` we have the following formulas for :math:`e^{A}`.
+   If :math:`A` is a multivector then :math:`e^{A}` is defined for any :math:`A` via the series expansion for :math:`e`. However as a practical matter we only have a simple closed form formula for :math:`e^{A}` if :math:`A^{2}` is a scalar\ [18]_. If :math:`A^{2}` is a scalar and we know the sign of :math:`A^{2}` we have the following formulas for :math:`e^{A}`.
 
    .. math::
 
@@ -1649,7 +1649,7 @@ Basic Multivector Functions
 
    If ``v1`` and ``v2`` are 3-dimensional Euclidean vectors the vector cross product is returned, :math:`v_{1}\times v_{2} = -I{\lp {v_{1}{\wedge}v_{2}} \rp }`.
 
-``def_prec(gd,op_ord='<>|,^,*')``\ [19]
+``def_prec(gd,op_ord='<>|,^,*')``\  [19]_
 
    This is used with the ``GAeval()`` function to evaluate a string representing a multivector expression with a revised operator precedence. ``def_prec()`` redefines the operator precedence for multivectors. ``def_prec()`` must be called in the main program an the argument ``gd`` must be ``globals()``. The argument ``op_ord`` defines the order of operator precedence from high to low with groups of equal precedence separated by commas. the default precedence ``op_ord='<>|,^,\*'`` is that used by
    Hestenes (:cite:`Hestenes`,p7,:cite:`Doran`,p38).
@@ -1666,7 +1666,7 @@ Basic Multivector Functions
 
    If :math:`A` is a multivector then ``A.exp(hint)`` is returned. If :math:`A` is a *sympy* expression the *sympy* expression :math:`e^{A}` is returned (see ``sympy.exp(A)`` member function).
 
-``GAeval(s,pstr=False)``\ [20]
+``GAeval(s,pstr=False)``\  [20]_
 
    Returns multivector expression for string ``s`` with operator precedence for string ``s`` defined by inputs to function ``def_prec()``. if ``pstr=True`` ``s`` and ``s`` with parenthesis added to enforce operator precedence are printed.
 
@@ -1779,7 +1779,7 @@ instantiated with
 
    The base manifold, ``sp3d``, is a 3-d Euclidean space using standard spherical coordinates. The submanifold ``sph2d`` of ``sp3d`` is a spherical surface of radius :math:`1`. To take the sumanifold operation one step further the submanifold ``cir1d`` of ``sph2d`` is a circle in ``sph2d`` where the latitude of the circle is :math:`\pi/8`.
 
-   In each case, for demonstration purposes, a scalar and vector function on each manifold is defined (``f`` and ``F`` for the 2-d manifold and ``h`` and ``H`` for the 1-d manifold) and the geometric derivative of each function is taken. The manifold mapping and the metric tensor for ``cir1d`` of ``sph2d`` are also shown. Note that if the submanifold basis vectors are not normalized[21] the program output is
+   In each case, for demonstration purposes, a scalar and vector function on each manifold is defined (``f`` and ``F`` for the 2-d manifold and ``h`` and ``H`` for the 1-d manifold) and the geometric derivative of each function is taken. The manifold mapping and the metric tensor for ``cir1d`` of ``sph2d`` are also shown. Note that if the submanifold basis vectors are not normalized\ [21]_ the program output is
 
    |image1|
 
@@ -1903,11 +1903,11 @@ Standard Printing
 
 Printing of multivectors is handled by the module ``printer`` which contains a string printer class derived from the *sympy* string printer class and a latex printer class derived from the *sympy* latex printer class. Additionally, there is an ``Eprint`` class that enhances the console output of *sympy* to make the printed output multivectors, functions, and derivatives more readable. ``Eprint`` requires an ansi console such as is supplied in linux or the program *ConEmu* replaces ``cmd.exe``.
 
-For a windows user the simplest way to implement *ConEmu* is to use the *geany* editor and in the Edit\ :math:`\rightarrow`\ Preferences\ :math:`\rightarrow`\ Tools menu replace ``cmd.exe`` with[22]
+For a windows user the simplest way to implement *ConEmu* is to use the *geany* editor and in the Edit\ :math:`\rightarrow`\ Preferences\ :math:`\rightarrow`\ Tools menu replace ``cmd.exe`` with\ [22]_
 
 ``"C:\Program Files\ConEmu\ConEmu64.exe" /WndW 180 /cmd %c``
 
-and then run an example *galgeba* program that used ``Eprint``. The default background and foreground colors make the output unreadable. To change these parameters to reasonable values:[23]
+and then run an example *galgeba* program that used ``Eprint``. The default background and foreground colors make the output unreadable. To change these parameters to reasonable values:\ [23]_
 
 1. Right click on title bar of console.
 
@@ -1954,7 +1954,7 @@ For latex printing one uses one functions from the ``ga`` module and one functio
 
 ``Fmt(obj,fmt=1)``
 
-   ``Fmt()`` can be used to set the global multivector printing format or to print a tuple, list, of dictionary.[24] The modes and operation of ``Fmt()`` are as follows:
+   ``Fmt()`` can be used to set the global multivector printing format or to print a tuple, list, of dictionary\ [24]_. The modes and operation of ``Fmt()`` are as follows:
 
    +---------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
    | ``obj``             | Effect                                                                                                                                                                |
@@ -2080,7 +2080,7 @@ original   replacement         displayed latex
 ``A<<B``   ``A\bar{\times} B`` :math:`A\bar{\times} B`
 ========== =================== ==============================
 
-If the first character in the string to be printed is a ``%`` none of the above substitutions are made before the latex processor is applied. In general for the latex printer strings are assumed to be in a math environment (equation or align) unless the first character in the string is a ``#``.[25]
+If the first character in the string to be printed is a ``%`` none of the above substitutions are made before the latex processor is applied. In general for the latex printer strings are assumed to be in a math environment (equation or align) unless the first character in the string is a ``#``\ [25]_.
 
 There are two member functions for returning LaTeX string representations of multivectors. If ``A`` is a multivector then ``A.Mv_latex_str()`` returns a LaTeX string in which the scalar coefficients of the multivector bases have been simplified (grouped, factored, etc.). This function is used when using ``print`` in the LaTeX mode. The member function ``A.raw_latex_str()`` returns a LaTeX string in which the scalar coefficients of the multivector bases have not been simplified.
 
@@ -2093,13 +2093,13 @@ Since the expressions for multivectors or differential operators can be very lon
 
    This function from the ``printer`` module allows the formatted printing of lists/tuples or multivectors/differential operators.
 
-   +-----------+------------------------------------------------------------------------------+
-   | ``obj``   | ``obj`` is a list or tuple of multivectors and/or differential operators.    |
-   +-----------+------------------------------------------------------------------------------+
-   | ``fmt=0`` | ``fmt=0`` prints each element of the list/tuple on an individual lines[26].  |
-   +-----------+------------------------------------------------------------------------------+
-   |           | ``fmt=1`` prints all elements of the list/tuple on a single line.            |
-   +-----------+------------------------------------------------------------------------------+
+   +-----------+---------------------------------------------------------------------------------+
+   | ``obj``   | ``obj`` is a list or tuple of multivectors and/or differential operators.       |
+   +-----------+---------------------------------------------------------------------------------+
+   | ``fmt=0`` | ``fmt=0`` prints each element of the list/tuple on an individual lines\ [26]_.  |
+   +-----------+---------------------------------------------------------------------------------+
+   |           | ``fmt=1`` prints all elements of the list/tuple on a single line.               |
+   +-----------+---------------------------------------------------------------------------------+
 
    If l is a list or tuple to print in the LaTeX environment use the command
 
@@ -2129,63 +2129,86 @@ Since the expressions for multivectors or differential operators can be very lon
 
 --------------
 
-[4] By the manifold embedding theorem any :math:`m`-dimensional manifold is isomorphic to a :math:`m`-dimensional vector manifold
+.. [4]
+   By the manifold embedding theorem any :math:`m`-dimensional manifold is isomorphic to a :math:`m`-dimensional vector manifold
 
-[5] This product in not necessarily positive definite.
+.. [5]
+   This product in not necessarily positive definite.
 
-[6] In this section and all following sections we are using the Einstein summation convention unless otherwise stated.
+.. [6]
+   In this section and all following sections we are using the Einstein summation convention unless otherwise stated.
 
-[7] We use the Christoffel symbols of the first kind to calculate the derivatives of the basis vectors and the product rule to calculate the derivatives of the basis blades where (http://en.wikipedia.org/wiki/Christoffel_symbols)
+.. [7]
+   We use the Christoffel symbols of the first kind to calculate the derivatives of the basis vectors and the product rule to calculate the derivatives of the basis blades where (http://en.wikipedia.org/wiki/Christoffel_symbols)
 
-.. math:: \be \Gamma_{ijk} = {\frac{1}{2}}{\lp {{{\displaystyle\frac{\partial {g_{jk}}}{\partial {x^{i}}}}}+{{\displaystyle\frac{\partial {g_{ik}}}{\partial {x^{j}}}}}-{{\displaystyle\frac{\partial {g_{ij}}}{\partial {x^{k}}}}}} \rp }, \ee
+   .. math:: \be \Gamma_{ijk} = {\frac{1}{2}}{\lp {{{\displaystyle\frac{\partial {g_{jk}}}{\partial {x^{i}}}}}+{{\displaystyle\frac{\partial {g_{ik}}}{\partial {x^{j}}}}}-{{\displaystyle\frac{\partial {g_{ij}}}{\partial {x^{k}}}}}} \rp }, \ee
 
-and
+   and
 
-.. math:: \be {{\displaystyle\frac{\partial {{{\eb}}_{j}}}{\partial {x^{i}}}}} = \Gamma_{ijk}{{\eb}}^{k}. \ee
+   .. math:: \be {{\displaystyle\frac{\partial {{{\eb}}_{j}}}{\partial {x^{i}}}}} = \Gamma_{ijk}{{\eb}}^{k}. \ee
 
-The Christoffel symbols of the second kind,
+   The Christoffel symbols of the second kind,
 
-.. math:: \be \Gamma_{ij}^{k} = {\frac{1}{2}}g^{kl}{\lp {{{\displaystyle\frac{\partial {g_{li}}}{\partial {x^{j}}}}}+{{\displaystyle\frac{\partial {g_{lj}}}{\partial {x^{i}}}}}-{{\displaystyle\frac{\partial {g_{ij}}}{\partial {x^{l}}}}}} \rp }, \ee
+   .. math:: \be \Gamma_{ij}^{k} = {\frac{1}{2}}g^{kl}{\lp {{{\displaystyle\frac{\partial {g_{li}}}{\partial {x^{j}}}}}+{{\displaystyle\frac{\partial {g_{lj}}}{\partial {x^{i}}}}}-{{\displaystyle\frac{\partial {g_{ij}}}{\partial {x^{l}}}}}} \rp }, \ee
 
-could also be used to calculate the derivatives in term of the original basis vectors, but since we need to calculate the reciprocal basis vectors for the geometric derivative it is more efficient to use the symbols of the first kind.
+   could also be used to calculate the derivatives in term of the original basis vectors, but since we need to calculate the reciprocal basis vectors for the geometric derivative it is more efficient to use the symbols of the first kind.
 
-[8] In this case :math:`D_{B}^{j_{1}\dots j_{n}} = F` and :math:`\partial_{j_{1}\dots j_{n}} = 1`.
+.. [8]
+   In this case :math:`D_{B}^{j_{1}\dots j_{n}} = F` and :math:`\partial_{j_{1}\dots j_{n}} = 1`.
 
-[9] For example in three dimensions :math:`{\left \{{3} \rbrc} = (0,1,2,3,(1,2),(2,3),(1,3),(1,2,3))` and as an example of how the superscript would work with each grade :math:`{{\eb}}^{0}=1`, :math:`{{\eb}}^{1}={{\eb}}^{1}`, :math:`{{\eb}}^{{\lp {1,2} \rp }}={{\eb}}^{1}{\wedge}{{\eb}}^{2}`, and :math:`{{\eb}}^{{\lp {1,2,3} \rp }}={{\eb}}^{1}{\wedge}{{\eb}}^{2}{\wedge}{{\eb}}^{3}`.
+.. [9]
+   For example in three dimensions :math:`{\left \{{3} \rbrc} = (0,1,2,3,(1,2),(2,3),(1,3),(1,2,3))` and as an example of how the superscript would work with each grade :math:`{{\eb}}^{0}=1`, :math:`{{\eb}}^{1}={{\eb}}^{1}`, :math:`{{\eb}}^{{\lp {1,2} \rp }}={{\eb}}^{1}{\wedge}{{\eb}}^{2}`, and :math:`{{\eb}}^{{\lp {1,2,3} \rp }}={{\eb}}^{1}{\wedge}{{\eb}}^{2}{\wedge}{{\eb}}^{3}`.
 
-[10] We are following the treatment of Tensors in section 3–10 of :cite:`Hestenes`.
+.. [10]
+   We are following the treatment of Tensors in section 3–10 of :cite:`Hestenes`.
 
-[11] We assume that the arguments are elements of a vector space or more generally a geometric algebra so that the concept of linearity is meaningful.
+.. [11]
+   We assume that the arguments are elements of a vector space or more generally a geometric algebra so that the concept of linearity is meaningful.
 
-[12] Since ``X`` or the metric tensor can be functions of coordinates the vector space that the geometric algebra is constructed from is not necessarily flat so that the geometric algebra is actually constructed on the tangent space of the manifold which is a vector space.
+.. [12]
+   Since ``X`` or the metric tensor can be functions of coordinates the vector space that the geometric algebra is constructed from is not necessarily flat so that the geometric algebra is actually constructed on the tangent space of the manifold which is a vector space.
 
-[13] The signature of the vector space, :math:`(p,q)`, is required to determine whether the square of the normalized pseudoscalar, :math:`I`, is :math:`+1` or :math:`-1`. In the future the metric tensor would be required to create a generalized spinor (:cite:`Hestenes`, pg106).
+.. [13]
+   The signature of the vector space, :math:`(p,q)`, is required to determine whether the square of the normalized pseudoscalar, :math:`I`, is :math:`+1` or :math:`-1`. In the future the metric tensor would be required to create a generalized spinor (:cite:`Hestenes`, pg106).
 
-[14] Using LaTeX output if a basis vector is denoted by :math:`{{\eb}}_{x}` then :math:`{{\eb}}` is the root symbol and :math:`x` is the subscript
+.. [14]
+   Using LaTeX output if a basis vector is denoted by :math:`{{\eb}}_{x}` then :math:`{{\eb}}` is the root symbol and :math:`x` is the subscript
 
-[15] There is a multivector class, ``Mv``, but in order the insure that every multivector is associated with the correct geometric algebra we always use the member function ``Ga.mv`` to instantiate the multivector.
+.. [15]
+   There is a multivector class, ``Mv``, but in order the insure that every multivector is associated with the correct geometric algebra we always use the member function ``Ga.mv`` to instantiate the multivector.
 
-[16] Denoted in text output by ``A__x``, etc. so that for text output ``A`` would be printed as ``A__x*e_x+A__y*e_y+A__z*e_z``.
+.. [16]
+   Denoted in text output by ``A__x``, etc. so that for text output ``A`` would be printed as ``A__x*e_x+A__y*e_y+A__z*e_z``.
 
-[17] If the metric is input as a list or list or lists the object is no longer quoted (input as a string). For example the old ``metric=’[1,1,1]’`` becomes ``metric=[1,1,1]``.
+.. [17]
+   If the metric is input as a list or list or lists the object is no longer quoted (input as a string). For example the old ``metric=’[1,1,1]’`` becomes ``metric=[1,1,1]``.
 
-[18] In the future it should be possible to generate closed form expressions for :math:`e^{A}` if :math:`A^{r}` is a scalar for some interger :math:`r`.
+.. [18]
+   In the future it should be possible to generate closed form expressions for :math:`e^{A}` if :math:`A^{r}` is a scalar for some interger :math:`r`.
 
-[19] See footnote [fn_6].
+.. [19]
+   See footnote [6]_.
 
-[20] ``GAeval`` is in the ``printer`` module.[fn_6]
+.. [20]
+   ``GAeval`` is in the ``printer`` module\ [6]_.
 
-[21] Remember that normalization is currently supported only for orthogonal systems (diagonal metric tensors).
+.. [21]
+   Remember that normalization is currently supported only for orthogonal systems (diagonal metric tensors).
 
-[22] The 180 in the *ConEmu* command line is the width of the console you wish to display in characters. Change the number to suit you.
+.. [22]
+   The 180 in the *ConEmu* command line is the width of the console you wish to display in characters. Change the number to suit you.
 
-[23] I am not exactly sure what the different parameter setting do. I achieved the result I wished for by trial and error. I encourage the users to experiment and share their results.
+.. [23]
+   I am not exactly sure what the different parameter setting do. I achieved the result I wished for by trial and error. I encourage the users to experiment and share their results.
 
-[24] In *Ipython notebook* tuples, or lists, or dictionarys of multivectors do print correctly. One mode of ``Fmt()`` corrects this deficiency.
+.. [24]
+   In *Ipython notebook* tuples, or lists, or dictionarys of multivectors do print correctly. One mode of ``Fmt()`` corrects this deficiency.
 
-[25] Preprocessing do not occur for the Ipython notebook and the string post processing commands ``%`` and ``#`` are not used in this case.
+.. [25]
+   Preprocessing do not occur for the Ipython notebook and the string post processing commands ``%`` and ``#`` are not used in this case.
 
-[26] The formatting of each element is respected as applied by ``A.Fmt(fmt=1,2, or 3)`` where ``A`` is an element of ``obj``\ so that if multivector/differential operation have been formatted to print on multiple lines it will printed on multiple lines.[Fmt_format]
+.. [26]
+   The formatting of each element is respected as applied by ``A.Fmt(fmt=1,2, or 3)`` where ``A`` is an element of ``obj``\ so that if multivector/differential operation have been formatted to print on multiple lines it will printed on multiple lines.[Fmt_format]
 
 .. |image0| image:: images/submanifold.svg
 .. |image1| image:: images/submanifold1.svg
