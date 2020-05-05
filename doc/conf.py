@@ -49,7 +49,8 @@ extensions = [
     'IPython.sphinxext.ipython_console_highlighting',
     'sphinx_markdown_tables',
     'm2r',
-    'releases'
+    'releases',
+    'sphinxcontrib.bibtex',
 ]
 
 
