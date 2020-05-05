@@ -902,14 +902,22 @@ def print_latex(expr, **settings):
     print(latex(expr, **settings))
 
 
-def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
-    """
-    Set modes for latex printer -
+def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
+    r"""
+    Turns on latex printing with configurable options.
 
-        Fmode:  Suppress function arguments (True)          Use sympy latex for functions (False)
-        Dmode:  Use compact form of derivatives (True)      Use sympy latex for derivatives (False)
+    This redirects printer output so that latex compiler can capture it.
 
-    and redirects printer output so that latex compiler can capture it.
+    ``Format()`` is also required for printing from *ipython notebook* (note that ``xpdf()`` is not needed to print from *ipython notebook*).
+
+    Parameters
+    ----------
+    Fmode:
+        * ``True`` -- Print functions without argument list, :math:`f`
+        * ``False`` -- Print functions with standard *sympy* latex formatting, :math:`{{f}\lp {x,y,z} \rp }`
+    Dmode:
+        * ``True`` -- Print partial derivatives with condensed notation, :math:`\partial_{x}f`
+        * ``False`` -- Print partial derivatives with standard *sympy* latex formatting, :math:`\pdiff{f}{x}`
     """
     global Format_cnt
 
