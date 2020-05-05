@@ -4,7 +4,7 @@ What is Geometric Algebra?
 .. raw:: html
 
    <script type="text/x-mathjax-config">
-   MathJax.Hub.Config({TeX: { equationNumbers: { autoNumber: "AMS" } }});
+   MathJax.Hub.Config({TeX: { equationNumbers: { tags: "AMS" } }});
    </script>
 
 .. math::
@@ -44,8 +44,6 @@ What is Geometric Algebra?
    \newcommand{\prm}[1]{{#1}'}
    \newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
    \newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
-   \newcommand{\be}{\begin{equation}}
-   \newcommand{\ee}{\end{equation}}
    \newcommand{\eb}{\bm{e}}
    \newcommand{\ehb}{\bm{\hat{e}}}
    \newcommand{\Tn}[2]{\f{\mathcal{T}_{#2}}{#1}}
@@ -72,7 +70,7 @@ two or more vectors. The additional axioms for the geometric algebra are that fo
 
 If the dot (inner) product of two vectors is defined by (:cite:`Doran`,p86)
 
-.. math:: \be a\cdot b \equiv (ab+ba)/2, \ee
+.. math:: a\cdot b \equiv (ab+ba)/2,
 
 then we have
 
@@ -87,21 +85,21 @@ then we have
 
 Thus :math:`a\cdot b` is real. The objects generated from linear combinations of the geometric products of vectors are called multivectors. If a basis for the underlying vector space are the vectors :math:`{\left \{{{{\eb}}_{1},\dots,{{\eb}}_{n}} \rbrc}` (we use boldface :math:`\eb`\ ’s to denote basis vectors) a complete basis for the geometric algebra is given by the scalar :math:`1`, the vectors :math:`{{\eb}}_{1},\dots,{{\eb}}_{n}` and all geometric products of vectors
 
-.. math:: \be {{\eb}}_{i_{1}}{{\eb}}_{i_{2}}\dots {{\eb}}_{i_{r}} \mbox{ where } 0\le r \le n\mbox{, }0 \le i_{j} \le n \mbox{ and } i_{1}<i_{2}<\dots<i_{r} \ee
+.. math:: {{\eb}}_{i_{1}}{{\eb}}_{i_{2}}\dots {{\eb}}_{i_{r}} \mbox{ where } 0\le r \le n\mbox{, }0 \le i_{j} \le n \mbox{ and } i_{1}<i_{2}<\dots<i_{r}
 
 Each base of the complete basis is represented by a non-commutative symbol (except for the scalar 1) with name :math:`{{\eb}}_{i_{1}}\dots {{\eb}}_{i_{r}}` so that the general multivector :math:`{\boldsymbol{A}}` is represented by (:math:`A` is the scalar part of the multivector and the :math:`A^{i_{1},\dots,i_{r}}` are scalars)
 
 .. math::
 
-   \be {\boldsymbol{A}} = A + \sum_{r=1}^{n}\sum_{\substack{i_{1},\dots,i_{r}\\ 0\le i_{j}<i_{j+1} \le n}}
-                  A^{i_{1},\dots,i_{r}}{{\eb}}_{i_{1}}{{\eb}}_{i_{2}}\dots {{\eb}}_{r} \ee
+   {\boldsymbol{A}} = A + \sum_{r=1}^{n}\sum_{\substack{i_{1},\dots,i_{r}\\ 0\le i_{j}<i_{j+1} \le n}}
+                  A^{i_{1},\dots,i_{r}}{{\eb}}_{i_{1}}{{\eb}}_{i_{2}}\dots {{\eb}}_{r}
 
 The critical operation in setting up the geometric algebra is reducing the geometric product of any two bases to a linear combination of bases so that we can calculate a multiplication table for the bases. Since the geometric product is associative we can use the operation (by definition for two vectors :math:`a\cdot b \equiv (ab+ba)/2` which is a scalar)
 
 .. math::
 
-   \be \label{reduce}
-         {{\eb}}_{i_{j+1}}{{\eb}}_{i_{j}} = 2{{\eb}}_{i_{j+1}}\cdot {{\eb}}_{i_{j}} - {{\eb}}_{i_{j}}{{\eb}}_{i_{j+1}} \ee
+   \label{reduce}
+         {{\eb}}_{i_{j+1}}{{\eb}}_{i_{j}} = 2{{\eb}}_{i_{j+1}}\cdot {{\eb}}_{i_{j}} - {{\eb}}_{i_{j}}{{\eb}}_{i_{j+1}}
 
 These processes are repeated until every basis list in :math:`{\boldsymbol{A}}` is in normal (ascending) order with no repeated elements. As an example consider the following
 
@@ -121,18 +119,18 @@ of vectors in a geometric product of :math:`r` factors reduces the number of non
 
 The other construction required for formulating the geometric algebra is the outer or wedge product (symbol :math:`{\wedge}`) of :math:`r` vectors denoted by :math:`a_{1}{\wedge}\dots{\wedge}a_{r}`. The wedge product of :math:`r` vectors is called an :math:`r`-blade and is defined by (:cite:`Doran`,p86)
 
-.. math:: \be a_{1}{\wedge}\dots{\wedge}a_{r} \equiv \sum_{i_{j_{1}}\dots i_{j_{r}}} \epsilon^{i_{j_{1}}\dots i_{j_{r}}}a_{i_{j_{1}}}\dots a_{i_{j_{1}}} \ee
+.. math:: a_{1}{\wedge}\dots{\wedge}a_{r} \equiv \sum_{i_{j_{1}}\dots i_{j_{r}}} \epsilon^{i_{j_{1}}\dots i_{j_{r}}}a_{i_{j_{1}}}\dots a_{i_{j_{1}}}
 
 where :math:`\epsilon^{i_{j_{1}}\dots i_{j_{r}}}` is the contravariant permutation symbol which is :math:`+1` for an even permutation of the superscripts, :math:`0` if any superscripts are repeated, and :math:`-1` for an odd permutation of the superscripts. From the definition :math:`a_{1}{\wedge}\dots{\wedge}a_{r}` is antisymmetric in all its arguments and the following relation for the wedge product of a vector :math:`a` and an :math:`r`-blade :math:`B_{r}` can be derived
 
 .. math::
 
-   \be \label{wedge}
-         a{\wedge}B_{r} = (aB_{r}+(-1)^{r}B_{r}a)/2 \ee
+   \label{wedge}
+         a{\wedge}B_{r} = (aB_{r}+(-1)^{r}B_{r}a)/2
 
 Using eq. (:math:`\ref{wedge}`) one can represent the wedge product of all the basis vectors in terms of the geometric product of all the basis vectors so that one can solve (the system of equations is lower diagonal) for the geometric product of all the basis vectors in terms of the wedge product of all the basis vectors. Thus a general multivector :math:`{\boldsymbol{B}}` can be represented as a linear combination of a scalar and the basis blades.
 
-.. math:: \be {\boldsymbol{B}} = B + \sum_{r=1}^{n}\sum_{i_{1},\dots,i_{r},\;\forall\; 0\le i_{j} \le n} B^{i_{1},\dots,i_{r}}{{\eb}}_{i_{1}}{\wedge}{{\eb}}_{i_{2}}{\wedge}\dots{\wedge}{{\eb}}_{r} \ee
+.. math:: {\boldsymbol{B}} = B + \sum_{r=1}^{n}\sum_{i_{1},\dots,i_{r},\;\forall\; 0\le i_{j} \le n} B^{i_{1},\dots,i_{r}}{{\eb}}_{i_{1}}{\wedge}{{\eb}}_{i_{2}}{\wedge}\dots{\wedge}{{\eb}}_{r}
 
 Using the blades :math:`{{\eb}}_{i_{1}}{\wedge}{{\eb}}_{i_{2}}{\wedge}\dots{\wedge}{{\eb}}_{r}` creates a graded algebra where :math:`r` is the grade of the basis blades. The grade-:math:`r` part of :math:`{\boldsymbol{B}}` is the linear combination of all terms with grade :math:`r` basis blades.
 
@@ -141,11 +139,11 @@ Grade Projection
 
 The scalar part of :math:`{\boldsymbol{B}}` is defined to be grade-:math:`0`. Now that the blade expansion of :math:`{\boldsymbol{B}}` is defined we can also define the grade projection operator :math:`{\left <{{\boldsymbol{B}}} \right >_{r}}` by
 
-.. math:: \be {\left <{{\boldsymbol{B}}} \right >_{r}} = \sum_{i_{1},\dots,i_{r},\;\forall\; 0\le i_{j} \le n} B^{i_{1},\dots,i_{r}}{{\eb}}_{i_{1}}{\wedge}{{\eb}}_{i_{2}}{\wedge}\dots{\wedge}{{\eb}}_{r} \ee
+.. math:: {\left <{{\boldsymbol{B}}} \right >_{r}} = \sum_{i_{1},\dots,i_{r},\;\forall\; 0\le i_{j} \le n} B^{i_{1},\dots,i_{r}}{{\eb}}_{i_{1}}{\wedge}{{\eb}}_{i_{2}}{\wedge}\dots{\wedge}{{\eb}}_{r}
 
 and
 
-.. math:: \be {\left <{{\boldsymbol{B}}} \right >_{}} \equiv {\left <{{\boldsymbol{B}}} \right >_{0}} = B \ee
+.. math:: {\left <{{\boldsymbol{B}}} \right >_{}} \equiv {\left <{{\boldsymbol{B}}} \right >_{0}} = B
 
 Multivector Products
 ~~~~~~~~~~~~~~~~~~~~
@@ -154,8 +152,8 @@ Then if :math:`{\boldsymbol{A}}_{r}` is an :math:`r`-grade multivector and :math
 
 .. math::
 
-   \be {\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s} = {\left <{{\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s}} \right >_{{\left |{r-s}\right |}}}+{\left <{{\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s}} \right >_{{\left |{r-s}\right |}+2}}+\cdots
-                                {\left <{{\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s}} \right >_{r+s}} \ee
+   {\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s} = {\left <{{\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s}} \right >_{{\left |{r-s}\right |}}}+{\left <{{\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s}} \right >_{{\left |{r-s}\right |}+2}}+\cdots
+                                {\left <{{\boldsymbol{A}}_{r}{\boldsymbol{B}}_{s}} \right >_{r+s}}
 
 and define (:cite:`Hestenes`,p6)
 
@@ -201,11 +199,11 @@ A final operation for multivectors is the reverse. If a multivector :math:`{\bol
 
 where for a general multivector we have (the the sum of the reverse of versors)
 
-.. math:: \be {\boldsymbol{A}}^{{\dagger}} = A + \sum_{r=1}^{n}(-1)^{r(r-1)/2}\sum_{i_{1},\dots,i_{r},\;\forall\; 0\le i_{j} \le n} A^{i_{1},\dots,i_{r}}{{\eb}}_{i_{1}}{\wedge}{{\eb}}_{i_{2}}{\wedge}\dots{\wedge}{{\eb}}_{r} \ee
+.. math:: {\boldsymbol{A}}^{{\dagger}} = A + \sum_{r=1}^{n}(-1)^{r(r-1)/2}\sum_{i_{1},\dots,i_{r},\;\forall\; 0\le i_{j} \le n} A^{i_{1},\dots,i_{r}}{{\eb}}_{i_{1}}{\wedge}{{\eb}}_{i_{2}}{\wedge}\dots{\wedge}{{\eb}}_{r}
 
 note that if :math:`{\boldsymbol{A}}` is a versor then :math:`{\boldsymbol{A}}{\boldsymbol{A}}^{{\dagger}}\in\Re` and (:math:`AA^{{\dagger}} \ne 0`)
 
-.. math:: \be {\boldsymbol{A}}^{-1} = {\displaystyle\frac{{\boldsymbol{A}}^{{\dagger}}}{{\boldsymbol{AA}}^{{\dagger}}}} \ee
+.. math:: {\boldsymbol{A}}^{-1} = {\displaystyle\frac{{\boldsymbol{A}}^{{\dagger}}}{{\boldsymbol{AA}}^{{\dagger}}}}
 
 The reverse is important in the theory of rotations in :math:`n`-dimensions. If :math:`R` is the product of an even number of vectors and :math:`RR^{{\dagger}} = 1` then :math:`RaR^{{\dagger}}` is a composition of rotations of the vector :math:`a`. If :math:`R` is the product of two vectors then the plane that :math:`R` defines is the plane of the rotation. That is to say that :math:`RaR^{{\dagger}}` rotates the component of :math:`a` that is projected into the plane defined by :math:`a` and
 :math:`b` where :math:`R=ab`. :math:`R` may be written :math:`R = e^{\frac{\theta}{2}U}`, where :math:`\theta` is the angle of rotation and :math:`U` is a unit blade :math:`\lp U^{2} = \pm 1\rp` that defines the plane of rotation.
@@ -215,13 +213,13 @@ Reciprocal Frames
 
 If we have :math:`M` linearly independent vectors (a frame), :math:`a_{1},\dots,a_{M}`, then the reciprocal frame is :math:`a^{1},\dots,a^{M}` where :math:`a_{i}\cdot a^{j} = \delta_{i}^{j}`, :math:`\delta_{i}^{j}` is the Kronecker delta (zero if :math:`i \ne j` and one if :math:`i = j`). The reciprocal frame is constructed as follows:
 
-.. math:: \be E_{M} = a_{1}{\wedge}\dots{\wedge}a_{M} \ee
+.. math:: E_{M} = a_{1}{\wedge}\dots{\wedge}a_{M}
 
-.. math:: \be E_{M}^{-1} = {\displaystyle\frac{E_{M}}{E_{M}^{2}}} \ee
+.. math:: E_{M}^{-1} = {\displaystyle\frac{E_{M}}{E_{M}^{2}}}
 
 Then
 
-.. math:: \be a^{i} = \lp -1\rp ^{i-1}\lp a_{1}{\wedge}\dots{\wedge}\breve{a}_{i} {\wedge}\dots{\wedge}a_{M}\rp E_{M}^{-1} \ee
+.. math:: a^{i} = \lp -1\rp ^{i-1}\lp a_{1}{\wedge}\dots{\wedge}\breve{a}_{i} {\wedge}\dots{\wedge}a_{M}\rp E_{M}^{-1}
 
 where :math:`\breve{a}_{i}` indicates that :math:`a_{i}` is to be deleted from the product. In the standard notation if a vector is denoted with a subscript the reciprocal vector is denoted with a superscript. The set of reciprocal vectors will be calculated if a coordinate set is given when a geometric algebra is instantiated since they are required for geometric differentiation when the ``Ga`` member function ``Ga.mvr()`` is called to return the reciprocal basis in terms of the basis vectors.
 
@@ -232,80 +230,78 @@ Manifolds and Submanifolds
 
 A :math:`m`-dimensional vector manifold\ [4]_, :math:`\mathcal{M}`, is defined by a coordinate tuple (tuples are indicated by the vector accent “:math:`\vec{\;\;\;}`”)
 
-.. math:: \be \vec{x} = \paren{x^{1},\dots,x^{m}}, \ee
+.. math:: \vec{x} = \paren{x^{1},\dots,x^{m}},
 
 and the differentiable mapping (:math:`U^{m}` is an :math:`m`-dimensional subset of :math:`\Re^{m}`)
 
-.. math:: \be \f{\bm{e}^{\mathcal{M}}}{\vec{x}}\colon U^{m}\subseteq\Re^{m}\rightarrow \mathcal{V}, \ee
+.. math:: \f{\bm{e}^{\mathcal{M}}}{\vec{x}}\colon U^{m}\subseteq\Re^{m}\rightarrow \mathcal{V},
 
 where :math:`\mathcal{V}` is a vector space with an inner product\ [5]_ (:math:`\cdot`) and is of :math:`{{\dim}\lp {\mathcal{V}} \rp } \ge m`.
 
 Then a set of basis vectors for the tangent space of :math:`\mathcal{M}` at :math:`\vec{x}`, :math:`{{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}`, are
 
-.. math:: \be \bm{e}_{i}^{\mathcal{M}} = \pdiff{\bm{e}^{\mathcal{M}}}{x^{i}} \ee
+.. math:: \bm{e}_{i}^{\mathcal{M}} = \pdiff{\bm{e}^{\mathcal{M}}}{x^{i}}
 
 and
 
-.. math:: \be \f{g_{ij}^{\mathcal{M}}}{\vec{x}} = \bm{e}_{i}^{\mathcal{M}}\cdot\bm{e}_{j}^{\mathcal{M}}. \ee
+.. math:: \f{g_{ij}^{\mathcal{M}}}{\vec{x}} = \bm{e}_{i}^{\mathcal{M}}\cdot\bm{e}_{j}^{\mathcal{M}}.
 
 A :math:`n`-dimensional (:math:`n\le m`) submanifold :math:`\mathcal{N}` of :math:`\mathcal{M}` is defined by a coordinate tuple
 
-.. math:: \be \vec{u} = \paren{u^{1},\dots,u^{n}}, \ee
+.. math:: \vec{u} = \paren{u^{1},\dots,u^{n}},
 
 and a differentiable mapping
 
 .. math::
 
-   \be \label{eq_79}
+   \label{eq_79}
        \f{\vec{x}}{\vec{u}}\colon U^{n}\subseteq\Re^{n}\rightarrow U^{m}\subseteq\Re^{m},
-    \ee
 
 Then the basis vectors for the tangent space :math:`{{{\mathcal{T}_{\vec{u}}}\lp {\mathcal{N}} \rp }}` are (using :math:`{{{{\eb}}^{\mathcal{N}}}\lp {\vec{u}} \rp } = {{{{\eb}}^{\mathcal{M}}}\lp {{{\vec{x}}\lp {\vec{u}} \rp }} \rp }` and the chain rule)\ [6]_
 
 .. math::
 
-   \be     \f{\bm{e}_{i}^{\mathcal{N}}}{\vec{u}} = \pdiff{\f{\bm{e}^{\mathcal{N}}}{\vec{u}}}{u^{i}}
-                                                 = \pdiff{\f{\bm{e}^{\mathcal{M}}}{\vec{x}}}{x^{j}}\pdiff{x^{j}}{u^{i}}
-                                                 = \f{\bm{e}_{j}^{\mathcal{M}}}{\f{\vec{x}}{\vec{u}}}\pdiff{x^{j}}{u^{i}}, \ee
+   \f{\bm{e}_{i}^{\mathcal{N}}}{\vec{u}} = \pdiff{\f{\bm{e}^{\mathcal{N}}}{\vec{u}}}{u^{i}}
+                                         = \pdiff{\f{\bm{e}^{\mathcal{M}}}{\vec{x}}}{x^{j}}\pdiff{x^{j}}{u^{i}}
+                                         = \f{\bm{e}_{j}^{\mathcal{M}}}{\f{\vec{x}}{\vec{u}}}\pdiff{x^{j}}{u^{i}},
 
 and
 
 .. math::
 
-   \be \label{eq_81}
+   \label{eq_81}
        \f{g_{ij}^{\mathcal{N}}}{\vec{u}} = \pdiff{x^{k}}{u^{i}}\pdiff{x^{l}}{u^{j}}
                                                \f{g_{kl}^{\mathcal{M}}}{\f{\vec{x}}{\vec{u}}}.
-    \ee
 
 Going back to the base manifold, :math:`\mathcal{M}`, note that the mapping :math:`{{{\eb}^{\mathcal{M}}}\lp {\vec{x}} \rp }\colon U^{n}\subseteq\Re^{n}\rightarrow \mathcal{V}` allows us to calculate an unnormalized pseudo-scalar for :math:`{{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}`,
 
 .. math::
 
-   \be     \f{I^{\mathcal{M}}}{\vec{x}} = \f{\bm{e}_{1}^{\mathcal{M}}}{\vec{x}}
-                                          \W\dots\W\f{\bm{e}_{m}^{\mathcal{M}}}{\vec{x}}. \ee
+   \f{I^{\mathcal{M}}}{\vec{x}} = \f{\bm{e}_{1}^{\mathcal{M}}}{\vec{x}}
+                                          \W\dots\W\f{\bm{e}_{m}^{\mathcal{M}}}{\vec{x}}.
 
 With the pseudo-scalar we can define a projection operator from :math:`\mathcal{V}` to the tangent space of :math:`\mathcal{M}` by
 
 .. math::
 
-   \be     \f{P_{\vec{x}}}{\bm{v}} = (\bm{v}\cdot \f{I^{\mathcal{M}}}{\vec{x}})
-                                 \paren{\f{I^{\mathcal{M}}}{\vec{x}}}^{-1} \;\forall\; \bm{v}\in\mathcal{V}. \ee
+   \f{P_{\vec{x}}}{\bm{v}} = (\bm{v}\cdot \f{I^{\mathcal{M}}}{\vec{x}})
+                                 \paren{\f{I^{\mathcal{M}}}{\vec{x}}}^{-1} \;\forall\; \bm{v}\in\mathcal{V}.
 
 In fact for each tangent space :math:`{{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}` we can define a geometric algebra :math:`{{\mathcal{G}}\lp {{{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}} \rp }` with pseudo-scalar :math:`I^{\mathcal{M}}` so that if :math:`A \in {{\mathcal{G}}\lp {\mathcal{V}} \rp }` then
 
 .. math::
 
-   \be     \f{P_{\vec{x}}}{A} = \paren{A\cdot \f{I^{\mathcal{M}}}{\vec{x}}}
+   \f{P_{\vec{x}}}{A} = \paren{A\cdot \f{I^{\mathcal{M}}}{\vec{x}}}
                             \paren{\f{I^{\mathcal{M}}}{\vec{x}}}^{-1}
                             \in \f{\mathcal{G}}{\Tn{\mathcal{M}}{\vec{x}}}\;\forall\;
-                            A \in \f{\mathcal{G}}{\mathcal{V}} \ee
+                            A \in \f{\mathcal{G}}{\mathcal{V}}
 
 and similarly for the submanifold :math:`\mathcal{N}`.
 
 If the embedding :math:`{{{\eb}^{\mathcal{M}}}\lp {\vec{x}} \rp }\colon U^{n}\subseteq\Re^{n}\rightarrow \mathcal{V}` is not given, but the metric tensor :math:`{{g_{ij}^{\mathcal{M}}}\lp {\vec{x}} \rp }` is given the geometric algebra of the tangent space can be constructed. Also the derivatives of the basis vectors of the tangent space can be calculated from the metric tensor using the Christoffel symbols, :math:`{{\Gamma_{ij}^{k}}\lp {\vec{u}} \rp }`, where the derivatives of the basis
 vectors are given by
 
-.. math:: \be \pdiff{\bm{e}_{j}^{\mathcal{M}}}{x^{i}} =\f{\Gamma_{ij}^{k}}{\vec{u}}\bm{e}_{k}^{\mathcal{M}}. \ee
+.. math:: \pdiff{\bm{e}_{j}^{\mathcal{M}}}{x^{i}} =\f{\Gamma_{ij}^{k}}{\vec{u}}\bm{e}_{k}^{\mathcal{M}}.
 
 If we have a submanifold, :math:`\mathcal{N}`, defined by eq. (:math:`\ref{eq_79}`) we can calculate the metric of :math:`\mathcal{N}` from eq. (:math:`\ref{eq_81}`) and hence construct the geometric algebra and calculus of the tangent space, :math:`{{{\mathcal{T}_{\vec{u}}}\lp {\mathcal{N}} \rp }}\subseteq {{{\mathcal{T}_{{{\vec{x}}\lp {\vec{u}} \rp }}}\lp {\mathcal{M}} \rp }}`.
 
@@ -319,24 +315,24 @@ Geometric Derivative
 
 The directional derivative of a multivector field :math:`{{F}\lp {x} \rp }` is defined by (:math:`a` is a vector and :math:`h` is a scalar)
 
-.. math:: \be \paren{a\cdot\nabla_{x}}F \equiv \lim_{h\rightarrow 0}\bfrac{\f{F}{x+ah}-\f{F}{x}}{h}. \label{eq_50} \ee
+.. math:: \paren{a\cdot\nabla_{x}}F \equiv \lim_{h\rightarrow 0}\bfrac{\f{F}{x+ah}-\f{F}{x}}{h}. \label{eq_50}
 
 Note that :math:`a\cdot\nabla_{x}` is a scalar operator. It will give a result containing only those grades that are already in :math:`F`. :math:`{\lp {a\cdot\nabla_{x}} \rp }F` is the best linear approximation of :math:`{{F}\lp {x} \rp }` in the direction :math:`a`. Equation (:math:`\ref{eq_50}`) also defines the operator :math:`\nabla_{x}` which for the basis vectors, :math:`{\left \{{{\eb}_{i}} \rbrc}`, has the representation (note that the :math:`{\left \{{{\eb}^{j}} \rbrc}` are reciprocal
 basis vectors)
 
-.. math:: \be \nabla_{x} F = {\eb}^{j}{\displaystyle\frac{\partial F}{\partial x^{j}}} \ee
+.. math:: \nabla_{x} F = {\eb}^{j}{\displaystyle\frac{\partial F}{\partial x^{j}}}
 
 If :math:`F_{r}` is a :math:`r`-grade multivector (if the independent vector, :math:`x`, is obvious we suppress it in the notation and just write :math:`\nabla`) and :math:`F_{r} = F_{r}^{i_{1}\dots i_{r}}{\eb}_{i_{1}}{\wedge}\dots{\wedge}{\eb}_{i_{r}}` then
 
-.. math:: \be \nabla F_{r} = {\displaystyle\frac{\partial F_{r}^{i_{1}\dots i_{r}}}{\partial x^{j}}}{\eb}^{j}\lp {\eb}_{i_{1}}{\wedge}\dots{\wedge}{\eb}_{i_{r}} \rp  \ee
+.. math:: \nabla F_{r} = {\displaystyle\frac{\partial F_{r}^{i_{1}\dots i_{r}}}{\partial x^{j}}}{\eb}^{j}\lp {\eb}_{i_{1}}{\wedge}\dots{\wedge}{\eb}_{i_{r}} \rp
 
 Note that :math:`{\eb}^{j}\lp {\eb}_{i_{1}}{\wedge}\dots{\wedge}{\eb}_{i_{r}} \rp` can only contain grades :math:`r-1` and :math:`r+1` so that :math:`\nabla F_{r}` also can only contain those grades. For a grade-:math:`r` multivector :math:`F_{r}` the inner (div) and outer (curl) derivatives are
 
-.. math:: \be \nabla\cdot F_{r} = \left < \nabla F_{r}\right >_{r-1} = {\eb}^{j}\cdot {{\displaystyle\frac{\partial {F_{r}}}{\partial {x^{j}}}}} \ee
+.. math:: \nabla\cdot F_{r} = \left < \nabla F_{r}\right >_{r-1} = {\eb}^{j}\cdot {{\displaystyle\frac{\partial {F_{r}}}{\partial {x^{j}}}}}
 
 and
 
-.. math:: \be \nabla{\wedge}F_{r} = \left < \nabla F_{r}\right >_{r+1} = {\eb}^{j}{\wedge}{{\displaystyle\frac{\partial {F_{r}}}{\partial {x^{j}}}}} \ee
+.. math:: \nabla{\wedge}F_{r} = \left < \nabla F_{r}\right >_{r+1} = {\eb}^{j}{\wedge}{{\displaystyle\frac{\partial {F_{r}}}{\partial {x^{j}}}}}
 
 For a general multivector function :math:`F` the inner and outer derivatives are just the sum of the inner and outer derivatives of each grade of the multivector function.
 
@@ -372,7 +368,7 @@ Normalizing Basis for Derivatives
 
 The basis vector set, :math:`{\left \{ {{\eb}_{i}} \rbrc}`, is not in general normalized. We define a normalized set of basis vectors, :math:`{\left \{{{\boldsymbol{\hat{e}}}_{i}} \rbrc}`, by
 
-.. math:: \be {\boldsymbol{\hat{e}}}_{i} = {\displaystyle\frac{{\eb}_{i}}{\sqrt{{\left |{{\eb}_{i}^{2}}\right |}}}} = {\displaystyle\frac{{\eb}_{i}}{{\left |{{\eb}_{i}}\right |}}}. \ee
+.. math:: {\boldsymbol{\hat{e}}}_{i} = {\displaystyle\frac{{\eb}_{i}}{\sqrt{{\left |{{\eb}_{i}^{2}}\right |}}}} = {\displaystyle\frac{{\eb}_{i}}{{\left |{{\eb}_{i}}\right |}}}.
 
 This works for all :math:`{\eb}_{i}^{2} \neq 0`. Note that :math:`{\boldsymbol{\hat{e}}}_{i}^{2} = \pm 1`.
 
@@ -380,11 +376,11 @@ Thus the geometric derivative for a set of normalized basis vectors is (where :m
 
 .. math::
 
-   \be     \nabla F_{r} = \eb^{i}\pdiff{F_{r}}{x^{i}} =
+   \nabla F_{r} = \eb^{i}\pdiff{F_{r}}{x^{i}} =
                       \pdiff{F_{r}^{i_{1}\dots i_{r}}}{x^{i}}\bm{e}^{i}
                       \paren{\bm{\hat{e}}_{i_{1}}\W\dots\W\bm{\hat{e}}_{i_{r}}}
                        +F_{r}^{i_{1}\dots i_{r}}\bm{e}^{i}\pdiff{}{x^{i}}
-                       \paren{\bm{\hat{e}}_{i_{1}}\W\dots\W\bm{\hat{e}}_{i_{r}}}. \ee
+                       \paren{\bm{\hat{e}}_{i_{1}}\W\dots\W\bm{\hat{e}}_{i_{r}}}.
 
 To calculate :math:`{\eb}^{i}` in terms of the :math:`{\boldsymbol{\hat{e}}}_{i}`\ ’s we have
 
@@ -428,41 +424,39 @@ First a note on partial derivative notation. We shall use the following notation
 
 .. math::
 
-   \be\label{eq_66a}
+   \label{eq_66a}
        \bfrac{\partial^{j_{1}+\cdots+j_{n}}}{\partial x_{1}^{j_{1}}\dots\partial x_{n}^{j_{n}}} = \partial_{j_{1}\dots j_{n}}.
-   \ee
 
 If :math:`j_{k}=0` the partial derivative with respect to the :math:`k^{th}` coordinate is not taken. If :math:`j_{k} = 0` for all :math:`1 \le k \le n` then the partial derivative operator is the scalar one. If we consider a partial derivative where the :math:`x`\ ’s are not in normal order such as
 
-.. math:: \be {\displaystyle\frac{\partial^{j_{1}+\cdots+j_{n}}}{\partial x_{i_{1}}^{j_{1}}\dots\partial x_{i_{n}}^{j_{n}}}}, \ee
+.. math:: {\displaystyle\frac{\partial^{j_{1}+\cdots+j_{n}}}{\partial x_{i_{1}}^{j_{1}}\dots\partial x_{i_{n}}^{j_{n}}}},
 
 and the :math:`i_{k}`\ ’s are not in ascending order. The derivative can always be put in the form in eq (:math:`\ref{eq_66a}`) since the order of differentiation does not change the value of the partial derivative (for the smooth functions we are considering). Additionally, using our notation the product of two partial derivative operations is given by
 
-.. math:: \be \partial_{i_{1}\dots i_{n}}\partial_{j_{1}\dots j_{n}} = \partial_{i_{1}+j_{1},\dots, i_{n}+j_{n}}. \ee
+.. math:: \partial_{i_{1}\dots i_{n}}\partial_{j_{1}\dots j_{n}} = \partial_{i_{1}+j_{1},\dots, i_{n}+j_{n}}.
 
 A general general multivector linear differential operator is a linear combination of multivectors and partial derivative operators denoted by
 
 .. math::
 
-   \be\label{eq_66b}
+   \label{eq_66b}
        D \equiv D^{i_{1}\dots i_{n}}\partial_{i_{1}\dots i_{n}}.
-   \ee
 
 Equation (:math:`\ref{eq_66b}`) is the normal form of the differential operator in that the partial derivative operators are written to the right of the multivector coefficients and do not operate upon the multivector coefficients. The operator of eq (:math:`\ref{eq_66b}`) can operate on mulitvector functions, returning a multivector function via the following definitions.
 
 :math:`F` as
 
-.. math:: \be D\circ F = D^{j_{1}\dots j_{n}}\circ\partial_{j_{1}\dots j_{n}}F,\label{eq_67a}  \ee
+.. math:: D\circ F = D^{j_{1}\dots j_{n}}\circ\partial_{j_{1}\dots j_{n}}F,\label{eq_67a}
 
 , or
 
-.. math:: \be F\circ D = \partial_{j_{1}\dots j_{n}}F\circ D^{j_{1}\dots j_{n}},\label{eq_68a} \ee
+.. math:: F\circ D = \partial_{j_{1}\dots j_{n}}F\circ D^{j_{1}\dots j_{n}},\label{eq_68a}
 
 where the :math:`D^{j_{1}\dots j_{n}}` are multivector functions and :math:`\circ` is any of the multivector multiplicative operations.
 
 Equations (:math:`\ref{eq_67a}`) and (:math:`\ref{eq_68a}`) are not the most general multivector linear differential operators, the most general would be
 
-.. math:: \be D \left( F \right) = {D^{j_{1}\dots j_{n}}}\left({\partial_{j_{1}\dots j_{n}}F}\right), \ee
+.. math:: D \left( F \right) = {D^{j_{1}\dots j_{n}}}\left({\partial_{j_{1}\dots j_{n}}F}\right),
 
 where :math:`{{D^{j_{1}\dots j_{n}}}\lp {} \rp }` are linear multivector functionals.
 
@@ -490,10 +484,10 @@ Thus for a pure operator product :math:`D_{A}\circ D_{B}` we have
 
 .. math::
 
-   \be D_{A}\circ D_{B} = \paren{D_{A}^{i_{1}\dots i_{n}}\circ\paren{\partial_{i_{1}\dots i_{n}}D_{B}^{j_{1}\dots j_{n}}}}
+   D_{A}\circ D_{B} = \paren{D_{A}^{i_{1}\dots i_{n}}\circ\paren{\partial_{i_{1}\dots i_{n}}D_{B}^{j_{1}\dots j_{n}}}}
                                                 \partial_{j_{1}\dots j_{n}}+
                                                 \paren{D_{A}^{i_{1}\dots i_{n}}\circ_{1}D_{B}^{j_{1}\dots j_{n}}}
-                                                \partial_{i_{1}+j_{1},\dots, i_{n}+j_{n}} \label{eq_71a}  \ee
+                                                \partial_{i_{1}+j_{1},\dots, i_{n}+j_{n}} \label{eq_71a}
 
 and the form of eq (:math:`\ref{eq_71a}`) is the same as eq (:math:`\ref{eq_67a}`). The basis of eq (:math:`\ref{eq_71a}`) is that the :math:`\partial` operator operates on all object to the right of it as products so that the product rule must be used in all differentiations. Since eq (:math:`\ref{eq_71a}`) puts the product of two differential operators in standard form we also evaluate :math:`F\circ_{2}{\lp {D_{A}\circ_{1}D_{B}} \rp }`.
 
@@ -504,31 +498,25 @@ A general differential operator is built from repeated applications of the basic
 
 .. math::
 
-   \be 
-       \nabla = \bar{\nabla} = e^{i}\pdiff{}{x^{i}},
-    \ee
+   \nabla = \bar{\nabla} = e^{i}\pdiff{}{x^{i}},
 
 but are flagged to produce the appropriate result.
 
 In the our notation the directional derivative operator is :math:`a\cdot\nabla`, the Laplacian :math:`\nabla\cdot\nabla` and the expression for the Riemann tensor, :math:`R^{i}_{jkl}`, is
 
-.. math:: \be \paren{\nabla\W\nabla}\eb^{i} = \half R^{i}_{jkl}\paren{\eb^{j}\W\eb^{k}}\eb^{l}. \ee
+.. math:: \paren{\nabla\W\nabla}\eb^{i} = \half R^{i}_{jkl}\paren{\eb^{j}\W\eb^{k}}\eb^{l}.
 
 We would use the complement if we wish a quantum mechanical type commutator defining
 
 .. math::
 
-   \be
-       \com{x,\nabla} \equiv x\nabla - \bar{\nabla}x,
-   \ee
+   \com{x,\nabla} \equiv x\nabla - \bar{\nabla}x,
 
 , or if we wish to simulate the dot notation (Doran and Lasenby)
 
 .. math::
 
-   \be
-       \dot{F}\dot{\nabla} = F\bar{\nabla}.
-   \ee
+   \dot{F}\dot{\nabla} = F\bar{\nabla}.
 
 Split Differential Operator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -536,7 +524,7 @@ Split Differential Operator
 To implement the general “dot” notation for differential operators in python is not possible. Another type of symbolic notation is required. I propose what one could call the “split differential operator.” For :math:`\nabla` denote the corresponding split operator by two operators :math:`{{\nabla}_{\mathcal{G}}}` and :math:`{{\nabla}_{\mathcal{D}}}` where in practice :math:`{{\nabla}_{\mathcal{G}}}` is a tuple of vectors and :math:`{{\nabla}_{\mathcal{D}}}` is a tuple of corresponding partial
 derivatives. Then the equivalent of the “dot” notation would be
 
-.. math:: \be \dot{\nabla}{\lp {A\dot{B}C} \rp } = {{\nabla}_{\mathcal{G}}}{\lp {A{\lp {{{\nabla}_{\mathcal{D}}}B} \rp }C} \rp }.\label{splitopV} \ee
+.. math:: \dot{\nabla}{\lp {A\dot{B}C} \rp } = {{\nabla}_{\mathcal{G}}}{\lp {A{\lp {{{\nabla}_{\mathcal{D}}}B} \rp }C} \rp }.\label{splitopV}
 
 We are using the :math:`\mathcal{G}` subscript to indicate the geometric algebra parts of the multivector differential operator and the :math:`\mathcal{D}` subscript to indicate the scalar differential operator parts of the multivector differential operator. An example of this notation in 3D Euclidean space is
 
@@ -557,33 +545,33 @@ To implement :math:`{{\nabla}_{\mathcal{G}}}` and :math:`{{\nabla}_{\mathcal{D}}
 
 Then the final evaluation is
 
-.. math:: \be {{\nabla}_{\mathcal{G}}}{\lp {A{\lp {{{\nabla}_{\mathcal{D}}}B} \rp }C} \rp } = {{\eb}}_{x}A{{\displaystyle\frac{\partial {B}}{\partial {x}}}}C+{{\eb}}_{y}A{{\displaystyle\frac{\partial {B}}{\partial {y}}}}C+{{\eb}}_{z}A{{\displaystyle\frac{\partial {B}}{\partial {z}}}}C, \ee
+.. math:: {{\nabla}_{\mathcal{G}}}{\lp {A{\lp {{{\nabla}_{\mathcal{D}}}B} \rp }C} \rp } = {{\eb}}_{x}A{{\displaystyle\frac{\partial {B}}{\partial {x}}}}C+{{\eb}}_{y}A{{\displaystyle\frac{\partial {B}}{\partial {y}}}}C+{{\eb}}_{z}A{{\displaystyle\frac{\partial {B}}{\partial {z}}}}C,
 
 which could be called the “dot” product of two tuples. Note that :math:`\nabla = {{\nabla}_{\mathcal{G}}}{{\nabla}_{\mathcal{D}}}` and :math:`\dot{F}\dot{\nabla} = F\bar{\nabla} = {\lp {{{\nabla}_{\mathcal{D}}}F} \rp }{{\nabla}_{\mathcal{G}}}`.
 
 For the general multivector differential operator, :math:`D`, the split operator parts are :math:`{{D}_{\mathcal{G}}}`, a tuple of basis blade multivectors and :math:`{{D}_{\mathcal{D}}}`, a tuple of scalar differential operators that correspond to the coefficients of the basis-blades in the total operator :math:`D` so that
 
-.. math:: \be \dot{D}{\lp {A\dot{B}C} \rp } = {{D}_{\mathcal{G}}}{\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp }. \label{splitopM} \ee
+.. math:: \dot{D}{\lp {A\dot{B}C} \rp } = {{D}_{\mathcal{G}}}{\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp }. \label{splitopM}
 
 If the index set for the basis blades of a geometric algebra is denoted by :math:`{\left \{{n} \rbrc}` where :math:`{\left \{{n} \rbrc}` contains :math:`2^{n}` indices for an :math:`n` dimensional geometric algebra then the most general multivector differential operator can be written\ [9]_
 
 .. math::
 
-   \be D = {{\displaystyle}\sum_{l\in{\left \{
+   D = {{\displaystyle}\sum_{l\in{\left \{
    {n} \rbrc}}{{\eb}}^{l}D_{{\left \{
-   {l} \rbrc}}} \ee
+   {l} \rbrc}}}
 
 .. math::
 
-   \be \dot{D}{\lp {A\dot{B}C} \rp } = {{D}_{\mathcal{G}}}{\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp } = {{\displaystyle}\sum_{l\in{\left \{
-   {n} \rbrc}}{{\eb}}^{l}{\lp {A{\lp {D_{l}B} \rp }C} \rp }} \ee
+   \dot{D}{\lp {A\dot{B}C} \rp } = {{D}_{\mathcal{G}}}{\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp } = {{\displaystyle}\sum_{l\in{\left \{
+   {n} \rbrc}}{{\eb}}^{l}{\lp {A{\lp {D_{l}B} \rp }C} \rp }}
 
 or
 
 .. math::
 
-   \be {\lp {A\dot{B}C} \rp }\dot{D} = {\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp }{{D}_{\mathcal{G}}} = {{\displaystyle}\sum_{l\in{\left \{
-   {n} \rbrc}}{\lp {A{\lp {D_{l}B} \rp }C} \rp }{{\eb}}^{l}}. \ee
+   {\lp {A\dot{B}C} \rp }\dot{D} = {\lp {A{\lp {{{D}_{\mathcal{D}}}B} \rp }C} \rp }{{D}_{\mathcal{G}}} = {{\displaystyle}\sum_{l\in{\left \{
+   {n} \rbrc}}{\lp {A{\lp {D_{l}B} \rp }C} \rp }{{\eb}}^{l}}.
 
 The implementation of equations :math:`\ref{splitopV}` and :math:`\ref{splitopM}` is described in sections :ref:`makeMV` and :ref:`makeMVD`.
 
@@ -604,9 +592,9 @@ The outermorphism induced by :math:`\underline{T}` is defined for :math:`x_{1},\
 
 .. math::
 
-   \be \newcommand{\f}[2]{{#1}\lp {#2} \rp }
+   \newcommand{\f}[2]{{#1}\lp {#2} \rp }
    \newcommand{\W}{\wedge}
-   \f{\underline{T}}{x_{1}\W\dots\W x_{r}} \equiv \f{\underline{T}}{x_{1}}\W\dots\W\f{\underline{T}}{x_{r}} \ee
+   \f{\underline{T}}{x_{1}\W\dots\W x_{r}} \equiv \f{\underline{T}}{x_{1}}\W\dots\W\f{\underline{T}}{x_{r}}
 
 If :math:`I` is the pseudo scalar for :math:`{{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}` we also have the following definitions for determinate, trace, and adjoint (:math:`\overline{T}`) of :math:`\underline{T}`
 
@@ -620,11 +608,11 @@ If :math:`I` is the pseudo scalar for :math:`{{{\mathcal{T}_{\vec{x}}}\lp {\math
 
 If :math:`{\left \{{{{\eb}}_{i}} \rbrc}` is a basis for :math:`{{{\mathcal{T}_{\vec{x}}}\lp {\mathcal{M}} \rp }}` then we can represent :math:`\underline{T}` with the matrix :math:`\underline{T}_{i}^{j}` used as follows (Einstein summation convention as usual) -
 
-.. math:: \be     \f{\underline{T}}{\eb_{i}} = \underline{T}_{i}^{j}\eb_{j}, \label{eq_85} \ee
+.. math:: \f{\underline{T}}{\eb_{i}} = \underline{T}_{i}^{j}\eb_{j}, \label{eq_85}
 
 The let :math:`{\lp {\underline{T}^{-1}} \rp }_{m}^{n}` be the inverse matrix of :math:`\underline{T}_{i}^{j}` so that :math:`{\lp {\underline{T}^{-1}} \rp }_{m}^{k}\underline{T}_{k}^{j} = \delta^{j}_{m}` and
 
-.. math:: \be \underline{T}^{-1}{\lp {a^{i}{{\eb}}_{i}} \rp } = a^{i}{\lp {\underline{T}^{-1}} \rp }_{i}^{j}{{\eb}}_{j} \label{eq_85a} \ee
+.. math:: \underline{T}^{-1}{\lp {a^{i}{{\eb}}_{i}} \rp } = a^{i}{\lp {\underline{T}^{-1}} \rp }_{i}^{j}{{\eb}}_{j} \label{eq_85a}
 
 and calculate
 
@@ -649,11 +637,11 @@ In eq. (:math:`\ref{eq_85}`) the matrix, :math:`\underline{T}_{i}^{j}`, only ha
 
 A important form of linear transformation with a simple representation is the spinor transformation. If :math:`S` is an even multivector we have :math:`SS^{{\dagger}} = \rho^{2}`, where :math:`\rho^{2}` is a scalar. Then :math:`S` is a spinor transformation is given by (:math:`v` is a vector)
 
-.. math:: \be {{S}\lp {v} \rp } = SvS^{{\dagger}} \ee
+.. math:: {{S}\lp {v} \rp } = SvS^{{\dagger}}
 
 if :math:`{{S}\lp {v} \rp }` is a vector and
 
-.. math:: \be {{S^{-1}}\lp {v} \rp } = \frac{S^{{\dagger}}vS}{\rho^{4}}. \ee
+.. math:: {{S^{-1}}\lp {v} \rp } = \frac{S^{{\dagger}}vS}{\rho^{4}}.
 
 Thus
 
@@ -676,7 +664,7 @@ One more topic to consider is whether or not :math:`T^{i}_{j}` should be called 
 
 It is
 
-.. math:: \be T_{ij} = g_{ik}T_{j}^{k} \ee
+.. math:: T_{ij} = g_{ik}T_{j}^{k}
 
 that has the proper symmetry for self adjoint transformations :math:`(a\cdot{{T}\lp {b} \rp } = b\cdot{{T}\lp {a} \rp })` in the sense that if :math:`T = \overline{T}` then :math:`T_{ij} = T_{ji}`. Of course if we are dealing with a manifold where the :math:`g_{ij}`\ ’s are functions of the coordinates then the matrix representation of a linear transformation will also be a function of the coordinates. Assuming we use :math:`T_{ij}` for the matrix representation of the linear transformation,
 :math:`T`, then if we given the matrix representation, :math:`T_{ij}`, we can construct the linear transformation given by :math:`T^{i}_{j}` as follows
@@ -721,7 +709,7 @@ The properties of tensors are (:math:`\alpha\in\Re`, :math:`a_{j},b\in\mathcal{V
 
 Now let :math:`T` be of rank :math:`r` and :math:`S` of rank :math:`s` then the product of the two tensors is
 
-.. math:: \be \f{\lp T\circ S\rp}{a_{1},\dots,a_{r+s}} \equiv \f{T}{a_{1},\dots,a_{r}}\circ\f{S}{a_{r+1},\dots,a_{r+s}}, \ee
+.. math:: \f{\lp T\circ S\rp}{a_{1},\dots,a_{r+s}} \equiv \f{T}{a_{1},\dots,a_{r}}\circ\f{S}{a_{r+1},\dots,a_{r+s}},
 
 where “:math:`\circ`” is any multivector multiplicative operation.
 
@@ -781,7 +769,7 @@ Contraction and Differentiation
 
 The contraction of a tensor between the :math:`j^{th}` and :math:`k^{th}` variables (slots) is
 
-.. math:: \be \f{T}{a_{i},\dots,a_{j-1},\nabla_{a_{k}},a_{j+1},\dots,a_{r}} = \nabla_{a_{j}}\cdot\lp \nabla_{a_{k}}\f{T}{a_{1},\dots,a_{r}}\rp . \ee
+.. math:: \f{T}{a_{i},\dots,a_{j-1},\nabla_{a_{k}},a_{j+1},\dots,a_{r}} = \nabla_{a_{j}}\cdot\lp \nabla_{a_{k}}\f{T}{a_{1},\dots,a_{r}}\rp .
 
 This operation reduces the rank of the tensor by two. This definition gives the standard results for *metric contraction* which is proved as follows for a rank :math:`r` grade zero tensor (the circumflex “:math:`\breve{\:\:}`” indicates that a term is to be deleted from the product).
 
@@ -809,7 +797,7 @@ Equation (:math:`\ref{eq108}`) is the correct formula for the metric contractio
 
 If we have a mixed representation of a tensor, :math:`T\indices{_{i_{1}\dots}{}^{i_{j}}{}_{\dots i_{k}\dots i_{r}}}`, and wish to contract between an upper and lower index (:math:`i_{j}` and :math:`i_{k}`) first lower the upper index and then use eq (:math:`\ref{eq108}`) to contract the result. Remember lowering the index does *not* change the tensor, only the *representation* of the tensor, while contraction results in a *new* tensor. First lower index
 
-.. math:: \be T\indices{_{i_{1}\dots}{}^{i_{j}}{}_{\dots i_{k}\dots i_{r}}} \xRightarrow{\small Lower Index} g_{i_{j}k_{j}}T\indices{_{i_{1}\dots}{}^{k_{j}}{}_{\dots i_{k}\dots i_{r}}} \ee
+.. math:: T\indices{_{i_{1}\dots}{}^{i_{j}}{}_{\dots i_{k}\dots i_{r}}} \xRightarrow{\small Lower Index} g_{i_{j}k_{j}}T\indices{_{i_{1}\dots}{}^{k_{j}}{}_{\dots i_{k}\dots i_{r}}}
 
 Now contract between :math:`i_{j}` and :math:`i_{k}` and use the properties of the metric tensor.
 
@@ -846,11 +834,11 @@ From Vector to Tensor
 
 A rank one tensor is a vector since it satisfies all the axioms for a vector space, but a vector in not necessarily a tensor since not all vectors are multilinear (actually in the case of vectors a linear function) functions. However, there is a simple isomorphism between vectors and rank one tensors defined by the mapping :math:`{{v}\lp {a} \rp }:\mathcal{V}\rightarrow\Re` such that if :math:`v,a \in\mathcal{V}`
 
-.. math:: \be \f{v}{a} \equiv v\cdot a. \ee
+.. math:: \f{v}{a} \equiv v\cdot a.
 
 So that if :math:`v = v^{i}{{\eb}}_{i} = v_{i}{{\eb}}^{i}` the covariant and contravariant representations of :math:`v` are (using :math:`{{\eb}}^{i}\cdot{{\eb}}_{j} = \delta^{i}_{j}`)
 
-.. math:: \be \f{v}{a} = v_{i}a^{i} = v^{i}a_{i}. \ee
+.. math:: \f{v}{a} = v_{i}a^{i} = v^{i}a_{i}.
 
 Parallel Transport and Covariant Derivatives
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -858,7 +846,7 @@ Parallel Transport and Covariant Derivatives
 The covariant derivative of a tensor field :math:`{{T}\lp {a_{1},\dots,a_{r};x} \rp }` (:math:`x` is the coordinate vector of which :math:`T` can be a non-linear function) in the direction :math:`a_{r+1}` is (remember :math:`a_{j} = a_{j}^{k}{{\eb}}_{k}` and the :math:`{{\eb}}_{k}` can be functions of :math:`x`) the directional derivative of :math:`{{T}\lp {a_{1},\dots,a_{r};x} \rp }` where all the arguments of :math:`T` are parallel transported. The definition of parallel transport is if
 :math:`a` and :math:`b` are tangent vectors in the tangent spaced of the manifold then
 
-.. math:: \be     \paren{a\cdot\nabla_{x}}b = 0 \label{eq108a} \ee
+.. math:: \paren{a\cdot\nabla_{x}}b = 0 \label{eq108a}
 
 if :math:`b` is parallel transported. Since :math:`b = b^{i}{{\eb}}_{i}` and the derivatives of :math:`{{\eb}}_{i}` are functions of the :math:`x^{i}`\ ’s then the :math:`b^{i}`\ ’s are also functions of the :math:`x^{i}`\ ’s so that in order for eq (:math:`\ref{eq108a}`) to be satisfied we have
 
@@ -873,7 +861,7 @@ if :math:`b` is parallel transported. Since :math:`b = b^{i}{{\eb}}_{i}` and the
 
 Thus for :math:`b` to be parallel transported we must have
 
-.. math:: \be     \partial_{x^{i}}b^{j} = -b^{k}\Gamma_{ik}^{j}. \label{eq121a} \ee
+.. math:: \partial_{x^{i}}b^{j} = -b^{k}\Gamma_{ik}^{j}. \label{eq121a}
 
 The geometric meaning of parallel transport is that for an infinitesimal rotation and dilation of the basis vectors (cause by infinitesimal changes in the :math:`x^{i}`\ ’s) the direction and magnitude of the vector :math:`b` does not change.
 
@@ -890,7 +878,7 @@ and if we define the initial conditions :math:`{{b^{j}}\lp {0} \rp }{{\eb}}_{j}`
 
 An equivalent formulation for the parallel transport equation is to let :math:`{{\gamma}\lp {s} \rp }` be a parametric curve in the manifold defined by the tuple :math:`{{\gamma}\lp {s} \rp } = {\lp {{{x^{1}}\lp {s} \rp },\dots,{{x^{n}}\lp {s} \rp }} \rp }`. Then the tangent to :math:`{{\gamma}\lp {s} \rp }` is given by
 
-.. math:: \be \deriv{\gamma}{s}{} \equiv \deriv{x^{i}}{s}{}\eb_{i} \ee
+.. math:: \deriv{\gamma}{s}{} \equiv \deriv{x^{i}}{s}{}\eb_{i}
 
 and if :math:`{{v}\lp {x} \rp }` is a vector field on the manifold then
 
@@ -917,7 +905,7 @@ If the tensor component representation is contra-variant (superscripts instead o
 
 and we need
 
-.. math:: \be     \paren{\partial_{x^{i}}b_{j}}\eb^{j} + b_{j}\partial_{x^{i}}\eb^{j} = 0. \label{eq111a} \ee
+.. math:: \paren{\partial_{x^{i}}b_{j}}\eb^{j} + b_{j}\partial_{x^{i}}\eb^{j} = 0. \label{eq111a}
 
 To satisfy equation (:math:`\ref{eq111a}`) consider the following
 
@@ -944,8 +932,8 @@ Thus if we have a mixed representation of a tensor
 
 .. math::
 
-   \be \f{T}{a_{1},\dots,a_{r};x} =
-       \f{T\indices{_{i_{1}\dots i_{s}}^{i_{s+1}\dots i_{r}}}}{x}a^{i_{1}}\dots a^{i_{s}}a_{i_{s+1}}\dots a_{i_{r}}, \ee
+   \f{T}{a_{1},\dots,a_{r};x} =
+       \f{T\indices{_{i_{1}\dots i_{s}}^{i_{s+1}\dots i_{r}}}}{x}a^{i_{1}}\dots a^{i_{s}}a_{i_{s+1}}\dots a_{i_{r}},
 
 the covariant derivative of the tensor is
 
@@ -982,8 +970,8 @@ The component free form of the covariant derivative (the one used to calculate i
 
 .. math::
 
-   \be \mathcal{D}_{a_{r+1}} {{T}\lp {a_{1},\dots,a_{r};x} \rp } \equiv \nabla T
-           - \sum_{k=1}^{r}{{T}\lp {a_{1},\dots,{\lp {a_{r+1}\cdot\nabla} \rp } a_{k},\dots,a_{r};x} \rp }. \ee
+   \mathcal{D}_{a_{r+1}} {{T}\lp {a_{1},\dots,a_{r};x} \rp } \equiv \nabla T
+           - \sum_{k=1}^{r}{{T}\lp {a_{1},\dots,{\lp {a_{r+1}\cdot\nabla} \rp } a_{k},\dots,a_{r};x} \rp }.
 
 Representation of Multivectors in *sympy*
 -----------------------------------------
@@ -999,7 +987,7 @@ In order not to reinvent the wheel all scalar symbolic algebra is handled by the
 
 The basic geometric algebra operations will be implemented in python by defining a geometric algebra class, *Ga*, that performs all required geometric algebra an calculus operations on *sympy* expressions of the form (Einstein summation convention)
 
-.. math:: \be F +\sum_{r=1}^{n}F^{i_{1}\dots i_{r}}\eb_{i_{1}}\dots\eb_{i_{r}} \ee
+.. math:: F +\sum_{r=1}^{n}F^{i_{1}\dots i_{r}}\eb_{i_{1}}\dots\eb_{i_{r}}
 
 where the :math:`F`\ ’s are *sympy* symbolic constants or functions of the coordinates and a multivector class, *Mv*, that wraps *Ga* and overloads the python operators to provide all the needed multivector operations as shown in Table :ref:`ops` where :math:`A` and :math:`B` are any two multivectors (In the case of :math:`+`, :math:`-`, :math:`*`, :math:`{\wedge}`, :math:`|`, :math:`<`, and :math:`>` the operation is also defined if :math:`A` or :math:`B` is a *sympy* symbol or a *sympy* real
 number).
@@ -1097,14 +1085,14 @@ then calling ``cf3d = Ga(basis,g=g)`` would initialize the metric tensor
 
 .. math::
 
-   \be g = \lbrk\begin{array}{ccccc}
+   g = \lbrk\begin{array}{ccccc}
        (a0.a0) & (a0.a1)  & (a0.a2) & 0 & 0\\
        (a0.a1) & (a1.a1)  & (a1.a2) & 0 & 0\\
        (a0.a2) & (a1.a2)  & (a2.a2) & 0 & 0 \\
        0 & 0 & 0 & 0 & 2 \\
        0 & 0 & 0 & 2 & 0
      \end{array}
-     \rbrk \ee
+     \rbrk
 
 for the ``cf3d`` (conformal 3-d) geometric algebra.
 
@@ -1191,7 +1179,7 @@ Blade Representation of Multivectors
 
 Since we can now calculate the symbolic geometric product of any two multivectors we can also calculate the blades corresponding to the product of the symbolic basis vectors using the formula
 
-.. math:: \be A_{r}{\wedge}b = {\frac{1}{2}}\lp A_{r}b+\lp -1 \rp ^{r}bA_{r} \rp , \ee
+.. math:: A_{r}{\wedge}b = {\frac{1}{2}}\lp A_{r}b+\lp -1 \rp ^{r}bA_{r} \rp ,
 
 where :math:`A_{r}` is a multivector of grade :math:`r` and :math:`b` is a vector. For our example basis the result is shown in Table :ref:`bladexpand`.
 
@@ -1401,7 +1389,7 @@ Since we need to associate each multivector with the geometric algebra that cont
 
    .Here a 3-dimensional multivector field that is a function of ``x``, ``y``, and ``z`` (``f=True``) is being instantiated. If latex output were used (to be discussed later) the multivector ``V`` would be displayed as
 
-   .. math:: \be V^{x}\eb_{x} + V^{y}\eb_{y} + V^{z}\eb_{z} \ee
+   .. math:: V^{x}\eb_{x} + V^{y}\eb_{y} + V^{z}\eb_{z}
 
    Where the coefficients of the basis vectors are generalized *sympy* functions of the coordinates. If ``f=(x,y)`` then the coefficients would be functions of ``x`` and ``y``. In general is ``f`` is a tuple of symbols then the coefficients of the basis would be functions of those symbols. The superscripts\ [16]_ are formed from the coordinate symbols or if there are no coordinates from the subscripts of the basis vectors. The types of name and modes available for multivector instantiation are
 
@@ -1433,7 +1421,7 @@ Since we need to associate each multivector with the geometric algebra that cont
 
    Line 7 is an example of instantiating a multivector scalar function (a multivector with only a scalar part). If we print ``f`` the result is ``x*y*z``. Line 8 is an example of instantiating a grade :math:`r` (in the example a grade 2) multivector where
 
-   .. math:: \be B = B^{xy}{\eb}_{x}{\wedge}{\eb}_{y}+B^{yz}{\eb}_{y}{\wedge}{\eb}_{z}+B^{xz}{\eb}_{x}{\wedge}{\eb}_{z}. \ee
+   .. math:: B = B^{xy}{\eb}_{x}{\wedge}{\eb}_{y}+B^{yz}{\eb}_{y}{\wedge}{\eb}_{z}+B^{xz}{\eb}_{x}{\wedge}{\eb}_{z}.
 
 If one wished to calculate the left and right geometric derivatives of ``F`` and ``B`` the required code would be
 
@@ -2076,29 +2064,29 @@ For the cases of derivatives the code is
 
 and the latex displayed output is (:math:`f` is a scalar function)
 
-.. math:: \be {\boldsymbol{A}} = A^{x}{\boldsymbol{e_{x}}}+A^{y}{\boldsymbol{e_{y}}}+A^{z}{\boldsymbol{e_{z}}} \ee
+.. math:: {\boldsymbol{A}} = A^{x}{\boldsymbol{e_{x}}}+A^{y}{\boldsymbol{e_{y}}}+A^{z}{\boldsymbol{e_{z}}}
 
-.. math:: \be {\boldsymbol{B}} = B^{xy}{\boldsymbol{e_{x}{\wedge}e_{y}}}+B^{xz}{\boldsymbol{e_{x}{\wedge}e_{z}}}+B^{yz}{\boldsymbol{e_{y}{\wedge}e_{z}}} \ee
+.. math:: {\boldsymbol{B}} = B^{xy}{\boldsymbol{e_{x}{\wedge}e_{y}}}+B^{xz}{\boldsymbol{e_{x}{\wedge}e_{z}}}+B^{yz}{\boldsymbol{e_{y}{\wedge}e_{z}}}
 
-.. math:: \be {\boldsymbol{\nabla}}  f = \partial_{x} f{\boldsymbol{e_{x}}}+\partial_{y} f{\boldsymbol{e_{y}}}+\partial_{z} f{\boldsymbol{e_{z}}} \ee
+.. math:: {\boldsymbol{\nabla}}  f = \partial_{x} f{\boldsymbol{e_{x}}}+\partial_{y} f{\boldsymbol{e_{y}}}+\partial_{z} f{\boldsymbol{e_{z}}}
 
-.. math:: \be {\boldsymbol{\nabla}} \cdot {\boldsymbol{A}} = \partial_{x} A^{x} + \partial_{y} A^{y} + \partial_{z} A^{z} \ee
+.. math:: {\boldsymbol{\nabla}} \cdot {\boldsymbol{A}} = \partial_{x} A^{x} + \partial_{y} A^{y} + \partial_{z} A^{z}
 
 .. math::
 
    \begin{aligned}
     {\boldsymbol{\nabla}}  {\boldsymbol{A}} =  & \partial_{x} A^{x} + \partial_{y} A^{y} + \partial_{z} A^{z} \\  & +\lp - \partial_{y} A^{x} + \partial_{x} A^{y}\rp {\boldsymbol{e_{x}{\wedge}e_{y}}}+\lp - \partial_{z} A^{x} + \partial_{x} A^{z}\rp {\boldsymbol{e_{x}{\wedge}e_{z}}}+\lp - \partial_{z} A^{y} + \partial_{y} A^{z}\rp {\boldsymbol{e_{y}{\wedge}e_{z}}} \\ \end{aligned}
 
-.. math:: \be -I ({\boldsymbol{\nabla}} {\wedge}{\boldsymbol{A}}) = \lp - \partial_{z} A^{y} + \partial_{y} A^{z}\rp {\boldsymbol{e_{x}}}+\lp \partial_{z} A^{x} - \partial_{x} A^{z}\rp {\boldsymbol{e_{y}}}+\lp - \partial_{y} A^{x} + \partial_{x} A^{y}\rp {\boldsymbol{e_{z}}} \ee
+.. math:: -I ({\boldsymbol{\nabla}} {\wedge}{\boldsymbol{A}}) = \lp - \partial_{z} A^{y} + \partial_{y} A^{z}\rp {\boldsymbol{e_{x}}}+\lp \partial_{z} A^{x} - \partial_{x} A^{z}\rp {\boldsymbol{e_{y}}}+\lp - \partial_{y} A^{x} + \partial_{x} A^{y}\rp {\boldsymbol{e_{z}}}
 
 .. math::
 
    \begin{aligned}
     {\boldsymbol{\nabla}}  {\boldsymbol{B}} =  & \lp - \partial_{y} B^{xy} - \partial_{z} B^{xz}\rp {\boldsymbol{e_{x}}}+\lp \partial_{x} B^{xy} - \partial_{z} B^{yz}\rp {\boldsymbol{e_{y}}}+\lp \partial_{x} B^{xz} + \partial_{y} B^{yz}\rp {\boldsymbol{e_{z}}} \\  & +\lp \partial_{z} B^{xy} - \partial_{y} B^{xz} + \partial_{x} B^{yz}\rp {\boldsymbol{e_{x}{\wedge}e_{y}{\wedge}e_{z}}} \\ \end{aligned}
 
-.. math:: \be {\boldsymbol{\nabla}} {\wedge}{\boldsymbol{B}} = \lp \partial_{z} B^{xy} - \partial_{y} B^{xz} + \partial_{x} B^{yz}\rp {\boldsymbol{e_{x}{\wedge}e_{y}{\wedge}e_{z}}} \ee
+.. math:: {\boldsymbol{\nabla}} {\wedge}{\boldsymbol{B}} = \lp \partial_{z} B^{xy} - \partial_{y} B^{xz} + \partial_{x} B^{yz}\rp {\boldsymbol{e_{x}{\wedge}e_{y}{\wedge}e_{z}}}
 
-.. math:: \be {\boldsymbol{\nabla}} \cdot {\boldsymbol{B}} = \lp - \partial_{y} B^{xy} - \partial_{z} B^{xz}\rp {\boldsymbol{e_{x}}}+\lp \partial_{x} B^{xy} - \partial_{z} B^{yz}\rp {\boldsymbol{e_{y}}}+\lp \partial_{x} B^{xz} + \partial_{y} B^{yz}\rp {\boldsymbol{e_{z}}} \ee
+.. math:: {\boldsymbol{\nabla}} \cdot {\boldsymbol{B}} = \lp - \partial_{y} B^{xy} - \partial_{z} B^{xz}\rp {\boldsymbol{e_{x}}}+\lp \partial_{x} B^{xy} - \partial_{z} B^{yz}\rp {\boldsymbol{e_{y}}}+\lp \partial_{x} B^{xz} + \partial_{y} B^{yz}\rp {\boldsymbol{e_{z}}}
 
 This example also demonstrates several other features of the latex printer. In the case that strings are input into the latex printer such as ``r'grad*\bm{A}'``, ``r'grad^\bm{A}'``, or ``r'grad*\bm{A}'``. The text symbols ``grad``, ``^``, ``|``, and ``*`` are mapped by the ``xpdf()`` post-processor as follows if the string contains an ``=``.
 
@@ -2175,15 +2163,15 @@ Since the expressions for multivectors or differential operators can be very lon
 .. [7]
    We use the Christoffel symbols of the first kind to calculate the derivatives of the basis vectors and the product rule to calculate the derivatives of the basis blades where (http://en.wikipedia.org/wiki/Christoffel_symbols)
 
-   .. math:: \be \Gamma_{ijk} = {\frac{1}{2}}{\lp {{{\displaystyle\frac{\partial {g_{jk}}}{\partial {x^{i}}}}}+{{\displaystyle\frac{\partial {g_{ik}}}{\partial {x^{j}}}}}-{{\displaystyle\frac{\partial {g_{ij}}}{\partial {x^{k}}}}}} \rp }, \ee
+   .. math:: \Gamma_{ijk} = {\frac{1}{2}}{\lp {{{\displaystyle\frac{\partial {g_{jk}}}{\partial {x^{i}}}}}+{{\displaystyle\frac{\partial {g_{ik}}}{\partial {x^{j}}}}}-{{\displaystyle\frac{\partial {g_{ij}}}{\partial {x^{k}}}}}} \rp },
 
    and
 
-   .. math:: \be {{\displaystyle\frac{\partial {{{\eb}}_{j}}}{\partial {x^{i}}}}} = \Gamma_{ijk}{{\eb}}^{k}. \ee
+   .. math:: {{\displaystyle\frac{\partial {{{\eb}}_{j}}}{\partial {x^{i}}}}} = \Gamma_{ijk}{{\eb}}^{k}.
 
    The Christoffel symbols of the second kind,
 
-   .. math:: \be \Gamma_{ij}^{k} = {\frac{1}{2}}g^{kl}{\lp {{{\displaystyle\frac{\partial {g_{li}}}{\partial {x^{j}}}}}+{{\displaystyle\frac{\partial {g_{lj}}}{\partial {x^{i}}}}}-{{\displaystyle\frac{\partial {g_{ij}}}{\partial {x^{l}}}}}} \rp }, \ee
+   .. math:: \Gamma_{ij}^{k} = {\frac{1}{2}}g^{kl}{\lp {{{\displaystyle\frac{\partial {g_{li}}}{\partial {x^{j}}}}}+{{\displaystyle\frac{\partial {g_{lj}}}{\partial {x^{i}}}}}-{{\displaystyle\frac{\partial {g_{ij}}}{\partial {x^{l}}}}}} \rp },
 
    could also be used to calculate the derivatives in term of the original basis vectors, but since we need to calculate the reciprocal basis vectors for the geometric derivative it is more efficient to use the symbols of the first kind.
 
