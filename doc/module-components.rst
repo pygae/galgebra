@@ -1,6 +1,21 @@
 Module Components
 =================
 
+.. warning::
+
+   This page is converted from the original :math:`\LaTeX` documentation, but
+   may no longer reflect the current state of the library. See the API docs at
+   :doc:`api` for more up-to-date but less structured and in-depth descriptions.
+
+   If you would like to help with merging the descriptions on the API with a
+   description on this page, please head over to :issue:`300` on GitHub, where
+   there's an explanation of how to do so. Even merging just one function
+   explanation helps!
+
+   Any function or class below with a ``[source]`` link to its right is
+   guaranteed to be up-to-date already, as its documentation is identical on
+   both pages.
+
 The geometric algebra module consists of the following files and classes
 
 +----------------+--------------------+------------------------------------------------------------------------------------------------------------------------------------------------------+
