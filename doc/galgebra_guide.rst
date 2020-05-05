@@ -982,7 +982,7 @@ Representation of Multivectors in *sympy*
 
 The *sympy* python module offers a simple way of representing multivectors using linear combinations of commutative expressions (expressions consisting only of commuting *sympy* objects) and non-commutative symbols. We start by defining :math:`n` non-commutative *sympy* symbols as a basis for the vector space
 
-``(e_1,...,e_n) = symbols(’e_1,...,e_n’,commutative=False,real=True)``
+``(e_1,...,e_n) = symbols('e_1,...,e_n',commutative=False,real=True)``
 
 Several software packages for numerical geometric algebra calculations are available from Doran-Lasenby group and the Dorst group. Symbolic packages for Clifford algebra using orthogonal bases such as :math:`{{\eb}}_{i}{{\eb}}_{j}+{{\eb}}_{j}{{\eb}}_{i} = 2\eta_{ij}`, where :math:`\eta_{ij}` is a numeric array are available in Maple and Mathematica. The symbolic algebra module, *ga*, developed for python does not depend on an orthogonal basis representation, but rather is generated from a set of
 :math:`n` arbitrary symbolic vectors :math:`{{\eb}}_{1},{{\eb}}_{2},\dots,{{\eb}}_{n}` and a symbolic metric tensor :math:`g_{ij} = {{\eb}}_{i}\cdot {{\eb}}_{j}` (the symbolic metric can be symbolic constants or symbolic function in the case of a manifold).
@@ -1030,7 +1030,7 @@ For those users who wish to define a default operator precedence the functions `
 
 ``GAeval(s,pstr=False)``
 
-   The function ``GAeval()`` returns a multivector expression defined by the string ``s`` where the operations in the string are parsed according to the precedences defined by ``def_prec()``. ``pstr`` is a flag to print the input and output of ``GAeval()`` for debugging purposes. ``GAeval()`` works by adding parenthesis to the input string ``s`` with the precedence defined by ``op_ord=’<>|,,*’``. Then the parsed string is converted to a *sympy* expression using the python ``eval()`` function.
+   The function ``GAeval()`` returns a multivector expression defined by the string ``s`` where the operations in the string are parsed according to the precedences defined by ``def_prec()``. ``pstr`` is a flag to print the input and output of ``GAeval()`` for debugging purposes. ``GAeval()`` works by adding parenthesis to the input string ``s`` with the precedence defined by ``op_ord='<>|,,*'``. Then the parsed string is converted to a *sympy* expression using the python ``eval()`` function.
    For example consider where ``X``, ``Y``, ``Z``, and ``W`` are multivectors
 
    .. code:: python
@@ -1250,7 +1250,7 @@ Instantiating a Geometric Algebra
 
 The geometric algebra class is instantiated with
 
-``Ga(basis,g=None,coords=None,X=None,norm=False,sig=’e’,Isq=’-’,wedge=True,debug=False)``
+``Ga(basis,g=None,coords=None,X=None,norm=False,sig='e',Isq='-',wedge=True,debug=False)``
 
    The ``basis`` and ``g`` parameters were described in section [BasisMetric]. If the metric is a function of position, if we have multivector fields, or we wish to calculate geometric derivatives a coordinate set, ``coords``, is required. ``coords`` is a list of *sympy* symbols. For the case of instantiating a 3-d geometric algebra in spherical coordinates we have
 
@@ -1274,11 +1274,11 @@ The geometric algebra class is instantiated with
 
    2. If the metric tensor is not purely numerical and orthogonal the following hints are used (dimension of vector space is :math:`n`)
 
-      1. ``sig=’e’`` the default hint assumes the signature is for a Euclidean space with signature :math:`(n,0)`.
+      1. ``sig='e'`` the default hint assumes the signature is for a Euclidean space with signature :math:`(n,0)`.
 
-      2. ``sig=’m+’`` assumes the signature if for the Minkowski space :math:`(n-1,1)`.
+      2. ``sig='m+'`` assumes the signature if for the Minkowski space :math:`(n-1,1)`.
 
-      3. ``sig=’m-’`` assumes the signature if for the Minkowski space :math:`(1,n-1)`.
+      3. ``sig='m-'`` assumes the signature if for the Minkowski space :math:`(1,n-1)`.
 
       4. ``sig=p`` where ``p`` is an integer :math:`p\le n` and the signature it :math:`(p,n-p)`.
 
@@ -1286,7 +1286,7 @@ The geometric algebra class is instantiated with
 
    Currently one need not be concerned about inputting ``sig`` unless one in using the *Ga* member function ``Ga.I()`` or the functions ``Mv.dual()`` or ``cross()`` which also use ``Ga.I()``.
 
-   If :math:`I^{2}` is numeric it is calculated if it is not numeric then ``Isq=’-’`` is the sign of the square of the pseudo-scalar. This is needed for some operations. The default is chosen for the case of a general 3D Euclidean metric.
+   If :math:`I^{2}` is numeric it is calculated if it is not numeric then ``Isq='-'`` is the sign of the square of the pseudo-scalar. This is needed for some operations. The default is chosen for the case of a general 3D Euclidean metric.
 
    If ``wedge=True`` the basis blades of a multivector are printed using the ``^`` symbol between basis vectors. If ``wedge=False`` the subscripts of each individual basis vector (assuming that the basis vector symbols are of the form root symbol with a subscript\ [14]_). For example in three dimensions if the basis vectors are :math:`{{\eb}}_{x}`, :math:`{{\eb}}_{y}`, and :math:`{{\eb}}_{z}` the grade 3 basis blade would be printed as :math:`{{\eb}}_{xyz}`.
 
@@ -1300,7 +1300,7 @@ The geometric algebra class is instantiated with
 
 To access the reciprocal basis vectors of the geometric algebra use the member function ``mvr()``
 
-``Ga.mvr(norm=’True’)``
+``Ga.mvr(norm='True')``
 
    ``Ga.mvr(norm)`` returns the reciprocal basis vectors as a tuple. This allows the programmer to attach any python variable names to the reciprocal basis vectors that is convenient. For example (demonstrating the use of both ``mv()`` and ``mvr()``)
 
@@ -1309,7 +1309,7 @@ To access the reciprocal basis vectors of the geometric algebra use the member f
       (e_x,e_y,e_z) = o3d.mv()
       (e__x,e__y,e__z) = o3d.mvr()
 
-   If ``norm=’True’`` or the basis vectors are orthogonal the dot product of the basis vector and the corresponding reciprocal basis vector is one :math:`{\lp {e_{i}\cdot e^{j}=\delta_{i}^{j}} \rp }`. If ``norm=’False’`` and the basis is non-orthogonal The dot product of the basis vector and the corresponding reciprocal basis vector is the square of the pseudo scalar, :math:`I^{2}`, of the geometric algebra :math:`{\lp {e_{i}\cdot e^{j}=E^{2}\delta_{i}^{j}} \rp }`.
+   If ``norm='True'`` or the basis vectors are orthogonal the dot product of the basis vector and the corresponding reciprocal basis vector is one :math:`{\lp {e_{i}\cdot e^{j}=\delta_{i}^{j}} \rp }`. If ``norm='False'`` and the basis is non-orthogonal The dot product of the basis vector and the corresponding reciprocal basis vector is the square of the pseudo scalar, :math:`I^{2}`, of the geometric algebra :math:`{\lp {e_{i}\cdot e^{j}=E^{2}\delta_{i}^{j}} \rp }`.
 
 In addition to the basis vectors, if coordinates are defined for the geometric algebra, the left and right geometric derivative operators are calculated and accessed with the ``Ga`` member function ``grads()``.
 
@@ -1383,7 +1383,7 @@ Since we need to associate each multivector with the geometric algebra that cont
 
    First consider the multivector instantiation in line 6,
 
-   ``V = o3d.mv(’V’,’vector’,f=True)``
+   ``V = o3d.mv('V','vector',f=True)``
 
    .Here a 3-dimensional multivector field that is a function of ``x``, ``y``, and ``z`` (``f=True``) is being instantiated. If latex output were used (to be discussed later) the multivector ``V`` would be displayed as
 
@@ -1459,7 +1459,7 @@ In order to be backward compatible with older versions of *galgebra* we introduc
 
 ``Fmt(self, fmt=1, title=None)``
 
-   ``Fmt`` in ``MV`` has inputs identical to ``Fmt`` in ``Mv`` except that if ``A`` is a multivector then ``A.Fmt(2,’A’)`` executes a print statement from ``MV`` and returns ``None``, while from ``Mv``, ``A.Fmt(2,’A’)`` returns a string so that the function is compatible with use in *ipython notebook*.
+   ``Fmt`` in ``MV`` has inputs identical to ``Fmt`` in ``Mv`` except that if ``A`` is a multivector then ``A.Fmt(2,'A')`` executes a print statement from ``MV`` and returns ``None``, while from ``Mv``, ``A.Fmt(2,'A')`` returns a string so that the function is compatible with use in *ipython notebook*.
 
 Basic Multivector Class Functions
 ---------------------------------
@@ -1484,24 +1484,24 @@ If we can instantiate multivectors we can use all the multivector class function
 
 ``dual(self)``
 
-   The mode of the ``dual()`` function is set by the ``Ga`` class static member function, ``GA.dual_mode(mode=’I+’)`` of the ``GA`` geometric galgebra which sets the following return values (:math:`I` is the pseudo-scalar for the geometric algebra ``GA``)
+   The mode of the ``dual()`` function is set by the ``Ga`` class static member function, ``GA.dual_mode(mode='I+')`` of the ``GA`` geometric galgebra which sets the following return values (:math:`I` is the pseudo-scalar for the geometric algebra ``GA``)
 
    =========== ================
    ``mode``    Return Value
    =========== ================
-   ``’+I’``    :math:`IA`
-   ``’I+’``    :math:`AI`
-   ``’-I’``    :math:`-IA`
-   ``’I-’``    :math:`-AI`
-   ``’+Iinv’`` :math:`I^{-1}A`
-   ``’Iinv+’`` :math:`AI^{-1}`
-   ``’-Iinv’`` :math:`-I^{-1}A`
-   ``’Iinv-’`` :math:`-AI^{-1}`
+   ``'+I'``    :math:`IA`
+   ``'I+'``    :math:`AI`
+   ``'-I'``    :math:`-IA`
+   ``'I-'``    :math:`-AI`
+   ``'+Iinv'`` :math:`I^{-1}A`
+   ``'Iinv+'`` :math:`AI^{-1}`
+   ``'-Iinv'`` :math:`-I^{-1}A`
+   ``'Iinv-'`` :math:`-AI^{-1}`
    =========== ================
 
-   For example if the geometric algebra is ``o3d``, ``A`` is a multivector in ``o3d``, and we wish to use ``mode=’I-’``. We set the mode with the function ``o3d.dual(’I-’)`` and get the dual of ``A`` with the function ``A.dual()`` which returns :math:`-AI`.
+   For example if the geometric algebra is ``o3d``, ``A`` is a multivector in ``o3d``, and we wish to use ``mode='I-'``. We set the mode with the function ``o3d.dual('I-')`` and get the dual of ``A`` with the function ``A.dual()`` which returns :math:`-AI`.
 
-   If ``o3d.dual(mode)`` is not called the default for the dual mode is ``mode=’I+’`` and ``A*I`` is returned.
+   If ``o3d.dual(mode)`` is not called the default for the dual mode is ``mode='I+'`` and ``A*I`` is returned.
 
    Note that ``Ga.dual(mode)`` used the function ``Ga.I()`` to calculate the normalized pseudoscalar. Thus if the metric tensor is not numerical and orthogonal the correct hint for then\ ``sig`` input of the *Ga* constructor is required.
 
@@ -1509,7 +1509,7 @@ If we can instantiate multivectors we can use all the multivector class function
 
    Return the even grade components of the multivector.
 
-``exp(self,hint=’-’)``
+``exp(self,hint='-')``
 
    If :math:`A` is a multivector then :math:`e^{A}` is defined for any :math:`A` via the series expansion for :math:`e`. However as a practical matter we only have a simple closed form formula for :math:`e^{A}` if :math:`A^{2}` is a scalar\ [18]_. If :math:`A^{2}` is a scalar and we know the sign of :math:`A^{2}` we have the following formulas for :math:`e^{A}`.
 
@@ -1562,10 +1562,10 @@ If we can instantiate multivectors we can use all the multivector class function
 
    All division operators (``/``, ``/=``) use right multiplication by the inverse.
 
-``norm(self,hint=’+’)``
+``norm(self,hint='+')``
 
    Return the norm of the multivector :math:`M` (``M.norm()``) defined by :math:`\sqrt{{\left |{MM^{{\dagger}}}\right |}}`. If :math:`MM^{{\dagger}}` is a scalar (a *sympy* scalar is returned). If :math:`MM^{{\dagger}}` is not a scalar the program exits with an error message. If :math:`MM^{{\dagger}}` is a number *sympy* can determine if it is positive or negative and calculate the absolute value. If :math:`MM^{{\dagger}}` is a *sympy* expression (function) *sympy* cannot determine the sign of
-   the expression so that ``hint=’+’`` or ``hint=’-’`` is needed to determine if the program should calculate :math:`\sqrt{MM^{{\dagger}}}` or :math:`\sqrt{-MM^{{\dagger}}}`. For example if we are in a Euclidean space and ``M`` is a vector then ``hint=’+’``, if ``M`` is a bivector then let ``hint=’-’``. If ``hint=’0’`` and :math:`MM^{{\dagger}}` is a symbolic scalar ``sqrt(Abs(M*M.rev()))`` is returned where ``Abs()`` is the *sympy* symbolic absolute value function.
+   the expression so that ``hint='+'`` or ``hint='-'`` is needed to determine if the program should calculate :math:`\sqrt{MM^{{\dagger}}}` or :math:`\sqrt{-MM^{{\dagger}}}`. For example if we are in a Euclidean space and ``M`` is a vector then ``hint='+'``, if ``M`` is a bivector then let ``hint='-'``. If ``hint='0'`` and :math:`MM^{{\dagger}}` is a symbolic scalar ``sqrt(Abs(M*M.rev()))`` is returned where ``Abs()`` is the *sympy* symbolic absolute value function.
 
 ``norm2(self)``
 
@@ -1585,7 +1585,7 @@ If we can instantiate multivectors we can use all the multivector class function
 
 ``pure_grade(self)``
 
-   If the multivector :math:`A` is pure (only contains one grade) return, :math:`A.pure\_grade()`, the index (’0’ for a scalar, ’1’ for vector, ’2’ for a bi-vector, etc.) of the non-zero grade. If :math:`A` is not pure return the negative of the highest non-zero grade index.
+   If the multivector :math:`A` is pure (only contains one grade) return, :math:`A.pure\_grade()`, the index ('0' for a scalar, '1' for vector, '2' for a bi-vector, etc.) of the non-zero grade. If :math:`A` is not pure return the negative of the highest non-zero grade index.
 
 ``odd(self)``
 
@@ -1599,9 +1599,9 @@ If we can instantiate multivectors we can use all the multivector class function
 
    Return the reverse of the multivector.
 
-``rotate_multivector(self,itheta,hint=’-’)``
+``rotate_multivector(self,itheta,hint='-')``
 
-   Rotate the multivector :math:`A` via the operation :math:`e^{-\theta i/2}Ae^{\theta i/2}` where itheta = :math:`\theta i`, :math:`\theta` is a scalar, and :math:`i` is a unit, :math:`i^{2} = \pm 1`, 2-blade. If :math:`{\lp {\theta i} \rp }^{2}` is not a number ``hint`` is required to determine the sign of the square of ``itheta``. The default chosen, ``hint=’-’``, is correct for any Euclidean space.
+   Rotate the multivector :math:`A` via the operation :math:`e^{-\theta i/2}Ae^{\theta i/2}` where itheta = :math:`\theta i`, :math:`\theta` is a scalar, and :math:`i` is a unit, :math:`i^{2} = \pm 1`, 2-blade. If :math:`{\lp {\theta i} \rp }^{2}` is not a number ``hint`` is required to determine the sign of the square of ``itheta``. The default chosen, ``hint='-'``, is correct for any Euclidean space.
 
 ``scalar(self)``
 
@@ -1654,7 +1654,7 @@ Basic Multivector Functions
    This is used with the ``GAeval()`` function to evaluate a string representing a multivector expression with a revised operator precedence. ``def_prec()`` redefines the operator precedence for multivectors. ``def_prec()`` must be called in the main program an the argument ``gd`` must be ``globals()``. The argument ``op_ord`` defines the order of operator precedence from high to low with groups of equal precedence separated by commas. the default precedence ``op_ord='<>|,^,\*'`` is that used by
    Hestenes (:cite:`Hestenes`,p7,:cite:`Doran`,p38).
 
-``dual(A,mode=’I+’)``
+``dual(A,mode='I+')``
 
    Return the dual of the multivector ``A``. The default operation is :math:`AI`. For other modes see member function\ ``Mv.dual(mode)``
 
@@ -1662,7 +1662,7 @@ Basic Multivector Functions
 
    Return even part of :math:`A`.
 
-``exp(A,hint=’-’)``
+``exp(A,hint='-')``
 
    If :math:`A` is a multivector then ``A.exp(hint)`` is returned. If :math:`A` is a *sympy* expression the *sympy* expression :math:`e^{A}` is returned (see ``sympy.exp(A)`` member function).
 
@@ -1682,9 +1682,9 @@ Basic Multivector Functions
 
    If ``x`` is a multivector with coefficients that contain floating point numbers, ``Nga()`` rounds all these numbers to a precision of ``prec`` and returns the rounded multivector.
 
-``norm(A,hint=’-’)``
+``norm(A,hint='-')``
 
-   If :math:`A` is a multivector and :math:`AA^{{\dagger}}` is a number (not a scalar function) then :math:`\sqrt{{\left |{AA^{{\dagger}}}\right |}}` is returned. If :math:`AA^{{\dagger}}` is a scalar *sympy* expression, but not a number, and ``hint=’-’`` then return :math:`\sqrt{-AA^{{\dagger}}}` otherwise return :math:`\sqrt{AA^{{\dagger}}}`.
+   If :math:`A` is a multivector and :math:`AA^{{\dagger}}` is a number (not a scalar function) then :math:`\sqrt{{\left |{AA^{{\dagger}}}\right |}}` is returned. If :math:`AA^{{\dagger}}` is a scalar *sympy* expression, but not a number, and ``hint='-'`` then return :math:`\sqrt{-AA^{{\dagger}}}` otherwise return :math:`\sqrt{AA^{{\dagger}}}`.
 
 ``norm2(A)``
 
@@ -1698,7 +1698,7 @@ Basic Multivector Functions
 
    Project blade ``A`` on blade ``B`` returning :math:`{\lp {A\rfloor B} \rp }B^{-1}`.
 
-``ReciprocalFrame(basis,mode=’norm’)``
+``ReciprocalFrame(basis,mode='norm')``
 
    If ``basis`` is a list/tuple of vectors, ``ReciprocalFrame()`` returns a tuple of reciprocal vectors. If ``mode=norm`` the vectors are normalized. If ``mode`` is anything other than ``norm`` the vectors are unnormalized and the normalization coefficient is added to the end of the tuple. One must divide by this coefficient to normalize the vectors.
 
@@ -1710,7 +1710,7 @@ Basic Multivector Functions
 
    If :math:`A` is a multivector return :math:`A^{{\dagger}}`.
 
-``rot(itheta,A,hint=’-’)``
+``rot(itheta,A,hint='-')``
 
    If ``A`` is a multivector return ``A.rotate_multivector(itheta,hint)`` where ``itheta`` is the bi-vector blade defining the rotation. For the use of ``hint`` see the member function ``Mv.rotate_multivector(self,itheta,hint)``.
 
@@ -1726,7 +1726,7 @@ The various derivatives of a multivector function is accomplished by multiplying
    (ex,ey,ez) = o3d.mv()
    (grad,rgrad) = o3d.grads()
 
-Then the gradient operator vector is ``grad`` (actually the user can give it any name he wants to). The derivatives of the multivector function ``F = o3d.mv(’F’,’mv’,f=True)`` are given by multiplying by the left geometric derivative operator and the right geometric derivative operator (:math:`\T{grad} = \nabla` and :math:`\T{rgrad} = \bar{\nabla}`). Another option is to use the radiant operator members of the geometric algebra directly where we have :math:`\nabla = {\texttt{o3d.grad}}` and
+Then the gradient operator vector is ``grad`` (actually the user can give it any name he wants to). The derivatives of the multivector function ``F = o3d.mv('F','mv',f=True)`` are given by multiplying by the left geometric derivative operator and the right geometric derivative operator (:math:`\T{grad} = \nabla` and :math:`\T{rgrad} = \bar{\nabla}`). Another option is to use the radiant operator members of the geometric algebra directly where we have :math:`\nabla = {\texttt{o3d.grad}}` and
 :math:`\bar{\nabla} = {\texttt{o3d.rgrad}}`.
 
 .. math::
@@ -1769,7 +1769,7 @@ Submanifolds
 In general the geometric algebra that the user defines exists on the tangent space of a manifold (see section [sect_manifold]). The submanifold class, ``Sm``, is derived from the ``Ga`` class and allows one to define a submanifold of a manifold by defining a coordinate mapping between the submanifold coordinates and the manifold coordinates. What is returned as the submanifold is the geometric algebra of the tangent space of the submanifold. The submanifold for a geometric algebra is
 instantiated with
 
-``Ga.sm(map,coords,root=’e’,norm=False)``
+``Ga.sm(map,coords,root='e',norm=False)``
 
    To define the submanifold we must def a coordinate map from the coordinates of the submanifold to each of the coordinates of the base manifold. Thus the arguments ``map`` and ``coords`` are respectively lists of functions and symbols. The list of symbols, ``coords``, are the coordinates of the submanifold and are of length equal to the dimension of the submanifold. The list of functions, ``map``, define the mapping from the coordinate space of the submanifold to the coordinate space of the
    base manifold. The length of ``map`` is equal to the dimension of the base manifold and each function in ``map`` is a function of the coordinates of the submanifold. ``root`` is the root of the string that is used to name the basis vectors of the submanifold. The default value of ``root`` is ``e``. The result of this is that if the *sympy* symbols for the coordinates are ``u`` and ``v`` (two dimensional manifold) the text symbols for the basis vectors are ``e_u`` and ``e_v`` or in LaTeX
@@ -1788,7 +1788,7 @@ Linear Transformations
 
 The mathematical background for linear transformations is in section [Ltrans]. Linear transformations on the tangent space of the manifold are instantiated with the ``Ga`` member function ``lt`` (the actual class being instantiated is ``Lt``) as shown in lines 12, 20, 26, and 44 of the code listing ``Ltrans.py``. In all of the examples in ``Ltrans.py`` the default instantiation is used which produces a general (all the coefficients of the linear transformation are symbolic constants) linear
 transformation. *Note that to instantiate linear transformations coordinates, :math:`{\left \{ {{\eb}_{i}} \rbrc}`, must be defined when the geometric algebra associated with the linear transformation is instantiated. This is due to the naming conventions of the general linear transformation (coordinate names are used) and for the calculation of the trace of the linear transformation which requires taking a divergence.* To instantiate a specific linear transformation the usage of ``lt()`` is
-``Ga.lt(M,f=False,mode=’g’)``
+``Ga.lt(M,f=False,mode='g')``
 
    ``M`` is an expression that can define the coefficients of the linear transformation in various ways defined as follows.
 
@@ -1976,8 +1976,8 @@ For latex printing one uses one functions from the ``ga`` module and one functio
    ===================== =============================================================
    ``paper=(w,h)``       ``w`` is paper width in inches and
    \                     ``h`` is paper height in inches
-   ``paper=’letter’``    paper is standard letter size 8.5 in :math:`\times` 11 in
-   ``paper=’landscape’`` paper is standard letter size but 11 in :math:`\times` 8.5 in
+   ``paper='letter'``    paper is standard letter size 8.5 in :math:`\times` 11 in
+   ``paper='landscape'`` paper is standard letter size but 11 in :math:`\times` 8.5 in
    ===================== =============================================================
 
    The default of ``paper=(14,11)`` was chosen so that long multivector expressions would not be truncated on the display.
@@ -2181,7 +2181,7 @@ Since the expressions for multivectors or differential operators can be very lon
    Denoted in text output by ``A__x``, etc. so that for text output ``A`` would be printed as ``A__x*e_x+A__y*e_y+A__z*e_z``.
 
 .. [17]
-   If the metric is input as a list or list or lists the object is no longer quoted (input as a string). For example the old ``metric=’[1,1,1]’`` becomes ``metric=[1,1,1]``.
+   If the metric is input as a list or list or lists the object is no longer quoted (input as a string). For example the old ``metric='[1,1,1]'`` becomes ``metric=[1,1,1]``.
 
 .. [18]
    In the future it should be possible to generate closed form expressions for :math:`e^{A}` if :math:`A^{r}` is a scalar for some interger :math:`r`.
