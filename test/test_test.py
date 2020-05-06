@@ -363,6 +363,33 @@ class TestTest(unittest.TestCase):
         aB = a|B
         assert str(aB) == '-(P2.a)*P1 + (P1.a)*P2'
 
+    def test_ReciprocalFrame(self):
+        ga, *basis = Ga.build('e*u|v|w')
+
+        r_basis = ga.ReciprocalFrame(basis)
+
+        for i, base in enumerate(basis):
+            for r_i, r_base in enumerate(r_basis):
+                if i == r_i:
+                    assert (base | r_base).simplify() == 1
+                else:
+                    assert (base | r_base).simplify() == 0
+
+    def test_ReciprocalFrame_append(self):
+        ga, *basis = Ga.build('e*u|v|w')
+        *r_basis, E_sq = ga.ReciprocalFrame(basis, mode='append')
+
+        for i, base in enumerate(basis):
+            for r_i, r_base in enumerate(r_basis):
+                if i == r_i:
+                    assert (base | r_base).simplify() == E_sq
+                else:
+                    assert (base | r_base).simplify() == 0
+
+        # anything that isn't 'norm' means 'append', but this is deprecated
+        with pytest.warns(DeprecationWarning):
+            assert ga.ReciprocalFrame(basis, mode='nonsense') == (*r_basis, E_sq)
+
     def test_reciprocal_frame_test(self):
 
         g = '1 # #,'+ \
@@ -475,3 +502,6 @@ class TestTest(unittest.TestCase):
         # all derived from
         ga.blade_expansion_dict
         ga.base_expansion_dict
+
+        with pytest.warns(DeprecationWarning):
+            import galgebra.utils

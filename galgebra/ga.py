@@ -7,7 +7,7 @@ import copy
 from itertools import combinations
 import functools
 from functools import reduce
-from typing import Tuple, TypeVar, Callable, Dict, List
+from typing import Tuple, TypeVar, Callable, Dict, Sequence, List
 from ._backports.typing import OrderedDict
 
 from sympy import (
@@ -356,6 +356,18 @@ class Ga(metric.Metric):
 
     @staticmethod
     def com(A, B):
+        r"""
+        Calculate commutator of multivectors :math:`A` and :math:`B`. Returns :math:`(AB-BA)/2`.
+
+        Additionally, commutator and anti-commutator operators are defined by
+
+        .. math::
+
+            \begin{aligned}
+                \texttt{A >> B} \equiv & {\displaystyle\frac{AB - BA}{2}} \\
+                \texttt{A << B} \equiv & {\displaystyle\frac{AB + BA}{2}}.
+            \end{aligned}
+        """
         return half * (A * B - B * A)
 
     @staticmethod
@@ -1830,17 +1842,15 @@ class Ga(metric.Metric):
 
         index = self.indexes_to_blades_dict.inverse[blade]
         grade = len(index)
-        if grade == 1:
-            db = self.de[ib][index[0]]
-        elif grade == 2:
-            db = self.wedge(self.de[ib][index[0]], self.basis[index[1]]) + \
-                self.wedge(self.basis[index[0]], self.de[ib][index[1]])
-        else:
-            db = self.wedge(self.de[ib][index[0]], self.indexes_to_blades_dict[index[1:]]) + \
-                self.wedge(self.indexes_to_blades_dict[index[:-1]], self.de[ib][index[-1]])
-            for i in range(1, grade - 1):
-                db += self.wedge(self.wedge(self.indexes_to_blades_dict[index[:i]], self.de[ib][index[i]]),
-                                 self.indexes_to_blades_dict[index[i + 1:]])
+
+        # differentiate each basis vector separately and sum
+        db = S.Zero
+        for i in range(grade):
+            db += reduce(self.wedge, [
+                self.indexes_to_blades_dict[index[:i]],
+                self.de[ib][index[i]],
+                self.indexes_to_blades_dict[index[i + 1:]]
+            ])
         self._dbases[key] = db
         return db
 
@@ -1968,7 +1978,28 @@ class Ga(metric.Metric):
             self.connect[mode_key].append((key, C))
         return C
 
-    def ReciprocalFrame(self, basis, mode='norm'):
+    def ReciprocalFrame(self, basis: Sequence[_mv.Mv], mode: str = 'norm') -> Tuple[_mv.Mv]:
+        r"""
+        Compute the reciprocal frame :math:`v^i` of a set of vectors :math:`v_i`.
+
+        Parameters
+        ----------
+        basis :
+            The sequence of vectors :math:`v_i` defining the input frame.
+        mode :
+            * ``"norm"`` -- indicates that the reciprocal vectors should be
+              normalized such that their product with the input vectors is 1,
+              :math:`v^i \cdot v_j = \delta_{ij}`.
+            * ``"append"`` -- indicates that instead of normalizing, the
+              normalization coefficient :math:`E^2` should be appended to the returned tuple.
+              One can divide by this coefficient to normalize the vectors.
+              The returned vectors are such that
+              :math:`v^i \cdot v_j = E^2\delta_{ij}`.
+
+            .. deprecated:: 0.5.0
+                Arbitrary strings are interpreted as ``"append"``, but in
+                future will be an error
+        """
         dim = len(basis)
 
         indexes = tuple(range(dim))
@@ -2001,11 +2032,17 @@ class Ga(metric.Metric):
             rbasis.append(recpv)
             sgn = -sgn
 
-        if mode != 'norm':
-            rbasis.append(E_sq)
-        else:
+        if mode == 'norm':
             for i in range(dim):
                 rbasis[i] = rbasis[i] / E_sq
+        else:
+            if mode != 'append':
+                # galgebra 0.5.0
+                warnings.warn(
+                    "Mode {!r} not understood, falling back to {!r} but this "
+                    "is deprecated".format(mode, 'append'),
+                    DeprecationWarning, stacklevel=2)
+            rbasis.append(E_sq)
 
         return tuple(rbasis)
 

@@ -18,3 +18,4 @@ notedown
 m2r
 semantic-version==2.6.0
 releases>=1.6.1
+sphinxcontrib-bibtex
