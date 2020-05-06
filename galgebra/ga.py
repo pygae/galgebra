@@ -7,7 +7,7 @@ import copy
 from itertools import combinations
 import functools
 from functools import reduce
-from typing import Tuple, TypeVar, Callable, Dict
+from typing import Tuple, TypeVar, Callable, Dict, Sequence
 from ._backports.typing import OrderedDict
 
 from sympy import (
@@ -1976,14 +1976,27 @@ class Ga(metric.Metric):
             self.connect[mode_key].append((key, C))
         return C
 
-    def ReciprocalFrame(self, basis, mode='norm'):
-        """
-        If ``basis`` is a list/tuple of vectors, ``ReciprocalFrame()`` returns a tuple of reciprocal vectors.
+    def ReciprocalFrame(self, basis: Sequence[_mv.Mv], mode: str = 'norm') -> Tuple[_mv.Mv]:
+        r"""
+        Compute the reciprocal frame :math:`v^i` of a set of vectors :math:`v_i`.
 
-        If ``mode=norm`` the vectors are normalized.
-        If ``mode`` is anything other than ``norm`` the vectors are unnormalized
-        and the normalization coefficient is added to the end of the tuple.
-        One must divide by this coefficient to normalize the vectors.
+        Parameters
+        ----------
+        basis :
+            The sequence of vectors :math:`v_i` defining the input frame.
+        mode :
+            * ``"norm"`` -- indicates that the reciprocal vectors should be
+              normalized such that their product with the input vectors is 1,
+              :math:`v^i \cdot v_j = \delta_{ij}`.
+            * ``"append"`` -- indicates that instead of normalizing, the
+              normalization coefficient :math:`E^2` should be appended to the returned tuple.
+              One can divide by this coefficient to normalize the vectors.
+              The returned vectors are such that
+              :math:`v^i \cdot v_j = E^2\delta_{ij}`.
+
+            .. deprecated:: 0.5.0
+                Arbitrary strings are interpreted as ``"append"``, but in
+                future will be an error
         """
         dim = len(basis)
 
@@ -2017,11 +2030,17 @@ class Ga(metric.Metric):
             rbasis.append(recpv)
             sgn = -sgn
 
-        if mode != 'norm':
-            rbasis.append(E_sq)
-        else:
+        if mode == 'norm':
             for i in range(dim):
                 rbasis[i] = rbasis[i] / E_sq
+        else:
+            if mode != 'append':
+                # galgebra 0.5.0
+                warnings.warn(
+                    "Mode {!r} not understood, falling back to {!r} but this "
+                    "is deprecated".format(mode, 'append'),
+                    DeprecationWarning, stacklevel=2)
+            rbasis.append(E_sq)
 
         return tuple(rbasis)
 
