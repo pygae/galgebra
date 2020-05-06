@@ -986,8 +986,6 @@ For those users who wish to define a default operator precedence the functions `
 .. autofunction:: galgebra.printer.def_prec
    :noindex:
 
-   Define the precedence of the multivector operations. The function ``def_prec()`` must be called from the main program and the first argument ``gd`` must be set to ``globals()``. The second argument ``op_ord`` determines the operator precedence for expressions input to the function ``GAeval()``. The default value of ``op_ord`` is ``'<>|,^,*'``. For the default value the ``<``, ``>``, and ``|`` operations have equal precedence followed by ``^``, and ``^`` is followed by ``*``.
-
 .. autofunction:: galgebra.printer.GAeval
    :noindex:
 
