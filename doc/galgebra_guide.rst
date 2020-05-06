@@ -1101,23 +1101,28 @@ In the simplest case of two basis vectors ``a_1`` and ``a_2`` we have a list of 
 
 .. code:: python
 
-   self.bases = [[Symbol('a_1', commutative=False, real=True),
-                  Symbol('a_2', commutative=False, real=True)],
-                 [Symbol('a_1*a_2', commutative=False, real=True)]]
+   self.bases = ((Integer(1),)
+                 (Symbol('a_1', commutative=False, real=True),
+                  Symbol('a_2', commutative=False, real=True)),
+                 (Symbol('a_1*a_2', commutative=False, real=True),))
 
 For the case of the basis blades we have
 
 .. code:: python
 
-   self.blades = [[Symbol('a_1', commutative=False, real=True),
-                   Symbol('a_2', commutative=False, real=True)],
-                  [Symbol('a_1^a_2', commutative=False, real=True)]]
+   self.blades = ((Integer(1),)
+                  (Symbol('a_1', commutative=False, real=True),
+                   Symbol('a_2', commutative=False, real=True)),
+                  (Symbol('a_1^a_2', commutative=False, real=True)))
 
 The index tuples for the bases of each pseudo grade and each grade for the case of dimension 3 is
 
 .. code:: python
 
-   self.indexes = (((0,),(1,),(2,)),((0,1),(0,2),(1,2)),((0,1,2)))
+   self.indexes = (((),),
+                   ((0,), (1,), (2,)),
+                   ((0, 1), (0, 2), (1, 2)),
+                   ((0, 1, 2),))
 
 Then the non-commutative symbol representing each base is constructed from each index tuple. For example for ``self.indexes[1][1]`` the symbol is ``Symbol('a_1*a_3', commutative=False)``.
 
