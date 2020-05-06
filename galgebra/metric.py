@@ -3,6 +3,9 @@ Metric Tensor and Derivatives of Basis Vectors.
 """
 
 import copy
+import warnings
+from typing import List, Optional
+
 from sympy import (
     diff, trigsimp, Matrix, Rational,
     sqf_list, Symbol, sqrt, eye, S, expand, Mul,
@@ -10,6 +13,7 @@ from sympy import (
 )
 
 from . import printer
+from ._utils import cached_property as _cached_property
 
 half = Rational(1, 2)
 
@@ -416,37 +420,41 @@ class Metric(object):
                 ])
 
     def derivatives_of_g(self):
-        # dg[i][j][k] = \partial_{x_{k}}g_{ij}
+        # galgebra 0.5.0
+        warnings.warn(
+            "Metric.derivatives_of_g is deprecated, and now does nothing. "
+            "the `.dg` property is now always available.")
 
-        dg = [[[
+    @_cached_property
+    def dg(self) -> List[List[List[Expr]]]:
+        # dg[i][j][k] = \partial_{x_{k}}g_{ij}
+        return [[[
             diff(self.g[i, j], x_k)
             for x_k in self.coords]
             for j in self.n_range]
             for i in self.n_range]
 
-        return dg
+    @_cached_property
+    def connect_flg(self) -> bool:
+        """ True if connection is non-zero """
+        if self.coords is None:
+            return False
+        else:
+            return any(
+                self.dg[i][j][k] != 0
+                for i in self.n_range
+                for j in self.n_range
+                for k in self.n_range
+            )
 
-    def _init_connect_flg(self):
-        # See if metric is flat
-
-        self.connect_flg = any(
-            self.dg[i][j][k] != 0
-            for i in self.n_range
-            for j in self.n_range
-            for k in self.n_range
-        )
-
-    def _build_derivatives_of_basis(self):  # Derivatives of basis vectors from Christoffel symbols
+    @_cached_property
+    def de(self) -> Optional[List[List[Expr]]]:
+        # Derivatives of basis vectors from Christoffel symbols
 
         n_range = self.n_range
 
-        self.dg = self.derivatives_of_g()
-
-        self._init_connect_flg()
-
         if not self.connect_flg:
-            self.de = None
-            return
+            return None
 
         # Christoffel symbols of the first kind, \Gamma_{ijk}
         # TODO handle None
@@ -454,13 +462,15 @@ class Metric(object):
 
         # de[i][j] = \partial_{x_{i}}e^{x_{j}}
         # \frac{\partial e_{j}}{\partial x^{i}} = \Gamma_{ijk} e^{k}
-        self.de = [[
+        de = [[
             sum([Gamma_ijk * e__k for Gamma_ijk, e__k in zip(dG[i][j], self.r_symbols)])
             for j in n_range
         ] for i in n_range]
 
         if self.debug:
-            printer.oprint('D_{i}e^{j}', self.de)
+            printer.oprint('D_{i}e^{j}', de)
+
+        return de
 
     def inverse_metric(self):
 
@@ -649,10 +659,6 @@ class Metric(object):
         self.debug = debug
         self.is_ortho = False  # Is basis othogonal
         self.coords = coords  # Manifold coordinates
-        if self.coords is None:
-            self.connect_flg = False
-        else:
-            self.connect_flg = True  # Connection needed for postion dependent metric
         self.norm = norm  # True to normalize basis vectors
         self.detg = None  #: Determinant of g
         self.g_adj = None  #: Adjugate of g
@@ -756,7 +762,6 @@ class Metric(object):
         )
 
         if self.coords is not None:
-            self._build_derivatives_of_basis()  # calculate derivatives of basis
             if self.norm:  # normalize basis, metric, and derivatives of normalized basis
                 if not self.is_ortho:
                     raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
