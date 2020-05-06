@@ -1828,6 +1828,13 @@ class Dop(dop._BaseDop):
 
 
 def Nga(x, prec=5):
+    """
+    Like :func:`sympy.N`, but also works on multivectors
+
+    For multivectors with coefficients that contain floating point numbers, this
+    rounds all these numbers to a precision of ``prec`` and returns the rounded
+    multivector.
+    """
     if isinstance(x, Mv):
         return Mv(Nsympy(x.obj, prec), ga=x.Ga)
     else:
@@ -1905,6 +1912,10 @@ def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors 
 
 
 def cross(v1, v2):
+    r"""
+    If ``v1`` and ``v2`` are 3-dimensional Euclidean vectors, compute the vector
+    cross product :math:`v_{1}\times v_{2} = -I{\lp {v_{1}{\wedge}v_{2}} \rp }`.
+    """
     if v1.is_vector() and v2.is_vector() and v1.Ga == v2.Ga and v1.Ga.n == 3:
         return -v1.Ga.I() * (v1 ^ v2)
     else:
@@ -1912,6 +1923,7 @@ def cross(v1, v2):
 
 
 def dual(A):
+    """ Equivalent to :meth:`Mv.dual` """
     if isinstance(A, Mv):
         return A.dual()
     else:
@@ -1919,18 +1931,24 @@ def dual(A):
 
 
 def even(A):
+    """ Equivalent to :meth:`Mv.even` """
     if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in even(A).')
     return A.even()
 
 
 def odd(A):
+    """ Equivalent to :meth:`Mv.odd` """
     if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in even(A).')
     return A.odd()
 
 
 def exp(A, hint='-'):
+    """
+    If ``A`` is a multivector then ``A.exp(hint)`` is returned.
+    If ``A`` is a *sympy* expression the *sympy* expression :math:`e^{A}` is returned (see :func:`sympy.exp`).
+    """
     if isinstance(A, Mv):
         return A.exp(hint)
     else:
@@ -1938,6 +1956,7 @@ def exp(A, hint='-'):
 
 
 def grade(A, r=0):
+    """ Equivalent to :meth:`Mv.grade` """
     if isinstance(A, Mv):
         return A.grade(r)
     else:
@@ -1945,12 +1964,14 @@ def grade(A, r=0):
 
 
 def inv(A):
+    """ Equivalent to :meth:`Mv.inv` """
     if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.inv()
 
 
 def norm(A, hint='+'):
+    """ Equivalent to :meth:`Mv.norm` """
     if isinstance(A, Mv):
         return A.norm(hint=hint)
     else:
@@ -1958,27 +1979,40 @@ def norm(A, hint='+'):
 
 
 def norm2(A):
+    """ Equivalent to :meth:`Mv.norm2` """
     if isinstance(A, Mv):
         return A.norm2()
     else:
         raise ValueError('A not a multivector in norm(A)')
 
 
-def proj(B, A):  # Project on the blade B the multivector A
+def proj(B, A):
+    """ Equivalent to :meth:`Mv.project_in_blade` """
     if isinstance(A, Mv):
         return A.project_in_blade(B)
     else:
         raise ValueError('A not a multivector in proj(B, A)')
 
 
-def rot(itheta, A, hint='-'):  # Rotate by the 2-blade itheta the multivector A
+def rot(itheta, A, hint='-'):
+    """
+    Equivalent to ``A.rotate_multivector(itheta, hint)`` where ``itheta`` is the bi-vector blade defining the rotation.
+    For the use of ``hint`` see the method :meth:`Mv.rotate_multivector`.
+    """
     if isinstance(A, Mv):
         return A.rotate_multivector(itheta, hint)
     else:
         raise ValueError('A not a multivector in rotate(A, itheta)')
 
 
-def refl(B, A):  # Project on the blade B the multivector A
+def refl(B, A):
+    r"""
+    Reflect multivector :math:`A` in blade :math:`B`.
+
+    If :math:`s` is grade of :math:`B` returns :math:`\sum_{r}(-1)^{s(r+1)}B{\left < {A} \right >}_{r}B^{-1}`.
+
+    Equivalent to :meth:`Mv.reflect_in_blade`
+    """
     if isinstance(A, Mv):
         return A.reflect_in_blade(B)
     else:
@@ -1986,6 +2020,7 @@ def refl(B, A):  # Project on the blade B the multivector A
 
 
 def rev(A):
+    """ Equivalent to :meth:`Mv.rev` """
     if isinstance(A, Mv):
         return A.rev()
     else:
@@ -1993,6 +2028,7 @@ def rev(A):
 
 
 def scalar(A):
+    """ Equivalent to :meth:`Mv.scalar` """
     if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.scalar()
