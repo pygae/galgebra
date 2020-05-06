@@ -1,25 +1,17 @@
 """ A private module to parse multivector expressions """
 import re
-
-op_cntrct = re.compile(r'(([A-Za-z0-9\_\#]+)(\||<|>)([A-Za-z0-9\_\#]+))')
-op_wedge = re.compile(r'(([A-Za-z0-9\_\#]+)[\^]{1}([A-Za-z0-9\_\#]+)([\^]{1}([A-Za-z0-9\_\#]+))*)')
-ops = r'[\^\|\<\>]+'
-ops_search = re.compile(r'(\^|\||<|>)+')
-parse_paren_calls = 0
-op_dict = {}
-op_lst = []
-
-OPS = {'<>|': r'(([A-Za-z0-9\_\#]+)(\||<|>)([A-Za-z0-9\_\#]+))',
-       '^': r'(([A-Za-z0-9\_\#]+)[\^]{1}([A-Za-z0-9\_\#]+)([\^]{1}([A-Za-z0-9\_\#]+))*)',
-       '*': r'(([A-Za-z0-9\_\#]+)[\*]{1}([A-Za-z0-9\_\#]+)([\*]{1}([A-Za-z0-9\_\#]+))*)'}
+from typing import List
 
 
-def set_precedence(op_ord: str = '<>|,^,*') -> None:
-    global op_dict, op_lst
-    op_lst = op_ord.split(',')
-    op_dict = {}
-    for op in op_lst:
-        op_dict[op] = re.compile(OPS[op])
+# The `#` character is included because we generate tokens containing it in
+# _parse_paren.
+_operand_re = r"([A-Za-z0-9\_\#]+)"
+
+_operator_res = {
+    '<>|': re.compile(r'(ARG(\||<|>)ARG)'.replace('ARG', _operand_re)),
+    '^': re.compile(r'(ARG[\^]ARG([\^]ARG)*)'.replace('ARG', _operand_re)),
+    '*': re.compile(r'(ARG[\*]ARG([\*]ARG)*)'.replace('ARG', _operand_re)),
+}
 
 
 def _contains_interval(interval1, interval2):  # interval1 inside interval2
@@ -29,9 +21,13 @@ def _contains_interval(interval1, interval2):  # interval1 inside interval2
         return False
 
 
+# counter to generate unique tokens
+_parse_paren_calls = 0
+
+
 def _parse_paren(line):
-    global parse_paren_calls
-    parse_paren_calls += 1
+    global _parse_paren_calls
+    _parse_paren_calls += 1
 
     if ('(' not in line) or (')' not in line):
         return [[[line]]]
@@ -82,7 +78,7 @@ def _parse_paren(line):
         for level in level_lst[1:]:
             igroup = 0
             for group in level:
-                token = '#' + str(parse_paren_calls) + '_' + str(ilevel) + '_' + str(igroup) + '#'
+                token = '#' + str(_parse_paren_calls) + '_' + str(ilevel) + '_' + str(igroup) + '#'
                 level_lst[ilevel][igroup].append(line[group[0]:group[1] + 1])
                 level_lst[ilevel][igroup].append(token)
                 igroup += 1
@@ -150,8 +146,12 @@ def _add_paren(line, re_exprs):
     return line
 
 
-def parse_line(line: str) -> str:
-    global op_lst, op_dict
+def validate_op_order(op_order: List[str]) -> None:
+    if not all(op in _operator_res for op in op_order):
+        raise ValueError("Illegal operator")
+
+
+def parse_line(line: str, op_order: List[str]) -> str:
     line = line.replace(' ', '')
     level_lst = _parse_paren(line)
     ilevel = 0
@@ -159,8 +159,8 @@ def parse_line(line: str) -> str:
         igroup = 0
         for group in level:
             string = group[-1]
-            for op in op_lst:
-                string = _add_paren(string, op_dict[op])
+            for op in op_order:
+                string = _add_paren(string, _operator_res[op])
             level_lst[ilevel][igroup][-1] = string
             igroup += 1
         ilevel += 1
