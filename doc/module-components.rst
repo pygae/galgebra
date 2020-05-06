@@ -150,14 +150,14 @@ To access the pseudo scalar of the geometric algebra use the member function ``I
 
 In general we have defined member functions of the ``Ga`` class that will instantiate objects of other classes since the objects of the other classes are all associated with a particular geometric algebra object. Thus we have
 
-===================== ======= =============
-Object                Class   ``Ga`` method
-===================== ======= =============
-multivector           ``Mv``  ``mv``
-submanifold           ``Sm``  ``sm``
-linear transformation ``Lt``  ``lt``
-differential operator ``Dop`` ``dop``
-===================== ======= =============
+===================== ========================= ===========================
+Object                Class                     ``Ga`` method
+===================== ========================= ===========================
+multivector           :class:`~galgebra.mv.Mv`  :meth:`~galgebra.ga.Ga.mv`
+submanifold           :class:`~galgebra.ga.Sm`  :meth:`~galgebra.ga.Ga.sm`
+linear transformation :class:`~galgebra.lt.Lt`  :meth:`~galgebra.ga.Ga.lt`
+differential operator :class:`~galgebra.mv.Dop` :meth:`~galgebra.ga.Ga.dop`
+===================== ========================= ===========================
 
 for the instantiation of various objects from the ``Ga`` class. This means that in order to instantiate any of these objects we need only to import ``Ga`` into our program.
 
