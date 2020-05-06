@@ -983,21 +983,13 @@ left and right contractions have a higher precedence than the geometric product 
 
 For those users who wish to define a default operator precedence the functions ``def_prec()`` and ``GAeval()`` are available in the module printer.
 
-``def_prec(gd,op_ord='<>|,^,*')``
+.. autofunction:: galgebra.printer.def_prec
+   :noindex:
 
    Define the precedence of the multivector operations. The function ``def_prec()`` must be called from the main program and the first argument ``gd`` must be set to ``globals()``. The second argument ``op_ord`` determines the operator precedence for expressions input to the function ``GAeval()``. The default value of ``op_ord`` is ``'<>|,^,*'``. For the default value the ``<``, ``>``, and ``|`` operations have equal precedence followed by ``^``, and ``^`` is followed by ``*``.
 
-``GAeval(s,pstr=False)``
-
-   The function ``GAeval()`` returns a multivector expression defined by the string ``s`` where the operations in the string are parsed according to the precedences defined by ``def_prec()``. ``pstr`` is a flag to print the input and output of ``GAeval()`` for debugging purposes. ``GAeval()`` works by adding parenthesis to the input string ``s`` with the precedence defined by ``op_ord='<>|,,*'``. Then the parsed string is converted to a *sympy* expression using the python ``eval()`` function.
-   For example consider where ``X``, ``Y``, ``Z``, and ``W`` are multivectors
-
-   .. code:: python
-
-      def_prec(globals())
-      V = GAeval('X|Y^Z*W')
-
-   The *sympy* variable ``V`` would evaluate to ``((X|Y)^Z)*W``.
+.. autofunction:: galgebra.printer.GAeval
+   :noindex:
 
 .. _BasisMetric:
 
