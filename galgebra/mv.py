@@ -72,7 +72,7 @@ class Mv(object):
     dual_mode_lst = ['+I', 'I+', '+Iinv', 'Iinv+', '-I', 'I-', '-Iinv', 'Iinv-']
 
     @staticmethod
-    def setup(ga) -> Tuple['Mv', List['Mv'], 'Mv']:
+    def setup(ga: 'Ga') -> Tuple['Mv', List['Mv'], 'Mv']:
         """
         Set up constant multivectors required for multivector class for
         a given geometric algebra, `ga`.
