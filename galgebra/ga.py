@@ -7,7 +7,7 @@ import copy
 from itertools import combinations
 import functools
 from functools import reduce
-from typing import Tuple, TypeVar, Callable, Dict
+from typing import Tuple, TypeVar, Callable, Dict, List
 from ._backports.typing import OrderedDict
 
 from sympy import (
@@ -278,15 +278,10 @@ class Ga(metric.Metric):
 
         List of reciprocal basis vectors expanded as linear combination of basis vector symbols.
 
-    .. attribute:: r_basis_dict
+    .. autosummary::
 
-        Dictionary to map reciprocal basis symbols to reciprocal basis expanded in terms of basis symbols
-        ``{reciprocal basis symbol: linear combination of basis symbols, ...}``
-
-    .. attribute:: r_basis_mv
-
-        List of reciprocal basis vectors in terms of basis multivectors (elements of list can be used in
-        multivector expressions.)
+        ~galgebra.ga.Ga.r_basis_dict
+        ~galgebra.ga.Ga.r_basis_mv
 
 
     .. rubric:: Derivative data structures
@@ -433,7 +428,7 @@ class Ga(metric.Metric):
             self._build_reciprocal_basis(self.gsym)
             self._build_grads()
         else:
-            self.r_basis_mv = None
+            self.r_basis = None
 
         if self.connect_flg:
             self._build_connection()
@@ -636,7 +631,7 @@ class Ga(metric.Metric):
         .. math:: e_{i}\cdot e^{j} = I^{2}\delta_{i}^{j}.
         """
 
-        if self.r_basis_mv is None:
+        if self.r_basis is None:
             self._build_reciprocal_basis(self.gsym)
         if norm and not self.is_ortho:
             return tuple([self.r_basis_mv[i] / self.e_sq for i in self.n_range])
@@ -1731,15 +1726,6 @@ class Ga(metric.Metric):
                         else:
                             print('e_{i}|e_{j} = ' + str(expand(ei_dot_ej / self.e_sq)))
 
-        # Dictionary to represent reciprocal basis vectors as expansions
-        # in terms of basis vectors.
-
-        self.r_basis_dict = {}
-        self.r_basis_mv = []
-        for r_symbol, r_base in zip(self.r_symbols, self.r_basis):
-            self.r_basis_dict[r_symbol] = r_base
-            self.r_basis_mv.append(mv.Mv(r_base, ga=self))
-
         # Replace reciprocal basis vectors with expansion in terms of
         # basis vectors in derivatives of basis vectors
 
@@ -1770,6 +1756,22 @@ class Ga(metric.Metric):
 
         if self.debug:
             print('reciprocal basis dictionary =\n', self.r_basis_dict)
+
+    @_cached_property
+    def r_basis_dict(self) -> Dict[Symbol, Expr]:
+        """ Dictionary to represent reciprocal basis vectors as expansions in terms of basis vectors.
+
+        ``{reciprocal basis symbol: linear combination of basis symbols, ...}``
+        """
+        return {
+            r_symbol: r_base
+            for r_symbol, r_base in zip(self.r_symbols, self.r_basis)
+        }
+
+    @_cached_property
+    def r_basis_mv(self) -> List[_mv.Mv]:
+        """ List of reciprocal basis vectors in terms of basis multivectors. """
+        return [mv.Mv(r_base, ga=self) for r_base in self.r_basis]
 
     def er_blade(self, er, blade, mode='*', left=True):
         r"""
