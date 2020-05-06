@@ -1197,6 +1197,8 @@ def def_prec(gd: dict, op_ord: str = '<>|,^,*') -> None:
     op_ord :
         The order of operator precedence from high to low with groups of equal precedence separated by commas.
         The default precedence, ``'<>|,^,*'``, is that used by Hestenes (:cite:`Hestenes`, p7, :cite:`Doran`, p38).
+        This means that the ``<``, ``>``, and ``|`` operations have equal
+        precedence, followed by ``^``, and lastly ``*``.
     """
     global _eval_global_dict, _eval_parse_order
     op_ord = op_ord.split(',')
@@ -1212,6 +1214,17 @@ def GAeval(s: str, pstr: bool = False):
     The operator precedence and variable values within the string are
     controlled by :func:`def_prec`. The documentation for that function
     describes the default precedence.
+
+    The implementation works by adding parenthesis to the input string ``s``
+    according to the requested precedence, and then calling :func:`eval` on the
+    result.
+
+    For example consider where ``X``, ``Y``, ``Z``, and ``W`` are multivectors::
+
+        def_prec(globals())
+        V = GAeval('X|Y^Z*W')
+
+    The *sympy* variable ``V`` would evaluate to ``((X|Y)^Z)*W``.
 
     Parameters
     ----------
