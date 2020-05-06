@@ -1182,7 +1182,8 @@ def Print_Function():
     return
 
 
-global_dict = {}
+_eval_global_dict = {}
+_eval_parse_order = []
 
 
 def def_prec(gd: dict, op_ord: str = '<>|,^,*') -> None:
@@ -1197,9 +1198,11 @@ def def_prec(gd: dict, op_ord: str = '<>|,^,*') -> None:
         The order of operator precedence from high to low with groups of equal precedence separated by commas.
         The default precedence, ``'<>|,^,*'``, is that used by Hestenes (:cite:`Hestenes`, p7, :cite:`Doran`, p38).
     """
-    global global_dict
-    global_dict = gd
-    _parser.set_precedence(op_ord)
+    global _eval_global_dict, _eval_parse_order
+    op_ord = op_ord.split(',')
+    _parser.validate_op_order(op_ord)
+    _eval_global_dict = gd
+    _eval_parse_order = op_ord
 
 
 def GAeval(s: str, pstr: bool = False):
@@ -1219,11 +1222,11 @@ def GAeval(s: str, pstr: bool = False):
         enforce operator precedence are printed.
     """
 
-    seval = _parser.parse_line(s)
+    seval = _parser.parse_line(s, _eval_parse_order)
     if pstr:
         print(s)
         print(seval)
-    return eval(seval, global_dict)
+    return eval(seval, _eval_global_dict)
 
 
 r"""
