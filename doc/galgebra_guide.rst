@@ -937,7 +937,7 @@ Representation of Multivectors in *sympy*
 
 The *sympy* python module offers a simple way of representing multivectors using linear combinations of commutative expressions (expressions consisting only of commuting *sympy* objects) and non-commutative symbols. We start by defining :math:`n` non-commutative *sympy* symbols as a basis for the vector space
 
-``(e_1,...,e_n) = symbols('e_1,...,e_n',commutative=False,real=True)``
+``e_1, ..., e_n = symbols('e_1,...,e_n', commutative=False, real=True)``
 
 Several software packages for numerical geometric algebra calculations are available from Doran-Lasenby group and the Dorst group. Symbolic packages for Clifford algebra using orthogonal bases such as :math:`{{\eb}}_{i}{{\eb}}_{j}+{{\eb}}_{j}{{\eb}}_{i} = 2\eta_{ij}`, where :math:`\eta_{ij}` is a numeric array are available in Maple and Mathematica. The symbolic algebra module, *ga*, developed for python does not depend on an orthogonal basis representation, but rather is generated from a set of
 :math:`n` arbitrary symbolic vectors :math:`{{\eb}}_{1},{{\eb}}_{2},\dots,{{\eb}}_{n}` and a symbolic metric tensor :math:`g_{ij} = {{\eb}}_{i}\cdot {{\eb}}_{j}` (the symbolic metric can be symbolic constants or symbolic function in the case of a manifold).
@@ -1016,7 +1016,7 @@ that would be input into the geometric algebra class instantiation function, ``G
 
 where each of the :math:`g_{ij}` is a symbol representing all of the dot products of the basis vectors. Note that the symbols are named so that :math:`g_{ij} = g_{ji}` since for the symbol function :math:`(a0.a1) \ne (a1.a0)`.
 
-Note that the strings shown in the above equation are only used when the values of :math:`g_{ij}` are output (printed). In the ga module (library) the :math:`g_{ij}` symbols are stored in a member of the geometric algebra instance so that if ``o3d`` is a geometric algebra then ``o3d.g`` is the metric tensor ( :math:`g_{ij} =` ``o3d.g[i,j]``) for that algebra.
+Note that the strings shown in the above equation are only used when the values of :math:`g_{ij}` are output (printed). In the ga module (library) the :math:`g_{ij}` symbols are stored in a member of the geometric algebra instance so that if ``o3d`` is a geometric algebra then ``o3d.g`` is the metric tensor ( :math:`g_{ij} =` ``o3d.g[i, j]``) for that algebra.
 
 The default definition of :math:`g` can be overwritten by specifying a string that will define :math:`g`. As an example consider a symbolic representation for conformal geometry. Define for a basis
 
@@ -1030,7 +1030,7 @@ and for a metric
 
    g = '# # # 0 0, # # # 0 0, # # # 0 0, 0 0 0 0 2, 0 0 0 2 0'
 
-then calling ``cf3d = Ga(basis,g=g)`` would initialize the metric tensor
+then calling ``cf3d = Ga(basis, g=g)`` would initialize the metric tensor
 
 .. math::
 
@@ -1051,27 +1051,27 @@ When ``Ga`` is called multivector representations of the basis local to the prog
 
 .. code:: python
 
-   o3d = Ga('a_1 a_2 a_3',g=[1,1,1])
-   (a_1,a_2,a_3) = o3d.mv()
+   o3d = Ga('a_1 a_2 a_3', g=[1, 1, 1])
+   a_1, a_2, a_3 = o3d.mv()
 
 or use the ``Ga.build()`` function -
 
 .. code:: python
 
-   (o3d,a_1,a_2,a_3) = Ga.build('a_1 a_2 a_3',g=[1,1,1])
+   o3d, a_1, a_2, a_3 = Ga.build('a_1 a_2 a_3', g=[1, 1, 1])
 
 Note that the python variable name for a basis vector does not have to correspond to the name give in ``Ga()`` or ``Ga.build()``, one may wish to use a shortened python variable name to reduce programming (typing) errors, for example one could use -
 
 .. code:: python
 
-   (o3d,a1,a2,a3) = Ga.build('a_1 a_2 a_3',g=[1,1,1])
+   o3d, a1, a2, a3 = Ga.build('a_1 a_2 a_3', g=[1, 1, 1])
 
 or
 
 .. code:: python
 
-   (st4d,g0,g1,g2,g3) = Ga.build('gamma_0 gamma_1 gamma_2 gamma_3',\
-                                   g=[1,-1,-1,-1])
+   st4d, g0, g1, g2, g3 = Ga.build('gamma_0 gamma_1 gamma_2 gamma_3',
+                                   g=[1, -1, -1, -1])
 
 for Minkowski space time.
 
@@ -1085,31 +1085,36 @@ In our symbolic geometric algebra all multivectors can be obtained from the symb
 
 .. code:: python
 
-   Symbol('a_1*a_2*a_3',commutative=False)
+   Symbol('a_1*a_2*a_3', commutative=False)
 
 In the simplest case of two basis vectors ``a_1`` and ``a_2`` we have a list of bases
 
 .. code:: python
 
-   self.bases = [[Symbol('a_1',commutative=False,real=True),\
-                Symbol('a_2',commutative=False,real=True)],\
-                [Symbol('a_1*a_2',commutative=False,real=True)]]
+   self.bases = ((Integer(1),)
+                 (Symbol('a_1', commutative=False, real=True),
+                  Symbol('a_2', commutative=False, real=True)),
+                 (Symbol('a_1*a_2', commutative=False, real=True),))
 
 For the case of the basis blades we have
 
 .. code:: python
 
-   self.blades = [[Symbol('a_1',commutative=False,real=True),\
-                 Symbol('a_2',commutative=False,real=True)],\
-                 [Symbol('a_1^a_2',commutative=False,real=True)]]
+   self.blades = ((Integer(1),)
+                  (Symbol('a_1', commutative=False, real=True),
+                   Symbol('a_2', commutative=False, real=True)),
+                  (Symbol('a_1^a_2', commutative=False, real=True)))
 
 The index tuples for the bases of each pseudo grade and each grade for the case of dimension 3 is
 
 .. code:: python
 
-   self.indexes = (((0,),(1,),(2,)),((0,1),(0,2),(1,2)),((0,1,2)))
+   self.indexes = (((),),
+                   ((0,), (1,), (2,)),
+                   ((0, 1), (0, 2), (1, 2)),
+                   ((0, 1, 2),))
 
-Then the non-commutative symbol representing each base is constructed from each index tuple. For example for ``self.indexes[1][1]`` the symbol is ``Symbol('a_1*a_3',commutative=False)``.
+Then the non-commutative symbol representing each base is constructed from each index tuple. For example for ``self.indexes[1][1]`` the symbol is ``Symbol('a_1*a_3', commutative=False)``.
 
 Base Representation of Multivectors
 -----------------------------------
