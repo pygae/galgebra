@@ -1201,10 +1201,10 @@ def def_prec(gd: dict, op_ord: str = '<>|,^,*') -> None:
         precedence, followed by ``^``, and lastly ``*``.
     """
     global _eval_global_dict, _eval_parse_order
-    op_ord = op_ord.split(',')
-    _parser.validate_op_order(op_ord)
+    op_ord_list = op_ord.split(',')
+    _parser.validate_op_order(op_ord_list)
     _eval_global_dict = gd
-    _eval_parse_order = op_ord
+    _eval_parse_order = op_ord_list
 
 
 def GAeval(s: str, pstr: bool = False):

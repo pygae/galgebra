@@ -8,7 +8,7 @@ else:
     import collections
 
     K = TypeVar('K')
-    V = TypeVar('K')
+    V = TypeVar('V')
 
     class OrderedDict(collections.OrderedDict, Mapping[K, V]):
         pass
