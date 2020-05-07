@@ -975,10 +975,29 @@ class Mv(object):
         return [self.Ga.mv(coef * base) for coef, base in cb]
 
     def get_coefs(self, grade: int) -> List[Expr]:
-        cb = metric.linear_expand_terms(self.obj)
-        cb = sorted(cb, key=lambda x: self.Ga.blades[grade].index(x[1]))
-        coefs, bases = list(zip(*cb))
-        return coefs
+        """
+        Like ``blade_coefs(self.Ga.mv_blades[grade])``, but requires all
+        components to be of that grade.
+
+        Raises
+        ------
+        ValueError:
+            If the multivector is not of the given grade.
+        """
+        blade_lst = self.Ga.blades[grade]
+        coef_lst = [S.Zero] * len(blade_lst)
+        for coef, blade in metric.linear_expand_terms(self.obj):
+            if coef == S.Zero:
+                continue  # TODO: why does expansion return this?
+            try:
+                base_i = blade_lst.index(blade)
+            except ValueError:
+                raise ValueError(
+                    "MultiVector has a {} component which is not grade {}"
+                    .format(blade, grade)
+                ) from None
+            coef_lst[base_i] += coef
+        return coef_lst
 
     def blade_coefs(self, blade_lst: List['Mv'] = None) -> List[Expr]:
         """
