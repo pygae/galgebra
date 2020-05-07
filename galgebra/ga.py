@@ -501,11 +501,13 @@ class Ga(metric.Metric):
 
         if isinstance(a, (list, tuple)):
             for ai in a:
-                self.make_grad(ai)
+                self.make_grad(ai, cmpflg=cmpflg)
             return
 
-        if a in list(self._agrads.keys()):
-            return self._agrads[a]
+        cache_key = (a, cmpflg)
+
+        if cache_key in self._agrads:
+            return self._agrads[cache_key]
 
         if isinstance(a, mv.Mv):
             ai = a.get_coefs(1)
@@ -516,9 +518,9 @@ class Ga(metric.Metric):
         for base, coord in zip(self.r_basis_mv, ai):
             coefs.append(base)
             pdiffs.append(dop.Pdop({coord: 1}))
-        self._agrads[a] = mv.Dop(coefs, pdiffs, ga=self, cmpflg=cmpflg)
+        self._agrads[cache_key] = mv.Dop(coefs, pdiffs, ga=self, cmpflg=cmpflg)
         self.a.append(a)
-        return self._agrads[a]
+        return self._agrads[cache_key]
 
     def __str__(self):
         return self.name

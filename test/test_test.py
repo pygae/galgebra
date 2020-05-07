@@ -455,6 +455,7 @@ class TestTest(unittest.TestCase):
         ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1], coords=symbols('x y z'))
         r = ga.mv(ga.coord_vec)
         assert ga.make_grad(r) == ga.grad
+        assert ga.make_grad(r, cmpflg=True) == ga.rgrad
 
     def test_deprecations(self):
         ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
