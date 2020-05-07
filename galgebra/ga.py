@@ -513,14 +513,18 @@ class Ga(metric.Metric):
             ai = a.get_coefs(1)
         else:
             ai = a
-        coefs = []
-        pdiffs = []
-        for base, coord in zip(self.r_basis_mv, ai):
-            coefs.append(base)
-            pdiffs.append(dop.Pdop({coord: 1}))
-        self._agrads[cache_key] = mv.Dop(coefs, pdiffs, ga=self, cmpflg=cmpflg)
+
+        # TODO: Work out what the heck Mlt is trying to do with this
         self.a.append(a)
-        return self._agrads[cache_key]
+
+        # make the grad and cache it
+        grad_a = mv.Dop([
+            (base, dop.Pdop({coord: 1}))
+            for base, coord in zip(self.r_basis_mv, ai)
+        ], ga=self, cmpflg=cmpflg)
+
+        self._agrads[cache_key] = grad_a
+        return grad_a
 
     def __str__(self):
         return self.name
