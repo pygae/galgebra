@@ -496,6 +496,8 @@ class Ga(metric.Metric):
         return sum([coord * base for coord, base in zip(self.coords, self.basis)])
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
+        if self.r_basis is None:
+            self._build_reciprocal_basis(self.gsym)
 
         if isinstance(a, (list, tuple)):
             for ai in a:
@@ -513,7 +515,7 @@ class Ga(metric.Metric):
         pdiffs = []
         for base, coord in zip(self.r_basis_mv, ai):
             coefs.append(base)
-            pdiffs.append(dop.Pdop({coord: 1}, ga=self))
+            pdiffs.append(dop.Pdop({coord: 1}))
         self._agrads[a] = mv.Dop(coefs, pdiffs, ga=self, cmpflg=cmpflg)
         self.a.append(a)
         return self._agrads[a]
