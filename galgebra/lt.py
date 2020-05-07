@@ -573,24 +573,24 @@ class Mlt(object):
         sub_lst = []
         for i, a in enumerate(anew):
             acoefs = a.get_coefs(1)
-            sub_lst += list(zip(Ga.pdiffs[i], acoefs))
+            sub_lst += list(zip(Ga._mlt_pdiffs[i], acoefs))
         return sub_lst
 
     @staticmethod
     def increment_slots(nargs, Ga):
         # Increment cache of available slots (vector variables) if needed for Mlt class
-        n_a = len(Ga.a)
+        n_a = len(Ga._mlt_a)
         if n_a < nargs:
             for i in range(n_a, nargs):
                 #  New slot variable with coefficients a_{n_a}__k
                 a = Ga.mv('a_' + str(i + 1), 'vector')
                 #  Append new slot variable a_j
-                Ga.a.append(a)
+                Ga._mlt_a.append(a)
                 #  Append slot variable coefficients a_j__k for purpose
                 #  of differentiation
                 coefs = a.get_coefs(1)
-                Ga.pdiffs.append(coefs)
-                Ga.acoefs += coefs
+                Ga._mlt_pdiffs.append(coefs)
+                Ga._mlt_acoefs += coefs
 
     @staticmethod
     def extact_basis_indexes(Ga):
@@ -698,12 +698,12 @@ class Mlt(object):
             coef = S(1)
             a_lst = []
             for factor in term.args:
-                if factor in ga.acoefs:
+                if factor in ga._mlt_acoefs:
                     a_lst.append(factor)
                 else:
                     coef *= factor
-            a_lst = tuple([x for x in a_lst if x in ga.acoefs])
-            b_lst = tuple([ga.acoefs.index(x) for x in a_lst])
+            a_lst = tuple([x for x in a_lst if x in ga._mlt_acoefs])
+            b_lst = tuple([ga._mlt_acoefs.index(x) for x in a_lst])
             lst_expr.append((coef, a_lst, b_lst))
         lst_expr = sorted(lst_expr, key=lambda x: x[2])
         new_lst_expr = []
@@ -737,7 +737,7 @@ class Mlt(object):
             if f.is_vector():  # f is vector T = f | a1
                 self.nargs = 1
                 Mlt.increment_slots(1, Ga)
-                self.fvalue = (f | Ga.a[0]).obj
+                self.fvalue = (f | Ga._mlt_a[0]).obj
                 self.f = None
             else:  # To be inplemented for f a general pure grade mulitvector
                 self.nargs = nargs
@@ -746,7 +746,7 @@ class Mlt(object):
         elif isinstance(f, Lt):  # f is linear transformation T = a1 | f(a2)
             self.nargs = 2
             Mlt.increment_slots(2, Ga)
-            self.fvalue = (Ga.a[0] | f(Ga.a[1])).obj
+            self.fvalue = (Ga._mlt_a[0] | f(Ga._mlt_a[1])).obj
             self.f = None
         elif isinstance(f, str) and nargs is not None:
             self.f = None
@@ -756,7 +756,7 @@ class Mlt(object):
                 t_indexes = nargs * [Mlt.extact_basis_indexes(self.Ga)]
                 self.fvalue = 0
                 for t_index, a_prod in zip(itertools.product(*t_indexes),
-                                           itertools.product(*self.Ga.pdiffs)):
+                                           itertools.product(*self.Ga._mlt_pdiffs)):
                     if fct:  # Tensor field
                         coef = Function(f+'_'+''.join(map(str, t_index)), real=True)(*self.Ga.coords)
                     else:  # Constant Tensor
@@ -765,7 +765,7 @@ class Mlt(object):
                     self.fvalue += coef
             else:  # General tensor of rank = 1
                 self.fvalue = 0
-                for t_index, a_prod in zip(Mlt.extact_basis_indexes(self.Ga), self.Ga.pdiffs[0]):
+                for t_index, a_prod in zip(Mlt.extact_basis_indexes(self.Ga), self.Ga._mlt_pdiffs[0]):
                     if fct:  # Tensor field
                         coef = Function(f+'_'+''.join(map(str, t_index)), real=True)(*self.Ga.coords)
                     else:  # Constant Tensor
@@ -777,7 +777,7 @@ class Mlt(object):
                 self.nargs = len(args)
                 self.f = f
                 Mlt.increment_slots(self.nargs, Ga)
-                self.fvalue = f(*tuple(Ga.a[0:self.nargs]))
+                self.fvalue = f(*tuple(Ga._mlt_a[0:self.nargs]))
             else:  # Tensor defined by component expression
                 self.f = None
                 self.nargs = len(args)
@@ -802,7 +802,7 @@ class Mlt(object):
             return self.f(*args)
         else:
             sub_lst = []
-            for x, ai in zip(args, self.Ga.pdiffs):
+            for x, ai in zip(args, self.Ga._mlt_pdiffs):
                 for r_base, aij in zip(self.Ga.r_basis_mv, ai):
                     sub_lst.append((aij, (r_base | x).scalar()))
             return self.fvalue.subs(sub_lst, simultaneous=True)
@@ -829,8 +829,8 @@ class Mlt(object):
         if isinstance(X, Mlt):
             nargs = self.nargs + X.nargs
             Mlt.increment_slots(nargs, self.Ga)
-            self_args = self.Ga.a[:self.nargs]
-            X_args = X.Ga.a[self.nargs:nargs]
+            self_args = self.Ga._mlt_a[:self.nargs]
+            X_args = X.Ga._mlt_a[self.nargs:nargs]
             value = (self(*self_args) * X(*X_args)).expand()
             return Mlt(value, self.Ga, nargs)
         else:
@@ -840,7 +840,7 @@ class Mlt(object):
         if isinstance(X, Mlt):
             nargs = self.nargs + X.nargs
             Mlt.increment_slots(nargs, self.Ga)
-            value = self(*self.Ga.a[:self.nargs]) ^ X(*X.Ga.a[self.nargs:nargs])
+            value = self(*self.Ga._mlt_a[:self.nargs]) ^ X(*X.Ga._mlt_a[self.nargs:nargs])
             return Mlt(value, self.Ga, nargs)
         else:
             return Mlt(X * self.fvalue, self.Ga, self.nargs)
@@ -849,7 +849,7 @@ class Mlt(object):
         if isinstance(X, Mlt):
             nargs = self.nargs + X.nargs
             Mlt.increment_slots(nargs, self.Ga)
-            value = self(*self.Ga.a[:self.nargs]) | X(*X.Ga.a[self.nargs:nargs])
+            value = self(*self.Ga._mlt_a[:self.nargs]) | X(*X.Ga._mlt_a[self.nargs:nargs])
             return Mlt(value, self.Ga, nargs)
         else:
             return Mlt(X * self.fvalue, self.Ga, self.nargs)
@@ -862,7 +862,7 @@ class Mlt(object):
 
     def dd(self):
         Mlt.increment_slots(self.nargs + 1, self.Ga)
-        dd_fvalue = (self.Ga.a[self.nargs] | self.Ga.grad) * self.fvalue
+        dd_fvalue = (self.Ga._mlt_a[self.nargs] | self.Ga.grad) * self.fvalue
         return Mlt(dd_fvalue, self.Ga, self.nargs + 1)
 
     def pdiff(self, slot: int):
@@ -881,7 +881,7 @@ class Mlt(object):
         if slot == nargs:
             return mv
         for islot in range(slot, nargs):
-            mv = mv.subs(list(zip(ga.pdiffs[islot], ga.pdiffs[islot - 1])))
+            mv = mv.subs(list(zip(ga._mlt_pdiffs[islot], ga._mlt_pdiffs[islot - 1])))
         return mv
 
     def contract(self, slot1: int, slot2: int):
@@ -915,13 +915,13 @@ class Mlt(object):
         :ref:`MLtrans`.
         """
         Mlt.increment_slots(self.nargs + 1, self.Ga)
-        agrad = self.Ga.a[self.nargs] | self.Ga.grad
+        agrad = self.Ga._mlt_a[self.nargs] | self.Ga.grad
         CD = Mlt((agrad * self.Ga.mv(self.fvalue)).obj, self.Ga, self.nargs + 1)
         if CD != 0:
             CD = CD.fvalue
         for i in range(self.nargs):
-            args = self.Ga.a[:self.nargs]
-            tmp = agrad * self.Ga.a[i]
+            args = self.Ga._mlt_a[:self.nargs]
+            tmp = agrad * self.Ga._mlt_a[i]
             if tmp.obj != 0:
                 args[i] = tmp
                 CD = CD - self(*args)

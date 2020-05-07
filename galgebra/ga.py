@@ -328,8 +328,6 @@ class Ga(metric.Metric):
     dual_mode_value = 'I+'
     dual_mode_lst = ['+I', 'I+', '-I', 'I-', '+Iinv', 'Iinv+', '-Iinv', 'Iinv-']
 
-    a = []
-
     presets = {'o3d': 'x,y,z:[1,1,1]:[1,1,0]',
                'cyl3d': 'r,theta,z:[1,r**2,1]:[1,1,0]:norm=True',
                'sph3d': 'r,theta,phi:[1,X[0]**2,X[0]**2*cos(X[1])**2]:[1,1,0]:norm=True',
@@ -478,11 +476,14 @@ class Ga(metric.Metric):
         if self.debug:
             print('Exit Ga.__init__()')
 
-        self.a = []  # List of dummy vectors for Mlt calculations
         self._agrads = {}  # cache of gradient operator with respect to vector a
         self.dslot = -1  # args slot for dervative, -1 for coordinates
-        self.acoefs = []  # List of dummy vectors coefficients
-        self.pdiffs = []  # List of lists dummy vector coefficients
+
+        # mystery state used by the Mlt class
+        self._mlt_a = []  # List of dummy vectors for Mlt calculations
+        self._mlt_acoefs = []  # List of dummy vectors coefficients
+        self._mlt_pdiffs = []  # List of lists dummy vector coefficients
+
         self._XOX = self.mv('XOX', 'vector')  # cached vector for use in is_versor
 
     @_cached_property
