@@ -481,6 +481,8 @@ class Ga(metric.Metric):
         self.a = []  # List of dummy vectors for Mlt calculations
         self._agrads = {}  # cache of gradient operator with respect to vector a
         self.dslot = -1  # args slot for dervative, -1 for coordinates
+        self.acoefs = []  # List of dummy vectors coefficients
+        self.pdiffs = []  # List of lists dummy vector coefficients
         self._XOX = self.mv('XOX', 'vector')  # cached vector for use in is_versor
 
     @_cached_property
@@ -497,11 +499,6 @@ class Ga(metric.Metric):
         if self.r_basis is None:
             self._build_reciprocal_basis(self.gsym)
 
-        if isinstance(a, (list, tuple)):
-            for ai in a:
-                self.make_grad(ai, cmpflg=cmpflg)
-            return
-
         cache_key = (a, cmpflg)
 
         if cache_key in self._agrads:
@@ -511,9 +508,6 @@ class Ga(metric.Metric):
             ai = a.get_coefs(1)
         else:
             ai = a
-
-        # TODO: Work out what the heck Mlt is trying to do with this
-        self.a.append(a)
 
         # make the grad and cache it
         grad_a = mv.Dop([

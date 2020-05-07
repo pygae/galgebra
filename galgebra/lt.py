@@ -725,48 +725,38 @@ class Mlt(object):
         new_lst_expr.append((coef, a))
         return new_lst_expr
 
-    def __init__(self, f, Ga, args, fct=False):
+    def __init__(self, f, Ga, nargs=None, fct=False):
         #  f is a function, a multivector, a string, or a component expression
         #  self.f is a function or None such as T | a_1 where T and a_1 are vectors
         #  self.fvalue is a component expression such as
         #  T_x*a_1__x+T_y*a_1__y+T_z*a_1__z for a rank 1 tensor in 3 space and all
         #  symbols are sympy real scalar symbols
         self.Ga = Ga
-        self.args = args
-        self.nargs = len(args)
         self.lcnt = 1
         if isinstance(f, mv.Mv):
             if f.is_vector():  # f is vector T = f | a1
-                if self.nargs != 1:
-                    raise ValueError('For mlt nargs != 1 for vector!\n')
-                Ga.make_grad(self.args)
-                self.fvalue = (f | self.args[0]).obj
+                self.nargs = 1
+                Mlt.increment_slots(1, Ga)
+                self.fvalue = (f | Ga.a[0]).obj
                 self.f = None
             else:  # To be inplemented for f a general pure grade mulitvector
-                self.nargs = len(args)
+                self.nargs = nargs
                 self.fvalue = f
                 self.f = None
         elif isinstance(f, Lt):  # f is linear transformation T = a1 | f(a2)
-            if self.nargs != 2:
-                raise ValueError('For mlt nargs != 2 for linear transformation!\n')
-            Ga.make_grad(self.args)
-            self.fvalue = (self.args[0] | f(self.args[1])).obj
+            self.nargs = 2
+            Mlt.increment_slots(2, Ga)
+            self.fvalue = (Ga.a[0] | f(Ga.a[1])).obj
             self.f = None
-        elif isinstance(f, str) and args is not None:
+        elif isinstance(f, str) and nargs is not None:
             self.f = None
-            if isinstance(args, (list, tuple)):
-                self.args = args
-                self.nargs = len(args)
-            else:
-                self.args = [args]
-                self.nargs = 1
-            if self.nargs > 1:  # General tensor of rank > 1
-                t_indexes = self.nargs * [Mlt.extact_basis_indexes(self.Ga)]
-                print(t_indexes)
-                print(self.Ga.Pdiffs)
+            self.nargs = nargs
+            Mlt.increment_slots(nargs, Ga)
+            if nargs > 1:  # General tensor of raank > 1
+                t_indexes = nargs * [Mlt.extact_basis_indexes(self.Ga)]
                 self.fvalue = 0
                 for t_index, a_prod in zip(itertools.product(*t_indexes),
-                                           itertools.product(*self.Ga.Pdiffs)):
+                                           itertools.product(*self.Ga.pdiffs)):
                     if fct:  # Tensor field
                         coef = Function(f+'_'+''.join(map(str, t_index)), real=True)(*self.Ga.coords)
                     else:  # Constant Tensor
