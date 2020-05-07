@@ -35,6 +35,8 @@ class TestMlt(unittest.TestCase):
 
         a1 = st4d.mv('a1', 'vector')
         a2 = st4d.mv('a2', 'vector')
+        a3 = st4d.mv('a3', 'vector')
+        a4 = st4d.mv('a4', 'vector')
 
         # calling the Mlt is like calling the function
         assert T(a1, a2) == TA(a1, a2)
@@ -42,3 +44,7 @@ class TestMlt(unittest.TestCase):
         # for addition, argument slots are reused
         assert (T + T)(a1, a2) == T(a1, a2) + T(a1, a2)
         assert (T - T)(a1, a2) == T(a1, a2) - T(a1, a2)
+
+        # for multiplication, argument slots are chained
+        assert (T ^ T)(a1, a2, a3, a4) == TA(a1, a2) ^ T(a3, a4)
+        assert (T | T)(a1, a2, a3, a4) == TA(a1, a2) | T(a3, a4)

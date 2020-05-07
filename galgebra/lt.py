@@ -840,7 +840,7 @@ class Mlt(object):
         if isinstance(X, Mlt):
             nargs = self.nargs + X.nargs
             Mlt.increment_slots(nargs, self.Ga)
-            value = self(*self.Ga.a[:self.nargs]) ^ X(X.Ga.a[self.nargs:nargs])
+            value = self(*self.Ga.a[:self.nargs]) ^ X(*X.Ga.a[self.nargs:nargs])
             return Mlt(value, self.Ga, nargs)
         else:
             return Mlt(X * self.fvalue, self.Ga, self.nargs)
@@ -849,7 +849,7 @@ class Mlt(object):
         if isinstance(X, Mlt):
             nargs = self.nargs + X.nargs
             Mlt.increment_slots(nargs, self.Ga)
-            value = self(*self.Ga.a[:self.nargs]) | X(X.Ga.a[self.nargs:nargs])
+            value = self(*self.Ga.a[:self.nargs]) | X(*X.Ga.a[self.nargs:nargs])
             return Mlt(value, self.Ga, nargs)
         else:
             return Mlt(X * self.fvalue, self.Ga, self.nargs)
