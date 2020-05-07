@@ -808,7 +808,7 @@ class Mlt(object):
             return self.fvalue.subs(sub_lst, simultaneous=True)
 
     def __add__(self, X):
-        if isinstance(Mlt, X):
+        if isinstance(X, Mlt):
             if self.nargs == X.nargs:
                 return Mlt(self.fvalue + X.fvalue, self.Ga, self.nargs)
             else:
@@ -817,7 +817,7 @@ class Mlt(object):
             raise TypeError('In Mlt add second argument not an Mkt\n')
 
     def __sub__(self, X):
-        if isinstance(Mlt, X):
+        if isinstance(X, Mlt):
             if self.nargs == X.nargs:
                 return Mlt(self.fvalue - X.fvalue, self.Ga, self.nargs)
             else:

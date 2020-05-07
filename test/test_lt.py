@@ -38,3 +38,7 @@ class TestMlt(unittest.TestCase):
 
         # calling the Mlt is like calling the function
         assert T(a1, a2) == TA(a1, a2)
+
+        # for addition, argument slots are reused
+        assert (T + T)(a1, a2) == T(a1, a2) + T(a1, a2)
+        assert (T - T)(a1, a2) == T(a1, a2) - T(a1, a2)
