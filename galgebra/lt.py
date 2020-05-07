@@ -831,7 +831,7 @@ class Mlt(object):
             Mlt.increment_slots(nargs, self.Ga)
             self_args = self.Ga.a[:self.nargs]
             X_args = X.Ga.a[self.nargs:nargs]
-            value = expand(self(*self_args) * X(*X_args))
+            value = (self(*self_args) * X(*X_args)).expand()
             return Mlt(value, self.Ga, nargs)
         else:
             return Mlt(X * self.fvalue, self.Ga, self.nargs)

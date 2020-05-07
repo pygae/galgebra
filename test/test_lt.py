@@ -46,5 +46,6 @@ class TestMlt(unittest.TestCase):
         assert (T - T)(a1, a2) == T(a1, a2) - T(a1, a2)
 
         # for multiplication, argument slots are chained
+        assert (T * T)(a1, a2, a3, a4) == TA(a1, a2) * T(a3, a4)
         assert (T ^ T)(a1, a2, a3, a4) == TA(a1, a2) ^ T(a3, a4)
         assert (T | T)(a1, a2, a3, a4) == TA(a1, a2) | T(a3, a4)
