@@ -1431,7 +1431,7 @@ class Dop(dop._BaseDop):
     terms : list of tuples
     """
 
-    def __init_from_coef_and_pdop(self, coefs: List[Any], pdiffs: List['Pdop']):
+    def __init_from_coef_and_pdop(self, coefs: List[Any], pdiffs: List['dop.Pdop']):
         if len(coefs) != len(pdiffs):
             raise ValueError('In Dop.__init__ coefficent list and Pdop list must be same length.')
         self.terms = tuple(zip(coefs, pdiffs))
@@ -1684,7 +1684,7 @@ class Dop(dop._BaseDop):
                 return False
         return True
 
-    def components(self) -> Tuple['Dop']:
+    def components(self) -> Tuple['Dop', ...]:
         return tuple(
             Dop([(sdop, Mv(base, ga=self.Ga))], ga=self.Ga)
             for sdop, base in self.Dop_mv_expand()
