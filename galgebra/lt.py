@@ -154,10 +154,7 @@ class Lt(object):
 
     @staticmethod
     def setup(ga):
-        # coords = [Symbol('mu_' + str(x)) for x in ga.coords]
-        coords = ga.coords
-        x = sum([coords[i] * ga.basis[i] for i in ga.n_range])
-        return coords, x
+        return ga.coords, ga.coord_vec
 
     @staticmethod
     def format(mat_fmt=False):
@@ -178,8 +175,8 @@ class Lt(object):
         self.fct_flg = f
         self.mode = mode
         self.Ga = ga
-        self.coords = ga.lt_coords
-        self.X = ga.lt_x
+        self.coords = ga.coords
+        self.X = ga.coord_vec
         self.spinor = False
         self.rho_sq = None
 

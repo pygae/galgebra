@@ -2,6 +2,8 @@
 Changelog
 =========
 
+- :support:`317` The undocumented attributes :attr:`galgebra.ga.Ga.lt_x` (the same as :attr:`~galgebra.ga.Ga.coords_vec`) and :attr:`galgebra.ga.Ga.lt_coords` (the same as :attr:`~galgebra.ga.Ga.coords`) have been deprecated.
+
 - :support:`280` The ``galgebra.utils`` module, which provided Python 2 compatibility helpers, has been deprecated.
 
 - :support:`245` (also :issue:`248`) The following attributes have been deprecated to reduce the number of similar members in :class:`~galgebra.ga.Ga`.
