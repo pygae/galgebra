@@ -12,11 +12,9 @@ The structure of the `doc` diretory is:
 │                                   #
 ├─ index.rst                        # The entry point of the Sphinx doc, it references both
 │                                   # galgebra_guide.ipynb and api.rst
-├─ galgebra.tex                     # The orignal LaTeX source that generated books/galgebra.pdf
-├─ galgebra.md                      # The Markdown source semi-auto converted from galgebra.tex
-│                                   # please edit this instead of galgebra.tex (deprecated by it)
-│                                   # or galgebra_guide.ipynb (auto generated from it)
-├─ galgebra_guide.ipynb             # The Jupyter notebook converted from galgebra.md
+├─ galgebra.tex                     # The original LaTeX source that generated books/galgebra.pdf
+├─ galgebra_guide.rst               # The convert vertion of the latex document.
+│                                   # This was converted to markdown manually, then to rST via nodedown and nbsphinx.
 ├─ api.rst                          # Use automodule to extract doc from galgebra Python source files
 │
 │                                   # Configurations:
