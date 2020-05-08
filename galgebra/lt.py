@@ -9,7 +9,7 @@ from copy import copy
 from functools import reduce
 
 from sympy import (
-    expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add
+    expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add, Expr
 )
 
 from . import printer
@@ -242,6 +242,13 @@ class Lt(object):
                 raise ValueError(str(mat_rep) + ' is not supported for Lt definition\n')
 
     def __call__(self, v, obj=False):
+        r"""
+        Returns the image of the multivector :math:`A` under the linear transformation :math:`L`.
+
+        :math:`{{L}\lp {A} \rp }` is defined by the linearity of :math:`L`, the
+        vector values :math:`{{L}\lp {{{\eb}}_{i}} \rp }`, and the definition
+        :math:`{{L}\lp {{{\eb}}_{i_{1}}{\wedge}\dots{\wedge}{{\eb}}_{i_{r}}} \rp } = {{L}\lp {{{\eb}}_{i_{1}}} \rp }{\wedge}\dots{\wedge}{{L}\lp {{{\eb}}_{i_{r}}} \rp }`.
+        """
 
         if isinstance(v, mv.Mv) and self.Ga != v.Ga:
             raise ValueError('In Lt call Lt and argument refer to different vector spaces')
@@ -349,13 +356,22 @@ class Lt(object):
             latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
         return latex_str
 
-    def det(self):  # det(L) defined by L(I) = det(L)I
+    def det(self) -> Expr:  # det(L) defined by L(I) = det(L)I
+        r"""
+        Returns the determinant (a scalar) of the linear transformation,
+        :math:`L`, defined by :math:`{{\det}\lp {L} \rp }I = {{L}\lp {I} \rp }`.
+        """
 
         lt_I = self(self.Ga.i, obj=True)
         det_lt_I = lt_I.subs(self.Ga.i.obj, S(1))
         return det_lt_I
 
-    def tr(self):  # tr(L) defined by tr(L) = grad|L(x)
+    def tr(self) -> Expr:  # tr(L) defined by tr(L) = grad|L(x)
+        r"""
+        Returns the trace (a scalar) of the linear transformation,
+        :math:`L`, defined by :math:`{{\operatorname{tr}}\lp {L} \rp }=\nabla_{a}\cdot{{L}\lp {a} \rp }`
+        where :math:`a` is a vector in the tangent space.
+        """
 
         connect_flg = self.Ga.connect_flg
         self.Ga.connect_flg = False
@@ -365,7 +381,13 @@ class Lt(object):
         self.Ga.connect_flg = connect_flg
         return tr_F
 
-    def adj(self):
+    def adj(self) -> 'Lt':
+        r"""
+        Returns the adjoint (a linear transformation) of the linear
+        transformation, :math:`L`, defined by :math:`a\cdot{{L}\lp {b} \rp } = b\cdot{{\bar{L}}\lp {a} \rp }`
+        where :math:`a` and :math:`b` are any two vectors in the tangent space
+        and :math:`\bar{L}` is the adjoint of :math:`L`.
+        """
 
         self_adj = []
         for e_j in self.Ga.basis:
@@ -459,8 +481,12 @@ class Lt(object):
             Printer = printer.GaPrinter
         return Printer().doprint(self)
 
-    def matrix(self):
-
+    def matrix(self) -> Matrix:
+        r"""
+        Returns the matrix representation of the linear transformation,
+        :math:`L`, defined by :math:`{{L}\lp {{{\eb}}_{i}} \rp } = L_{ij}{{\eb}}_{j}`
+        where :math:`L_{ij}` is the matrix representation.
+        """
         if self.mat is not None:
             return self.mat
         else:
@@ -776,6 +802,10 @@ class Mlt(object):
         return Printer().doprint(self)
 
     def __call__(self, *args):
+        """
+        Evaluate the multilinear function for the given vector arguments.
+        Note that a sympy scalar is returned, *not* a multilinear function.
+        """
         if len(args) == 0:
             return self.fvalue
         if self.f is not None:
@@ -845,7 +875,13 @@ class Mlt(object):
         dd_fvalue = (self.Ga.a[self.nargs] | self.Ga.grad) * self.fvalue
         return Mlt(dd_fvalue, self.Ga, self.nargs + 1)
 
-    def pdiff(self, slot):
+    def pdiff(self, slot: int):
+        r"""
+        Returns gradient of tensor, ``T``, with respect to slot vector.
+
+        For example if the tensor is :math:`{{T}\lp {a_{1},a_{2}} \rp }` then ``T.pdiff(2)`` is :math:`\nabla_{a_{2}}T`. Since ``T`` is a scalar function,
+        ``T.pdiff(2)`` is a vector function.
+        """
         # Take geometric derivative of mlt with respect to slot argument
         self.Ga.dslot = slot - 1
         return self.Ga.grad * self.Ga.mv(self.fvalue)
@@ -858,7 +894,17 @@ class Mlt(object):
             mv = mv.subs(list(zip(ga.pdiffs[islot], ga.pdiffs[islot - 1])))
         return mv
 
-    def contract(self, slot1, slot2):
+    def contract(self, slot1: int, slot2: int):
+        """
+        Returns contraction of tensor between ``slot1`` and ``slot2`` where
+        ``slot1`` is the index of the first vector argument and ``slot2`` is the
+        index of the second vector argument of the tensor.
+
+        For example if we have a rank two tensor, ``T(a1, a2)``, then
+        ``T.contract(1, 2)`` is the contraction of ``T``.
+        For this case since there are only two slots, there can only be one
+        contraction.
+        """
         min_slot = min(slot1, slot2)
         max_slot = max(slot1, slot2)
         cnargs = self.nargs - 2
@@ -871,6 +917,13 @@ class Mlt(object):
         return Mlt(div_grad_self, self.Ga, cnargs)
 
     def cderiv(self):
+        """
+        Returns covariant derivative of tensor field.
+
+        If ``T`` is a tensor of rank :math:`k` then ``T.cderiv()`` is a tensor
+        of rank :math:`k+1`. The operation performed is defined in section
+        :ref:`MLtrans`.
+        """
         Mlt.increment_slots(self.nargs + 1, self.Ga)
         agrad = self.Ga.a[self.nargs] | self.Ga.grad
         CD = Mlt((agrad * self.Ga.mv(self.fvalue)).obj, self.Ga, self.nargs + 1)
