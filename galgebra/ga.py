@@ -20,6 +20,7 @@ from . import metric
 from . import mv
 from . import dop
 from . import lt
+from .atoms import BasisBaseSymbol, BasisBladeSymbol, BasisBladeNoWedgeSymbol
 from ._utils import cached_property as _cached_property
 
 half = Rational(1, 2)
@@ -36,10 +37,6 @@ _lt = lt
 
 # template argument for functions which are Expr -> Expr and Mv -> Mv
 _MaybeMv = TypeVar('_MaybeMv', Expr, _mv.Mv)
-
-
-def all_same(items):
-    return all(x == items[0] for x in items)
 
 
 def is_bases_product(w):
@@ -1037,31 +1034,14 @@ class Ga(metric.Metric):
         """ Build a symbol used for the `base_rep` from the given tuple """
         if not base_index:
             return S(1)
-        symbol_str = '*'.join([str(self.basis[i]) for i in base_index])
-        return Symbol(symbol_str, commutative=False)
+        return BasisBaseSymbol(*(self.basis[i] for i in base_index))
 
     def _build_basis_blade_symbol(self, base_index: Tuple[int, ...]) -> Symbol:
         """ Build a symbol used for the `blade_rep` from the given tuple """
-        if not base_index:
-            return S(1)
         if self.wedge_print:
-            symbol_str = '^'.join([str(self.basis[i]) for i in base_index])
+            return BasisBladeSymbol(*(self.basis[i] for i in base_index))
         else:
-            sub_str = []
-            root_str = []
-            for i in base_index:
-                basis_vec_str = str(self.basis[i])
-                split_lst = basis_vec_str.split('_')
-                if len(split_lst) != 2:
-                    raise ValueError('!!!!Incompatible basis vector '+basis_vec_str+' for wedge_print = False!!!!')
-                else:
-                    sub_str.append(split_lst[1])
-                    root_str.append(split_lst[0])
-            if all_same(root_str):
-                symbol_str = root_str[0] + '_' + ''.join(sub_str)
-            else:
-                raise ValueError('!!!!No unique root symbol for wedge_print = False!!!!')
-        return Symbol(symbol_str, commutative=False)
+            return BasisBladeNoWedgeSymbol(*(self.basis[i] for i in base_index))
 
     def _print_basis_and_blade_debug(self) -> None:
         printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes.flat,

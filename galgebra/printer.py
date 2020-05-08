@@ -10,6 +10,7 @@ import functools
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
 from itertools import islice
 from sympy.printing.str import StrPrinter
+from sympy.printing.conventions import split_super_sub
 from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
@@ -544,38 +545,6 @@ class GaLatexPrinter(LatexPrinter):
     special_alphabet = list(reversed(sorted(list(greek) + list(other), key=len)))
 
     @staticmethod
-    def split_super_sub(text):
-        """
-        A wrapped version of a corresponding sympy function.
-
-        This is modified to handle basis blades and basis bases.
-        """
-        from sympy.printing.conventions import split_super_sub as sub_split_super_sub
-
-        if '*' not in text and '^' not in text:
-            name, supers, subs = sub_split_super_sub(text)
-            return '*', [name], [supers], [subs]
-
-        if '*' in text:
-            basis = text.split('*')
-            split_flg = '*'
-        if '^' in text:
-            basis = text.split('^')
-            split_flg = '^'
-
-        name_lst = []
-        supers_lst = []
-        subs_lst = []
-
-        for base in basis:
-            name, supers, subs = sub_split_super_sub(base)
-            name_lst.append(name)
-            supers_lst.append(supers)
-            subs_lst.append(subs)
-
-        return split_flg, name_lst, supers_lst, subs_lst
-
-    @staticmethod
     def redirect():
         GaLatexPrinter.latex_flg = True
         GaLatexPrinter.Basic__ga_print_str__ = Basic.__ga_print_str__
@@ -660,14 +629,9 @@ class GaLatexPrinter(LatexPrinter):
                 return tex % (self._print(expr.base),
                               self._print(expr.exp))
 
-    def _print_Symbol(self, expr):
-
-        nc_flg = False
-
-        mode_dict = {'*': '', '^': '\\wedge '}
+    def _print_Symbol(self, expr, style='plain'):
 
         def str_symbol(name_str):
-            mode, name_lst, supers_lst, subs_lst = GaLatexPrinter.split_super_sub(name_str)
 
             def translate(s):
                 tmp = s
@@ -694,49 +658,26 @@ class GaLatexPrinter(LatexPrinter):
 
                 return tmp
 
-            s = ''
+            name, supers, subs = split_super_sub(name_str)
 
-            for name, supers, subs in zip(name_lst, supers_lst, subs_lst):
+            name = translate(name)
 
-                name = translate(name)
+            if style == 'bold':
+                name = '\\boldsymbol{' + name +'}'
 
-                if nc_flg:
-                    name = '\\boldsymbol{' + name +'}'
+            supers = list(map(translate, supers))
+            subs = list(map(translate, subs))
 
-                if supers != []:
-                    supers = list(map(translate, supers))
+            # glue all items together:
+            if len(supers) > 0:
+                name += "^{%s}" % " ".join(supers)
+            if len(subs) > 0:
+                name += "_{%s}" % " ".join(subs)
 
-                if subs != []:
-                    subs = list(map(translate, subs))
-
-                # glue all items together:
-                if len(supers) > 0:
-                    name += "^{%s}" % " ".join(supers)
-                if len(subs) > 0:
-                    name += "_{%s}" % " ".join(subs)
-
-                s += name + mode_dict[mode]
-
-            if mode == '^':
-                s = s[:-7]
-
-            return s
+            return name
 
         if expr in self._settings['symbol_names']:
             return self._settings['symbol_names'][expr]
-
-        name_str = expr.name
-
-        if isinstance(expr, Symbol) and not expr.is_commutative:
-            nc_flg = True
-
-        # Translate entry in general metric tensor a.b -> a \cdot b
-
-        if '.' in name_str and name_str[0] == '(' and name_str[-1] == ')':
-            name_str = name_str[1:-1]
-            name_lst = name_str.split('.')
-            name_str = r'\left ( ' + str_symbol(name_lst[0]) + r'\cdot ' + str_symbol(name_lst[1]) + r'\right ) '
-            return name_str
 
         return str_symbol(expr.name)
 

@@ -8,12 +8,13 @@ from typing import List, Optional
 
 from sympy import (
     diff, trigsimp, Matrix, Rational,
-    sqf_list, Symbol, sqrt, eye, S, expand, Mul,
+    sqf_list, sqrt, eye, S, expand, Mul,
     Add, simplify, Expr, Function
 )
 
 from . import printer
 from ._utils import cached_property as _cached_property
+from .atoms import BasisVectorSymbol, DotProductSymbol
 
 half = Rational(1, 2)
 
@@ -245,7 +246,7 @@ def symbols_list(s, indices=None, sub=True, commutative=False):
 
     else:  # indices symbol list used for sub/superscripts of generated symbol list
         s_lst = [s + pos + str(i) for i in indices]
-    return [Symbol(printer.Eprint.Base(s), commutative=commutative) for s in s_lst]
+    return [BasisVectorSymbol(s, commutative=commutative) for s in s_lst]
 
 
 class Simp:
@@ -356,11 +357,9 @@ class Metric(object):
         """ Build an element for the metric of `bases[i1] . basis[i2]` """
         if s == '#':
             if i1 <= i2:  # for default element ensure symmetry
-                return Symbol('(' + str(self.basis[i1]) +
-                              '.' + str(self.basis[i2]) + ')', real=True)
+                return DotProductSymbol(self.basis[i1], self.basis[i2])
             else:
-                return Symbol('(' + str(self.basis[i2]) +
-                              '.' + str(self.basis[i1]) + ')', real=True)
+                return DotProductSymbol(self.basis[i2], self.basis[i1])
         else:  # element is fraction or integer
             return Rational(s)
 
