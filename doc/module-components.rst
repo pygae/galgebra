@@ -636,30 +636,20 @@ with output
 
 The member function of the ``Lt`` class are
 
-.. method:: Lt.__call__(A)
+.. automethod:: galgebra.lt.Lt.__call__(A)
    :noindex:
 
-   Returns the image of the multivector :math:`A` under the linear transformation :math:`L` where :math:`{{L}\lp {A} \rp }` is defined by the linearity of :math:`L`, the vector values :math:`{{L}\lp {{{\eb}}_{i}} \rp }`, and the definition :math:`{{L}\lp {{{\eb}}_{i_{1}}{\wedge}\dots{\wedge}{{\eb}}_{i_{r}}} \rp } = {{L}\lp {{{\eb}}_{i_{1}}} \rp }{\wedge}\dots{\wedge}{{L}\lp {{{\eb}}_{i_{r}}} \rp }`.
-
-.. method:: Lt.det()
+.. automethod:: galgebra.lt.Lt.det
    :noindex:
 
-   Returns the determinant (a scalar) of the linear transformation, :math:`L`, defined by :math:`{{\det}\lp {L} \rp }I = {{L}\lp {I} \rp }`.
-
-.. method:: Lt.adj()
+.. automethod:: galgebra.lt.Lt.adj
    :noindex:
 
-   Returns the adjoint (a linear transformation) of the linear transformation, :math:`L`, defined by :math:`a\cdot{{L}\lp {b} \rp } = b\cdot{{\bar{L}}\lp {a} \rp }` where :math:`a` and :math:`b` are any two vectors in the tangent space and :math:`\bar{L}` is the adjoint of :math:`L`.
-
-.. method:: Lt.tr()
+.. automethod:: galgebra.lt.Lt.tr
    :noindex:
 
-   Returns the trace (a scalar) of the linear transformation, :math:`L`, defined by :math:`{{\operatorname{tr}}\lp {L} \rp }=\nabla_{a}\cdot{{L}\lp {a} \rp }` where :math:`a` is a vector in the tangent space.
-
-.. method:: Lt.matrix()
+.. automethod:: galgebra.lt.Lt.matrix
    :noindex:
-
-   Returns the matrix representation (*sympy* ``Matrix``) of the linear transformation, :math:`L`, defined by :math:`{{L}\lp {{{\eb}}_{i}} \rp } = L_{ij}{{\eb}}_{j}` where :math:`L_{ij}` is the matrix representation.
 
 The ``Ltrans.py`` demonstrate the use of the various ``Lt`` member functions and operators. The operators that can be used with linear transformations are ``+``, ``-``, and ``*``. If :math:`A` and :math:`B` are linear transformations, :math:`V` a multivector, and :math:`\alpha` a scalar then :math:`{{{\lp {A\pm B} \rp }}\lp {V} \rp } = {{A}\lp {V} \rp }\pm{{B}\lp {V} \rp }`, :math:`{{{\lp {AB} \rp }}\lp {V} \rp } = {{A}\lp {{{B}\lp {V} \rp }} \rp }`, and
 :math:`{{{\lp {\alpha A} \rp }}\lp {V} \rp } = \alpha{{A}\lp {V} \rp }`.
@@ -717,25 +707,17 @@ Basic Multilinear Function Class Functions
 
 If we can instantiate multilinear functions we can use all the multilinear function class functions as described as follows. See section :ref:`MLtrans` for the mathematical description of each operation.
 
-.. method:: Mlt.__call__(kargs)
+.. automethod:: galgebra.lt.Mlt.__call__
    :noindex:
 
-   Calling function to evaluates multilinear function for ``kargs`` list of vector arguments and returns a value. Note that a sympy scalar is returned, *not* a multilinear function.
-
-.. method:: Mlt.contract(slot1,slot2)
+.. automethod:: galgebra.lt.Mlt.contract
    :noindex:
 
-   Returns contraction of tensor between ``slot1`` and ``slot2`` where ``slot1`` is the index of the first vector argument and ``slot2`` is the index of the second vector argument of the tensor. For example if we have a rank two tensor, ``T(a1,a2)``, then ``T.contract(1,2)`` is the contraction of ``T``. For this case since there are only two slots there can only be one contraction.
-
-.. method:: Mlt.pdiff(slot)
+.. automethod:: galgebra.lt.Mlt.pdiff
    :noindex:
 
-   Returns gradient of tensor, ``T``, with respect to slot vector. For example if the tensor is :math:`{{T}\lp {a_{1},a_{2}} \rp }` then ``T.pdiff(2)`` is :math:`\nabla_{a_{2}}T`. Since ``T`` is a scalar function, ``T.pdiff(2)`` is a vector function.
-
-.. method:: Mlt.cderiv()
+.. automethod:: galgebra.lt.Mlt.cderiv
    :noindex:
-
-   Returns covariant derivative of tensor field. If ``T`` is a tensor of rank :math:`k` then ``T.cderiv()`` is a tensor of rank :math:`k+1`. The operation performed is defined in section :ref:`MLtrans`.
 
 Standard Printing
 -----------------
