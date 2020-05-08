@@ -251,21 +251,16 @@ Backward Compatibility Class MV
 
 In order to be backward compatible with older versions of *galgebra* we introduce the class MV which is inherits it’s functions from then class Mv. To instantiate a geometric algebra using MV use the static function
 
-.. method:: MV.setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None))
+.. automethod:: galgebra.deprecated.MV.setup
    :noindex:
-
-   This function allows a single geometric algebra to be created. If the function is called more than once the old geometric algebra is overwritten by the new geometric algebra. The named input ``metric`` is the same as the named input ``g`` in the current version of *galgebra*. Likewise, ``basis``, ``coords``, and ``debug`` are the same in the old and current versions of *galgebra*\ \ [17]_. Due to improvements in *sympy* the inputs ``rframe`` and ``curv[1]`` are no longer required. ``curv[0]`` is
-   the vector function (list or tuple of scalar functions) of the coordinates required to define a vector manifold. For compatibility with the old version of *galgebra* if ``curv`` is used ``metric`` should be a orthonormal Euclidean metric of the same dimension as ``curv[0]``. It is strongly suggested that one use the new methods of defining a geometric algebra on a manifold.
 
 .. class:: MV(base, mvtype, fct=False, blade_rep=True)
    :noindex:
 
    For the instantiation of multivector using ``MV`` the ``base`` and ``mvtype`` arguments are the same as for new methods of multivector instantiation. The ``fct`` input is the same and the ``g`` input in the new methods. ``blade_rep`` is not used in the new methods so setting ``blade_rep=False`` will do nothing. Effectively ``blade_rep=False`` was not used in the old examples.
 
-.. method:: MV.Fmt(self, fmt=1, title=None)
+.. automethod:: galgebra.deprecated.MV.Fmt
    :noindex:
-
-   ``Fmt`` in ``MV`` has inputs identical to ``Fmt`` in ``Mv`` except that if ``A`` is a multivector then ``A.Fmt(2,'A')`` executes a print statement from ``MV`` and returns ``None``, while from ``Mv``, ``A.Fmt(2,'A')`` returns a string so that the function is compatible with use in *ipython notebook*.
 
 Basic Multivector Class Functions
 ---------------------------------
@@ -951,9 +946,6 @@ Since the expressions for multivectors or differential operators can be very lon
 
 .. [16]
    Denoted in text output by ``A__x``, etc. so that for text output ``A`` would be printed as ``A__x*e_x+A__y*e_y+A__z*e_z``.
-
-.. [17]
-   If the metric is input as a list or list or lists the object is no longer quoted (input as a string). For example the old ``metric='[1,1,1]'`` becomes ``metric=[1,1,1]``.
 
 .. [18]
    In the future it should be possible to generate closed form expressions for :math:`e^{A}` if :math:`A^{r}` is a scalar for some interger :math:`r`.
