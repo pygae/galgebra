@@ -49,3 +49,14 @@ class TestMlt(unittest.TestCase):
         assert (T * T)(a1, a2, a3, a4) == TA(a1, a2) * T(a3, a4)
         assert (T ^ T)(a1, a2, a3, a4) == TA(a1, a2) ^ T(a3, a4)
         assert (T | T)(a1, a2, a3, a4) == TA(a1, a2) | T(a3, a4)
+
+        # Test linearity properties. Note that this behavior is implied by our
+        # test that T and TA are equivalent above, but it does exercise
+        # `Mlt.__call__` with compound expressions as arguments.
+        alpha = st4d.mv('alpha', 'scalar')
+        b = st4d.mv('b', 'vector')
+
+        assert T(alpha * a1, a2) == alpha * T(a1, a2)
+        assert T(a1, alpha * a2) == alpha * T(a1, a2)
+        assert T(a1 + b, a2) == T(a1, a2) + T(b, a2)
+        assert T(a1, a2 + b) == T(a1, a2) + T(a1, b)
