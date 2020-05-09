@@ -494,27 +494,35 @@ class Ga(metric.Metric):
         return sum([coord * base for coord, base in zip(self.coords, self.basis)])
 
     def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
+        if self.r_basis is None:
+            self._build_reciprocal_basis(self.gsym)
 
         if isinstance(a, (list, tuple)):
             for ai in a:
-                self.make_grad(ai)
+                self.make_grad(ai, cmpflg=cmpflg)
             return
 
-        if a in list(self._agrads.keys()):
-            return self._agrads[a]
+        cache_key = (a, cmpflg)
+
+        if cache_key in self._agrads:
+            return self._agrads[cache_key]
 
         if isinstance(a, mv.Mv):
             ai = a.get_coefs(1)
         else:
             ai = a
-        coefs = []
-        pdiffs = []
-        for base, coord in zip(self.r_basis_mv, ai):
-            coefs.append(base)
-            pdiffs.append(dop.Pdop({coord: 1}, ga=self))
-        self._agrads[a] = mv.Dop(coefs, pdiffs, ga=self, cmpflg=cmpflg)
+
+        # TODO: Work out what the heck Mlt is trying to do with this
         self.a.append(a)
-        return self._agrads[a]
+
+        # make the grad and cache it
+        grad_a = mv.Dop([
+            (base, dop.Pdop({coord: 1}))
+            for base, coord in zip(self.r_basis_mv, ai)
+        ], ga=self, cmpflg=cmpflg)
+
+        self._agrads[cache_key] = grad_a
+        return grad_a
 
     def __str__(self):
         return self.name
