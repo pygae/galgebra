@@ -328,8 +328,6 @@ class Ga(metric.Metric):
     dual_mode_value = 'I+'
     dual_mode_lst = ['+I', 'I+', '-I', 'I-', '+Iinv', 'Iinv+', '-Iinv', 'Iinv-']
 
-    a = []
-
     presets = {'o3d': 'x,y,z:[1,1,1]:[1,1,0]',
                'cyl3d': 'r,theta,z:[1,r**2,1]:[1,1,0]:norm=True',
                'sph3d': 'r,theta,phi:[1,X[0]**2,X[0]**2*cos(X[1])**2]:[1,1,0]:norm=True',
@@ -478,9 +476,14 @@ class Ga(metric.Metric):
         if self.debug:
             print('Exit Ga.__init__()')
 
-        self.a = []  # List of dummy vectors for Mlt calculations
         self._agrads = {}  # cache of gradient operator with respect to vector a
         self.dslot = -1  # args slot for dervative, -1 for coordinates
+
+        # mystery state used by the Mlt class
+        self._mlt_a = []  # List of dummy vectors for Mlt calculations
+        self._mlt_acoefs = []  # List of dummy vectors coefficients
+        self._mlt_pdiffs = []  # List of lists dummy vector coefficients
+
         self._XOX = self.mv('XOX', 'vector')  # cached vector for use in is_versor
 
     @_cached_property
@@ -497,11 +500,6 @@ class Ga(metric.Metric):
         if self.r_basis is None:
             self._build_reciprocal_basis(self.gsym)
 
-        if isinstance(a, (list, tuple)):
-            for ai in a:
-                self.make_grad(ai, cmpflg=cmpflg)
-            return
-
         cache_key = (a, cmpflg)
 
         if cache_key in self._agrads:
@@ -511,9 +509,6 @@ class Ga(metric.Metric):
             ai = a.get_coefs(1)
         else:
             ai = a
-
-        # TODO: Work out what the heck Mlt is trying to do with this
-        self.a.append(a)
 
         # make the grad and cache it
         grad_a = mv.Dop([
