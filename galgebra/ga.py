@@ -496,24 +496,49 @@ class Ga(metric.Metric):
             raise ValueError("Ga with no coords has no coord_vec")
         return sum([coord * base for coord, base in zip(self.coords, self.basis)])
 
-    def make_grad(self, a, cmpflg=False):  # make gradient operator with respect to vector a
+    def _reciprocal_of_basis_blade(self, blade: Symbol) -> Expr:
+        r"""
+        Compute the reciprocal :math:`e^I` of a basis blade :math:`e_I`.
+
+        This is a blade :math:`e^I` such that :math:`\left<\e^Ie_J\right> = \delta_I^J`
+        (:cite:`Hestenes`, eq 3.19).
+        """
+        index = self.indexes_to_blades_dict.inverse[blade]
+        r_blade = reduce(self.wedge, [
+            self.r_basis[i] for i in index[::-1]
+        ], S.One)
+        r_blade = r_blade.simplify()
+
+        # normalize at the end
+        if not self.is_ortho:
+            # r_basis is already normalized if is_ortho is true
+            r_blade /= (self.e_sq**len(index))
+
+        return r_blade
+
+    @_cached_property
+    def _reciprocal_blade_dict(self) -> lazy_dict:
+        """ A dictionary mapping basis blades to their reciprocal blades. """
         if self.r_basis is None:
             self._build_reciprocal_basis(self.gsym)
+        return lazy_dict({}, self._reciprocal_of_basis_blade)
+
+    def make_grad(self, a: Union[_mv.Mv, Sequence[Expr]], cmpflg: bool = False) -> mv.Dop:
+        r""" Obtain a gradient operator with respect to the multivector a, :math:`\bm{\nabla}_a`."""
+        if not isinstance(a, mv.Mv):
+            # This might be needed for Mlt, let's leave it till we're sure.
+            # Convert to a multivector.
+            a = sum((ai * ei for ai, ei in zip(a, self.mv_basis)), self.mv(S.Zero))
 
         cache_key = (a, cmpflg)
 
         if cache_key in self._agrads:
             return self._agrads[cache_key]
 
-        if isinstance(a, mv.Mv):
-            ai = a.get_coefs(1)
-        else:
-            ai = a
-
         # make the grad and cache it
         grad_a = mv.Dop([
-            (base, dop.Pdop({coord: 1}))
-            for base, coord in zip(self.r_basis_mv, ai)
+            (self.mv(self._reciprocal_blade_dict[base]), dop.Pdop({coef: 1}))
+            for coef, base in metric.linear_expand_terms(a.obj)
         ], ga=self, cmpflg=cmpflg)
 
         self._agrads[cache_key] = grad_a
