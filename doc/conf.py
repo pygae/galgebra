@@ -326,3 +326,8 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'sympy': ('https://docs.sympy.org/latest', None),
+}
