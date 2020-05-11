@@ -476,26 +476,20 @@ class TestTest:
         assert dB * dx * (x * B) == 9
 
     @pytest.mark.parametrize('g', [
-        pytest.param(None, id='generic', marks=[pytest.mark.slow]),
+        pytest.param(None, id='generic'),
         pytest.param([1, 1, 1], id='ortho')
     ])
     def test_reciprocal_blades(self, g):
         ga = Ga('e*1|2|3', g=g)
-
-        def scalar_product(a, b):
-            # TODO: implement this in ga.py more efficiently, rather than
-            # computing terms we do not need in left_contract
-            lc = ga.left_contract(a, b)
-            return ga.grade_decomposition(lc).get(0, S.Zero)
 
         for b1 in ga.blades.flat:
             for b2 in ga.blades.flat:
                 rb2 = ga._reciprocal_blade_dict[b2]
 
                 if b1 == b2:
-                    assert scalar_product(b1, rb2).simplify() == S.One
+                    assert ga.scalar_product(b1, rb2).simplify() == S.One
                 else:
-                    assert scalar_product(b1, rb2).simplify() == S.Zero
+                    assert ga.scalar_product(b1, rb2).simplify() == S.Zero
 
     def test_deprecations(self):
         coords = symbols('x y z')

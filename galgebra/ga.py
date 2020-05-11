@@ -327,6 +327,11 @@ class _HestenesDotFunction(_SingleGradeProductFunction):
         return abs(grade1 - grade2)
 
 
+class _ScalarProductFunction(_SingleGradeProductFunction):
+    def _result_grade(self, grade1: int, grade2: int) -> Optional[int]:
+        return 0
+
+
 class _LeftContractFunction(_SingleGradeProductFunction):
     def _result_grade(self, grade1: int, grade2: int) -> Optional[int]:
         grade = grade2 - grade1
@@ -1584,6 +1589,11 @@ class Ga(metric.Metric):
     def hestenes_dot(self) -> BladeProductFunction:
         r""" The hestenes dot product, :math:`A \bullet B` """
         return _HestenesDotFunction(self)
+
+    @_cached_property
+    def scalar_product(self) -> BladeProductFunction:
+        r""" The scalar product, :math:`A * B` """
+        return _ScalarProductFunction(self)
 
     @_cached_property
     def left_contract(self) -> BladeProductFunction:
