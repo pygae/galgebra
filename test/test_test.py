@@ -1,7 +1,6 @@
 import sys
-import unittest
 import pytest
-from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
+from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol, S
 from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter, ZERO_STR
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Mv, Nga
@@ -25,12 +24,7 @@ def make_vector(a, n=3, ga=None):
     else:
         return F(a)
 
-class TestTest(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
+class TestTest:
 
     def test_basic_multivector_operations(self):
 
@@ -456,6 +450,52 @@ class TestTest(unittest.TestCase):
         r = ga.mv(ga.coord_vec)
         assert ga.make_grad(r) == ga.grad
         assert ga.make_grad(r, cmpflg=True) == ga.rgrad
+
+        x = ga.mv('x', 'vector')
+        B = ga.mv('B', 'bivector')
+        dx = ga.make_grad(x)
+        dB = ga.make_grad(B)
+
+        # GA4P, eq. (6.29)
+        for a in [ga.mv(1), e_1, e_1^e_2]:
+            r = a.i_grade
+            assert dx * (x ^ a) == (ga.n - r) * a
+            assert dx * (x * a) == ga.n * a
+
+        # derivable via the product rule
+        assert dx * (x*x) == 2*x
+        assert dx * (x*x*x) == (2*x)*x + (x*x)*ga.n
+
+        assert dB * (B*B) == 2*B
+        assert dB * (B*B*B) == (2*B)*B + (B*B)*ga.n
+
+        # an arbitrary chained expression to check we do not crash
+        assert dB * dx * (B * x) == -3
+        assert dx * dB * (x * B) == -3
+        assert dx * dB * (B * x) == 9
+        assert dB * dx * (x * B) == 9
+
+    @pytest.mark.parametrize('g', [
+        pytest.param(None, id='generic', marks=[pytest.mark.slow]),
+        pytest.param([1, 1, 1], id='ortho')
+    ])
+    def test_reciprocal_blades(self, g):
+        ga = Ga('e*1|2|3', g=g)
+
+        def scalar_product(a, b):
+            # TODO: implement this in ga.py more efficiently, rather than
+            # computing terms we do not need in left_contract
+            lc = ga.left_contract(a, b)
+            return ga.grade_decomposition(lc).get(0, S.Zero)
+
+        for b1 in ga.blades.flat:
+            for b2 in ga.blades.flat:
+                rb2 = ga._reciprocal_blade_dict[b2]
+
+                if b1 == b2:
+                    assert scalar_product(b1, rb2).simplify() == S.One
+                else:
+                    assert scalar_product(b1, rb2).simplify() == S.Zero
 
     def test_deprecations(self):
         coords = symbols('x y z')
