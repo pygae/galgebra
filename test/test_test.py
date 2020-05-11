@@ -451,6 +451,30 @@ class TestTest:
         assert ga.make_grad(r) == ga.grad
         assert ga.make_grad(r, cmpflg=True) == ga.rgrad
 
+        x = ga.mv('x', 'vector')
+        B = ga.mv('B', 'bivector')
+        dx = ga.make_grad(x)
+        dB = ga.make_grad(B)
+
+        # GA4P, eq. (6.29)
+        for a in [ga.mv(1), e_1, e_1^e_2]:
+            r = a.i_grade
+            assert dx * (x ^ a) == (ga.n - r) * a
+            assert dx * (x * a) == ga.n * a
+
+        # derivable via the product rule
+        assert dx * (x*x) == 2*x
+        assert dx * (x*x*x) == (2*x)*x + (x*x)*ga.n
+
+        assert dB * (B*B) == 2*B
+        assert dB * (B*B*B) == (2*B)*B + (B*B)*ga.n
+
+        # an arbitrary chained expression to check we do not crash
+        assert dB * dx * (B * x) == -3
+        assert dx * dB * (x * B) == -3
+        assert dx * dB * (B * x) == 9
+        assert dB * dx * (x * B) == 9
+
     @pytest.mark.parametrize('g', [
         pytest.param(None, id='generic', marks=[pytest.mark.slow]),
         pytest.param([1, 1, 1], id='ortho')
