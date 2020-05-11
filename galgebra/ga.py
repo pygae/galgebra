@@ -1315,6 +1315,14 @@ class Ga(metric.Metric):
         # inner (|), left (<), and right (>) products of basis blades
         # blade12 is the sympy product of two basis blades
         blade1, blade2 = blade12
+        # grades of input blades
+        grade1 = self.blades_to_grades_dict[blade1]
+        grade2 = self.blades_to_grades_dict[blade2]
+
+        grade = self._dot_product_grade(grade1, grade2, mode=mode)
+        if grade is None:
+            return zero
+
         # Need base rep for blades since that is all we can multiply
         base1 = self.blade_expansion_dict[blade1]
         base2 = self.blade_expansion_dict[blade2]
@@ -1324,13 +1332,6 @@ class Ga(metric.Metric):
         blade12 = self.base_to_blade_rep(base12)
         # decompose geometric product by grades
         grade_dict = self.grade_decomposition(blade12)
-        # grades of input blades
-        grade1 = self.blades_to_grades_dict[blade1]
-        grade2 = self.blades_to_grades_dict[blade2]
-
-        grade = self._dot_product_grade(grade1, grade2, mode=mode)
-        if grade is None:
-            return zero
         return grade_dict.get(grade, zero)
 
     ############# Non-Orthogonal Tables and Dictionaries ###############
