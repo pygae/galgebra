@@ -49,7 +49,11 @@ def is_bases_product(w):
     return len(nc) == 2 or len(nc) == 1 and nc[0].is_Pow and nc[0].exp == 2
 
 
-class lazy_dict(dict):
+_K = TypeVar('_K')
+_V = TypeVar('_V')
+
+
+class lazy_dict(Dict[_K, _V]):
     """
     A dictionary that creates missing entries on the fly.
 
@@ -70,7 +74,7 @@ class lazy_dict(dict):
         dict.__init__(self, d)
         self.f_value = f_value
 
-    def __missing__(self, key):
+    def __missing__(self, key: _K) -> _V:
         value = self.f_value(key)
         self[key] = value
         return value
@@ -182,10 +186,6 @@ class GradedTuple(Tuple[Tuple[_T, ...], ...]):
         )
 
 
-_K = TypeVar('_K')
-_V = TypeVar('_V')
-
-
 class OrderedBiMap(OrderedDict[_K, _V]):
     """ A dict with an ``.inverse`` attribute mapping in the other direction """
     def __init__(self, items):
@@ -256,7 +256,7 @@ class Ga(metric.Metric):
     .. rubric:: Multiplication tables data structures
 
     Tables for the operators ``*``, ``^``, ``|``, ``<``, and ``>``.
-    Keys are always ``sympy.Mul(blade1, blade2)`` and values are ``f(blade1, blade2)``.
+    Keys are always ``(blade1, blade2)`` and values are ``f(blade1, blade2)``.
     These dictionaries are lazy and computed on the fly, meaning they may be
     empty until an attempt is made to index them.
 
@@ -517,7 +517,7 @@ class Ga(metric.Metric):
         return r_blade
 
     @_cached_property
-    def _reciprocal_blade_dict(self) -> lazy_dict:
+    def _reciprocal_blade_dict(self) -> lazy_dict[Symbol, Expr]:
         """ A dictionary mapping basis blades to their reciprocal blades. """
         if self.r_basis is None:
             self._build_reciprocal_basis(self.gsym)
@@ -990,13 +990,13 @@ class Ga(metric.Metric):
         return self.indexes_to_blades_dict.inverse
 
     @_cached_property
-    def mul_table_dict(self) -> lazy_dict:
-        """ Geometric products of basis blades, ``{base1*base2: Expansion of base1*base2, ...}`` """
+    def mul_table_dict(self) -> lazy_dict[Tuple[Symbol, Symbol], Expr]:
+        """ Geometric products of basis blades, ``{(base1, base2): Expansion of base1*base2, ...}`` """
         return lazy_dict({}, f_value=self.geometric_product_basis_blades)  # Geometric product (*) of blades
 
     @_cached_property
-    def wedge_table_dict(self) -> lazy_dict:
-        """ Outer products of basis blades, ``{base1*base2: Expansion of base1^base2, ...}`` """
+    def wedge_table_dict(self) -> lazy_dict[Tuple[Symbol, Symbol], Expr]:
+        """ Outer products of basis blades, ``{(base1, base2): Expansion of base1^base2, ...}`` """
         return lazy_dict({}, f_value=self.wedge_product_basis_blades)  # Outer product (^)
 
     @property
@@ -1010,18 +1010,18 @@ class Ga(metric.Metric):
             return self.non_orthogonal_dot_product_basis_blades
 
     @_cached_property
-    def dot_table_dict(self) -> lazy_dict:
-        """ Hestenes inner products of basis blades, ``{base1*base2: Expansion of base1|base2, ...}`` """
+    def dot_table_dict(self) -> lazy_dict[Tuple[Symbol, Symbol], Expr]:
+        """ Hestenes inner products of basis blades, ``{(base1, base2): Expansion of base1|base2, ...}`` """
         return lazy_dict({}, f_value=functools.partial(self._dot_product_basis_blades, mode='|'))
 
     @_cached_property
-    def left_contract_table_dict(self) -> lazy_dict:
-        """ Left contraction of basis blades, ``{base1*base2: Expansion of base1<base2, ...}`` """
+    def left_contract_table_dict(self) -> lazy_dict[Tuple[Symbol, Symbol], Expr]:
+        """ Left contraction of basis blades, ``{(base1, base2): Expansion of base1<base2, ...}`` """
         return lazy_dict({}, f_value=functools.partial(self._dot_product_basis_blades, mode='<'))
 
     @_cached_property
-    def right_contract_table_dict(self) -> lazy_dict:
-        """ Right contraction of basis blades, ``{base1*base2: Expansion of base1>base2, ...}`` """
+    def right_contract_table_dict(self) -> lazy_dict[Tuple[Symbol, Symbol], Expr]:
+        """ Right contraction of basis blades, ``{(base1, base2): Expansion of base1>base2, ...}`` """
         return lazy_dict({}, f_value=functools.partial(self._dot_product_basis_blades, mode='>'))
 
     def _build_connection(self):
