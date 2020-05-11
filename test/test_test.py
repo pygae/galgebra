@@ -518,3 +518,31 @@ class TestTest(unittest.TestCase):
             ga.lt_x
         with pytest.warns(DeprecationWarning):
             ga.lt_coords
+
+    def test_aliases(self):
+        """ Tests of trivial getters which are aliases of other attributes.
+
+        These may merge into test_deprecated in future
+        """
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+
+        ga.mul_table_dict
+        ga.wedge_table_dict
+        ga.dot_table_dict
+        ga.left_contract_table_dict
+        ga.right_contract_table_dict
+        ga.basic_mul_table_dict
+
+        assert ga.geometric_product_basis_blades((e_1.obj, e_2.obj)) == (e_1 * e_2).obj
+        assert ga.wedge_product_basis_blades((e_1.obj, e_2.obj)) == (e_1 ^ e_2).obj
+        e_12 = e_1 ^ e_2
+        assert ga.non_orthogonal_dot_product_basis_blades((e_1.obj, e_12.obj), mode='|') == (e_1 | e_12).obj
+        assert ga.non_orthogonal_dot_product_basis_blades((e_1.obj, e_12.obj), mode='<') == (e_1 < e_12).obj
+        assert ga.non_orthogonal_dot_product_basis_blades((e_1.obj, e_12.obj), mode='>') == (e_1 > e_12).obj
+
+        # test the member that is nonsense unless in an orthonormal algebra
+        ga_ortho, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1])
+        e_12 = e_1 ^ e_2
+        assert ga_ortho.dot_product_basis_blades((e_1.obj, e_12.obj), mode='|') == (e_1 | e_12).obj
+        assert ga_ortho.dot_product_basis_blades((e_1.obj, e_12.obj), mode='<') == (e_1 < e_12).obj
+        assert ga_ortho.dot_product_basis_blades((e_1.obj, e_12.obj), mode='>') == (e_1 > e_12).obj
