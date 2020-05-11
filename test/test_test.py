@@ -1,5 +1,4 @@
 import sys
-import unittest
 import pytest
 from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
 from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter, ZERO_STR
@@ -25,12 +24,7 @@ def make_vector(a, n=3, ga=None):
     else:
         return F(a)
 
-class TestTest(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
+class TestTest:
 
     def test_basic_multivector_operations(self):
 
