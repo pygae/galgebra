@@ -1229,25 +1229,44 @@ class Ga(metric.Metric):
             DeprecationWarning, stacklevel=2)
         return self.indexes_to_blades_dict.inverse
 
-    # aliases for compatibility
     @property
-    def mul_table_dict(self) -> lazy_dict:
+    def mul_table_dict(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.mul_table_dict` is deprecated, use `ga.mul.table_dict`",
+            DeprecationWarning, stacklevel=2)
         return self.mul.table_dict
 
     @property
     def wedge_table_dict(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.wedge_table_dict` is deprecated, use `ga.wedge.table_dict`",
+            DeprecationWarning, stacklevel=2)
         return self.wedge.table_dict
 
     @property
     def dot_table_dict(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.dot_table_dict` is deprecated, use `ga.hestenes_dot.table_dict`",
+            DeprecationWarning, stacklevel=2)
         return self.hestenes_dot.table_dict
 
     @property
     def left_contract_table_dict(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.left_contract_table_dict` is deprecated, use `ga.left_contract.table_dict`",
+            DeprecationWarning, stacklevel=2)
         return self.left_contract.table_dict
 
     @property
     def right_contract_table_dict(self):
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.right_contract_table_dict` is deprecated, use `ga.right_contract.table_dict`",
+            DeprecationWarning, stacklevel=2)
         return self.right_contract.table_dict
 
     def _build_connection(self):
@@ -1265,6 +1284,10 @@ class Ga(metric.Metric):
     # ******************* Geometric Product (*) ********************** #
 
     def geometric_product_basis_blades(self, blade12: Tuple[Symbol, Symbol]) -> Expr:
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.geometric_product_basis_blades` is deprecated, use `ga.mul.of_basis_blades`",
+            DeprecationWarning, stacklevel=2)
         return self.mul.of_basis_blades(*blade12)
 
     def reduce_basis(self, blst):
@@ -1416,6 +1439,10 @@ class Ga(metric.Metric):
         return sgn, lst
 
     def wedge_product_basis_blades(self, blade12: Tuple[Symbol, Symbol]) -> Expr:
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.wedge_product_basis_blades` is deprecated, use `ga.wedge.of_basis_blades`",
+            DeprecationWarning, stacklevel=2)
         return self.wedge.of_basis_blades(*blade12)
 
     # ***** Dot (|) product, reft (<) and right (>) contractions ***** #
@@ -1431,15 +1458,29 @@ class Ga(metric.Metric):
             raise ValueError('mode={!r} not allowed'.format(mode))
 
     def dot_product_basis_blades(self, blade12: Tuple[Symbol, Symbol], mode: str) -> Expr:
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.dot_product_basis_blades` is deprecated, use `ga.<which-dot>.of_basis_blades` "
+            "where `<which-dot>` is one of `hestenes_dot`, `left_contract`, and `right_contract`",
+            DeprecationWarning, stacklevel=2)
         return self._dot_product_method(mode)._of_basis_blades_ortho(*blade12)
 
     def non_orthogonal_dot_product_basis_blades(self, blade12: Tuple[Symbol, Symbol], mode: str) -> Expr:
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.non_orthogonal_dot_product_basis_blades` is deprecated, use `ga.<which-dot>.of_basis_blades` "
+            "where `<which-dot>` is one of `hestenes_dot`, `left_contract`, and `right_contract`",
+            DeprecationWarning, stacklevel=2)
         return self._dot_product_method(mode)._of_basis_blades_non_ortho(*blade12)
 
     ############# Non-Orthogonal Tables and Dictionaries ###############
 
     @property
     def basic_mul_table_dict(self) -> OrderedDict[Mul, Expr]:
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.basic_mul_table_dict` is deprecated, use `ga.mul.table_dict`",
+            DeprecationWarning, stacklevel=2)
         return self.basic_mul.table_dict
 
     @property
@@ -1467,6 +1508,10 @@ class Ga(metric.Metric):
         return list(self.basic_mul.table_dict.values())
 
     def non_orthogonal_bases_products(self, base12: Tuple[Symbol, Symbol]) -> Expr:
+        # galgebra 0.5.0
+        warnings.warn(
+            "`ga.non_orthogonal_bases_products` is deprecated, use `ga.basic_mul.of_basis_bases`",
+            DeprecationWarning, stacklevel=2)
         return self.basic_mul.of_basis_bases(*base12)
 
     @_cached_property
