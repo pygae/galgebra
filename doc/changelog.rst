@@ -4,6 +4,8 @@ Changelog
 
 - :feature:`326` The :meth:`galgebra.ga.Ga.make_grad` function now accepts multivectors, not just vectors.
 
+- :support:`335` The undocumented method :meth:`galgebra.ga.Ga.X` (the same as :attr:`~galgebra.ga.Ga.coords_vec`) has been deprecated.
+
 - :support:`317` The undocumented attributes :attr:`galgebra.ga.Ga.lt_x` (the same as :attr:`~galgebra.ga.Ga.coords_vec`) and :attr:`galgebra.ga.Ga.lt_coords` (the same as :attr:`~galgebra.ga.Ga.coords`) have been deprecated.
 
 - :support:`280` The ``galgebra.utils`` module, which provided Python 2 compatibility helpers, has been deprecated.

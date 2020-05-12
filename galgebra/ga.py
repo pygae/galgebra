@@ -819,7 +819,11 @@ class Ga(metric.Metric):
         return mv.Mv('XxXx', 'vector', ga=self)
 
     def X(self):
-        return self.mv(sum([coord*base for coord, base in zip(self.coords, self.basis)]))
+        # galgebra 0.5.0
+        warnings.warn(
+            "ga.X() is deprecated, use `ga.coord_vec` instead",
+            DeprecationWarning, stacklevel=2)
+        return self.coord_vec
 
     @property
     def Pdiffs(self) -> Dict[Symbol, _dop.Pdop]:

@@ -549,6 +549,13 @@ class TestTest:
 
         # aliases
         with pytest.warns(DeprecationWarning):
+            assert ga.X()
+
+        # derived from
+        ga.coord_vec
+
+        # aliases
+        with pytest.warns(DeprecationWarning):
             ga.lt_x
         with pytest.warns(DeprecationWarning):
             ga.lt_coords
