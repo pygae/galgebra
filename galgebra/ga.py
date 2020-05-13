@@ -12,7 +12,7 @@ from ._backports.typing import OrderedDict
 from sympy import (
     diff, Rational, Symbol, S, Mul, Add, Expr,
     expand, simplify, eye, trigsimp,
-    symbols, sqrt, Function
+    symbols, sqrt, MatrixSymbol
 )
 
 from . import printer
@@ -20,7 +20,10 @@ from . import metric
 from . import mv
 from . import dop
 from . import lt
-from .atoms import BasisBaseSymbol, BasisBladeSymbol, BasisBladeNoWedgeSymbol
+from .atoms import (
+    BasisBaseSymbol, BasisBladeSymbol, BasisBladeNoWedgeSymbol, MatrixFunction,
+    Determinant,
+)
 from ._utils import cached_property as _cached_property
 
 half = Rational(1, 2)
@@ -1870,18 +1873,15 @@ class Ga(metric.Metric):
         else:
             if gsym is not None:
                 # Define name of metric tensor determinant as sympy symbol
-                if printer.GaLatexPrinter.latex_flg:
-                    det_str = r'\det\left ( ' + gsym + r'\right ) '
+                if self.coords is None:
+                    gsym_obj = MatrixSymbol(gsym, self.n, self.n)
                 else:
-                    det_str = 'det(' + gsym + ')'
+                    gsym_obj = MatrixFunction(gsym, self.n, self.n)(*self.coords)
                 # Define square of pseudo-scalar in terms of metric tensor
                 # determinant
+                det_g = Determinant(gsym_obj)
                 n = self.n
-                if self.coords is None:  # Metric tensor is constant
-                    self.e_sq = (-1) ** (n*(n - 1)//2) * Symbol(det_str, real=True)
-                else:  # Metric tensor is function of coordinates
-                    n = len(self.coords)
-                    self.e_sq = (-1) ** (n*(n - 1)//2) * Function(det_str, real=True)(*self.coords)
+                self.e_sq = (-1) ** (n*(n - 1)//2) * det_g
             else:
                 self.e_sq = simplify((self.e * self.e).obj)
             if self.debug:
