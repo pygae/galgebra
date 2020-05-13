@@ -199,16 +199,16 @@ class TestTest:
 
         Bhat = Binv*B # D&L 10.154
         R = c+s*Bhat # Rotor R = exp(alpha*Bhat/2)
-        assert str(R) == 'c + (1/B)*s*X^Y - (1/B)*(Y.e)*s*X^e + (1/B)*(X.e)*s*Y^e'
+        assert str(R) == 'c + (1/B)*s*X^Y - (Y.e)*(1/B)*s*X^e + (X.e)*(1/B)*s*Y^e'
 
         Z = R*X*R.rev() # D&L 10.155
         Z.obj = expand(Z.obj)
         Z.obj = Z.obj.collect([Binv, s, c, XdotY])
-        assert str(Z) == '((1/B)**2*(X.Y)**2*s**2 - 2*(1/B)**2*(X.Y)*(X.e)*(Y.e)*s**2 + 2*(1/B)*(X.Y)*c*s - 2*(1/B)*(X.e)*(Y.e)*c*s + c**2)*X + 2*(1/B)*(X.e)**2*c*s*Y + 2*(1/B)*(X.Y)*(X.e)*s*(-(1/B)*(X.Y)*s + 2*(1/B)*(X.e)*(Y.e)*s - c)*e'
+        assert str(Z) == '((X.Y)**2*(1/B)**2*s**2 - 2*(X.Y)*(X.e)*(Y.e)*(1/B)**2*s**2 + 2*(X.Y)*(1/B)*c*s - 2*(X.e)*(Y.e)*(1/B)*c*s + c**2)*X + 2*(X.e)**2*(1/B)*c*s*Y + 2*(X.Y)*(X.e)*(1/B)*s*(-(X.Y)*(1/B)*s + 2*(X.e)*(Y.e)*(1/B)*s - c)*e'
         W = Z|Y
         # From this point forward all calculations are with sympy scalars
         W = W.scalar()
-        assert str(W) == '(1/B)**2*(X.Y)**3*s**2 - 4*(1/B)**2*(X.Y)**2*(X.e)*(Y.e)*s**2 + 4*(1/B)**2*(X.Y)*(X.e)**2*(Y.e)**2*s**2 + 2*(1/B)*(X.Y)**2*c*s - 4*(1/B)*(X.Y)*(X.e)*(Y.e)*c*s + (X.Y)*c**2'
+        assert str(W) == '(X.Y)**3*(1/B)**2*s**2 - 4*(X.Y)**2*(X.e)*(Y.e)*(1/B)**2*s**2 + 2*(X.Y)**2*(1/B)*c*s + 4*(X.Y)*(X.e)**2*(Y.e)**2*(1/B)**2*s**2 - 4*(X.Y)*(X.e)*(Y.e)*(1/B)*c*s + (X.Y)*c**2'
         W = expand(W)
         W = simplify(W)
         W = W.collect([s*Binv])

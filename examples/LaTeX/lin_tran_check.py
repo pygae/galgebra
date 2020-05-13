@@ -86,8 +86,12 @@ def main():
 
     print('B =', B2d)
     print('A + B =', A2d + B2d)
-    print('AB =', A2d * B2d)
     print('A - B =', A2d - B2d)
+
+    # TODO: add this back when we drop Sympy 1.3. The 64kB of output is far too
+    # printer-dependent
+    if False:
+        print('AB =', A2d * B2d)
 
     a = g2d.mv('a','vector')
     b = g2d.mv('b','vector')
