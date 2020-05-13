@@ -5,6 +5,7 @@ Multivector Linear Transformation
 import inspect
 import types
 import itertools
+import warnings
 from copy import copy
 from functools import reduce
 
@@ -594,20 +595,11 @@ class Mlt(object):
 
     @staticmethod
     def extact_basis_indexes(Ga):
-        base_indexes = []
-        for base in Ga.basis:
-            base_str = str(base)
-            base_str = base_str.replace(r'\boldsymbol', '')
-            base_str = base_str.replace('{', '')
-            base_str = base_str.replace('}', '')
-            i = base_str.find('_') + 1
-            if i == 0:
-                base_indexes.append(base_str)
-            else:
-                if base_str[i] == '_':
-                    i += 1
-                base_indexes.append(base_str[i:])
-        return base_indexes
+        # galgebra 0.5.0
+        warnings.warn(
+            "`Mlt.extact_basis_indexes(ga)` is deprecated, use `ga.basis_super_scripts`",
+            DeprecationWarning, stacklevel=2)
+        return Ga.basis_super_scripts
 
     def _sympystr(self, print_obj):
         return print_obj.doprint(self.fvalue)
@@ -752,9 +744,8 @@ class Mlt(object):
             self.f = None
             self.nargs = nargs
             Mlt.increment_slots(nargs, Ga)
-            t_indexes = Mlt.extact_basis_indexes(self.Ga)
             self.fvalue = S(0)
-            for t_index, a_prod in zip(itertools.product(t_indexes, repeat=self.nargs),
+            for t_index, a_prod in zip(itertools.product(self.Ga.basis_super_scripts, repeat=self.nargs),
                                        itertools.product(*self.Ga._mlt_pdiffs)):
                 name = '{}_{}'.format(f, ''.join(map(str, t_index)))
                 if fct:  # Tensor field
