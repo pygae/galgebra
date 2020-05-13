@@ -1878,10 +1878,10 @@ class Ga(metric.Metric):
                 # determinant
                 n = self.n
                 if self.coords is None:  # Metric tensor is constant
-                    self.e_sq = (-1) ** (n*(n - 1)/2) * Symbol(det_str, real=True)
+                    self.e_sq = (-1) ** (n*(n - 1)//2) * Symbol(det_str, real=True)
                 else:  # Metric tensor is function of coordinates
                     n = len(self.coords)
-                    self.e_sq = (-1) ** (n*(n - 1)/2) * Function(det_str, real=True)(*self.coords)
+                    self.e_sq = (-1) ** (n*(n - 1)//2) * Function(det_str, real=True)(*self.coords)
             else:
                 self.e_sq = simplify((self.e * self.e).obj)
             if self.debug:
