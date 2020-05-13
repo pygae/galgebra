@@ -762,9 +762,6 @@ class GaLatexPrinter(LatexPrinter):
                 else:
                     name = name % ",".join(args)
 
-            if 'det(g)' in name:
-                name = name.replace('det(g)', r'\det\left ( g \right )')
-
             return name
 
     def _print_Derivative(self, expr):
@@ -821,6 +818,10 @@ class GaLatexPrinter(LatexPrinter):
         out_str = out_str[:-4] + ' \\end{array}\\right ] '
 
         return out_str
+
+    def _print_Determinant(self, expr):
+        # sympy `uses |X|` by default, we want `det (X)`
+        return r"\det\left ( {}\right )".format(self._print(expr.args[0]))
 
     @staticmethod
     def latex(expr, **settings):

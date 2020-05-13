@@ -2,8 +2,10 @@
 
 from typing import Union
 
-from sympy import Symbol, AtomicExpr, S, Basic
+from sympy import Symbol, AtomicExpr, S, Basic, sympify, MatrixExpr
+from sympy import Determinant as _Determinant
 from sympy.core import numbers
+from sympy.core.function import AppliedUndef, UndefinedFunction
 from sympy.printing.pretty.stringpict import prettyForm, stringPict
 from sympy.printing.pretty.pretty_symbology import U
 
@@ -147,3 +149,19 @@ class DotProductSymbol(AtomicExpr):
             printer._print(b),
         ))
         return prettyForm(*pform.parens())
+
+
+class MatrixFunction(UndefinedFunction):
+    """ Like a MatrixSymbol, but for functions. """
+    def __new__(mcl, name, m, n, **kwargs):
+        cls = super().__new__(mcl, name, (AppliedUndef, MatrixExpr), {}, **kwargs)
+        cls.shape = sympify(n, strict=True), sympify(n, strict=True)
+        return cls
+
+
+# workaround until sympy/sympy#19354 is merged
+if _Determinant.is_commutative is not True:
+    class Determinant(_Determinant):
+        is_commutative = True
+else:
+    Determinant = _Determinant
