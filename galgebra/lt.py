@@ -17,14 +17,6 @@ from . import metric
 from . import mv
 
 
-def aprint(a):
-    out = ''
-    for ai in a:
-        out += str(ai)+','
-    print('['+out[:-1]+']')
-    return
-
-
 def Symbolic_Matrix(root, coords=None, mode='g', f=False, sub=True):
     if sub:
         pos = '_'
