@@ -376,7 +376,7 @@ class Lt(object):
         connect_flg = self.Ga.connect_flg
         self.Ga.connect_flg = False
 
-        F_x = mv.Mv(self(self.Ga.lt_x, obj=True), ga=self.Ga)
+        F_x = mv.Mv(self(self.Ga.coord_vec, obj=True), ga=self.Ga)
         tr_F = (self.Ga.grad | F_x).scalar()
         self.Ga.connect_flg = connect_flg
         return tr_F
