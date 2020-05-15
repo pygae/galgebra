@@ -2,6 +2,8 @@
 Changelog
 =========
 
+- :bug:`344` :func:`galgebra.metric.collect` no longer discards terms that were not requested.
+
 - :feature:`326` The :meth:`galgebra.ga.Ga.make_grad` function now accepts multivectors, not just vectors.
 
 - :support:`335` The undocumented method :meth:`galgebra.ga.Ga.X` (the same as :attr:`~galgebra.ga.Ga.coords_vec`) has been deprecated.
