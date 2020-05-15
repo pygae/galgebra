@@ -420,9 +420,11 @@ class GaLatexPrinter(LatexPrinter):
     title is printed in equation mode. '%' has the same effect in title as
     in the Fmt() member function.
     """
-    # overrides of base class settings
+    # overrides of base class settings, and new settings for our printers
     _default_settings = ChainMap({
         "mat_str": "array",
+        "omit_function_args": False,
+        "omit_partial_derivative_fraction": False,
     }, LatexPrinter._default_settings)
 
     fmt = 1
@@ -435,8 +437,6 @@ class GaLatexPrinter(LatexPrinter):
     latex_flg = False
     latex_str = ''
     ipy = False
-
-    inv_trig_style = None
 
     preamble = \
 """
@@ -487,8 +487,6 @@ class GaLatexPrinter(LatexPrinter):
     postscript = '\\end{document}\n'
     macros = '\\newcommand{\\f}[2]{{#1}\\left ({#2}\\right )}'
 
-    Dmode = False  # True - Print derivative contracted
-    Fmode = False  # True - Print function contracted
     latex_flg = False
     ipy = False
 
@@ -653,8 +651,7 @@ class GaLatexPrinter(LatexPrinter):
 
             # How inverse trig functions should be displayed, formats are:
             # abbreviated: asin, full: arcsin, power: sin^-1
-            #inv_trig_style = self._settings['inv_trig_style']
-            _inv_trig_style = GaLatexPrinter.inv_trig_style
+            inv_trig_style = self._settings['inv_trig_style']
             # If we are dealing with a power-style inverse trig function
             inv_trig_power_case = False
             # If it is applicable to fold the argument brackets
@@ -665,11 +662,11 @@ class GaLatexPrinter(LatexPrinter):
 
             # If the function is an inverse trig function, handle the style
             if func in inv_trig_table:
-                if GaLatexPrinter.inv_trig_style == "abbreviated":
+                if inv_trig_style == "abbreviated":
                     func = func
-                elif GaLatexPrinter.inv_trig_style == "full":
+                elif inv_trig_style == "full":
                     func = "arc" + func[1:]
-                elif GaLatexPrinter.inv_trig_style == "power":
+                elif inv_trig_style == "power":
                     func = func[1:]
                     inv_trig_power_case = True
 
@@ -708,16 +705,16 @@ class GaLatexPrinter(LatexPrinter):
                     # with the function name itself
                     name += r" {%s}"
                 else:
-                    if not GaLatexPrinter.Fmode:
+                    if not self._settings["omit_function_args"]:
                         name += r"%s"
             else:
-                if func in accepted_latex_functions or not GaLatexPrinter.Fmode:
+                if func in accepted_latex_functions or not self._settings["omit_function_args"]:
                     name += r"{\left (%s \right )}"
 
             if inv_trig_power_case and exp is not None:
                 name += r"^{%s}" % exp
 
-            if func in accepted_latex_functions or not GaLatexPrinter.Fmode:
+            if func in accepted_latex_functions or not self._settings["omit_function_args"]:
                 if len(args) == 1:
                     name = name % args[0]
                 else:
@@ -729,7 +726,7 @@ class GaLatexPrinter(LatexPrinter):
         dim = len(expr.variables)
         imax = 1
         if dim == 1:
-            if GaLatexPrinter.Dmode:
+            if self._settings["omit_partial_derivative_fraction"]:
                 tex = r"\partial_{%s}" % self._print(expr.variables[0])
             else:
                 tex = r"\frac{\partial}{\partial %s}" % self._print(expr.variables[0])
@@ -746,7 +743,7 @@ class GaLatexPrinter(LatexPrinter):
                 imax = max(imax, i)
                 multiplicity.append((current, i))
 
-            if GaLatexPrinter.Dmode:
+            if self._settings["omit_partial_derivative_fraction"]:
                 tex = ''
                 for x, i in multiplicity:
                     if i == 1:
@@ -812,9 +809,11 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
     """
     global Format_cnt
 
-    GaLatexPrinter.Dmode = Dmode
-    GaLatexPrinter.Fmode = Fmode
-    GaLatexPrinter.inv_trig_style = inverse
+    GaLatexPrinter.set_global_settings(
+        omit_partial_derivative_fraction=Dmode,
+        omit_function_args=Fmode,
+        inv_trig_style=inverse,
+    )
 
     if Format_cnt == 0:
         Format_cnt += 1
@@ -1026,8 +1025,10 @@ def xdvi(filename=None, debug=False, paper=(14, 11)):
 
 
 def LatexFormat(Fmode=True, Dmode=True, ipy=False):
-    GaLatexPrinter.Dmode = Dmode
-    GaLatexPrinter.Fmode = Fmode
+    GaLatexPrinter.set_global_settings(
+        omit_partial_derivative_fraction=Dmode,
+        omit_function_args=Fmode
+    )
     GaLatexPrinter.ipy = ipy
     GaLatexPrinter.redirect()
     return
