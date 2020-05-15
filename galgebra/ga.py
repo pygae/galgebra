@@ -684,10 +684,9 @@ class Ga(metric.Metric):
             self.coords = list(self.coords)
 
         self.e = mv.Mv(self.blades.flat[-1], ga=self)  # Pseudo-scalar for geometric algebra
-        self.e_sq = simplify(expand((self.e*self.e).scalar()))
 
         if self.coords is not None:
-            self._build_reciprocal_basis(self.gsym)
+            self._build_reciprocal_basis()
             self._build_grads()
         else:
             self.r_basis = None
@@ -765,7 +764,7 @@ class Ga(metric.Metric):
     def _reciprocal_blade_dict(self) -> lazy_dict:
         """ A dictionary mapping basis blades to their reciprocal blades. """
         if self.r_basis is None:
-            self._build_reciprocal_basis(self.gsym)
+            self._build_reciprocal_basis()
         return lazy_dict({}, self._reciprocal_of_basis_blade)
 
     def make_grad(self, a: Union[_mv.Mv, Sequence[Expr]], cmpflg: bool = False) -> mv.Dop:
@@ -926,7 +925,7 @@ class Ga(metric.Metric):
         """
 
         if self.r_basis is None:
-            self._build_reciprocal_basis(self.gsym)
+            self._build_reciprocal_basis()
         if norm and not self.is_ortho:
             return tuple([self.r_basis_mv[i] / self.e_sq for i in self.n_range])
         else:
@@ -1841,9 +1840,31 @@ class Ga(metric.Metric):
                     s += Mul._from_args(c) * blade
         return s
 
+    @_cached_property
+    def e_sq(self) -> Expr:
+        r"""
+        If ``self.gsym = True`` then :math:`E_{n}^2` is not evaluated, but is represented
+        as :math:`E_{n}^2 = (-1)^{n*(n-1)/2}\operatorname{det}(g)` where
+        :math:`\operatorname{det}(g)` the determinant
+        of the metric tensor can be general scalar function of the coordinates.
+        """
+        if self.gsym is not None:
+            # Define name of metric tensor determinant as sympy symbol
+            if self.coords is None:
+                gsym_obj = MatrixSymbol(self.gsym, self.n, self.n)
+            else:
+                gsym_obj = MatrixFunction(self.gsym, self.n, self.n)(*self.coords)
+            # Define square of pseudo-scalar in terms of metric tensor
+            # determinant
+            det_g = Determinant(gsym_obj)
+            n = self.n
+            return (-1) ** (n*(n - 1)//2) * det_g
+        else:
+            return simplify(expand((self.e*self.e).scalar()))
+
     ##################### Multivector derivatives ######################
 
-    def _build_reciprocal_basis(self, gsym):
+    def _build_reciprocal_basis(self):
         r"""
         Calculate reciprocal basis vectors :math:`e^{j}` where
 
@@ -1858,11 +1879,6 @@ class Ga(metric.Metric):
 
         For non-orthogonal basis :math:`e^{j}` is not normalized and must be
         divided by :math:`E_{n}^2` (``self.e_sq``) in any relevant calculations.
-
-        If ``gsym = True`` then :math:`E_{n}^2` is not evaluated, but is represented
-        as :math:`E_{n}^2 = (-1)^{n*(n-1)/2}\operatorname{det}(g)` where
-        :math:`\operatorname{det}(g)` the determinant
-        of the metric tensor can be general scalar function of the coordinates.
         """
 
         if self.debug:
@@ -1871,19 +1887,6 @@ class Ga(metric.Metric):
         if self.is_ortho:
             self.r_basis = [self.basis[i] / self.g[i, i] for i in self.n_range]
         else:
-            if gsym is not None:
-                # Define name of metric tensor determinant as sympy symbol
-                if self.coords is None:
-                    gsym_obj = MatrixSymbol(gsym, self.n, self.n)
-                else:
-                    gsym_obj = MatrixFunction(gsym, self.n, self.n)(*self.coords)
-                # Define square of pseudo-scalar in terms of metric tensor
-                # determinant
-                det_g = Determinant(gsym_obj)
-                n = self.n
-                self.e_sq = (-1) ** (n*(n - 1)//2) * det_g
-            else:
-                self.e_sq = simplify((self.e * self.e).obj)
             if self.debug:
                 print('E**2 =', self.e_sq)
 
