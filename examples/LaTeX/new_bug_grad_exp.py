@@ -44,7 +44,7 @@ the_exponential= (-E*gw*t).exp(hint='-')
 
 #Accepted the 2 following statements
 the_exponential.Fmt(fmt=1, title=r'%e^{-E\gamma_{w}t}')
-(-E*gw*the_exponential*t).Fmt(fmt=1, title='%-E\gamma_{w}e^{-E\gamma_{w}t}\gamma_{t}')
+(-E*gw*the_exponential*t).Fmt(fmt=1, title=r'%-E\gamma_{w}e^{-E\gamma_{w}t}\gamma_{t}')
 
 #why the simplification doesn't take place here ?
 (grad*the_exponential).Fmt(fmt=1, title=r'%\bm{\nabla} e^{-E\gamma_{w}t}')
