@@ -10,6 +10,9 @@
     :caption: A guide to GAlgebra
 
     galgebra_guide
+    sympy-representation
+    module-components
+    bibliography
 
 .. toctree::
     :maxdepth: 2

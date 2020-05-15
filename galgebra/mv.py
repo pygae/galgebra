@@ -6,7 +6,7 @@ import copy
 import numbers
 import operator
 from functools import reduce
-from typing import List, Any, Tuple, Union
+from typing import List, Any, Tuple, Union, TYPE_CHECKING
 
 from sympy import (
     Symbol, Function, S, expand, Add,
@@ -15,12 +15,17 @@ from sympy import (
 )
 from sympy import exp as sympy_exp
 from sympy import N as Nsympy
+from sympy.printing.latex import LatexPrinter as _LatexPrinter
+from sympy.printing.str import StrPrinter as _StrPrinter
 
 from . import printer
 from . import metric
 from .printer import ZERO_STR
-from .utils import _KwargParser
+from ._utils import KwargParser as _KwargParser
 from . import dop
+
+if TYPE_CHECKING:
+    from galgebra.ga import Ga
 
 ONE = S(1)
 ZERO = S(0)
@@ -60,28 +65,23 @@ class Mv(object):
 
     ################### Multivector initialization #####################
 
+    # This is read by one code path in `galgebra.printer.Fmt`. Only one example
+    # sets it.
     fmt = 1
-    latex_flg = False
-    restore = False
+
     dual_mode_lst = ['+I', 'I+', '+Iinv', 'Iinv+', '-I', 'I-', '-Iinv', 'Iinv-']
 
     @staticmethod
-    def setup(ga):
+    def setup(ga: 'Ga') -> Tuple['Mv', List['Mv'], 'Mv']:
         """
         Set up constant multivectors required for multivector class for
         a given geometric algebra, `ga`.
         """
-        Mv.fmt = 1
         # copy basis in case the caller wanted to change it
         return ga.mv_I, list(ga.mv_basis), ga.mv_x
 
     @staticmethod
-    def Format(mode=1):
-        Mv.latex_flg = True
-        Mv.fmt = mode
-
-    @staticmethod
-    def Mul(A, B, op):
+    def Mul(A: 'Mv', B: 'Mv', op: str) -> 'Mv':
         """
         Function for all types of geometric multiplications called by
         overloaded operators for ``*``, ``^``, ``|``, ``<``, and ``>``.
@@ -104,7 +104,7 @@ class Mv(object):
         else:
             raise ValueError('Operation ' + op + 'not allowed in Mv.Mul!')
 
-    def characterise_Mv(self):
+    def characterise_Mv(self) -> None:
         if self.char_Mv:
             return
         obj = expand(self.obj)
@@ -167,7 +167,7 @@ class Mv(object):
     # switch to using the / syntax from PEP570
 
     @staticmethod
-    def _make_grade(ga, __name_or_coeffs, __grade, **kwargs):
+    def _make_grade(ga: 'Ga', __name_or_coeffs: Union[str, list, tuple], __grade: int, **kwargs) -> Expr:
         """ Make a pure grade multivector. """
         def add_superscript(root, s):
             if not s:
@@ -202,7 +202,7 @@ class Mv(object):
             raise TypeError("Expected a string, list, or tuple")
 
     @staticmethod
-    def _make_scalar(ga, __name_or_value, **kwargs):
+    def _make_scalar(ga: 'Ga', __name_or_value: Union[str, Expr], **kwargs) -> Expr:
         """ Make a scalar multivector """
         if isinstance(__name_or_value, str):
             name = __name_or_value
@@ -212,22 +212,22 @@ class Mv(object):
             return value
 
     @staticmethod
-    def _make_vector(ga, __name_or_coeffs, **kwargs):
+    def _make_vector(ga: 'Ga', __name_or_coeffs: Union[str, list, tuple], **kwargs) -> Expr:
         """ Make a vector multivector """
         return Mv._make_grade(ga, __name_or_coeffs, 1, **kwargs)
 
     @staticmethod
-    def _make_bivector(ga, __name_or_coeffs, **kwargs):
+    def _make_bivector(ga: 'Ga', __name_or_coeffs: Union[str, list, tuple], **kwargs) -> Expr:
         """ Make a bivector multivector """
         return Mv._make_grade(ga, __name_or_coeffs, 2, **kwargs)
 
     @staticmethod
-    def _make_pseudo(ga, __name_or_coeffs, **kwargs):
+    def _make_pseudo(ga: 'Ga', __name_or_coeffs: Union[str, list, tuple], **kwargs) -> Expr:
         """ Make a pseudo scalar multivector """
         return Mv._make_grade(ga, __name_or_coeffs, ga.n, **kwargs)
 
     @staticmethod
-    def _make_mv(ga, __name, **kwargs):
+    def _make_mv(ga: 'Ga', __name: str, **kwargs) -> Expr:
         """ Make a general (2**n components) multivector """
         if not isinstance(__name, str):
             raise TypeError("Must be a string")
@@ -237,7 +237,7 @@ class Mv(object):
         ))
 
     @staticmethod
-    def _make_spinor(ga, __name, **kwargs):
+    def _make_spinor(ga: 'Ga', __name: str, **kwargs) -> Expr:
         """ Make a general even (spinor) multivector """
         if not isinstance(__name, str):
             raise TypeError("Must be a string")
@@ -247,7 +247,7 @@ class Mv(object):
         ))
 
     @staticmethod
-    def _make_odd(ga, __name, **kwargs):
+    def _make_odd(ga: 'Ga', __name: str, **kwargs) -> Expr:
         """ Make a general odd multivector """
         if not isinstance(__name, str):
             raise TypeError("Must be a string")
@@ -381,7 +381,7 @@ class Mv(object):
 
     ################# Multivector member functions #####################
 
-    def reflect_in_blade(self, blade):  # Reflect mv in blade
+    def reflect_in_blade(self, blade: 'Mv') -> 'Mv':  # Reflect mv in blade
         # See Mv class functions documentation
         if blade.is_blade():
             self.characterise_Mv()
@@ -399,7 +399,7 @@ class Mv(object):
         else:
             raise ValueError(str(blade) + 'is not a blade in reflect_in_blade(self, blade)')
 
-    def project_in_blade(self, blade):
+    def project_in_blade(self, blade: 'Mv') -> 'Mv':
         # See Mv class functions documentation
         if blade.is_blade():
             blade.characterise_Mv()
@@ -408,12 +408,12 @@ class Mv(object):
         else:
             raise ValueError(str(blade) + 'is not a blade in project_in_blade(self, blade)')
 
-    def rotate_multivector(self, itheta, hint='-'):
+    def rotate_multivector(self, itheta: 'Mv', hint: str = '-'):
         Rm = (-itheta/S(2)).exp(hint)
         Rp = (itheta/S(2)).exp(hint)
         return Rm * self * Rp
 
-    def base_rep(self):
+    def base_rep(self) -> 'Mv':
         """ Express as a linear combination of geometric products """
         if not self.is_blade_rep:
             return self
@@ -423,7 +423,7 @@ class Mv(object):
         b.is_blade_rep = False
         return b
 
-    def blade_rep(self):
+    def blade_rep(self) -> 'Mv':
         """ Express as a linear combination of blades """
         if self.is_blade_rep:
             return self
@@ -433,7 +433,7 @@ class Mv(object):
         b.is_blade_rep = True
         return b
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         if self.is_scalar():
             # ensure we match equality
             return hash(self.obj)
@@ -582,16 +582,18 @@ class Mv(object):
     def __repr__(self):
         return str(self)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int) -> 'Mv':
         '''
         get a specified grade of a multivector
         '''
         return self.grade(key)
 
-    def Mv_str(self):
-        global print_replace_old, print_replace_new
+    def _sympystr(self, print_obj: printer.GaPrinter) -> str:
+        if self.obj == S.Zero:
+            return ZERO_STR
+
         if self.i_grade == 0:
-            return str(self.obj)
+            return print_obj.doprint(self.obj)
 
         # note: this just replaces `self` for the rest of this function
         obj = expand(self.obj)
@@ -629,22 +631,22 @@ class Mv(object):
             terms = list(terms.items())
             sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
-            s = str(sorted_terms[0][1][0] * sorted_terms[0][1][1])
-            if printer.GaPrinter.fmt == 3:
+            s = print_obj.doprint(sorted_terms[0][1][0] * sorted_terms[0][1][1])
+            if print_obj.fmt == 3:
                 s = ' ' + s + '\n'
-            if printer.GaPrinter.fmt == 2:
+            if print_obj.fmt == 2:
                 s = ' ' + s
             old_grade = sorted_terms[0][1][2]
             for (key, (c, base, grade)) in sorted_terms[1:]:
-                term = str(c * base)
-                if printer.GaPrinter.fmt == 2 and old_grade != grade:  # one grade per line
+                term = print_obj.doprint(c * base)
+                if print_obj.fmt == 2 and old_grade != grade:  # one grade per line
                     old_grade = grade
                     s += '\n'
                 if term[0] == '-':
                     term = ' - ' + term[1:]
                 else:
                     term = ' + ' + term
-                if printer.GaPrinter.fmt == 3:  # one base per line
+                if print_obj.fmt == 3:  # one base per line
                     s += term + '\n'
                 else:  # one multivector per line
                     s += term
@@ -654,11 +656,11 @@ class Mv(object):
                 s = s.replace(printer.print_replace_old, printer.print_replace_new)
             return s
         else:
-            return str(self.obj)
+            return print_obj.doprint(self.obj)
 
-    def Mv_latex_str(self):
+    def _latex(self, print_obj: _LatexPrinter) -> str:
 
-        if self.obj == 0:
+        if self.obj == S.Zero:
             return ZERO_STR
 
         first_line = True
@@ -717,7 +719,7 @@ class Mv(object):
         sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
         if len(sorted_terms) == 1 and sorted_terms[0][1][2] == 0:  # scalar
-            return printer.latex(printer.coef_simplify(sorted_terms[0][1][0]))
+            return print_obj.doprint(printer.coef_simplify(sorted_terms[0][1][0]))
 
         lines = []
         old_grade = -1
@@ -725,7 +727,7 @@ class Mv(object):
         for (index, (coef, base, grade)) in sorted_terms:
             coef = printer.coef_simplify(coef)
             # coef = simplify(coef)
-            l_coef = printer.latex(coef)
+            l_coef = print_obj.doprint(coef)
             if l_coef == '1' and base != S(1):
                 l_coef = ''
             if l_coef == '-1' and base != S(1):
@@ -733,14 +735,14 @@ class Mv(object):
             if base == S(1):
                 l_base = ''
             else:
-                l_base = printer.latex(base)
+                l_base = print_obj.doprint(base)
             if isinstance(coef, Add):
                 cb_str = '\\left ( ' + l_coef + '\\right ) ' + l_base
             else:
                 cb_str = l_coef + ' ' + l_base
-            if printer.GaLatexPrinter.fmt == 3:  # One base per line
+            if print_obj.fmt == 3:  # One base per line
                 lines.append(append_plus(cb_str))
-            elif printer.GaLatexPrinter.fmt == 2:  # One grade per line
+            elif print_obj.fmt == 2:  # One grade per line
                 if grade != old_grade:
                     old_grade = grade
                     if not first_line:
@@ -750,9 +752,9 @@ class Mv(object):
                     s += append_plus(cb_str)
             else:  # One multivector per line
                 s += append_plus(cb_str)
-        if printer.GaLatexPrinter.fmt == 2:
+        if print_obj.fmt == 2:
             lines.append(s)
-        if printer.GaLatexPrinter.fmt >= 2:
+        if print_obj.fmt >= 2:
             if len(lines) == 1:
                 return lines[0]
             s = ' \\begin{aligned} '
@@ -865,7 +867,7 @@ class Mv(object):
         A = A.blade_rep()
         return Mv(self.Ga.right_contract(self.obj, A.obj), ga=self.Ga)
 
-    def collect(self, deep=False):
+    def collect(self, deep=False) -> 'Mv':
         """
         group coeffients of blades of multivector
         so there is only one coefficient per grade
@@ -893,21 +895,21 @@ class Mv(object):
                 obj += obj_dict[base]*base
         return Mv(obj, ga=self.Ga)
 
-    def is_scalar(self):
+    def is_scalar(self) -> bool:
         grades = self.Ga.grades(self.obj)
         if len(grades) == 1 and grades[0] == 0:
             return True
         else:
             return False
 
-    def is_vector(self):
+    def is_vector(self) -> bool:
         grades = self.Ga.grades(self.obj)
         if len(grades) == 1 and grades[0] == 1:
             return True
         else:
             return False
 
-    def is_blade(self):
+    def is_blade(self) -> bool:
         """
         True is self is blade, otherwise False
         sets self.blade_flg and returns value
@@ -924,14 +926,14 @@ class Mv(object):
                 self.blade_flg = False
             return self.blade_flg
 
-    def is_base(self):
+    def is_base(self) -> bool:
         coefs, _bases = metric.linear_expand(self.obj)
         if len(coefs) > 1:
             return False
         else:
             return coefs[0] == ONE
 
-    def is_versor(self):
+    def is_versor(self) -> bool:
         """
         Test for versor (geometric product of vectors)
 
@@ -954,31 +956,50 @@ class Mv(object):
         self.versor_flg = test.is_vector()
         return self.versor_flg
 
-    def is_zero(self):
+    def is_zero(self) -> bool:
         if self.obj == 0:
             return True
         return False
 
-    def scalar(self):
+    def scalar(self) -> Expr:
         """ return scalar part of multivector as sympy expression """
         return self.Ga.scalar_part(self.obj)
 
-    def get_grade(self, r):
+    def get_grade(self, r: int) -> 'Mv':
         """ return r-th grade of multivector as a multivector """
         return Mv(self.Ga.get_grade(self.obj, r), ga=self.Ga)
 
-    def components(self):
+    def components(self) -> List['Mv']:
         cb = metric.linear_expand_terms(self.obj)
         cb = sorted(cb, key=lambda x: self.Ga.blades.flat.index(x[1]))
         return [self.Ga.mv(coef * base) for coef, base in cb]
 
-    def get_coefs(self, grade):
-        cb = metric.linear_expand_terms(self.obj)
-        cb = sorted(cb, key=lambda x: self.Ga.blades[grade].index(x[1]))
-        coefs, bases = list(zip(*cb))
-        return coefs
+    def get_coefs(self, grade: int) -> List[Expr]:
+        """
+        Like ``blade_coefs(self.Ga.mv_blades[grade])``, but requires all
+        components to be of that grade.
 
-    def blade_coefs(self, blade_lst=None):
+        Raises
+        ------
+        ValueError:
+            If the multivector is not of the given grade.
+        """
+        blade_lst = self.Ga.blades[grade]
+        coef_lst = [S.Zero] * len(blade_lst)
+        for coef, blade in metric.linear_expand_terms(self.obj):
+            if coef == S.Zero:
+                continue  # TODO: why does expansion return this?
+            try:
+                base_i = blade_lst.index(blade)
+            except ValueError:
+                raise ValueError(
+                    "MultiVector has a {} component which is not grade {}"
+                    .format(blade, grade)
+                ) from None
+            coef_lst[base_i] += coef
+        return coef_lst
+
+    def blade_coefs(self, blade_lst: List['Mv'] = None) -> List[Expr]:
         """
         For a multivector, A, and a list of basis blades, blade_lst return
         a list (sympy expressions) of the coefficients of each basis blade
@@ -987,12 +1008,10 @@ class Mv(object):
 
         if blade_lst is None:
             blade_lst = self.Ga.mv_blades.flat
-
-        # print 'Enter blade_coefs blade_lst =', blade_lst, type(blade_lst), [i.is_blade() for i in blade_lst]
-
-        for blade in blade_lst:
-            if not blade.is_base() or not blade.is_blade():
-                raise ValueError("%s expression isn't a basis blade" % blade)
+        else:
+            for blade in blade_lst:
+                if not blade.is_base() or not blade.is_blade():
+                    raise ValueError("%s expression isn't a basis blade" % blade)
         blade_lst = [x.obj for x in blade_lst]
         coefs, bases = metric.linear_expand(self.obj)
         coef_lst = []
@@ -1003,7 +1022,7 @@ class Mv(object):
                 coef_lst.append(ZERO)
         return coef_lst
 
-    def proj(self, bases_lst):
+    def proj(self, bases_lst: List['Mv']) -> 'Mv':
         """
         Project multivector onto a given list of bases.  That is find the
         part of multivector with the same bases as in the bases_lst.
@@ -1015,7 +1034,7 @@ class Mv(object):
                 obj += coef * base
         return Mv(obj, ga=self.Ga)
 
-    def dual(self):
+    def dual(self) -> 'Mv':
         mode = self.Ga.dual_mode_value
         sign = S(1)
         if '-' in mode:
@@ -1029,21 +1048,21 @@ class Mv(object):
         else:
             return sign * self * I
 
-    def even(self):
+    def even(self) -> 'Mv':
         """ return even parts of multivector """
         return Mv(self.Ga.even_odd(self.obj, True), ga=self.Ga)
 
-    def odd(self):
+    def odd(self) -> 'Mv':
         """ return odd parts of multivector """
         return Mv(self.Ga.even_odd(self.obj, False), ga=self.Ga)
 
-    def rev(self):
+    def rev(self) -> 'Mv':
         self = self.blade_rep()
         return Mv(self.Ga.reverse(self.obj), ga=self.Ga)
 
     __invert__ = rev  # allow `~x` to call x.rev()
 
-    def diff(self, coord):
+    def diff(self, coord) -> 'Mv':
         if self.Ga.coords is None:
             obj = diff(self.obj, coord)
         elif coord not in self.Ga.coords:
@@ -1063,10 +1082,10 @@ class Mv(object):
             obj = self.Ga.pDiff(self.obj, coord)
         return Mv(obj, ga=self.Ga)
 
-    def pdiff(self, var):
+    def pdiff(self, var) -> 'Mv':
         return Mv(self.Ga.pDiff(self.obj, var), ga=self.Ga)
 
-    def Grad(self, coords, mode='*', left=True):
+    def Grad(self, coords, mode: str = '*', left: bool = True) -> 'Mv':
         """
         Returns various derivatives (*,^,|,<,>) of multivector functions
         with respect to arbitrary coordinates, 'coords'.  This would be
@@ -1079,7 +1098,7 @@ class Mv(object):
         """
         return Mv(self.Ga.Diff(self, mode, left, coords=coords), ga=self.Ga)
 
-    def exp(self, hint='-'):  # Calculate exponential of multivector
+    def exp(self, hint: str = '-') -> 'Mv':  # Calculate exponential of multivector
         """
         Only works if square of multivector is a scalar.  If square is a
         number we can determine if square is > or < zero and hence if
@@ -1133,7 +1152,7 @@ class Mv(object):
         else:
             raise ValueError('"' + str(self) + '**2" is not a scalar in exp.')
 
-    def set_coef(self, igrade, ibase, value):
+    def set_coef(self, igrade: int, ibase: int, value: Expr) -> None:
         if self.blade_rep:
             base = self.Ga.blades[igrade][ibase]
         else:
@@ -1145,7 +1164,7 @@ class Mv(object):
         else:
             self.obj += value * base
 
-    def Fmt(self, fmt=1, title=None):
+    def Fmt(self, fmt: int = 1, title: str = None) -> Union['Mv', str]:
         """
         Set format for printing of multivectors
 
@@ -1177,24 +1196,19 @@ class Mv(object):
         if printer.isinteractive():
             return self
 
-        if Mv.latex_flg:
-            latex_str = printer.GaLatexPrinter.latex(self)
-            printer.GaLatexPrinter.fmt = printer.GaLatexPrinter.prev_fmt
-
-            if title is not None:
-                return title + ' = ' + latex_str
-            else:
-                return latex_str
+        if printer.GaLatexPrinter.latex_flg:
+            s = printer.GaLatexPrinter().doprint(self)
         else:
-            s = str(self)
-            printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-            if title is not None:
-                return title + ' = ' + s
-            else:
-                return s
+            s = printer.GaPrinter().doprint(self)
 
-    def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter.latex(self)
+        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
+        if title is not None:
+            return title + ' = ' + s
+        else:
+            return s
+
+    def _repr_latex_(self) -> str:
+        latex_str = printer.GaLatexPrinter().doprint(self)
         if r'\begin{align*}' not in latex_str:
             if self.title is None:
                 latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
@@ -1205,7 +1219,7 @@ class Mv(object):
                 latex_str = latex_str.replace('&', ' ' + self.title + ' =&', 1)
         return latex_str
 
-    def norm2(self):
+    def norm2(self) -> Expr:
         reverse = self.rev()
         product = self * reverse
         if product.is_scalar():
@@ -1213,7 +1227,7 @@ class Mv(object):
         else:
             raise TypeError('"(' + str(product) + ')**2" is not a scalar in norm2.')
 
-    def norm(self, hint='+'):
+    def norm(self, hint: str = '+') -> Expr:
         """
         If A is a multivector and A*A.rev() is a scalar then::
 
@@ -1258,7 +1272,7 @@ class Mv(object):
 
     __abs__ = norm  # allow `abs(x)` to call z.norm()
 
-    def inv(self):
+    def inv(self) -> 'Mv':
         if self.is_scalar():  # self is a scalar
             return self.Ga.mv(S(1)/self.obj)
         self_sq = self * self
@@ -1278,7 +1292,7 @@ class Mv(object):
             return (S(1)/self_self_rev.obj) * self_rev
         raise TypeError('In inv() for self =' + str(self) + 'self, or self*self or self*self.rev() is not a scalar')
 
-    def func(self, fct):  # Apply function, fct, to each coefficient of multivector
+    def func(self, fct) -> 'Mv':  # Apply function, fct, to each coefficient of multivector
         s = S(0)
         for coef, base in metric.linear_expand_terms(self.obj):
             s += fct(coef) * base
@@ -1286,10 +1300,10 @@ class Mv(object):
         fct_self.characterise_Mv()
         return fct_self
 
-    def trigsimp(self):
+    def trigsimp(self) -> 'Mv':
         return self.func(trigsimp)
 
-    def simplify(self, modes=simplify):
+    def simplify(self, modes=simplify) -> 'Mv':
         """
         Simplify a multivector by scalar (sympy) simplifications.
 
@@ -1306,16 +1320,16 @@ class Mv(object):
             obj += coef * base
         return Mv(obj, ga=self.Ga)
 
-    def subs(self, *args, **kwargs):
+    def subs(self, *args, **kwargs) -> 'Mv':
         return Mv(self.obj.subs(*args, **kwargs), ga=self.Ga)
 
-    def expand(self):
+    def expand(self) -> 'Mv':
         obj = sum((
             expand(coef) * base for coef, base in metric.linear_expand_terms(self.obj)
         ), S(0))
         return Mv(obj, ga=self.Ga)
 
-    def list(self):
+    def list(self) -> List[Expr]:
         indexes = []
         key_coefs = []
         for coef, base in metric.linear_expand_terms(self.obj):
@@ -1332,10 +1346,10 @@ class Mv(object):
         coefs = [x[0] for x in key_coefs]
         return coefs
 
-    def grade(self, r=0):
+    def grade(self, r=0) -> 'Mv':
         return self.get_grade(r)
 
-    def pure_grade(self):
+    def pure_grade(self) -> int:
         """
         For pure grade return grade.  If not pure grade return negative
         of maximum grade
@@ -1345,7 +1359,7 @@ class Mv(object):
             return self.i_grade
         return -self.grades[-1]
 
-    def _eval_derivative_n_times(self, x, n):
+    def _eval_derivative_n_times(self, x, n) -> 'Mv':
         for i in range(n):
             self = self.Ga.pDiff(self, x)
         return self
@@ -1356,7 +1370,7 @@ class Mv(object):
         return new_self
 
 
-def compare(A, B):
+def compare(A: Mv, B: Mv) -> Union[Expr, int]:
     """
     Determine if ``B = c*A`` where c is a scalar.  If true return c
     otherwise return 0.
@@ -1437,7 +1451,7 @@ class Dop(dop._BaseDop):
     terms : list of tuples
     """
 
-    def __init_from_coef_and_pdop(self, coefs: List[Any], pdiffs: List['Pdop']):
+    def __init_from_coef_and_pdop(self, coefs: List[Any], pdiffs: List['dop.Pdop']):
         if len(coefs) != len(pdiffs):
             raise ValueError('In Dop.__init__ coefficent list and Pdop list must be same length.')
         self.terms = tuple(zip(coefs, pdiffs))
@@ -1469,7 +1483,7 @@ class Dop(dop._BaseDop):
                 'In Dop.__init__ terms are neither (Mv, Pdop) pairs or '
                 '(Sdop, Mv) pairs, got {}'.format(terms))
 
-    def __init__(self, *args, ga, cmpflg=False, debug=False, fmt_dop=1):
+    def __init__(self, *args, ga: 'Ga', cmpflg: bool = False, debug: bool = False, fmt_dop: int = 1) -> None:
         """
         Parameters
         ----------
@@ -1500,7 +1514,7 @@ class Dop(dop._BaseDop):
                 "Dop() takes from 1 to 2 positional arguments but {} were "
                 "given".format(len(args)))
 
-    def simplify(self, modes=simplify):
+    def simplify(self, modes=simplify) -> 'Dop':
         """
         Simplify each multivector coefficient of a partial derivative
         """
@@ -1509,7 +1523,7 @@ class Dop(dop._BaseDop):
             ga=self.Ga, cmpflg=self.cmpflg
         )
 
-    def consolidate_coefs(self):
+    def consolidate_coefs(self) -> 'Dop':
         """
         Remove zero coefs and consolidate coefs with repeated pdiffs.
         """
@@ -1661,7 +1675,7 @@ class Dop(dop._BaseDop):
         else:
             return NotImplemented
 
-    def __str__(self):
+    def __str__(self) -> str:
         if printer.GaLatexPrinter.latex_flg:
             Printer = printer.GaLatexPrinter
         else:
@@ -1669,11 +1683,11 @@ class Dop(dop._BaseDop):
 
         return Printer().doprint(self)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
-    def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter.latex(self)
+    def _repr_latex_(self) -> str:
+        latex_str = printer.GaLatexPrinter().doprint(self)
         if r'\begin{align*}' not in latex_str:
             if self.title is None:
                 latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
@@ -1684,19 +1698,19 @@ class Dop(dop._BaseDop):
                 latex_str = latex_str.replace('&', ' ' + self.title + ' =&', 1)
         return latex_str
 
-    def is_scalar(self):
+    def is_scalar(self) -> bool:
         for coef, pdiff in self.terms:
             if isinstance(coef, Mv) and not coef.is_scalar():
                 return False
         return True
 
-    def components(self):
+    def components(self) -> Tuple['Dop', ...]:
         return tuple(
             Dop([(sdop, Mv(base, ga=self.Ga))], ga=self.Ga)
             for sdop, base in self.Dop_mv_expand()
         )
 
-    def Dop_mv_expand(self, modes=None):
+    def Dop_mv_expand(self, modes=None) -> List[Tuple[Expr, Expr]]:
         coefs = []
         bases = []
         self.consolidate_coefs()
@@ -1727,7 +1741,7 @@ class Dop(dop._BaseDop):
         terms = list(zip(coefs, bases))
         return sorted(terms, key=lambda x: self.Ga.blades.flat.index(x[1]))
 
-    def Dop_str(self):
+    def _sympystr(self, print_obj: _StrPrinter) -> str:
         if len(self.terms) == 0:
             return ZERO_STR
 
@@ -1735,8 +1749,8 @@ class Dop(dop._BaseDop):
         s = ''
 
         for sdop, base in mv_terms:
-            str_base = printer.latex(base)
-            str_sdop = printer.latex(sdop)
+            str_base = print_obj.doprint(base)
+            str_sdop = print_obj.doprint(sdop)
             if base == S(1):
                 s += str_sdop
             else:
@@ -1761,7 +1775,7 @@ class Dop(dop._BaseDop):
         s = s.replace('+ -', '-')
         return s[:-3]
 
-    def Dop_latex_str(self):
+    def _latex(self, print_obj: _LatexPrinter) -> str:
         if len(self.terms) == 0:
             return ZERO_STR
 
@@ -1771,8 +1785,8 @@ class Dop(dop._BaseDop):
         s = ''
 
         for sdop, base in mv_terms:
-            str_base = printer.latex(base)
-            str_sdop = printer.latex(sdop)
+            str_base = print_obj.doprint(base)
+            str_sdop = print_obj.doprint(sdop)
             if base == S(1):
                 s += str_sdop
             else:
@@ -1805,7 +1819,7 @@ class Dop(dop._BaseDop):
         dop.Sdop.str_mode = False
         return s[:-3]
 
-    def Fmt(self, fmt=1, title=None, dop_fmt=None):
+    def Fmt(self, fmt: int = 1, title: str = None, dop_fmt: int = None) -> Union['Dop', str]:
         if printer.GaLatexPrinter.latex_flg:
             printer.GaLatexPrinter.prev_fmt = printer.GaLatexPrinter.fmt
             printer.GaLatexPrinter.prev_dop_fmt = printer.GaLatexPrinter.dop_fmt
@@ -1819,24 +1833,18 @@ class Dop(dop._BaseDop):
         if printer.isinteractive():
             return self
 
-        if Mv.latex_flg:
-            latex_str = printer.GaLatexPrinter.latex(self)
-            printer.GaLatexPrinter.fmt = printer.GaLatexPrinter.prev_fmt
-            printer.GaLatexPrinter.dop_fmt = printer.GaLatexPrinter.prev_dop_fmt
-
-            if title is not None:
-                return title + ' = ' + latex_str
-            else:
-                return latex_str
+        if printer.GaLatexPrinter.latex_flg:
+            s = printer.GaLatexPrinter().doprint(self)
         else:
-            s = str(self)
-            printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-            printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
+            s = printer.GaPrinter().doprint(self)
 
-            if title is not None:
-                return title + ' = ' + s
-            else:
-                return s
+        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
+        printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
+
+        if title is not None:
+            return title + ' = ' + s
+        else:
+            return s
 
     def odot(self, dot_flg=True):
         new_self = copy.deepcopy(self)
@@ -1850,6 +1858,13 @@ class Dop(dop._BaseDop):
 
 
 def Nga(x, prec=5):
+    """
+    Like :func:`sympy.N`, but also works on multivectors
+
+    For multivectors with coefficients that contain floating point numbers, this
+    rounds all these numbers to a precision of ``prec`` and returns the rounded
+    multivector.
+    """
     if isinstance(x, Mv):
         return Mv(Nsympy(x.obj, prec), ga=x.Ga)
     else:
@@ -1926,95 +1941,124 @@ def correlation(u, v, dec=3):  # Compute the correlation coefficient of vectors 
     return ulocal.dot(vlocal) / (ulocal.norm() * vlocal.norm()). evalf(dec)
 
 
-def cross(v1, v2):
+def cross(v1: Mv, v2: Mv) -> Mv:
+    r"""
+    If ``v1`` and ``v2`` are 3-dimensional Euclidean vectors, compute the vector
+    cross product :math:`v_{1}\times v_{2} = -I{\lp {v_{1}{\wedge}v_{2}} \rp }`.
+    """
     if v1.is_vector() and v2.is_vector() and v1.Ga == v2.Ga and v1.Ga.n == 3:
         return -v1.Ga.I() * (v1 ^ v2)
     else:
         raise ValueError(str(v1) + ' and ' + str(v2) + ' not compatible for cross product.')
 
 
-def dual(A):
+def dual(A: Mv) -> Mv:
+    """ Equivalent to :meth:`Mv.dual` """
     if isinstance(A, Mv):
         return A.dual()
     else:
         raise ValueError('A not a multivector in dual(A)')
 
 
-def even(A):
+def even(A: Mv) -> Mv:
+    """ Equivalent to :meth:`Mv.even` """
     if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in even(A).')
     return A.even()
 
 
-def odd(A):
+def odd(A: Mv) -> Mv:
+    """ Equivalent to :meth:`Mv.odd` """
     if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in even(A).')
     return A.odd()
 
 
-def exp(A, hint='-'):
+def exp(A: Union[Mv, Expr], hint: str = '-') -> Union[Mv, Expr]:
+    """
+    If ``A`` is a multivector then ``A.exp(hint)`` is returned.
+    If ``A`` is a *sympy* expression the *sympy* expression :math:`e^{A}` is returned (see :func:`sympy.exp`).
+    """
     if isinstance(A, Mv):
         return A.exp(hint)
     else:
         return sympy_exp(A)
 
 
-def grade(A, r=0):
+def grade(A: Mv, r: int = 0) -> Mv:
+    """ Equivalent to :meth:`Mv.grade` """
     if isinstance(A, Mv):
         return A.grade(r)
     else:
         raise ValueError('A not a multivector in grade(A, r)')
 
 
-def inv(A):
+def inv(A: Mv) -> Mv:
+    """ Equivalent to :meth:`Mv.inv` """
     if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.inv()
 
 
-def norm(A, hint='+'):
+def norm(A: Mv, hint: str = '+') -> Expr:
+    """ Equivalent to :meth:`Mv.norm` """
     if isinstance(A, Mv):
         return A.norm(hint=hint)
     else:
         raise ValueError('A not a multivector in norm(A)')
 
 
-def norm2(A):
+def norm2(A: Mv) -> Expr:
+    """ Equivalent to :meth:`Mv.norm2` """
     if isinstance(A, Mv):
         return A.norm2()
     else:
         raise ValueError('A not a multivector in norm(A)')
 
 
-def proj(B, A):  # Project on the blade B the multivector A
+def proj(B: Mv, A: Mv) -> Mv:
+    """ Equivalent to :meth:`Mv.project_in_blade` """
     if isinstance(A, Mv):
         return A.project_in_blade(B)
     else:
         raise ValueError('A not a multivector in proj(B, A)')
 
 
-def rot(itheta, A, hint='-'):  # Rotate by the 2-blade itheta the multivector A
+def rot(itheta: Mv, A: Mv, hint: str = '-') -> Mv:
+    """
+    Equivalent to ``A.rotate_multivector(itheta, hint)`` where ``itheta`` is the bi-vector blade defining the rotation.
+    For the use of ``hint`` see the method :meth:`Mv.rotate_multivector`.
+    """
     if isinstance(A, Mv):
         return A.rotate_multivector(itheta, hint)
     else:
         raise ValueError('A not a multivector in rotate(A, itheta)')
 
 
-def refl(B, A):  # Project on the blade B the multivector A
+def refl(B: Mv, A: Mv) -> Mv:
+    r"""
+    Reflect multivector :math:`A` in blade :math:`B`.
+
+    If :math:`s` is grade of :math:`B` returns :math:`\sum_{r}(-1)^{s(r+1)}B{\left < {A} \right >}_{r}B^{-1}`.
+
+    Equivalent to :meth:`Mv.reflect_in_blade`
+    """
     if isinstance(A, Mv):
         return A.reflect_in_blade(B)
     else:
         raise ValueError('A not a multivector in reflect(B, A)')
 
 
-def rev(A):
+def rev(A: Mv) -> Mv:
+    """ Equivalent to :meth:`Mv.rev` """
     if isinstance(A, Mv):
         return A.rev()
     else:
         raise ValueError('A not a multivector in rev(A)')
 
 
-def scalar(A):
+def scalar(A: Mv) -> Expr:
+    """ Equivalent to :meth:`Mv.scalar` """
     if not isinstance(A, Mv):
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.scalar()

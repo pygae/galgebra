@@ -9,7 +9,7 @@ from copy import copy
 from functools import reduce
 
 from sympy import (
-    expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add
+    expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add, Expr
 )
 
 from . import printer
@@ -154,10 +154,7 @@ class Lt(object):
 
     @staticmethod
     def setup(ga):
-        # coords = [Symbol('mu_' + str(x)) for x in ga.coords]
-        coords = ga.coords
-        x = sum([coords[i] * ga.basis[i] for i in ga.n_range])
-        return coords, x
+        return ga.coords, ga.coord_vec
 
     @staticmethod
     def format(mat_fmt=False):
@@ -178,8 +175,8 @@ class Lt(object):
         self.fct_flg = f
         self.mode = mode
         self.Ga = ga
-        self.coords = ga.lt_coords
-        self.X = ga.lt_x
+        self.coords = ga.coords
+        self.X = ga.coord_vec
         self.spinor = False
         self.rho_sq = None
 
@@ -245,6 +242,13 @@ class Lt(object):
                 raise ValueError(str(mat_rep) + ' is not supported for Lt definition\n')
 
     def __call__(self, v, obj=False):
+        r"""
+        Returns the image of the multivector :math:`A` under the linear transformation :math:`L`.
+
+        :math:`{{L}\lp {A} \rp }` is defined by the linearity of :math:`L`, the
+        vector values :math:`{{L}\lp {{{\eb}}_{i}} \rp }`, and the definition
+        :math:`{{L}\lp {{{\eb}}_{i_{1}}{\wedge}\dots{\wedge}{{\eb}}_{i_{r}}} \rp } = {{L}\lp {{{\eb}}_{i_{1}}} \rp }{\wedge}\dots{\wedge}{{L}\lp {{{\eb}}_{i_{r}}} \rp }`.
+        """
 
         if isinstance(v, mv.Mv) and self.Ga != v.Ga:
             raise ValueError('In Lt call Lt and argument refer to different vector spaces')
@@ -347,18 +351,27 @@ class Lt(object):
         return str(self)
 
     def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
         if r'\begin{align*}' not in latex_str:
             latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
         return latex_str
 
-    def det(self):  # det(L) defined by L(I) = det(L)I
+    def det(self) -> Expr:  # det(L) defined by L(I) = det(L)I
+        r"""
+        Returns the determinant (a scalar) of the linear transformation,
+        :math:`L`, defined by :math:`{{\det}\lp {L} \rp }I = {{L}\lp {I} \rp }`.
+        """
 
         lt_I = self(self.Ga.i, obj=True)
         det_lt_I = lt_I.subs(self.Ga.i.obj, S(1))
         return det_lt_I
 
-    def tr(self):  # tr(L) defined by tr(L) = grad|L(x)
+    def tr(self) -> Expr:  # tr(L) defined by tr(L) = grad|L(x)
+        r"""
+        Returns the trace (a scalar) of the linear transformation,
+        :math:`L`, defined by :math:`{{\operatorname{tr}}\lp {L} \rp }=\nabla_{a}\cdot{{L}\lp {a} \rp }`
+        where :math:`a` is a vector in the tangent space.
+        """
 
         connect_flg = self.Ga.connect_flg
         self.Ga.connect_flg = False
@@ -368,7 +381,13 @@ class Lt(object):
         self.Ga.connect_flg = connect_flg
         return tr_F
 
-    def adj(self):
+    def adj(self) -> 'Lt':
+        r"""
+        Returns the adjoint (a linear transformation) of the linear
+        transformation, :math:`L`, defined by :math:`a\cdot{{L}\lp {b} \rp } = b\cdot{{\bar{L}}\lp {a} \rp }`
+        where :math:`a` and :math:`b` are any two vectors in the tangent space
+        and :math:`\bar{L}` is the adjoint of :math:`L`.
+        """
 
         self_adj = []
         for e_j in self.Ga.basis:
@@ -389,35 +408,35 @@ class Lt(object):
             raise ValueError('Lt inverse currently implemented only for spinor!\n')
         return Lt_inv
 
-    def Lt_str(self):
+    def _sympystr(self, print_obj):
 
         if self.spinor:
-            return 'R = ' + str(self.R)
+            return 'R = ' + print_obj.doprint(self.R)
         else:
             pre = 'Lt('
             s = ''
             for base in self.Ga.basis:
                 if base in self.lt_dict:
-                    s += pre + str(base) + ') = ' + str(mv.Mv(self.lt_dict[base], ga=self.Ga)) + '\n'
+                    s += pre + print_obj.doprint(base) + ') = ' + print_obj.doprint(mv.Mv(self.lt_dict[base], ga=self.Ga)) + '\n'
                 else:
-                    s += pre + str(base) + ') = 0\n'
+                    s += pre + print_obj.doprint(base) + ') = 0\n'
             return s[:-1]
 
-    def Lt_latex_str(self):
+    def _latex(self, print_obj):
 
         if self.spinor:
             s = '\\left \\{ \\begin{array}{ll} '
             for base in self.Ga.basis:
-                str_base = printer.latex(base)
-                s += 'L \\left ( ' + str_base + '\\right ) =& ' + printer.latex(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
+                str_base = print_obj.doprint(base)
+                s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj.doprint(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
         else:
             s = '\\left \\{ \\begin{array}{ll} '
             for base in self.Ga.basis:
-                str_base = printer.latex(base)
+                str_base = print_obj.doprint(base)
                 if base in self.lt_dict:
-                    s += 'L \\left ( ' + str_base + '\\right ) =& ' + printer.latex(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
+                    s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj.doprint(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
                 else:
                     s += 'L \\left ( ' + str_base + '\\right ) =& 0 \\\\ '
             s = s[:-3] + ' \\end{array} \\right \\} \n'
@@ -428,7 +447,7 @@ class Lt(object):
         if printer.isinteractive():
             return self
 
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
 
         r"""
         if printer.GaLatexPrinter.ipy:
@@ -462,8 +481,12 @@ class Lt(object):
             Printer = printer.GaPrinter
         return Printer().doprint(self)
 
-    def matrix(self):
-
+    def matrix(self) -> Matrix:
+        r"""
+        Returns the matrix representation of the linear transformation,
+        :math:`L`, defined by :math:`{{L}\lp {{{\eb}}_{i}} \rp } = L_{ij}{{\eb}}_{j}`
+        where :math:`L_{ij}` is the matrix representation.
+        """
         if self.mat is not None:
             return self.mat
         else:
@@ -550,24 +573,24 @@ class Mlt(object):
         sub_lst = []
         for i, a in enumerate(anew):
             acoefs = a.get_coefs(1)
-            sub_lst += list(zip(Ga.pdiffs[i], acoefs))
+            sub_lst += list(zip(Ga._mlt_pdiffs[i], acoefs))
         return sub_lst
 
     @staticmethod
     def increment_slots(nargs, Ga):
         # Increment cache of available slots (vector variables) if needed for Mlt class
-        n_a = len(Ga.a)
+        n_a = len(Ga._mlt_a)
         if n_a < nargs:
             for i in range(n_a, nargs):
                 #  New slot variable with coefficients a_{n_a}__k
                 a = Ga.mv('a_' + str(i + 1), 'vector')
                 #  Append new slot variable a_j
-                Ga.a.append(a)
+                Ga._mlt_a.append(a)
                 #  Append slot variable coefficients a_j__k for purpose
                 #  of differentiation
                 coefs = a.get_coefs(1)
-                Ga.pdiffs.append(coefs)
-                Ga.acoefs += coefs
+                Ga._mlt_pdiffs.append(coefs)
+                Ga._mlt_acoefs += coefs
 
     @staticmethod
     def extact_basis_indexes(Ga):
@@ -586,19 +609,19 @@ class Mlt(object):
                 base_indexes.append(base_str[i:])
         return base_indexes
 
-    def Mlt_str(self):
-        return str(self.fvalue)
+    def _sympystr(self, print_obj):
+        return print_obj.doprint(self.fvalue)
 
-    def Mlt_latex_str(self):
+    def _latex(self, print_obj):
         if self.nargs <= 1:
-            return printer.latex(self.fvalue)
+            return print_obj.doprint(self.fvalue)
         expr_lst = Mlt.expand_expr(self.fvalue, self.Ga)
         latex_str = '\\begin{align*} '
         first = True
         cnt = 1  # Component count on line
         for term in expr_lst:
             coef_str = str(term[0])
-            coef_latex = printer.latex(term[0])
+            coef_latex = print_obj.doprint(term[0])
             term_add_flg = isinstance(term[0], Add)
             if term_add_flg:
                 coef_latex = r'\left ( ' + coef_latex + r'\right ) '
@@ -608,7 +631,7 @@ class Mlt(object):
                 if coef_str[0].strip() != '-' or term_add_flg:
                     coef_latex = ' + ' + coef_latex
             for aij in term[1]:
-                coef_latex += printer.latex(aij) + ' '
+                coef_latex += print_obj.doprint(aij) + ' '
             if cnt == 1:
                 latex_str += ' & ' + coef_latex
             else:
@@ -646,7 +669,7 @@ class Mlt(object):
         for latex.
         """
         self.lcnt = lcnt
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
         self.lcnt = 1
 
         if printer.GaLatexPrinter.ipy:
@@ -675,12 +698,12 @@ class Mlt(object):
             coef = S(1)
             a_lst = []
             for factor in term.args:
-                if factor in ga.acoefs:
+                if factor in ga._mlt_acoefs:
                     a_lst.append(factor)
                 else:
                     coef *= factor
-            a_lst = tuple([x for x in a_lst if x in ga.acoefs])
-            b_lst = tuple([ga.acoefs.index(x) for x in a_lst])
+            a_lst = tuple([x for x in a_lst if x in ga._mlt_acoefs])
+            b_lst = tuple([ga._mlt_acoefs.index(x) for x in a_lst])
             lst_expr.append((coef, a_lst, b_lst))
         lst_expr = sorted(lst_expr, key=lambda x: x[2])
         new_lst_expr = []
@@ -702,69 +725,51 @@ class Mlt(object):
         new_lst_expr.append((coef, a))
         return new_lst_expr
 
-    def __init__(self, f, Ga, args, fct=False):
+    def __init__(self, f, Ga, nargs=None, fct=False):
         #  f is a function, a multivector, a string, or a component expression
         #  self.f is a function or None such as T | a_1 where T and a_1 are vectors
         #  self.fvalue is a component expression such as
         #  T_x*a_1__x+T_y*a_1__y+T_z*a_1__z for a rank 1 tensor in 3 space and all
         #  symbols are sympy real scalar symbols
         self.Ga = Ga
-        self.args = args
-        self.nargs = len(args)
         self.lcnt = 1
         if isinstance(f, mv.Mv):
             if f.is_vector():  # f is vector T = f | a1
-                if self.nargs != 1:
-                    raise ValueError('For mlt nargs != 1 for vector!\n')
-                Ga.make_grad(self.args)
-                self.fvalue = (f | self.args[0]).obj
+                self.nargs = 1
+                Mlt.increment_slots(1, Ga)
+                self.fvalue = (f | Ga._mlt_a[0]).obj
                 self.f = None
             else:  # To be inplemented for f a general pure grade mulitvector
-                self.nargs = len(args)
+                self.nargs = nargs
                 self.fvalue = f
                 self.f = None
         elif isinstance(f, Lt):  # f is linear transformation T = a1 | f(a2)
-            if self.nargs != 2:
-                raise ValueError('For mlt nargs != 2 for linear transformation!\n')
-            Ga.make_grad(self.args)
-            self.fvalue = (self.args[0] | f(self.args[1])).obj
+            self.nargs = 2
+            Mlt.increment_slots(2, Ga)
+            self.fvalue = (Ga._mlt_a[0] | f(Ga._mlt_a[1])).obj
             self.f = None
-        elif isinstance(f, str) and args is not None:
+        elif isinstance(f, str) and nargs is not None:
             self.f = None
-            if isinstance(args, (list, tuple)):
-                self.args = args
-                self.nargs = len(args)
-            else:
-                self.args = [args]
-                self.nargs = 1
-            if self.nargs > 1:  # General tensor of rank > 1
-                t_indexes = self.nargs * [Mlt.extact_basis_indexes(self.Ga)]
-                print(t_indexes)
-                print(self.Ga.Pdiffs)
-                self.fvalue = 0
-                for t_index, a_prod in zip(itertools.product(*t_indexes),
-                                           itertools.product(*self.Ga.Pdiffs)):
-                    if fct:  # Tensor field
-                        coef = Function(f+'_'+''.join(map(str, t_index)), real=True)(*self.Ga.coords)
-                    else:  # Constant Tensor
-                        coef = symbols(f+'_'+''.join(map(str, t_index)), real=True)
-                    coef *= reduce(lambda x, y: x*y, a_prod)
-                    self.fvalue += coef
-            else:  # General tensor of rank = 1
-                self.fvalue = 0
-                for t_index, a_prod in zip(Mlt.extact_basis_indexes(self.Ga), self.Ga.pdiffs[0]):
-                    if fct:  # Tensor field
-                        coef = Function(f+'_'+''.join(map(str, t_index)), real=True)(*self.Ga.coords)
-                    else:  # Constant Tensor
-                        coef = symbols(f+'_'+''.join(map(str, t_index)), real=True)
-                    self.fvalue += coef * a_prod
+            self.nargs = nargs
+            Mlt.increment_slots(nargs, Ga)
+            t_indexes = Mlt.extact_basis_indexes(self.Ga)
+            self.fvalue = S(0)
+            for t_index, a_prod in zip(itertools.product(t_indexes, repeat=self.nargs),
+                                       itertools.product(*self.Ga._mlt_pdiffs)):
+                name = '{}_{}'.format(f, ''.join(map(str, t_index)))
+                if fct:  # Tensor field
+                    coef = Function(name, real=True)(*self.Ga.coords)
+                else:  # Constant Tensor
+                    coef = symbols(name, real=True)
+                self.fvalue += reduce(lambda x, y: x*y, a_prod, coef)
+
         else:
             if isinstance(f, types.FunctionType):  # Tensor defined by general multi-linear function
                 args, _varargs, _kwargs, _defaults = inspect.getargspec(f)
                 self.nargs = len(args)
                 self.f = f
                 Mlt.increment_slots(self.nargs, Ga)
-                self.fvalue = f(*tuple(Ga.a[0:self.nargs]))
+                self.fvalue = f(*tuple(Ga._mlt_a[0:self.nargs]))
             else:  # Tensor defined by component expression
                 self.f = None
                 self.nargs = len(args)
@@ -779,19 +784,23 @@ class Mlt(object):
         return Printer().doprint(self)
 
     def __call__(self, *args):
+        """
+        Evaluate the multilinear function for the given vector arguments.
+        Note that a sympy scalar is returned, *not* a multilinear function.
+        """
         if len(args) == 0:
             return self.fvalue
         if self.f is not None:
             return self.f(*args)
         else:
             sub_lst = []
-            for x, ai in zip(args, self.Ga.pdiffs):
+            for x, ai in zip(args, self.Ga._mlt_pdiffs):
                 for r_base, aij in zip(self.Ga.r_basis_mv, ai):
                     sub_lst.append((aij, (r_base | x).scalar()))
             return self.fvalue.subs(sub_lst, simultaneous=True)
 
     def __add__(self, X):
-        if isinstance(Mlt, X):
+        if isinstance(X, Mlt):
             if self.nargs == X.nargs:
                 return Mlt(self.fvalue + X.fvalue, self.Ga, self.nargs)
             else:
@@ -800,7 +809,7 @@ class Mlt(object):
             raise TypeError('In Mlt add second argument not an Mkt\n')
 
     def __sub__(self, X):
-        if isinstance(Mlt, X):
+        if isinstance(X, Mlt):
             if self.nargs == X.nargs:
                 return Mlt(self.fvalue - X.fvalue, self.Ga, self.nargs)
             else:
@@ -812,9 +821,9 @@ class Mlt(object):
         if isinstance(X, Mlt):
             nargs = self.nargs + X.nargs
             Mlt.increment_slots(nargs, self.Ga)
-            self_args = self.Ga.a[:self.nargs]
-            X_args = X.Ga.a[self.nargs:nargs]
-            value = expand(self(*self_args) * X(*X_args))
+            self_args = self.Ga._mlt_a[:self.nargs]
+            X_args = X.Ga._mlt_a[self.nargs:nargs]
+            value = (self(*self_args) * X(*X_args)).expand()
             return Mlt(value, self.Ga, nargs)
         else:
             return Mlt(X * self.fvalue, self.Ga, self.nargs)
@@ -823,7 +832,7 @@ class Mlt(object):
         if isinstance(X, Mlt):
             nargs = self.nargs + X.nargs
             Mlt.increment_slots(nargs, self.Ga)
-            value = self(*self.Ga.a[:self.nargs]) ^ X(X.Ga.a[self.nargs:nargs])
+            value = self(*self.Ga._mlt_a[:self.nargs]) ^ X(*X.Ga._mlt_a[self.nargs:nargs])
             return Mlt(value, self.Ga, nargs)
         else:
             return Mlt(X * self.fvalue, self.Ga, self.nargs)
@@ -832,23 +841,29 @@ class Mlt(object):
         if isinstance(X, Mlt):
             nargs = self.nargs + X.nargs
             Mlt.increment_slots(nargs, self.Ga)
-            value = self(*self.Ga.a[:self.nargs]) | X(X.Ga.a[self.nargs:nargs])
+            value = self(*self.Ga._mlt_a[:self.nargs]) | X(*X.Ga._mlt_a[self.nargs:nargs])
             return Mlt(value, self.Ga, nargs)
         else:
             return Mlt(X * self.fvalue, self.Ga, self.nargs)
 
     def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter.latex(self)
+        latex_str = printer.GaLatexPrinter().doprint(self)
         if r'\begin{align*}' not in latex_str:
             latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
         return latex_str
 
     def dd(self):
         Mlt.increment_slots(self.nargs + 1, self.Ga)
-        dd_fvalue = (self.Ga.a[self.nargs] | self.Ga.grad) * self.fvalue
+        dd_fvalue = (self.Ga._mlt_a[self.nargs] | self.Ga.grad) * self.fvalue
         return Mlt(dd_fvalue, self.Ga, self.nargs + 1)
 
-    def pdiff(self, slot):
+    def pdiff(self, slot: int):
+        r"""
+        Returns gradient of tensor, ``T``, with respect to slot vector.
+
+        For example if the tensor is :math:`{{T}\lp {a_{1},a_{2}} \rp }` then ``T.pdiff(2)`` is :math:`\nabla_{a_{2}}T`. Since ``T`` is a scalar function,
+        ``T.pdiff(2)`` is a vector function.
+        """
         # Take geometric derivative of mlt with respect to slot argument
         self.Ga.dslot = slot - 1
         return self.Ga.grad * self.Ga.mv(self.fvalue)
@@ -858,10 +873,20 @@ class Mlt(object):
         if slot == nargs:
             return mv
         for islot in range(slot, nargs):
-            mv = mv.subs(list(zip(ga.pdiffs[islot], ga.pdiffs[islot - 1])))
+            mv = mv.subs(list(zip(ga._mlt_pdiffs[islot], ga._mlt_pdiffs[islot - 1])))
         return mv
 
-    def contract(self, slot1, slot2):
+    def contract(self, slot1: int, slot2: int):
+        """
+        Returns contraction of tensor between ``slot1`` and ``slot2`` where
+        ``slot1`` is the index of the first vector argument and ``slot2`` is the
+        index of the second vector argument of the tensor.
+
+        For example if we have a rank two tensor, ``T(a1, a2)``, then
+        ``T.contract(1, 2)`` is the contraction of ``T``.
+        For this case since there are only two slots, there can only be one
+        contraction.
+        """
         min_slot = min(slot1, slot2)
         max_slot = max(slot1, slot2)
         cnargs = self.nargs - 2
@@ -874,14 +899,21 @@ class Mlt(object):
         return Mlt(div_grad_self, self.Ga, cnargs)
 
     def cderiv(self):
+        """
+        Returns covariant derivative of tensor field.
+
+        If ``T`` is a tensor of rank :math:`k` then ``T.cderiv()`` is a tensor
+        of rank :math:`k+1`. The operation performed is defined in section
+        :ref:`MLtrans`.
+        """
         Mlt.increment_slots(self.nargs + 1, self.Ga)
-        agrad = self.Ga.a[self.nargs] | self.Ga.grad
+        agrad = self.Ga._mlt_a[self.nargs] | self.Ga.grad
         CD = Mlt((agrad * self.Ga.mv(self.fvalue)).obj, self.Ga, self.nargs + 1)
         if CD != 0:
             CD = CD.fvalue
         for i in range(self.nargs):
-            args = self.Ga.a[:self.nargs]
-            tmp = agrad * self.Ga.a[i]
+            args = self.Ga._mlt_a[:self.nargs]
+            tmp = agrad * self.Ga._mlt_a[i]
             if tmp.obj != 0:
                 args[i] = tmp
                 CD = CD - self(*args)

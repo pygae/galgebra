@@ -5,16 +5,17 @@ ANSI Enhanced Text Printing, Text Printer and LaTeX Printer for all Geometric Al
 import os
 import sys
 import io
-import re
+import builtins
 import subprocess
+import functools
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
 from itertools import islice
 from sympy.printing.str import StrPrinter
+from sympy.printing.conventions import split_super_sub
 from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
-import builtins
 from . import printer
 
 try:
@@ -27,6 +28,8 @@ except ImportError:
     pass
 
 from inspect import getouterframes, currentframe
+
+from ._utils import parser as _parser
 
 #Save original print function
 old_print = builtins.print
@@ -439,32 +442,33 @@ class GaPrinter(StrPrinter):
         out_str = ostr(list(expr))
         return out_str
 
-    def _print_Mv(self, expr):
-        if expr.obj == S(0):
-            return ZERO_STR
-        else:
-            return expr.Mv_str()
 
-    def _print_Pdop(self, expr):
-        return expr.Pdop_str()
-
-    def _print_Dop(self, expr):
-        return expr.Dop_str()
-
-    def _print_Sdop(self, expr):
-        return expr.Sdop_str()
-
-    def _print_Lt(self, expr):
-        return expr.Lt_str()
-
-    def _print_Mlt(self, expr):
-        return expr.Mlt_str()
-
-
-Basic.__str__ = lambda self: GaPrinter().doprint(self)
-Matrix.__str__ = lambda self: GaPrinter().doprint(self)
+Basic.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
+Matrix.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
 Basic.__repr__ = lambda self: GaPrinter().doprint(self)
 Matrix.__repr__ = lambda self: GaPrinter().doprint(self)
+
+
+# This is the lesser of two evils. Previously, we overwrote `Basic.__str__` in
+# order to customise `print(sympy)`. This broke a bunch of assumptions inside
+# sympy, so isn't safe. Instead of clobbering `__str__`, we add a
+# `__ga_print_str__` attribute, and have `print` use it if present.
+_old_print = builtins.print
+
+
+@functools.wraps(_old_print)
+def _print(*values, **kwargs):
+    values_new = []
+    for v in values:
+        try:
+            f = type(v).__ga_print_str__
+        except AttributeError:
+            values_new.append(v)
+        else:
+            values_new.append(f(v))
+    _old_print(*values_new, **kwargs)
+
+builtins.print = _print
 
 
 def enhance_print():
@@ -611,95 +615,15 @@ class GaLatexPrinter(LatexPrinter):
     special_alphabet = list(reversed(sorted(list(greek) + list(other), key=len)))
 
     @staticmethod
-    def split_super_sub(text):
-        """Split a symbol name into a name, superscripts and subscripts
-
-           The first part of the symbol name is considered to be its actual
-           'name', followed by super- and subscripts. Each superscript is
-           preceded with a "^" character or by "__". Each subscript is preceded
-           by a "_" character.  The three return values are the actual name, a
-           list with superscripts and a list with subscripts.
-
-           >>> from sympy.printing.conventions import split_super_sub
-           >>> split_super_sub('a_x^1')
-           ('a', ['1'], ['x'])
-           >>> split_super_sub('var_sub1__sup_sub2')
-           ('var', ['sup'], ['sub1', 'sub2'])
-
-        """
-
-        def sub_split_super_sub(text):
-
-            pos = 0
-            name = None
-            supers = []
-            subs = []
-            while pos < len(text):
-                start = pos + 1
-                if text[pos:pos + 2] == "__":
-                    start += 1
-                pos_hat = text.find("^", start)
-                if pos_hat < 0:
-                    pos_hat = len(text)
-                pos_usc = text.find("_", start)
-                if pos_usc < 0:
-                    pos_usc = len(text)
-                pos_next = min(pos_hat, pos_usc)
-                part = text[pos:pos_next]
-                pos = pos_next
-                if name is None:
-                    name = part
-                elif part.startswith("^"):
-                    supers.append(part[1:])
-                elif part.startswith("__"):
-                    supers.append(part[2:])
-                elif part.startswith("_"):
-                    subs.append(part[1:])
-                else:
-                    raise RuntimeError("This should never happen.")
-
-            # make a little exception when a name ends with digits, i.e. treat them
-            # as a subscript too.
-            m = re.match('(^[a-zA-Z]+)([0-9]+)$', name)
-            if m is not None:
-                name, sub = m.groups()
-                subs.insert(0, sub)
-
-            return name, supers, subs
-
-        if '*' not in text and '^' not in text:
-            name, supers, subs = sub_split_super_sub(text)
-            return '*', [name], [supers], [subs]
-
-        if '*' in text:
-            basis = text.split('*')
-            split_flg = '*'
-        if '^' in text:
-            basis = text.split('^')
-            split_flg = '^'
-
-        name_lst = []
-        supers_lst = []
-        subs_lst = []
-
-        for base in basis:
-            name, supers, subs = sub_split_super_sub(base)
-            name_lst.append(name)
-            supers_lst.append(supers)
-            subs_lst.append(subs)
-
-        return split_flg, name_lst, supers_lst, subs_lst
-
-    @staticmethod
     def redirect():
         GaLatexPrinter.latex_str = ''
         GaLatexPrinter.text_printer = print   #Save original print function
         builtins.print = printer.latex_print  #Redefine original print function
         GaLatexPrinter.latex_flg = True
-        GaLatexPrinter.Basic__str__ = Basic.__str__
-        GaLatexPrinter.Matrix__str__ = Matrix.__str__
-        Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
+        GaLatexPrinter.Basic__ga_print_str__ = Basic.__ga_print_str__
+        GaLatexPrinter.Matrix__ga_print_str__ = Matrix.__ga_print_str__
+        Basic.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
+        Matrix.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
         return
 
     @staticmethod
@@ -707,8 +631,8 @@ class GaLatexPrinter(LatexPrinter):
         if GaLatexPrinter.latex_flg:
             builtins.print = GaLatexPrinter.text_printer  #Redefine orginal print function
             GaLatexPrinter.latex_flg = False
-            Basic.__str__ = GaLatexPrinter.Basic__str__
-            Matrix.__str__ = GaLatexPrinter.Matrix__str__
+            Basic.__ga_print_str__ = GaLatexPrinter.Basic__ga_print_str__
+            Matrix.__ga_print_str__ = GaLatexPrinter.Matrix__ga_print_str__
         return
 
     def _print_Pow(self, expr):
@@ -772,14 +696,9 @@ class GaLatexPrinter(LatexPrinter):
                 return tex % (self._print(expr.base),
                               self._print(expr.exp))
 
-    def _print_Symbol(self, expr):
-
-        nc_flg = False
-
-        mode_dict = {'*': '', '^': '\\wedge '}
+    def _print_Symbol(self, expr, style='plain'):
 
         def str_symbol(name_str):
-            mode, name_lst, supers_lst, subs_lst = GaLatexPrinter.split_super_sub(name_str)
 
             def translate(s):
                 tmp = s
@@ -806,49 +725,26 @@ class GaLatexPrinter(LatexPrinter):
 
                 return tmp
 
-            s = ''
+            name, supers, subs = split_super_sub(name_str)
 
-            for name, supers, subs in zip(name_lst, supers_lst, subs_lst):
+            name = translate(name)
 
-                name = translate(name)
+            if style == 'bold':
+                name = '\\boldsymbol{' + name +'}'
 
-                if nc_flg:
-                    name = '\\boldsymbol{' + name +'}'
+            supers = list(map(translate, supers))
+            subs = list(map(translate, subs))
 
-                if supers != []:
-                    supers = list(map(translate, supers))
+            # glue all items together:
+            if len(supers) > 0:
+                name += "^{%s}" % " ".join(supers)
+            if len(subs) > 0:
+                name += "_{%s}" % " ".join(subs)
 
-                if subs != []:
-                    subs = list(map(translate, subs))
-
-                # glue all items together:
-                if len(supers) > 0:
-                    name += "^{%s}" % " ".join(supers)
-                if len(subs) > 0:
-                    name += "_{%s}" % " ".join(subs)
-
-                s += name + mode_dict[mode]
-
-            if mode == '^':
-                s = s[:-7]
-
-            return s
+            return name
 
         if expr in self._settings['symbol_names']:
             return self._settings['symbol_names'][expr]
-
-        name_str = expr.name
-
-        if isinstance(expr, Symbol) and not expr.is_commutative:
-            nc_flg = True
-
-        # Translate entry in general metric tensor a.b -> a \cdot b
-
-        if '.' in name_str and name_str[0] == '(' and name_str[-1] == ')':
-            name_str = name_str[1:-1]
-            name_lst = name_str.split('.')
-            name_str = r'\left ( ' + str_symbol(name_lst[0]) + r'\cdot ' + str_symbol(name_lst[1]) + r'\right ) '
-            return name_str
 
         return str_symbol(expr.name)
 
@@ -980,27 +876,6 @@ class GaLatexPrinter(LatexPrinter):
             s = r"%s %s" % (tex, self._print(expr.expr))
         return s
 
-    def _print_Mv(self, expr):
-        if expr.obj == S(0):
-            return ZERO_STR
-        else:
-            return expr.Mv_latex_str()
-
-    def _print_Pdop(self, expr):
-        return expr.Pdop_latex_str()
-
-    def _print_Dop(self, expr):
-        return expr.Dop_latex_str()
-
-    def _print_Sdop(self, expr):
-        return expr.Sdop_latex_str()
-
-    def _print_Lt(self, expr):
-        return expr.Lt_latex_str()
-
-    def _print_Mlt(self, expr):
-        return expr.Mlt_latex_str()
-
     def _print_MatrixBase(self, expr):
         rows = expr.rows
         cols = expr.cols
@@ -1053,11 +928,7 @@ def latex_print(*s, **kws):
             else:
                 latex_str += arg + ' '
         else:
-            if isinstance(arg, tuple):
-                tmp = r'\lp ' + str(arg)[1:-1] + r'\rp '
-                latex_str += tmp + ' '
-            else:
-                latex_str += str(arg) + ' '
+            latex_str += GaLatexPrinter().doprint(arg) + ' '
 
     if GaLatexPrinter.fmt_dict['h']:
         latex_str = r'\begin{array}{c}\hline ' + latex_str + r' \\ \hline \end{array} '
@@ -1085,14 +956,22 @@ def print_latex(expr, **settings):
     print(latex(expr, **settings))
 
 
-def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
-    """
-    Set modes for latex printer -
+def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
+    r"""
+    Turns on latex printing with configurable options.
 
-        Fmode:  Suppress function arguments (True)          Use sympy latex for functions (False)
-        Dmode:  Use compact form of derivatives (True)      Use sympy latex for derivatives (False)
+    This redirects printer output so that latex compiler can capture it.
 
-    and redirects printer output so that latex compiler can capture it.
+    ``Format()`` is also required for printing from *ipython notebook* (note that ``xpdf()`` is not needed to print from *ipython notebook*).
+
+    Parameters
+    ----------
+    Fmode:
+        * ``True`` -- Print functions without argument list, :math:`f`
+        * ``False`` -- Print functions with standard *sympy* latex formatting, :math:`{{f}\lp {x,y,z} \rp }`
+    Dmode:
+        * ``True`` -- Print partial derivatives with condensed notation, :math:`\partial_{x}f`
+        * ``False`` -- Print partial derivatives with standard *sympy* latex formatting, :math:`\pdiff{f}{x}`
     """
     global Format_cnt
 
@@ -1108,8 +987,8 @@ def Format(Fmode=True, Dmode=True, dop=1, inverse='full'):
         # Overload python 3 print function
         GaLatexPrinter.redirect()
 
-        Basic.__str__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__str__ = lambda self: GaLatexPrinter().doprint(self)
+        Basic.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
+        Matrix.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
         Basic.__repr__ = lambda self: GaLatexPrinter().doprint(self)
         Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
 
@@ -1465,193 +1344,64 @@ def Print_Function():
     return
 
 
-import re as regrep
-
-op_cntrct = regrep.compile(r'(([A-Za-z0-9\_\#]+)(\||<|>)([A-Za-z0-9\_\#]+))')
-op_wedge = regrep.compile(r'(([A-Za-z0-9\_\#]+)[\^]{1}([A-Za-z0-9\_\#]+)([\^]{1}([A-Za-z0-9\_\#]+))*)')
-ops = r'[\^\|\<\>]+'
-ops_search = regrep.compile(r'(\^|\||<|>)+')
-parse_paren_calls = 0
-global_dict = {}
-op_dict = {}
-op_lst = []
-
-OPS = {'<>|': r'(([A-Za-z0-9\_\#]+)(\||<|>)([A-Za-z0-9\_\#]+))',
-       '^': r'(([A-Za-z0-9\_\#]+)[\^]{1}([A-Za-z0-9\_\#]+)([\^]{1}([A-Za-z0-9\_\#]+))*)',
-       '*': r'(([A-Za-z0-9\_\#]+)[\*]{1}([A-Za-z0-9\_\#]+)([\*]{1}([A-Za-z0-9\_\#]+))*)'}
+_eval_global_dict = {}
+_eval_parse_order = []
 
 
-def def_prec(gd, op_ord='<>|,^,*'):  # Default is Doran and Lasenby convention
-    global global_dict, op_dict, op_lst
-    global_dict = gd
-    op_lst = op_ord.split(',')
-    op_dict = {}
-    for op in op_lst:
-        op_dict[op] = regrep.compile(OPS[op])
-    return
-
-
-def contains_interval(interval1, interval2):  # interval1 inside interval2
-    if interval1[0] > interval2[0] and interval1[1] < interval2[1]:
-        return True
-    else:
-        return False
-
-
-def parse_paren(line):
-    global parse_paren_calls
-    parse_paren_calls += 1
-
-    if ('(' not in line) or (')' not in line):
-        return [[[line]]]
-    level = 0
-    max_level = 0
-    ich = 0
-    paren_lst = []
-    for ch in line:
-        if ch == '(':
-            level += 1
-            paren_lst.append([level, ich])
-        if ch == ')':
-            if level < 1:
-                raise ValueError('Mismathed Parenthesis in: ' + line + '\n')
-            paren_lst.reverse()
-            iparen = 0
-            for elem in paren_lst:
-                if elem[0] == level:
-                    paren_lst[iparen].append(ich)
-                    break
-                iparen += 1
-            paren_lst.reverse()
-            level -= 1
-        max_level = max(max_level, level)
-        ich += 1
-    if level != 0:
-        raise ValueError('Mismatched Parenthesis in: ' + line + '\n')
-    if max_level > 0:
-        level_lst = []
-        for _x in range(max_level + 1):
-            level_lst.append([])
-        for group in paren_lst:
-            level_lst[group[0]].append(group[1:])
-        ilevel = max_level
-        while ilevel > 1:
-            level = level_lst[ilevel]
-            level_down = level_lst[ilevel - 1]
-            igroup = 0
-            for group in level:
-                igroup_down = 0
-                for group_down in level_down:
-                    if contains_interval(group, group_down):
-                        level_lst[ilevel][igroup].append(igroup_down)
-                    igroup_down += 1
-                igroup += 1
-            ilevel -= 1
-        ilevel = 1
-        for level in level_lst[1:]:
-            igroup = 0
-            for group in level:
-                token = '#' + str(parse_paren_calls) + '_' + str(ilevel) + '_' + str(igroup) + '#'
-                level_lst[ilevel][igroup].append(line[group[0]:group[1] + 1])
-                level_lst[ilevel][igroup].append(token)
-                igroup += 1
-            ilevel += 1
-        ilevel = 1
-        for level in level_lst[1:]:
-            igroup = 0
-            for group in level:
-                group.append(group[-2])
-                level_lst[ilevel][igroup] = group
-                igroup += 1
-            ilevel += 1
-        ilevel = max_level
-        while ilevel > 1:
-            igroup = 0
-            for group in level_lst[ilevel]:
-                group_down = level_lst[ilevel - 1][group[2]]
-                replace_text = group_down[-1].replace(group[-3], group[-2])
-                level_lst[ilevel - 1][group[2]][-1] = replace_text
-                igroup += 1
-            ilevel -= 1
-        for group in level_lst[1]:
-            line = line.replace(group[2], group[3])
-        ilevel = 1
-        level_lst[0] = [[line]]
-    return level_lst
-
-
-def unparse_paren(level_lst):
-    line = level_lst[0][0][0]
-    for level in level_lst[1:]:
-        for group in level:
-            new_string = group[-1]
-            if new_string[:2] == '((' and new_string[-2:] == '))':
-                new_string = new_string[1:-1]
-            line = line.replace(group[-2], new_string)
-    return line
-
-
-def sub_paren(s):
-    string = s.group(0)
-    return '(%s)' % string
-
-
-def add_paren(line, re_exprs):
-    paren_flg = False
-    if (line[0] == '(') and (line[-1] == ')'):
-        paren_flg = True
-        line = line[1:-1]
-    if ('(' in line) or (')' in line):
-        line_levels = parse_paren(line)
-        ilevel = 0
-        for level in line_levels:
-            igroup = 0
-            for group in level:
-                group[-1] = regrep.sub(re_exprs, sub_paren, group[-1])
-                line_levels[ilevel][igroup] = group
-                igroup += 1
-            ilevel += 1
-        line = unparse_paren(line_levels)
-    else:
-        line = regrep.sub(re_exprs, sub_paren, line)
-    if paren_flg:
-        line = '(' + line + ')'
-    return line
-
-
-def parse_line(line):
-    global op_lst, op_dict
-    line = line.replace(' ', '')
-    level_lst = parse_paren(line)
-    ilevel = 0
-    for level in level_lst:
-        igroup = 0
-        for group in level:
-            string = group[-1]
-            for op in op_lst:
-                string = add_paren(string, op_dict[op])
-            level_lst[ilevel][igroup][-1] = string
-            igroup += 1
-        ilevel += 1
-    line = unparse_paren(level_lst)
-    return line
-
-
-def GAeval(s, pstr=False):
+def def_prec(gd: dict, op_ord: str = '<>|,^,*') -> None:
     """
-    GAeval converts a string to a multivector expression where the
-    user can control the precedence of the of the multivector operators so
-    that one does not need to put parenthesis around every multivector
-    operation.  The default precedence used (high to low) is <,>, and | have
-    an have the highest precedence, then comes ^, and finally *.  The
-    default precedence can be changed with the def_prec function.
+    This is used with the ``GAeval()`` function to evaluate a string representing a multivector expression with a revised operator precedence.
+
+    Parameters
+    ----------
+    gd :
+        The ``globals()`` dictionary to lookup variable names in.
+    op_ord :
+        The order of operator precedence from high to low with groups of equal precedence separated by commas.
+        The default precedence, ``'<>|,^,*'``, is that used by Hestenes (:cite:`Hestenes`, p7, :cite:`Doran`, p38).
+        This means that the ``<``, ``>``, and ``|`` operations have equal
+        precedence, followed by ``^``, and lastly ``*``.
+    """
+    global _eval_global_dict, _eval_parse_order
+    op_ord_list = op_ord.split(',')
+    _parser.validate_op_order(op_ord_list)
+    _eval_global_dict = gd
+    _eval_parse_order = op_ord_list
+
+
+def GAeval(s: str, pstr: bool = False):
+    """
+    Evaluate a multivector expression string ``s``.
+
+    The operator precedence and variable values within the string are
+    controlled by :func:`def_prec`. The documentation for that function
+    describes the default precedence.
+
+    The implementation works by adding parenthesis to the input string ``s``
+    according to the requested precedence, and then calling :func:`eval` on the
+    result.
+
+    For example consider where ``X``, ``Y``, ``Z``, and ``W`` are multivectors::
+
+        def_prec(globals())
+        V = GAeval('X|Y^Z*W')
+
+    The *sympy* variable ``V`` would evaluate to ``((X|Y)^Z)*W``.
+
+    Parameters
+    ----------
+    s :
+        The string to evaluate.
+    pstr :
+        If ``True``, the values of ``s`` and ``s`` with parenthesis added to
+        enforce operator precedence are printed.
     """
 
-    seval = parse_line(s)
+    seval = _parser.parse_line(s, _eval_parse_order)
     if pstr:
         print(s)
         print(seval)
-    return eval(seval, global_dict)
+    return eval(seval, _eval_global_dict)
 
 
 def Fmt(obj, fmt=0):

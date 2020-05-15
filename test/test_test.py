@@ -1,7 +1,6 @@
 import sys
-import unittest
 import pytest
-from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol
+from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol, S
 from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter, ZERO_STR
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Mv, Nga
@@ -25,12 +24,7 @@ def make_vector(a, n=3, ga=None):
     else:
         return F(a)
 
-class TestTest(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
+class TestTest:
 
     def test_basic_multivector_operations(self):
 
@@ -172,8 +166,8 @@ class TestTest(unittest.TestCase):
 
         assert str(X) == '1.2*e_x + 2.34*e_y + 0.555*e_z'
         assert str(Nga(X, 2)) == '1.2*e_x + 2.3*e_y + 0.55*e_z'
-        assert str(X*Y) == '12.7011000000000 + 4.02078*e_x^e_y + 6.175185*e_x^e_z + 10.182*e_y^e_z'
-        assert str(Nga(X*Y, 2)) == '13. + 4.0*e_x^e_y + 6.2*e_x^e_z + 10.0*e_y^e_z'
+        assert str(X*Y) == '12.7011 + 4.02078*e_x^e_y + 6.175185*e_x^e_z + 10.182*e_y^e_z'
+        assert str(Nga(X*Y, 2)) == '13.0 + 4.0*e_x^e_y + 6.2*e_x^e_z + 10.0*e_y^e_z'
 
     def test_noneuclidian_distance_calculation(self):
         from sympy import solve, sqrt
@@ -205,16 +199,16 @@ class TestTest(unittest.TestCase):
 
         Bhat = Binv*B # D&L 10.154
         R = c+s*Bhat # Rotor R = exp(alpha*Bhat/2)
-        assert str(R) == 'c + (1/B)*s*X^Y - (1/B)*(Y.e)*s*X^e + (1/B)*(X.e)*s*Y^e'
+        assert str(R) == 'c + (1/B)*s*X^Y - (Y.e)*(1/B)*s*X^e + (X.e)*(1/B)*s*Y^e'
 
         Z = R*X*R.rev() # D&L 10.155
         Z.obj = expand(Z.obj)
         Z.obj = Z.obj.collect([Binv, s, c, XdotY])
-        assert str(Z) == '((1/B)**2*(X.Y)**2*s**2 - 2*(1/B)**2*(X.Y)*(X.e)*(Y.e)*s**2 + 2*(1/B)*(X.Y)*c*s - 2*(1/B)*(X.e)*(Y.e)*c*s + c**2)*X + 2*(1/B)*(X.e)**2*c*s*Y + 2*(1/B)*(X.Y)*(X.e)*s*(-(1/B)*(X.Y)*s + 2*(1/B)*(X.e)*(Y.e)*s - c)*e'
+        assert str(Z) == '((X.Y)**2*(1/B)**2*s**2 - 2*(X.Y)*(X.e)*(Y.e)*(1/B)**2*s**2 + 2*(X.Y)*(1/B)*c*s - 2*(X.e)*(Y.e)*(1/B)*c*s + c**2)*X + 2*(X.e)**2*(1/B)*c*s*Y + 2*(X.Y)*(X.e)*(1/B)*s*(-(X.Y)*(1/B)*s + 2*(X.e)*(Y.e)*(1/B)*s - c)*e'
         W = Z|Y
         # From this point forward all calculations are with sympy scalars
         W = W.scalar()
-        assert str(W) == '(1/B)**2*(X.Y)**3*s**2 - 4*(1/B)**2*(X.Y)**2*(X.e)*(Y.e)*s**2 + 4*(1/B)**2*(X.Y)*(X.e)**2*(Y.e)**2*s**2 + 2*(1/B)*(X.Y)**2*c*s - 4*(1/B)*(X.Y)*(X.e)*(Y.e)*c*s + (X.Y)*c**2'
+        assert str(W) == '(X.Y)**3*(1/B)**2*s**2 - 4*(X.Y)**2*(X.e)*(Y.e)*(1/B)**2*s**2 + 2*(X.Y)**2*(1/B)*c*s + 4*(X.Y)*(X.e)**2*(Y.e)**2*(1/B)**2*s**2 - 4*(X.Y)*(X.e)*(Y.e)*(1/B)*c*s + (X.Y)*c**2'
         W = expand(W)
         W = simplify(W)
         W = W.collect([s*Binv])
@@ -363,6 +357,33 @@ class TestTest(unittest.TestCase):
         aB = a|B
         assert str(aB) == '-(P2.a)*P1 + (P1.a)*P2'
 
+    def test_ReciprocalFrame(self):
+        ga, *basis = Ga.build('e*u|v|w')
+
+        r_basis = ga.ReciprocalFrame(basis)
+
+        for i, base in enumerate(basis):
+            for r_i, r_base in enumerate(r_basis):
+                if i == r_i:
+                    assert (base | r_base).simplify() == 1
+                else:
+                    assert (base | r_base).simplify() == 0
+
+    def test_ReciprocalFrame_append(self):
+        ga, *basis = Ga.build('e*u|v|w')
+        *r_basis, E_sq = ga.ReciprocalFrame(basis, mode='append')
+
+        for i, base in enumerate(basis):
+            for r_i, r_base in enumerate(r_basis):
+                if i == r_i:
+                    assert (base | r_base).simplify() == E_sq
+                else:
+                    assert (base | r_base).simplify() == 0
+
+        # anything that isn't 'norm' means 'append', but this is deprecated
+        with pytest.warns(DeprecationWarning):
+            assert ga.ReciprocalFrame(basis, mode='nonsense') == (*r_basis, E_sq)
+
     def test_reciprocal_frame_test(self):
 
         g = '1 # #,'+ \
@@ -424,8 +445,55 @@ class TestTest(unittest.TestCase):
         w = (w.expand()).scalar()
         assert str(simplify(w/Esq)) == '1'
 
+    def test_make_grad(self):
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1], coords=symbols('x y z'))
+        r = ga.mv(ga.coord_vec)
+        assert ga.make_grad(r) == ga.grad
+        assert ga.make_grad(r, cmpflg=True) == ga.rgrad
+
+        x = ga.mv('x', 'vector')
+        B = ga.mv('B', 'bivector')
+        dx = ga.make_grad(x)
+        dB = ga.make_grad(B)
+
+        # GA4P, eq. (6.29)
+        for a in [ga.mv(1), e_1, e_1^e_2]:
+            r = a.i_grade
+            assert dx * (x ^ a) == (ga.n - r) * a
+            assert dx * (x * a) == ga.n * a
+
+        # derivable via the product rule
+        assert dx * (x*x) == 2*x
+        assert dx * (x*x*x) == (2*x)*x + (x*x)*ga.n
+
+        assert dB * (B*B) == 2*B
+        assert dB * (B*B*B) == (2*B)*B + (B*B)*ga.n
+
+        # an arbitrary chained expression to check we do not crash
+        assert dB * dx * (B * x) == -3
+        assert dx * dB * (x * B) == -3
+        assert dx * dB * (B * x) == 9
+        assert dB * dx * (x * B) == 9
+
+    @pytest.mark.parametrize('g', [
+        pytest.param(None, id='generic'),
+        pytest.param([1, 1, 1], id='ortho')
+    ])
+    def test_reciprocal_blades(self, g):
+        ga = Ga('e*1|2|3', g=g)
+
+        for b1 in ga.blades.flat:
+            for b2 in ga.blades.flat:
+                rb2 = ga._reciprocal_blade_dict[b2]
+
+                if b1 == b2:
+                    assert ga.scalar_product(b1, rb2).simplify() == S.One
+                else:
+                    assert ga.scalar_product(b1, rb2).simplify() == S.Zero
+
     def test_deprecations(self):
-        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        coords = symbols('x y z')
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', coords=coords)
 
         # none of these have the scalar as their first element, which is why
         # they're deprecated.
@@ -475,3 +543,55 @@ class TestTest(unittest.TestCase):
         # all derived from
         ga.blade_expansion_dict
         ga.base_expansion_dict
+
+        with pytest.warns(DeprecationWarning):
+            import galgebra.utils
+
+        # aliases
+        with pytest.warns(DeprecationWarning):
+            assert ga.X()
+
+        # derived from
+        ga.coord_vec
+
+        # aliases
+        with pytest.warns(DeprecationWarning):
+            ga.lt_x
+        with pytest.warns(DeprecationWarning):
+            ga.lt_coords
+
+        # more aliases
+        with pytest.warns(DeprecationWarning):
+            ga.mul_table_dict
+        with pytest.warns(DeprecationWarning):
+            ga.wedge_table_dict
+        with pytest.warns(DeprecationWarning):
+            ga.dot_table_dict
+        with pytest.warns(DeprecationWarning):
+            ga.left_contract_table_dict
+        with pytest.warns(DeprecationWarning):
+            ga.right_contract_table_dict
+        with pytest.warns(DeprecationWarning):
+            ga.basic_mul_table_dict
+
+        with pytest.warns(DeprecationWarning):
+            assert ga.geometric_product_basis_blades((e_1.obj, e_2.obj)) == (e_1 * e_2).obj
+        with pytest.warns(DeprecationWarning):
+            assert ga.wedge_product_basis_blades((e_1.obj, e_2.obj)) == (e_1 ^ e_2).obj
+        e_12 = e_1 ^ e_2
+        with pytest.warns(DeprecationWarning):
+            assert ga.non_orthogonal_dot_product_basis_blades((e_1.obj, e_12.obj), mode='|') == (e_1 | e_12).obj
+        with pytest.warns(DeprecationWarning):
+            assert ga.non_orthogonal_dot_product_basis_blades((e_1.obj, e_12.obj), mode='<') == (e_1 < e_12).obj
+        with pytest.warns(DeprecationWarning):
+            assert ga.non_orthogonal_dot_product_basis_blades((e_1.obj, e_12.obj), mode='>') == (e_1 > e_12).obj
+
+        # test the member that is nonsense unless in an orthonormal algebra
+        ga_ortho, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1])
+        e_12 = e_1 ^ e_2
+        with pytest.warns(DeprecationWarning):
+            assert ga_ortho.dot_product_basis_blades((e_1.obj, e_12.obj), mode='|') == (e_1 | e_12).obj
+        with pytest.warns(DeprecationWarning):
+            assert ga_ortho.dot_product_basis_blades((e_1.obj, e_12.obj), mode='<') == (e_1 < e_12).obj
+        with pytest.warns(DeprecationWarning):
+            assert ga_ortho.dot_product_basis_blades((e_1.obj, e_12.obj), mode='>') == (e_1 > e_12).obj

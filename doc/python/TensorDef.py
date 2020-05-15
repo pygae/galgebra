@@ -13,8 +13,7 @@ A = st4d.mv('T', 'bivector')
 
 
 def TA(a1, a2):
-    global A
     return A | (a1 ^ a2)
 
-# FIXME TypeError: __init__() missing 1 required positional argument: 'args'
+
 T = Mlt(TA, st4d)  # Define multi-linear function

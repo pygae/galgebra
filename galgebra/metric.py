@@ -3,13 +3,18 @@ Metric Tensor and Derivatives of Basis Vectors.
 """
 
 import copy
+import warnings
+from typing import List, Optional
+
 from sympy import (
     diff, trigsimp, Matrix, Rational,
-    sqf_list, Symbol, sqrt, eye, S, expand, Mul,
+    sqf_list, sqrt, eye, S, expand, Mul,
     Add, simplify, Expr, Function
 )
 
 from . import printer
+from ._utils import cached_property as _cached_property
+from .atoms import BasisVectorSymbol, DotProductSymbol
 
 half = Rational(1, 2)
 
@@ -241,7 +246,7 @@ def symbols_list(s, indices=None, sub=True, commutative=False):
 
     else:  # indices symbol list used for sub/superscripts of generated symbol list
         s_lst = [s + pos + str(i) for i in indices]
-    return [Symbol(printer.Eprint.Base(s), commutative=commutative) for s in s_lst]
+    return [BasisVectorSymbol(s, commutative=commutative) for s in s_lst]
 
 
 class Simp:
@@ -352,15 +357,10 @@ class Metric(object):
         """ Build an element for the metric of `bases[i1] . basis[i2]` """
         if s == '#':
             if i1 <= i2:  # for default element ensure symmetry
-                return Symbol('(' + str(self.basis[i1]) +
-                              '.' + str(self.basis[i2]) + ')', real=True)
+                return DotProductSymbol(self.basis[i1], self.basis[i2])
             else:
-                return Symbol('(' + str(self.basis[i2]) +
-                              '.' + str(self.basis[i1]) + ')', real=True)
-        elif '/' in s:  # element is fraction
-            num, dem = s.split('/')
-            return Rational(num, dem)
-        else:  # element is integer
+                return DotProductSymbol(self.basis[i2], self.basis[i1])
+        else:  # element is fraction or integer
             return Rational(s)
 
     def metric_symbols_list(self, s=None):  # input metric tensor as string
@@ -382,9 +382,10 @@ class Metric(object):
 
             if n_rows == 1:  # orthogonal metric
                 m_lst = s.split(' ')
-                m = []
-                for i, s in enumerate(m_lst):
-                    m.append(self._build_metric_element(s, i, i))
+                m = [
+                    self._build_metric_element(s, i, i)
+                    for i, s in enumerate(m_lst)
+                ]
 
                 if len(m) != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
@@ -405,60 +406,60 @@ class Metric(object):
                     if n_rows != n_cols:  # non square metric
                         raise ValueError("'" + s + "' does not represent square metric")
                     m_lst.append(cols)
-                m = []
                 n = len(m_lst)
                 if n != self.n:
                     raise ValueError('Input metric "' + s + '" has' +
                                      ' different rank than bases "' + str(self.basis) + '"')
-                for i1, row in enumerate(m_lst):
-                    row_symbols = []
-                    for i2, s in enumerate(row):
-                        row_symbols.append(self._build_metric_element(s, i1, i2))
-                    m.append(row_symbols)
-                m = Matrix(m)
-                return m
+                return Matrix([
+                    [
+                        self._build_metric_element(s, i1, i2)
+                        for i2, s in enumerate(row)
+                    ]
+                    for i1, row in enumerate(m_lst)
+                ])
 
     def derivatives_of_g(self):
-        # dg[i][j][k] = \partial_{x_{k}}g_{ij}
+        # galgebra 0.5.0
+        warnings.warn(
+            "Metric.derivatives_of_g is deprecated, and now does nothing. "
+            "the `.dg` property is now always available.")
 
-        dg = [[[
+    @_cached_property
+    def dg(self) -> List[List[List[Expr]]]:
+        # dg[i][j][k] = \partial_{x_{k}}g_{ij}
+        return [[[
             diff(self.g[i, j], x_k)
             for x_k in self.coords]
             for j in self.n_range]
             for i in self.n_range]
 
-        return dg
+    @_cached_property
+    def connect_flg(self) -> bool:
+        """ True if connection is non-zero """
+        if self.coords is None:
+            return False
+        else:
+            return any(
+                self.dg[i][j][k] != 0
+                for i in self.n_range
+                for j in self.n_range
+                for k in self.n_range
+            )
 
-    def _init_connect_flg(self):
-        # See if metric is flat
-
-        self.connect_flg = False
-
-        for i in self.n_range:
-            for j in self.n_range:
-                for k in self.n_range:
-                    if self.dg[i][j][k] != 0:
-                        self.connect_flg = True
-                        break
-
-    def _build_derivatives_of_basis(self):  # Derivatives of basis vectors from Christoffel symbols
+    @_cached_property
+    def de(self) -> Optional[List[List[Expr]]]:
+        # Derivatives of basis vectors from Christoffel symbols
 
         n_range = self.n_range
 
-        self.dg = dg = self.derivatives_of_g()
-
-        self._init_connect_flg()
-
         if not self.connect_flg:
-            self.de = None
-            return
-
-        de = []  # de[i][j] = \partial_{x_{i}}e^{x_{j}}
+            return None
 
         # Christoffel symbols of the first kind, \Gamma_{ijk}
         # TODO handle None
         dG = self.Christoffel_symbols(mode=1)
 
+        # de[i][j] = \partial_{x_{i}}e^{x_{j}}
         # \frac{\partial e_{j}}{\partial x^{i}} = \Gamma_{ijk} e^{k}
         de = [[
             sum([Gamma_ijk * e__k for Gamma_ijk, e__k in zip(dG[i][j], self.r_symbols)])
@@ -467,7 +468,8 @@ class Metric(object):
 
         if self.debug:
             printer.oprint('D_{i}e^{j}', de)
-        self.de = de
+
+        return de
 
     def inverse_metric(self):
 
@@ -503,14 +505,13 @@ class Metric(object):
 
         if mode == 1:
 
-            dG = []  # dG[i][j][k] = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
-
             # Christoffel symbols of the first kind, \Gamma_{ijk}
             # \partial_{x^{i}}e_{j} = \Gamma_{ijk}e^{k}
 
             def Gamma_ijk(i, j, k):
                 return half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
 
+            # dG[i][j][k] = half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
             dG = [[[
                 Simp.apply(Gamma_ijk(i, j, k))
                 for k in n_range]
@@ -548,10 +549,11 @@ class Metric(object):
         if self.de is None:
             return
 
-        renorm = []
         #  Generate mapping for renormalizing reciprocal basis vectors
-        for ib in self.n_range:  # e^{ib} --> e^{ib}/|e_{ib}|
-            renorm.append((self.r_symbols[ib], self.r_symbols[ib] / self.e_norm[ib]))
+        renorm = [
+            (self.r_symbols[ib], self.r_symbols[ib] / self.e_norm[ib])
+            for ib in self.n_range  # e^{ib} --> e^{ib}/|e_{ib}|
+        ]
 
         # Normalize derivatives of basis vectors
 
@@ -656,10 +658,6 @@ class Metric(object):
         self.debug = debug
         self.is_ortho = False  # Is basis othogonal
         self.coords = coords  # Manifold coordinates
-        if self.coords is None:
-            self.connect_flg = False
-        else:
-            self.connect_flg = True  # Connection needed for postion dependent metric
         self.norm = norm  # True to normalize basis vectors
         self.detg = None  #: Determinant of g
         self.g_adj = None  #: Adjugate of g
@@ -695,37 +693,38 @@ class Metric(object):
                     raise ValueError('For metric derived from vector field ' +
                                      ' coordinates must be defined.')
                 else:  # Vector manifold defined by vector field
-                    dX = []
-                    for coord in coords:  # Get basis vectors by differentiating vector field
-                        dX.append([diff(x, coord) for x in X])
-                    g_tmp = []
-                    for dx1 in dX:
-                        g_row = []
-                        for dx2 in dX:
-                            dx1_dot_dx2 = trigsimp(Metric.dot_orthogonal(dx1, dx2, g))
-                            g_row.append(dx1_dot_dx2)
-                        g_tmp.append(g_row)
-                    self.g = Matrix(g_tmp)
+                    # Get basis vectors by differentiating vector field
+                    dX = [
+                        [diff(x, coord) for x in X]
+                        for coord in coords
+                    ]
+                    self.g = Matrix([
+                        [
+                            trigsimp(Metric.dot_orthogonal(dx1, dx2, g))
+                            for dx2 in dX
+                        ]
+                        for dx1 in dX
+                    ])
                     if self.debug:
                         printer.oprint('X_{i}', X, 'D_{i}X_{j}', dX)
 
         else:  # metric is symbolic or list of lists of functions of coordinates
             if isinstance(g, str):  # metric elements are symbols or constants
                 if g == 'g':  # general symbolic metric tensor (g_ij functions of position)
-                    g_lst = []
-                    g_inv_lst = []
-                    for coord in self.coords:
-                        i1 = str(coord)
-                        tmp = []
-                        tmp_inv = []
-                        for coord2 in self.coords:
-                            i2 = str(coord2)
-                            tmp.append(Function('g_'+i1+'_'+i2)(*self.coords))
-                            tmp_inv.append(Function('g__'+i1+'__'+i2)(*self.coords))
-                        g_lst.append(tmp)
-                        g_inv_lst.append(tmp_inv)
-                    self.g = Matrix(g_lst)
-                    self.g_inv = Matrix(g_inv_lst)
+                    self.g = Matrix([
+                        [
+                            Function('g_{}_{}'.format(coord, coord2))(*self.coords)
+                            for coord2 in self.coords
+                        ]
+                        for coord in self.coords
+                    ])
+                    self.g_inv = Matrix([
+                        [
+                            Function('g__{}__{}'.format(coord, coord2))(*self.coords)
+                            for coord2 in self.coords
+                        ]
+                        for coord in self.coords
+                    ])
                 else:  # specific symbolic metric tensor (g_ij are symbolic or numerical constants)
                     self.g = self.metric_symbols_list(g)  # construct symbolic metric from string and basis
             else:  # metric is given as list of function or list of lists of function or matrix of functions
@@ -747,32 +746,28 @@ class Metric(object):
 
         # Determine if metric is orthogonal
 
-        self.is_ortho = True
+        self.is_ortho = all(
+            self.g[i, j] == 0
+            for i in self.n_range
+            for j in self.n_range
+            if i < j
+        )
 
-        for i in self.n_range:
-            for j in self.n_range:
-                if i < j:
-                    if self.g[i, j] != 0:
-                        self.is_ortho = False
-                        break
-
-        self.g_is_numeric = True
-
-        for i in self.n_range:
-            for j in self.n_range:
-                if i < j:
-                    if not self.g[i, j].is_number:
-                        self.g_is_numeric = False
-                        break
+        self.g_is_numeric = all(
+            self.g[i, j].is_number
+            for i in self.n_range
+            for j in self.n_range
+            if i < j
+        )
 
         if self.coords is not None:
-            self._build_derivatives_of_basis()  # calculate derivatives of basis
             if self.norm:  # normalize basis, metric, and derivatives of normalized basis
                 if not self.is_ortho:
                     raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
-                self.e_norm = []
-                for i in self.n_range:
-                    self.e_norm.append(square_root_of_expr(self.g[i, i]))
+                self.e_norm = [
+                    square_root_of_expr(self.g[i, i])
+                    for i in self.n_range
+                ]
                 if debug:
                     printer.oprint('|e_{i}|', self.e_norm)
             else:
