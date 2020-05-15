@@ -1464,31 +1464,6 @@ def Print_Function():
         print('Code output:\n')
     return
 
-r"""
-def Print_Function():
-    global prog_str, off_mode
-    if off_mode:
-        return
-    fct_name = str(sys._getframe(1).f_code.co_name)
-    ifct = prog_str.find('def ' + fct_name)
-    iend = prog_str.find('def ', ifct + 4)
-    tmp_str = prog_str[ifct:iend - 1]
-    fct_name = fct_name.replace('_', ' ')
-    if GaLatexPrinter.latex_flg:
-        #print '#Code for '+fct_name
-        print(r'\begin{lstlisting}[language=Python,showspaces=false,' + \
-              r'showstringspaces=false,backgroundcolor=\color{gray},frame=single]')
-        #print('CODE')
-        print(tmp_str)
-        print(r'\end{lstlisting}')
-        print('Code Output:')
-    else:
-        print('\n' + 80 * '*')
-        #print '\nCode for '+fct_name
-        print(tmp_str)
-        print('Code output:\n')
-    return
-"""
 
 import re as regrep
 
