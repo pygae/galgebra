@@ -5,6 +5,7 @@ Multivector Linear Transformation
 import inspect
 import types
 import itertools
+import warnings
 from copy import copy
 from functools import reduce
 
@@ -15,14 +16,6 @@ from sympy import (
 from . import printer
 from . import metric
 from . import mv
-
-
-def aprint(a):
-    out = ''
-    for ai in a:
-        out += str(ai)+','
-    print('['+out[:-1]+']')
-    return
 
 
 def Symbolic_Matrix(root, coords=None, mode='g', f=False, sub=True):
@@ -376,7 +369,7 @@ class Lt(object):
         connect_flg = self.Ga.connect_flg
         self.Ga.connect_flg = False
 
-        F_x = mv.Mv(self(self.Ga.lt_x, obj=True), ga=self.Ga)
+        F_x = mv.Mv(self(self.Ga.coord_vec, obj=True), ga=self.Ga)
         tr_F = (self.Ga.grad | F_x).scalar()
         self.Ga.connect_flg = connect_flg
         return tr_F
@@ -594,20 +587,11 @@ class Mlt(object):
 
     @staticmethod
     def extact_basis_indexes(Ga):
-        base_indexes = []
-        for base in Ga.basis:
-            base_str = str(base)
-            base_str = base_str.replace(r'\boldsymbol', '')
-            base_str = base_str.replace('{', '')
-            base_str = base_str.replace('}', '')
-            i = base_str.find('_') + 1
-            if i == 0:
-                base_indexes.append(base_str)
-            else:
-                if base_str[i] == '_':
-                    i += 1
-                base_indexes.append(base_str[i:])
-        return base_indexes
+        # galgebra 0.5.0
+        warnings.warn(
+            "`Mlt.extact_basis_indexes(ga)` is deprecated, use `ga.basis_super_scripts`",
+            DeprecationWarning, stacklevel=2)
+        return Ga.basis_super_scripts
 
     def _sympystr(self, print_obj):
         return print_obj.doprint(self.fvalue)
@@ -752,9 +736,8 @@ class Mlt(object):
             self.f = None
             self.nargs = nargs
             Mlt.increment_slots(nargs, Ga)
-            t_indexes = Mlt.extact_basis_indexes(self.Ga)
             self.fvalue = S(0)
-            for t_index, a_prod in zip(itertools.product(t_indexes, repeat=self.nargs),
+            for t_index, a_prod in zip(itertools.product(self.Ga.basis_super_scripts, repeat=self.nargs),
                                        itertools.product(*self.Ga._mlt_pdiffs)):
                 name = '{}_{}'.format(f, ''.join(map(str, t_index)))
                 if fct:  # Tensor field
