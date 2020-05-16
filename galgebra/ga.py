@@ -996,7 +996,7 @@ class Ga(metric.Metric):
     def lt_x(self) -> Expr:
         # galgebra 0.5.0
         warnings.warn(
-            "`ga.lt_x` is deprecated, use the identical `ga.coords_vec`.",
+            "`ga.lt_x` is deprecated, use the identical `ga.coord_vec`.",
             DeprecationWarning, stacklevel=2)
         return self.coord_vec
 
