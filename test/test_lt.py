@@ -1,6 +1,8 @@
 import unittest
 
+import pytest
 from sympy import symbols
+
 from galgebra.ga import Ga
 from galgebra.lt import Mlt
 
@@ -93,3 +95,8 @@ class TestMlt(unittest.TestCase):
             Tyx * a1y * a2x +
             Tyy * a1y * a2y
         )
+
+    def test_deprecations(self):
+        g = Ga('e*a|b', g=[1, 1])
+        with pytest.warns(DeprecationWarning):
+            assert Mlt.extact_basis_indexes(g) == ['a', 'b']
