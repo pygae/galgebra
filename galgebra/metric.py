@@ -104,7 +104,13 @@ def collect(A, nc_list):
     for x in nc_list:
         if x in bases:
             i = bases.index(x)
-            C += coefs[i]*x
+            bases.pop(i)
+            C += coefs.pop(i)*x
+
+    # add whatever is left
+    for c, b in zip(coefs, bases):
+        C += c * b
+
     return C
 
 
