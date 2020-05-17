@@ -1,12 +1,12 @@
 import sys
 import pytest
-from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol, S
+from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol, S, Add
 from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter, ZERO_STR
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Mv, Nga
 # for backward compatibility
 from galgebra.mv import ONE, ZERO, HALF
-from galgebra import ga
+from galgebra import ga, metric
 
 def F(x):
     global n, nbar
@@ -490,6 +490,12 @@ class TestTest:
                     assert ga.scalar_product(b1, rb2).simplify() == S.One
                 else:
                     assert ga.scalar_product(b1, rb2).simplify() == S.Zero
+
+    def test_metric_collect(self):
+        ga = Ga('e*1|2', g=[1, 1, 1])
+        e1, e2 = ga.basis
+
+        assert metric.collect(2*e1 + e2, [e1]) == 2*e1 + e2
 
     def test_deprecations(self):
         coords = symbols('x y z')

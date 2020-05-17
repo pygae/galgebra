@@ -996,7 +996,7 @@ class Ga(metric.Metric):
     def lt_x(self) -> Expr:
         # galgebra 0.5.0
         warnings.warn(
-            "`ga.lt_x` is deprecated, use the identical `ga.coords_vec`.",
+            "`ga.lt_x` is deprecated, use the identical `ga.coord_vec`.",
             DeprecationWarning, stacklevel=2)
         return self.coord_vec
 
@@ -1878,10 +1878,10 @@ class Ga(metric.Metric):
                 # determinant
                 n = self.n
                 if self.coords is None:  # Metric tensor is constant
-                    self.e_sq = (-1) ** (n*(n - 1)/2) * Symbol(det_str, real=True)
+                    self.e_sq = (-1) ** (n*(n - 1)//2) * Symbol(det_str, real=True)
                 else:  # Metric tensor is function of coordinates
                     n = len(self.coords)
-                    self.e_sq = (-1) ** (n*(n - 1)/2) * Function(det_str, real=True)(*self.coords)
+                    self.e_sq = (-1) ** (n*(n - 1)//2) * Function(det_str, real=True)(*self.coords)
             else:
                 self.e_sq = simplify((self.e * self.e).obj)
             if self.debug:

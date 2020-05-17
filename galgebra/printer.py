@@ -36,8 +36,7 @@ old_print = builtins.print
 ZERO_STR = ' 0 '
 Format_cnt = 0
 latex_str = ''
-ip_cmds = \
-r"""
+ip_cmds = r"""
 \DeclareMathOperator{\Tr}{Tr}
 \DeclareMathOperator{\Adj}{Adj}
 \newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
