@@ -2,13 +2,12 @@
 from __future__ import print_function
 import sys
 from sympy import Symbol,symbols,sin,cos,Rational,expand,simplify,collect
-from galgebra.printer import enhance_print,Get_Program,Print_Function,Format
+from galgebra.printer import enhance_print,Format
 from galgebra.deprecated import MV
 from galgebra.mv import Nga,ONE,ZERO
 from galgebra.ga import Ga
 
 def basic_multivector_operations():
-    Print_Function()
     (ex,ey,ez) = MV.setup('e*x|y|z')
 
     A = MV('A','mv')
@@ -65,7 +64,6 @@ def basic_multivector_operations():
     return
 
 def check_generalized_BAC_CAB_formulas():
-    Print_Function()
 
     (a,b,c,d,e) = MV.setup('a b c d e')
 
@@ -85,7 +83,6 @@ def check_generalized_BAC_CAB_formulas():
     return
 
 def derivatives_in_rectangular_coordinates():
-    Print_Function()
 
     X = (x,y,z) = symbols('x y z')
     (ex,ey,ez,grad) = MV.setup('e_x e_y e_z',metric='[1,1,1]',coords=X)
@@ -118,7 +115,6 @@ def derivatives_in_rectangular_coordinates():
     return
 
 def derivatives_in_spherical_coordinates():
-    Print_Function()
 
     X = (r,th,phi) = symbols('r theta phi')
     curv = [[r*cos(phi)*sin(th),r*sin(phi)*sin(th),r*cos(th)],[1,r,r*sin(th)]]
@@ -139,7 +135,6 @@ def derivatives_in_spherical_coordinates():
     return
 
 def rounding_numerical_components():
-    Print_Function()
 
     (ex,ey,ez) = MV.setup('e_x e_y e_z',metric='[1,1,1]')
 
@@ -154,7 +149,6 @@ def rounding_numerical_components():
 
 def noneuclidian_distance_calculation():
     from sympy import solve,sqrt
-    Print_Function()
 
     metric = '0 # #,# 0 #,# # 1'
     (X,Y,e) = MV.setup('X Y e',metric)
@@ -275,7 +269,6 @@ def make_vector(a,n = 3):
 
 def conformal_representations_of_circles_lines_spheres_and_planes():
     global n,nbar
-    Print_Function()
 
     metric = '1 0 0 0 0,0 1 0 0 0,0 0 1 0 0,0 0 0 0 2,0 0 0 2 0'
 
@@ -316,7 +309,6 @@ def conformal_representations_of_circles_lines_spheres_and_planes():
 
 def properties_of_geometric_objects():
     global n,nbar
-    Print_Function()
 
     metric = '# # # 0 0,'+ \
              '# # # 0 0,'+ \
@@ -347,7 +339,6 @@ def properties_of_geometric_objects():
 
 def extracting_vectors_from_conformal_2_blade():
     global n,nbar
-    Print_Function()
 
     metric = ' 0 -1 #,'+ \
              '-1 0 #,'+ \
@@ -377,7 +368,6 @@ def extracting_vectors_from_conformal_2_blade():
     return
 
 def reciprocal_frame_test():
-    Print_Function()
 
     metric = '1 # #,'+ \
              '# 1 #,'+ \
@@ -440,7 +430,6 @@ def reciprocal_frame_test():
     return
 
 def main():
-    Get_Program(True)
     enhance_print()
     basic_multivector_operations()
     check_generalized_BAC_CAB_formulas()

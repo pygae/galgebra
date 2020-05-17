@@ -1,7 +1,7 @@
 
 import sys
 from sympy import symbols, sin, cos
-from galgebra.printer import Format, xpdf, Get_Program, Print_Function
+from galgebra.printer import Format, xpdf, Print_Function
 from galgebra.ga import Ga
 from galgebra.lt import Mlt
 

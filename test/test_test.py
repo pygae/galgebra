@@ -1,7 +1,7 @@
 import sys
 import pytest
 from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol, S, Add
-from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter
+from galgebra.printer import Format, Eprint, latex, GaPrinter
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Mv, Nga
 # for backward compatibility

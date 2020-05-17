@@ -76,6 +76,10 @@ Changelog
 
 - :bug:`354` :func:`galgebra.printer.oprint` no longer strips the last ``)`` from :class:`sympy.Matrix` objects within lists.
 
+- :support:`349` :func:`galegbra.printer.Get_Program` is deprecated. This
+  function used to have to be called before func:`galegbra.printer.Print_Function`,
+  but now all it does is act as an enable/disable flag for the latter, such that ``Get_Program(True); Print_Function()`` was a no-op.
+
 - :bug:`348` :func:`galgebra.printer.Print_Function` no longer emits code after the function body. Previously, examples had a ``def dummy(): pass`` function to work around this.
 
 - :bug:`345` :attr:`~galgebra.ga.Ga.e_sq` no longer contains a floating point term.

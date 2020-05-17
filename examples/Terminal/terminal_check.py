@@ -1,9 +1,13 @@
 #!/usr/bin/python
 from __future__ import print_function
 from sympy import Symbol, symbols, sin, cos, Rational, expand, simplify, collect
-from galgebra.printer import Eprint, Get_Program, Print_Function
+from galgebra.printer import Eprint
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Nga
+
+# no-op version of galgebra.printer.Print_Function
+Print_Function = lambda: None
+
 
 def basic_multivector_operations():
     Print_Function()
@@ -505,7 +509,6 @@ def signature_test():
 
 
 def main():
-    Get_Program(True)
     #ga_print_on()
     Eprint()
 

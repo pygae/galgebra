@@ -11,6 +11,7 @@ import functools
 import inspect
 import re
 import shutil
+import warnings
 from collections import ChainMap
 
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
@@ -1001,9 +1002,16 @@ off_mode = False
 def Get_Program(off=False):
     global off_mode
     off_mode = off
+    # galgebra 0.5.0
+    warnings.warn(
+        "galgebra.printer.Get_Program is deprecated, and exists solely to "
+        "toggle whether galgebra.printer.Print_Function does anything. If you "
+        "want to turn off program printing, then just don't call Print_Function!",
+        DeprecationWarning, stacklevel=2)
 
 
 def Print_Function():
+    """ Print out the source of the current function """
     if off_mode:
         return
 

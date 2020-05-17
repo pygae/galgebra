@@ -1,7 +1,7 @@
 from __future__ import print_function
 from sympy import symbols
 from galgebra.ga import Ga
-from galgebra.printer import Eprint, Get_Program, Print_Function
+from galgebra.printer import Eprint, Print_Function
 
 def Mv_setup_options():
     Print_Function()
@@ -29,7 +29,6 @@ def Mv_setup_options():
     return
 
 def main():
-    Get_Program()
     Eprint()
     Mv_setup_options()
     return

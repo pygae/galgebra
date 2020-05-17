@@ -1,10 +1,8 @@
 from __future__ import print_function
-from galgebra.printer import xpdf,Get_Program,Print_Function,Format
+from galgebra.printer import xpdf,Format
 from galgebra.deprecated import MV
 
 def basic_multivector_operations_3D():
-    Print_Function()
-
     (ex,ey,ez) = MV.setup('e*x|y|z')
 
     print('g_{ij} =',MV.metric)
@@ -30,8 +28,6 @@ def basic_multivector_operations_3D():
     return
 
 def basic_multivector_operations_2D():
-    Print_Function()
-
     (ex,ey) = MV.setup('e*x|y')
 
     print('g_{ij} =',MV.metric)
@@ -48,7 +44,6 @@ def basic_multivector_operations_2D():
     return
 
 def main():
-    Get_Program(True)
     Format()
 
     basic_multivector_operations_3D()

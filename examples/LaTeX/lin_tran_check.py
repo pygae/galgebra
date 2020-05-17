@@ -1,7 +1,7 @@
 from __future__ import print_function
 from sympy import symbols, sin, cos, simplify
 from galgebra.ga import Ga
-from galgebra.printer import Format, xpdf, Eprint, Print_Function, Get_Program, latex
+from galgebra.printer import Format, xpdf, Eprint, Print_Function, latex
 from galgebra.lt import Symbolic_Matrix
 
 
@@ -159,7 +159,6 @@ def main():
 if __name__ == "__main__":
     #Eprint()
     Format()
-    # Get_Program()
     main()
     # xpdf()
     xpdf(pdfprog=None)

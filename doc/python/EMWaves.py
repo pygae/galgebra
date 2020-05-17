@@ -1,6 +1,6 @@
 import sys
 from sympy import symbols, exp, I, Matrix, solve, simplify
-from galgebra.printer import Format, xpdf, Get_Program, Print_Function
+from galgebra.printer import Format, xpdf, Print_Function
 from galgebra.ga import Ga
 from galgebra.metric import linear_expand
 

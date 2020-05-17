@@ -1,7 +1,7 @@
 from __future__ import print_function
 from sympy import symbols,S
 from galgebra.ga import Ga
-from galgebra.printer import Eprint, Get_Program, Print_Function
+from galgebra.printer import Eprint, Print_Function
 
 def coefs_test():
     Print_Function()
@@ -19,7 +19,6 @@ def coefs_test():
     return
 
 def main():
-    Get_Program()
     Eprint()
     coefs_test()
     return

@@ -1,6 +1,6 @@
 from __future__ import print_function
 from sympy import symbols, sin, cos, sinh, cosh, trigsimp, S
-from galgebra.printer import Format, xpdf, Get_Program, Print_Function
+from galgebra.printer import Format, xpdf, Print_Function
 from galgebra.ga import Ga
 
 def Product_of_Rotors():
@@ -66,7 +66,6 @@ def Product_of_Rotors():
     return
 
 def main():
-    Get_Program()
     Format()
     Product_of_Rotors()
     # xpdf(paper=(8.5,11))
