@@ -1183,15 +1183,6 @@ def GAeval(s: str, pstr: bool = False):
     return eval(seval, _eval_global_dict)
 
 
-r"""
-\begin{array}{c}
-\left ( \begin{array}{c} F,\\ \end{array} \right . \\
-\begin{array}{c} F, \\ \end{array} \\
-\left .\begin{array}{c}         F \\ \end{array} \right ) \\
-\end{array}
-"""
-
-
 def Fmt(obj, fmt=0):
     if isinstance(obj, (list, tuple, dict)):
         n = len(obj)
