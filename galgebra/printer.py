@@ -568,67 +568,6 @@ class GaLatexPrinter(LatexPrinter):
             Basic.__ga_print_str__ = GaLatexPrinter.Basic__ga_print_str__
             Matrix.__ga_print_str__ = GaLatexPrinter.Matrix__ga_print_str__
 
-    def _print_Pow(self, expr):
-        base = self._print(expr.base)
-        if ('_' in base or '^' in base) and 'cdot' not in base:
-            mode = True
-        else:
-            mode = False
-
-        # Treat x**Rational(1, n) as special case
-        if expr.exp.is_Rational and abs(expr.exp.p) == 1 and expr.exp.q != 1:
-            #base = self._print(expr.base)
-            expq = expr.exp.q
-
-            if expq == 2:
-                tex = r"\sqrt{%s}" % base
-            elif self._settings['itex']:
-                tex = r"\root{%d}{%s}" % (expq, base)
-            else:
-                tex = r"\sqrt[%d]{%s}" % (expq, base)
-
-            if expr.exp.is_negative:
-                return r"\frac{1}{%s}" % tex
-            else:
-                return tex
-        elif self._settings['fold_frac_powers'] \
-            and expr.exp.is_Rational \
-                and expr.exp.q != 1:
-            base, p, q = self._print(expr.base), expr.exp.p, expr.exp.q
-            if mode:
-                return r"{\left ( %s \right )}^{%s/%s}" % (base, p, q)
-            else:
-                return r"%s^{%s/%s}" % (base, p, q)
-
-        elif expr.exp.is_Rational and expr.exp.is_negative and expr.base.is_Function:
-            # Things like 1/x
-            return r"\frac{%s}{%s}" % \
-                (1, self._print(Pow(expr.base, -expr.exp)))
-        else:
-            if expr.base.is_Function:
-                return r"{%s}^{%s}" % (self._print(expr.base), self._print(expr.exp))
-            else:
-                if expr.is_commutative and expr.exp == -1:
-                    #solves issue 1030
-                    #As Mul always simplify 1/x to x**-1
-                    #The objective is achieved with this hack
-                    #first we get the latex for -1 * expr,
-                    #which is a Mul expression
-                    tex = self._print(S.NegativeOne * expr).strip()
-                    #the result comes with a minus and a space, so we remove
-                    if tex[:1] == "-":
-                        return tex[1:].strip()
-                if self._needs_brackets(expr.base):
-                    tex = r"\left(%s\right)^{%s}"
-                else:
-                    if mode:
-                        tex = r"{\left ( %s \right )}^{%s}"
-                    else:
-                        tex = r"%s^{%s}"
-
-                return tex % (self._print(expr.base),
-                              self._print(expr.exp))
-
     def _print_Symbol(self, expr, style='plain'):
 
         def str_symbol(name_str):
