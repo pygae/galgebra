@@ -7,6 +7,7 @@ import sys
 import io
 import builtins
 import functools
+import inspect
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
 from itertools import islice
 from sympy.printing.str import StrPrinter
@@ -971,9 +972,8 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     latex_str = latex_str.replace('\n\n', '\n')
 
     if prog:
-        prog_file = open(sys.argv[0], 'r')
-        prog_str = prog_file.read()
-        prog_file.close()
+        with open(sys.argv[0], 'r') as prog_file:
+            prog_str = prog_file.read()
         prog_str = '{\\Large \\bf Program:}\\begin{lstlisting}[language=Python,showspaces=false,' + \
                    'showstringspaces=false]\n' + \
                    prog_str + '\n\\end{lstlisting}\n {\\Large \\bf Code Output:} \n'
@@ -1083,30 +1083,19 @@ def LatexFormat(Fmode=True, Dmode=True, ipy=False):
     GaLatexPrinter.redirect()
     return
 
-prog_str = ''
 off_mode = False
 
 
 def Get_Program(off=False):
-    global prog_str, off_mode
+    global off_mode
     off_mode = off
-    if off_mode:
-        return
-    prog_file = open(sys.argv[0], 'r')
-    prog_str = prog_file.read()
-    prog_file.close()
-    return
 
 
 def Print_Function():
-    global prog_str, off_mode
     if off_mode:
         return
-    fct_name = str(sys._getframe(1).f_code.co_name)
-    ifct = prog_str.find('def ' + fct_name)
-    iend = prog_str.find('def ', ifct + 4)
-    tmp_str = prog_str[ifct:iend - 1]
-    fct_name = fct_name.replace('_', ' ')
+
+    tmp_str = inspect.getsource(inspect.currentframe().f_back)
     if GaLatexPrinter.latex_flg:
         #print '#Code for '+fct_name
         print(r'##\\begin{lstlisting}[language=Python,showspaces=false,' + \
