@@ -16,7 +16,6 @@ from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
-from . import printer
 
 try:
     from IPython.display import display, Latex, Math, display_latex
@@ -35,7 +34,7 @@ from ._utils import parser as _parser
 old_print = builtins.print
 ZERO_STR = ' 0 '
 Format_cnt = 0
-latex_str = ''
+_global_latex_str = ''
 ip_cmds = r"""
 \DeclareMathOperator{\Tr}{Tr}
 \DeclareMathOperator{\Adj}{Adj}
@@ -617,7 +616,7 @@ class GaLatexPrinter(LatexPrinter):
     def redirect():
         GaLatexPrinter.latex_str = ''
         GaLatexPrinter.text_printer = print   #Save original print function
-        builtins.print = printer.latex_print  #Redefine original print function
+        builtins.print = latex_print  #Redefine original print function
         GaLatexPrinter.latex_flg = True
         GaLatexPrinter.Basic__ga_print_str__ = Basic.__ga_print_str__
         GaLatexPrinter.Matrix__ga_print_str__ = Matrix.__ga_print_str__
@@ -939,14 +938,15 @@ def latex_print(*s, **kws):
     if isinteractive():
         return display(Latex('$$ ' + latex_str + ' $$'))
     else:
+        global _global_latex_str
         if 'Print_Function()' and 'lstlisting' in latex_str:
 
             latex_str = latex_str.replace(r'\begin{equation}', '')
 
-            printer.latex_str += latex_str + '\n'
+            _global_latex_str += latex_str + '\n'
         else:
-            printer.latex_str += r'\begin{equation} ' +latex_str + r'\nonumber\end{equation}' + '\n'
-            #GaLatexPrinter.text_printer('latex string length =',len(printer.latex_str))
+            _global_latex_str += r'\begin{equation} ' +latex_str + r'\nonumber\end{equation}' + '\n'
+            #GaLatexPrinter.text_printer('latex string length =',len(_global_latex_str))
         return
 
 
@@ -1230,7 +1230,7 @@ def xtex(tex='file', filename=None, paper=(14, 11), crop=False, png=False, prog=
     is generated.
     """
 
-    latex_lst = printer.latex_str.split('\n')
+    latex_lst = _global_latex_str.split('\n')
     latex_str = ''
 
     lhs = ''
@@ -1254,7 +1254,7 @@ def xtex(tex='file', filename=None, paper=(14, 11), crop=False, png=False, prog=
                       'in,' + str(paper[1] - 1) + 'in}}\n'
 
     paper_size = paper_size.replace('@10pt@', pt)
-    latex_str = paper_size + printer.preamble + printer.ip_cmds + r'\begin{document}' + printer.latex_str + GaLatexPrinter.postscript
+    latex_str = paper_size + preamble + ip_cmds + r'\begin{document}' + _global_latex_str + GaLatexPrinter.postscript
 
     if filename is None:
         pyfilename = sys.argv[0]
@@ -1331,11 +1331,12 @@ def Print_Function():
     tmp_str = prog_str[ifct:iend - 1]
     fct_name = fct_name.replace('_', ' ')
     if GaLatexPrinter.latex_flg:
-        printer.latex_str += '\\begin{lstlisting}[language=Python,showspaces=false,' + \
+        global _global_latex_str
+        _global_latex_str += '\\begin{lstlisting}[language=Python,showspaces=false,' + \
               'showstringspaces=false,backgroundcolor=\\color{gray},frame=single]'+'\n'
-        printer.latex_str += tmp_str+'\n'
-        printer.latex_str += '\\end{lstlisting}'+'\n'
-        printer.latex_str += r'\T{Code Output:}'+'\n'
+        _global_latex_str += tmp_str+'\n'
+        _global_latex_str += '\\end{lstlisting}'+'\n'
+        _global_latex_str += r'\T{Code Output:}'+'\n'
     else:
         print('\n' + 80 * '*')
         print(tmp_str)
@@ -1503,10 +1504,10 @@ class Notes(object):
         self.latex_str = latex_str
 
     def __str__(self):
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
+        if GaLatexPrinter.latex_flg:
+            Printer = GaLatexPrinter
         else:
-            Printer = printer.GaPrinter
+            Printer = GaPrinter
 
         return Printer().doprint(self)
 
