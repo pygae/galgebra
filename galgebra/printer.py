@@ -33,30 +33,29 @@ ZERO_STR = ' 0 '
 
 Format_cnt = 0
 
-ip_cmds = \
-"""
-$\\DeclareMathOperator{\\Tr}{Tr}
-\\DeclareMathOperator{\\Adj}{Adj}
-\\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
-\\newcommand{\\lp}{\\left (}
-\\newcommand{\\rp}{\\right )}
-\\newcommand{\\paren}[1]{\\lp {#1} \\rp}
-\\newcommand{\\half}{\\frac{1}{2}}
-\\newcommand{\\llt}{\\left <}
-\\newcommand{\\rgt}{\\right >}
-\\newcommand{\\abs}[1]{\\left |{#1}\\right | }
-\\newcommand{\\pdiff}[2]{\\bfrac{\\partial {#1}}{\\partial {#2}}}
-\\newcommand{\\npdiff}[3]{\\bfrac{\\partial^{#3} {#1}}{\\partial {#2}^{#3}}}
-\\newcommand{\\lbrc}{\\left \\{}
-\\newcommand{\\rbrc}{\\right \\}}
-\\newcommand{\\W}{\\wedge}
-\\newcommand{\\prm}[1]{{#1}'}
-\\newcommand{\\ddt}[1]{\\bfrac{d{#1}}{dt}}
-\\newcommand{\\R}{\\dagger}
-\\newcommand{\\deriv}[3]{\\bfrac{d^{#3}#1}{d{#2}^{#3}}}
-\\newcommand{\\grade}[1]{\\left < {#1} \\right >}
-\\newcommand{\\f}[2]{{#1}\\lp {#2} \\rp}
-\\newcommand{\\eval}[2]{\\left . {#1} \\right |_{#2}}$
+ip_cmds = r"""
+$\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Adj}{Adj}
+\newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
+\newcommand{\lp}{\left (}
+\newcommand{\rp}{\right )}
+\newcommand{\paren}[1]{\lp {#1} \rp}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\llt}{\left <}
+\newcommand{\rgt}{\right >}
+\newcommand{\abs}[1]{\left |{#1}\right | }
+\newcommand{\pdiff}[2]{\bfrac{\partial {#1}}{\partial {#2}}}
+\newcommand{\npdiff}[3]{\bfrac{\partial^{#3} {#1}}{\partial {#2}^{#3}}}
+\newcommand{\lbrc}{\left \{}
+\newcommand{\rbrc}{\right \}}
+\newcommand{\W}{\wedge}
+\newcommand{\prm}[1]{{#1}'}
+\newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
+\newcommand{\R}{\dagger}
+\newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
+\newcommand{\grade}[1]{\left < {#1} \right >}
+\newcommand{\f}[2]{{#1}\lp {#2} \rp}
+\newcommand{\eval}[2]{\left . {#1} \right |_{#2}}$
 """
 
 print_replace_old = None
