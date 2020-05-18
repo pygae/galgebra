@@ -8,6 +8,7 @@ import io
 import builtins
 import functools
 import inspect
+import shutil
 from collections import ChainMap
 
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
@@ -86,40 +87,6 @@ def isinteractive():  #Is ipython running
         return True
     except NameError:
         return False
-
-
-def find_executable(executable, path=None):
-    """Try to find 'executable' in the directories listed in 'path' (a
-    string listing directories separated by 'os.pathsep'; defaults to
-    os.environ['PATH']).  Returns the complete filename or None if not
-    found
-    """
-    if path is None:
-        path = os.environ['PATH']
-    paths = path.split(os.pathsep)
-    extlist = ['']
-    if os.name == 'os2':
-        _base, ext = os.path.splitext(executable)
-        # executable files on OS/2 can have an arbitrary extension, but
-        # .exe is automatically appended if no dot is present in the name
-        if not ext:
-            executable = executable + ".exe"
-    elif sys.platform == 'win32':
-        pathext = os.environ['PATHEXT'].lower().split(os.pathsep)
-        _base, ext = os.path.splitext(executable)
-        if ext.lower() not in pathext:
-            extlist = pathext
-    for ext in extlist:
-        execname = executable + ext
-        if os.path.isfile(execname):
-            return execname
-        else:
-            for p in paths:
-                f = os.path.join(p, execname)
-                if os.path.isfile(f):
-                    return f
-    else:
-        return None
 
 
 def ostr(obj, dict_mode=False, indent=True):
@@ -1026,7 +993,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
     if pdfprog is None:
         return
 
-    pdflatex = find_executable(pdfprog)
+    pdflatex = shutil.which(pdfprog)
 
     if debug:
         print('pdflatex path =', pdflatex)
