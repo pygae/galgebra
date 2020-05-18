@@ -184,17 +184,12 @@ def oprint(*args, dict_mode=False):
     if isinstance(args[0], str) or args[0] is None:
         titles = args[0::2]
         objs = args[1::2]
-        if len(args) > 2:
-            if objs[0] is None:
-                n = 0
-            else:
-                n = len(titles[0])
-            for title, obj in zip(titles[1:], objs[1:]):
-                if obj is None:
-                    if not (dict_mode and isinstance(obj, dict)):
-                        n = max(n, len(title))
-        else:
-            n = len(titles[0])
+        n = max((
+            len(title)
+            for title, obj in zip(titles, objs)
+            if obj is not None
+            if not (dict_mode and isinstance(obj, dict))
+        ), default=0)
 
         for title, obj in zip(titles, objs):
             if obj is None:

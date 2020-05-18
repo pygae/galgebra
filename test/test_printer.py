@@ -62,12 +62,12 @@ def test_oprint():
         )
 
     assert s.getvalue() == textwrap.dedent("""\
-        int = 1
+        int        = 1
         dictionary:{a:1,b:2}
-        set = {1}
-        tuple = (1,2)
-        list = [1,2,3]
-        str = a quote: "
+        set        = {1}
+        tuple      = (1,2)
+        list       = [1,2,3]
+        str        = a quote: "
         """)
 
 
@@ -85,12 +85,12 @@ def test_oprint_dict_mode():
         )
 
     assert s.getvalue() == textwrap.dedent("""\
-        int = 1
+        int   = 1
         dictionary:
         a -> 1
         b -> 2
-        set = {1}
+        set   = {1}
         tuple = (1,2)
-        list = [1,2,3]
-        str = a quote: "
+        list  = [1,2,3]
+        str   = a quote: "
         """)
