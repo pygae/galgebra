@@ -63,7 +63,7 @@ def test_oprint():
 
     assert s.getvalue() == textwrap.dedent("""\
         int        = 1
-        dictionary:{a:1,b:2}
+        dictionary = {a:1,b:2}
         set        = {1}
         tuple      = (1,2)
         list       = [1,2,3]
