@@ -444,15 +444,9 @@ class Mv(object):
         if isinstance(A, Mv):
             diff = (self - A).expand().simplify()
             # diff = (self - A).expand()
-            if diff.obj == S(0):
-                return True
-            else:
-                return False
+            return diff.obj == S(0)
         else:
-            if self.is_scalar() and self.obj == A:
-                return True
-            else:
-                return False
+            return self.is_scalar() and self.obj == A
 
     """
     def __eq__(self, A):
@@ -897,17 +891,11 @@ class Mv(object):
 
     def is_scalar(self) -> bool:
         grades = self.Ga.grades(self.obj)
-        if len(grades) == 1 and grades[0] == 0:
-            return True
-        else:
-            return False
+        return grades == [0]
 
     def is_vector(self) -> bool:
         grades = self.Ga.grades(self.obj)
-        if len(grades) == 1 and grades[0] == 1:
-            return True
-        else:
-            return False
+        return grades == [1]
 
     def is_blade(self) -> bool:
         """
@@ -928,10 +916,7 @@ class Mv(object):
 
     def is_base(self) -> bool:
         coefs, _bases = metric.linear_expand(self.obj)
-        if len(coefs) > 1:
-            return False
-        else:
-            return coefs[0] == ONE
+        return coefs == [ONE]
 
     def is_versor(self) -> bool:
         """
@@ -957,9 +942,7 @@ class Mv(object):
         return self.versor_flg
 
     def is_zero(self) -> bool:
-        if self.obj == 0:
-            return True
-        return False
+        return self.obj == 0
 
     def scalar(self) -> Expr:
         """ return scalar part of multivector as sympy expression """
@@ -1698,10 +1681,10 @@ class Dop(dop._BaseDop):
         return latex_str
 
     def is_scalar(self) -> bool:
-        for coef, pdiff in self.terms:
-            if isinstance(coef, Mv) and not coef.is_scalar():
-                return False
-        return True
+        return all(
+            not isinstance(coef, Mv) or coef.is_scalar()
+            for coef, pdiff in self.terms
+        )
 
     def components(self) -> Tuple['Dop', ...]:
         return tuple(
