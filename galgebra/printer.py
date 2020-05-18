@@ -368,10 +368,6 @@ class GaPrinter(StrPrinter):
         s += str(self._print(function))
         return Eprint.Deriv(s)
 
-    def _print_Matrix(self, expr):
-        out_str = ostr(list(expr))
-        return out_str
-
 
 Basic.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
 Matrix.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
