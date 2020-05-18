@@ -126,7 +126,7 @@ def ostr(obj, dict_mode=False, indent=True):
     Recursively convert iterated object (list/tuple/dict/set) to string.
     """
     def ostr_rec(obj, dict_mode):
-        global ostr_s
+        ostr_s = ""
         if isinstance(obj, Matrix):
             ostr_s += str(obj)
         elif isinstance(obj, tuple):
@@ -135,7 +135,7 @@ def ostr(obj, dict_mode=False, indent=True):
             else:
                 ostr_s += '('
                 for obj_i in obj:
-                    ostr_rec(obj_i, dict_mode)
+                    ostr_s += ostr_rec(obj_i, dict_mode)
                 ostr_s = ostr_s[:-1] + '),'
         elif isinstance(obj, list):
             if len(obj) == 0:
@@ -143,49 +143,45 @@ def ostr(obj, dict_mode=False, indent=True):
             else:
                 ostr_s += '['
                 for obj_i in obj:
-                    ostr_rec(obj_i, dict_mode)
+                    ostr_s += ostr_rec(obj_i, dict_mode)
                 ostr_s = ostr_s[:-1] + '],'
         elif isinstance(obj, dict):
             if dict_mode:
                 ostr_s += '\n'
                 for key in list(obj.keys()):
-                    ostr_rec(key, dict_mode)
+                    ostr_s += ostr_rec(key, dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
                     ostr_s += ' -> '
-                    ostr_rec(obj[key], dict_mode)
+                    ostr_s += ostr_rec(obj[key], dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
                     ostr_s += '\n'
             else:
                 ostr_s += '{'
                 for key in list(obj.keys()):
-                    ostr_rec(key, dict_mode)
+                    ostr_s += ostr_rec(key, dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
                     ostr_s += ':'
-                    ostr_rec(obj[key], dict_mode)
+                    ostr_s += ostr_rec(obj[key], dict_mode)
                 ostr_s = ostr_s[:-1] + '} '
         elif isinstance(obj, set):
             tmp_obj = list(obj)
             ostr_s += '{'
             for obj_i in tmp_obj:
-                ostr_rec(obj_i, dict_mode)
+                ostr_s += ostr_rec(obj_i, dict_mode)
             ostr_s = ostr_s[:-1] + '},'
         else:
             ostr_s += str(obj) + ','
-        return
-    global ostr_s
-    ostr_s = ''
-    if isinstance(obj, Matrix):
-        ostr_s += '\n' + str(obj)
         return ostr_s
+
+    if isinstance(obj, Matrix):
+        return '\n' + str(obj)
     elif isinstance(obj, (tuple, list, dict, set)):
-        ostr_rec(obj, dict_mode)
-        ostr_s = ostr_s[:-1]
+        return ostr_rec(obj, dict_mode)[:-1]
     else:
-        ostr_s = str(obj)
-    return ostr_s
+        return str(obj)
 
 
 def find_functions(expr):
