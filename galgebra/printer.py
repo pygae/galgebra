@@ -11,7 +11,6 @@ import inspect
 from collections import ChainMap
 
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
-from itertools import islice
 from sympy.printing.str import StrPrinter
 from sympy.printing.conventions import split_super_sub
 from sympy.printing.latex import LatexPrinter, accepted_latex_functions
@@ -216,8 +215,8 @@ def oprint(*args, dict_mode=False):
     """
 
     if isinstance(args[0], str) or args[0] is None:
-        titles = list(islice(args, None, None, 2))
-        objs = tuple(islice(args, 1, None, 2))
+        titles = args[0::2]
+        objs = args[1::2]
         if len(args) > 2:
             if objs[0] is None:
                 n = 0
