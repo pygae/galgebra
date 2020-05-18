@@ -177,8 +177,6 @@ class Lt(object):
         self.mv_dict = None
         self.mat = None
 
-        self.Ga.inverse_metric()  # g^{-1} needed for standard matrix representation
-
         if isinstance(mat_rep, tuple):  # tuple input
             for key in mat_rep:
                 self.lt_dict[key] = mat_rep[key]

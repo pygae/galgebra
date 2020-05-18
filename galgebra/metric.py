@@ -479,21 +479,29 @@ class Metric(object):
 
         return de
 
-    def inverse_metric(self):
+    def inverse_metric(self) -> None:
+        # galgebra 0.5.0
+        warnings.warn(
+            "Metric.inverse_metric is deprecated, and now does nothing. "
+            "the `.g_inv` property is now always available.")
 
-        if self.g_inv is not None:
-            return
-
+    @_cached_property
+    def g_inv(self) -> Matrix:
+        """ Inverse of g """
         if self.is_ortho:  # Orthogonal metric
-            self.g_inv = eye(self.n)
+            g_inv = eye(self.n)
             for i in range(self.n):
-                self.g_inv[i, i] = S(1)/self.g(i, i)
+                g_inv[i, i] = S(1)/self.g(i, i)
+            return g_inv
+        elif self.gsym is None:
+            return simplify(self.g.inv())
         else:
-            if self.gsym is None:
-                self.g_inv = simplify(self.g.inv())
-            else:
-                self.g_adj = simplify(self.g.adjugate())
-                self.g_inv = self.g_adj/self.detg
+            return self.g_adj/self.detg
+
+    @_cached_property
+    def g_adj(self) -> Matrix:
+        """ Adjugate of g """
+        return simplify(self.g.adjugate())
 
     def Christoffel_symbols(self, mode=1):
         """
@@ -532,8 +540,6 @@ class Metric(object):
         elif mode == 2:
             # TODO handle None
             Gamma1 = self.Christoffel_symbols(mode=1)
-
-            self.inverse_metric()
 
             # Christoffel symbols of the second kind, \Gamma_{ij}^{k} = \Gamma_{ijl}g^{lk}
             # \partial_{x^{i}}e_{j} = \Gamma_{ij}^{k}e_{k}
@@ -679,8 +685,6 @@ class Metric(object):
         self.is_ortho = False  # Is basis othogonal
         self.coords = coords  # Manifold coordinates
         self.norm = norm  # True to normalize basis vectors
-        self.g_adj = None  #: Adjugate of g
-        self.g_inv = None  #: Inverse of g
         # Generate list of basis vectors and reciprocal basis vectors
         # as non-commutative symbols
 
