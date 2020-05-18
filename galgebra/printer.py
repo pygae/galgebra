@@ -8,6 +8,8 @@ import io
 import builtins
 import functools
 import inspect
+from collections import ChainMap
+
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
 from itertools import islice
 from sympy.printing.str import StrPrinter
@@ -463,6 +465,10 @@ class GaLatexPrinter(LatexPrinter):
     title is printed in equation mode. '%' has the same effect in title as
     in the Fmt() member function.
     """
+    # overrides of base class settings
+    _default_settings = ChainMap({
+        "mat_str": "array",
+    }, LatexPrinter._default_settings)
 
     fmt = 1
     prev_fmt = 1
@@ -805,19 +811,6 @@ class GaLatexPrinter(LatexPrinter):
         else:
             s = r"%s %s" % (tex, self._print(expr.expr))
         return s
-
-    def _print_MatrixBase(self, expr):
-        rows = expr.rows
-        cols = expr.cols
-
-        out_str = ' \\left [ \\begin{array}{' + (cols * 'c') + '} '
-        for row in range(rows):
-            for col in range(cols):
-                out_str += latex(expr[row, col]) + ' & '
-            out_str = out_str[:-2] + ' \\\\ '
-        out_str = out_str[:-4] + ' \\end{array}\\right ] '
-
-        return out_str
 
     def _print_Determinant(self, expr):
         # sympy `uses |X|` by default, we want `det (X)`
