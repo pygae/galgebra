@@ -9,12 +9,14 @@ from typing import List, Optional
 from sympy import (
     diff, trigsimp, Matrix, Rational,
     sqf_list, sqrt, eye, S, expand, Mul,
-    Add, simplify, Expr, Function
+    Add, simplify, Expr, Function, MatrixSymbol
 )
 
 from . import printer
 from ._utils import cached_property as _cached_property
-from .atoms import BasisVectorSymbol, DotProductSymbol
+from .atoms import (
+    BasisVectorSymbol, DotProductSymbol, MatrixFunction, Determinant,
+)
 
 half = Rational(1, 2)
 
@@ -490,7 +492,6 @@ class Metric(object):
             if self.gsym is None:
                 self.g_inv = simplify(self.g.inv())
             else:
-                self.detg = Function('|' + self.gsym + '|', real=True)(*self.coords)
                 self.g_adj = simplify(self.g.adjugate())
                 self.g_inv = self.g_adj/self.detg
 
@@ -617,6 +618,19 @@ class Metric(object):
             return
         raise ValueError(str(self.sig) + ' is not allowed value for self.sig')
 
+    @_cached_property
+    def detg(self) -> Expr:
+        r""" Determinant of :math:`g`, :math:`\det g` """
+        if self.gsym is None:
+            g = self.g
+        else:
+            # Define name of metric tensor determinant as sympy symbol
+            if self.coords is None:
+                g = MatrixSymbol(self.gsym, self.n, self.n)
+            else:
+                g = MatrixFunction(self.gsym, self.n, self.n)(*self.coords)
+        return Determinant(g)
+
     def __init__(
         self, basis, *,
         g=None,
@@ -665,7 +679,6 @@ class Metric(object):
         self.is_ortho = False  # Is basis othogonal
         self.coords = coords  # Manifold coordinates
         self.norm = norm  # True to normalize basis vectors
-        self.detg = None  #: Determinant of g
         self.g_adj = None  #: Adjugate of g
         self.g_inv = None  #: Inverse of g
         # Generate list of basis vectors and reciprocal basis vectors

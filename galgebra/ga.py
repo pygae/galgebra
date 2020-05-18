@@ -12,7 +12,7 @@ from ._backports.typing import OrderedDict
 from sympy import (
     diff, Rational, Symbol, S, Mul, Add, Expr,
     expand, simplify, eye, trigsimp,
-    symbols, sqrt, MatrixSymbol
+    symbols, sqrt,
 )
 
 from . import printer
@@ -21,8 +21,7 @@ from . import mv
 from . import dop
 from . import lt
 from .atoms import (
-    BasisBaseSymbol, BasisBladeSymbol, BasisBladeNoWedgeSymbol, MatrixFunction,
-    Determinant,
+    BasisBaseSymbol, BasisBladeSymbol, BasisBladeNoWedgeSymbol,
 )
 from ._utils import cached_property as _cached_property
 
@@ -1849,16 +1848,10 @@ class Ga(metric.Metric):
         of the metric tensor can be general scalar function of the coordinates.
         """
         if self.gsym is not None:
-            # Define name of metric tensor determinant as sympy symbol
-            if self.coords is None:
-                gsym_obj = MatrixSymbol(self.gsym, self.n, self.n)
-            else:
-                gsym_obj = MatrixFunction(self.gsym, self.n, self.n)(*self.coords)
             # Define square of pseudo-scalar in terms of metric tensor
             # determinant
-            det_g = Determinant(gsym_obj)
             n = self.n
-            return (-1) ** (n*(n - 1)//2) * det_g
+            return (-1) ** (n*(n - 1)//2) * self.detg
         else:
             return simplify(expand((self.e*self.e).scalar()))
 
