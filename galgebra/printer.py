@@ -288,13 +288,8 @@ class GaPrinter(StrPrinter):
                       'cosh', 'cot', 'coth', 'exp', 'floor', 'im', 'log', 're',
                       'root', 'sin', 'sinh', 'sqrt', 'sign', 'tan', 'tanh', 'Abs')
 
-    str_flg = True
     prev_fmt = 1
     fmt = 1
-    dop_fmt =1
-    prev_dop_fmt = 1
-    lt_fmt = 1
-    prev_lt_fmt = 1
 
     def _print_Function(self, expr):
         name = expr.func.__name__
@@ -429,10 +424,6 @@ class GaLatexPrinter(LatexPrinter):
 
     fmt = 1
     prev_fmt = 1
-    dop_fmt =1
-    prev_dop_fmt = 1
-    lt_fmt = 1
-    prev_lt_fmt = 1
 
     latex_flg = False
     latex_str = ''

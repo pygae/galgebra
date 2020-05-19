@@ -19,7 +19,7 @@ print(B.Fmt(3))
 lap = o3d.grad*o3d.grad
 print(r'%\nabla^{2} = \nabla\cdot\nabla =', lap)
 dop = lap + o3d.grad
-print(dop.Fmt(fmt=3,dop_fmt=3))
+print(dop.Fmt(fmt=3))
 
 # xpdf(paper=(6, 7))
 xpdf(pdfprog=None, paper=(6, 7))
