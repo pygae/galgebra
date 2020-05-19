@@ -33,6 +33,82 @@ HALF = Rational(1, 2)
 
 half = Rational(1, 2)
 
+
+# Add custom settings to the builtin latex printer
+_LatexPrinter._default_settings.update({
+    'galgebra_mv_fmt': 1
+})
+_StrPrinter._default_settings.update({
+    'galgebra_mv_fmt': 1
+})
+
+
+class _FmtResult:
+    """ Object returned from Mv.Fmt and Dop.Fmt, which can be printed as latex """
+    def __init__(self, obj, fmt: int = None, label: str = None):
+        self._obj = obj
+        self._fmt = fmt
+        self._label = label
+
+    def _latex(self, printer):
+        # make a copy of the printer with the specified setting applied
+        new_printer = copy.copy(printer)
+        new_printer._settings = copy.copy(new_printer._settings)
+        if self._fmt is not None:
+            new_printer._settings['galgebra_mv_fmt'] = self._fmt
+
+        # print and add the label, if present
+        latex_str = new_printer.doprint(self._obj)
+        if self._label is not None:
+            if r'\begin{align*}' in latex_str:
+                latex_str = latex_str.replace('&', ' ' + self._label + ' =&', 1)
+            else:
+                latex_str = self._label + ' = ' + latex_str
+        return latex_str
+
+    def _sympystr(self, printer):
+        # make a copy of the printer with the specified setting applied
+        new_printer = copy.copy(printer)
+        new_printer._settings = copy.copy(new_printer._settings)
+        if self._fmt is not None:
+            new_printer._settings['galgebra_mv_fmt'] = self._fmt
+
+        # print and add the label, if present
+        s = new_printer.doprint(self._obj)
+        if self._label is not None:
+            s = self._label + ' = ' + s
+        return s
+
+    def _repr_latex_(self):
+        latex_str = printer.GaLatexPrinter().doprint(self)
+        if r'\begin{align*}' not in latex_str:
+            latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
+        return latex_str
+
+    def __str__(self):
+        return printer.GaPrinter().doprint(self)
+
+    def __repr__(self):
+        return str(self)
+
+    def __ga_print_str__(self):
+        if printer.GaLatexPrinter.latex_flg:
+            # unfortunately we cannot re-use `_latex` here, because the output
+            # of this function has to survive the post-processing in
+            # `galgebra.printer.tex`.
+            settings = {}
+            if self._fmt is not None:
+                settings['galgebra_mv_fmt'] = self._fmt
+            latex_str = printer.GaLatexPrinter(settings).doprint(self._obj)
+
+            if self._label:
+                latex_str = self._label + ' = ' + latex_str
+
+            return latex_str
+        else:
+            return str(self)
+
+
 ########################### Multivector Class ##########################
 
 
@@ -636,21 +712,21 @@ class Mv(object):
             sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
             s = print_obj.doprint(sorted_terms[0][1][0] * sorted_terms[0][1][1])
-            if print_obj.fmt == 3:
+            if print_obj._settings['galgebra_mv_fmt'] == 3:
                 s = ' ' + s + '\n'
-            if print_obj.fmt == 2:
+            if print_obj._settings['galgebra_mv_fmt'] == 2:
                 s = ' ' + s
             old_grade = sorted_terms[0][1][2]
             for (key, (c, base, grade)) in sorted_terms[1:]:
                 term = print_obj.doprint(c * base)
-                if print_obj.fmt == 2 and old_grade != grade:  # one grade per line
+                if print_obj._settings['galgebra_mv_fmt'] == 2 and old_grade != grade:  # one grade per line
                     old_grade = grade
                     s += '\n'
                 if term[0] == '-':
                     term = ' - ' + term[1:]
                 else:
                     term = ' + ' + term
-                if print_obj.fmt == 3:  # one base per line
+                if print_obj._settings['galgebra_mv_fmt'] == 3:  # one base per line
                     s += term + '\n'
                 else:  # one multivector per line
                     s += term
@@ -744,9 +820,9 @@ class Mv(object):
                 cb_str = '\\left ( ' + l_coef + '\\right ) ' + l_base
             else:
                 cb_str = l_coef + ' ' + l_base
-            if print_obj.fmt == 3:  # One base per line
+            if print_obj._settings['galgebra_mv_fmt'] == 3:  # One base per line
                 lines.append(append_plus(cb_str))
-            elif print_obj.fmt == 2:  # One grade per line
+            elif print_obj._settings['galgebra_mv_fmt'] == 2:  # One grade per line
                 if grade != old_grade:
                     old_grade = grade
                     if not first_line:
@@ -756,9 +832,9 @@ class Mv(object):
                     s += append_plus(cb_str)
             else:  # One multivector per line
                 s += append_plus(cb_str)
-        if print_obj.fmt == 2:
+        if print_obj._settings['galgebra_mv_fmt'] == 2:
             lines.append(s)
-        if print_obj.fmt >= 2:
+        if print_obj._settings['galgebra_mv_fmt'] >= 2:
             if len(lines) == 1:
                 return lines[0]
             s = ' \\begin{align*} '
@@ -1176,41 +1252,10 @@ class Mv(object):
         with one grade per line.  Works for both standard printing and
         for latex.
         """
-        if printer.GaLatexPrinter.latex_flg:
-            printer.GaLatexPrinter.prev_fmt = printer.GaLatexPrinter.fmt
-            printer.GaLatexPrinter.fmt = fmt
-        else:
-            printer.GaPrinter.prev_fmt = printer.GaPrinter.fmt
-            printer.GaPrinter.fmt = fmt
-
-        if title is not None:
-            self.title = title
-
-        if printer.isinteractive():
-            return self
-
-        if printer.GaLatexPrinter.latex_flg:
-            s = printer.GaLatexPrinter().doprint(self)
-        else:
-            s = printer.GaPrinter().doprint(self)
-
-        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-        if title is not None:
-            return title + ' = ' + s
-        else:
-            return s
+        return _FmtResult(self, fmt, title)
 
     def _repr_latex_(self) -> str:
-        latex_str = printer.GaLatexPrinter().doprint(self)
-        if r'\begin{align*}' not in latex_str:
-            if self.title is None:
-                latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-            else:
-                latex_str = r'\begin{equation*} ' + self.title + ' = ' + latex_str + r' \end{equation*}'
-        else:
-            if self.title is not None:
-                latex_str = latex_str.replace('&', ' ' + self.title + ' =&', 1)
-        return latex_str
+        return self.Fmt(fmt=None, title=self.title)._repr_latex_()
 
     def norm2(self) -> Expr:
         reverse = self.rev()
@@ -1665,16 +1710,7 @@ class Dop(dop._BaseDop):
         return str(self)
 
     def _repr_latex_(self) -> str:
-        latex_str = printer.GaLatexPrinter().doprint(self)
-        if r'\begin{align*}' not in latex_str:
-            if self.title is None:
-                latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-            else:
-                latex_str = r'\begin{equation*} ' + self.title + ' = ' + latex_str + r' \end{equation*}'
-        else:
-            if self.title is not None:
-                latex_str = latex_str.replace('&', ' ' + self.title + ' =&', 1)
-        return latex_str
+        return self.Fmt(fmt=None, title=self.title)._repr_latex_()
 
     def is_scalar(self) -> bool:
         return all(
@@ -1798,28 +1834,7 @@ class Dop(dop._BaseDop):
         return s[:-3]
 
     def Fmt(self, fmt: int = 1, title: str = None) -> Union['Dop', str]:
-        if printer.GaLatexPrinter.latex_flg:
-            printer.GaLatexPrinter.prev_fmt = printer.GaLatexPrinter.fmt
-        else:
-            printer.GaPrinter.prev_fmt = printer.GaPrinter.fmt
-
-        if title is not None:
-            self.title = title
-
-        if printer.isinteractive():
-            return self
-
-        if printer.GaLatexPrinter.latex_flg:
-            s = printer.GaLatexPrinter().doprint(self)
-        else:
-            s = printer.GaPrinter().doprint(self)
-
-        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-
-        if title is not None:
-            return title + ' = ' + s
-        else:
-            return s
+        return _FmtResult(self, fmt, title)
 
     def _eval_derivative_n_times(self, x, n):
         return Dop(dop._eval_derivative_n_times_terms(self.terms, x, n), cmpflg=self.cmpflg, ga=self.Ga)
