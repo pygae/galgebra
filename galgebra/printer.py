@@ -291,8 +291,6 @@ class GaPrinter(StrPrinter):
     str_flg = True
     prev_fmt = 1
     fmt = 1
-    dop_fmt =1
-    prev_dop_fmt = 1
     lt_fmt = 1
     prev_lt_fmt = 1
 
@@ -429,8 +427,6 @@ class GaLatexPrinter(LatexPrinter):
 
     fmt = 1
     prev_fmt = 1
-    dop_fmt =1
-    prev_dop_fmt = 1
     lt_fmt = 1
     prev_lt_fmt = 1
 

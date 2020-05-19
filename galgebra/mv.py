@@ -1451,7 +1451,7 @@ class Dop(dop._BaseDop):
                 'In Dop.__init__ terms are neither (Mv, Pdop) pairs or '
                 '(Sdop, Mv) pairs, got {}'.format(terms))
 
-    def __init__(self, *args, ga: 'Ga', cmpflg: bool = False, debug: bool = False, fmt_dop: int = 1) -> None:
+    def __init__(self, *args, ga: 'Ga', cmpflg: bool = False, debug: bool = False) -> None:
         """
         Parameters
         ----------
@@ -1461,15 +1461,12 @@ class Dop(dop._BaseDop):
             Complement flag for Dop
         debug : bool
             True to print out debugging information
-        fmt_dop :
-            1 for normal dop partial derivative formatting
         """
         if ga is None:
             raise ValueError('ga argument to Dop() must not be None')
 
         self.cmpflg = cmpflg
         self.Ga = ga
-        self.dop_fmt = fmt_dop
         self.title = None
 
         if len(args) == 2:
@@ -1787,13 +1784,11 @@ class Dop(dop._BaseDop):
         dop.Sdop.str_mode = False
         return s[:-3]
 
-    def Fmt(self, fmt: int = 1, title: str = None, dop_fmt: int = None) -> Union['Dop', str]:
+    def Fmt(self, fmt: int = 1, title: str = None) -> Union['Dop', str]:
         if printer.GaLatexPrinter.latex_flg:
             printer.GaLatexPrinter.prev_fmt = printer.GaLatexPrinter.fmt
-            printer.GaLatexPrinter.prev_dop_fmt = printer.GaLatexPrinter.dop_fmt
         else:
             printer.GaPrinter.prev_fmt = printer.GaPrinter.fmt
-            printer.GaPrinter.prev_dop_fmt = printer.GaPrinter.dop_fmt
 
         if title is not None:
             self.title = title
@@ -1807,7 +1802,6 @@ class Dop(dop._BaseDop):
             s = printer.GaPrinter().doprint(self)
 
         printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-        printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
 
         if title is not None:
             return title + ' = ' + s
