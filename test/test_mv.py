@@ -74,6 +74,9 @@ class TestMv(unittest.TestCase):
         self.assertTrue(m1.blade_coefs([e_1]) == [a])
         self.assertTrue(m1.blade_coefs([e_2]) == [1])
         self.assertTrue(m1.blade_coefs([e_3]) == [-1])
+        self.assertTrue(m1.blade_coefs([e_1, e_2, e_3]) == [a, 1, -1])
+        self.assertTrue(m1.list() == [a, 1, -1])  # alias
+
         self.assertTrue(m1.blade_coefs([e_1 ^ e_2]) == [b])
         self.assertTrue(m1.blade_coefs([e_2 ^ e_3]) == [0])
         self.assertTrue(m1.blade_coefs([e_1 ^ e_3]) == [0])

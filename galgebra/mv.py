@@ -1334,21 +1334,7 @@ class Mv(object):
         return Mv(obj, ga=self.Ga)
 
     def list(self) -> List[Expr]:
-        indexes = []
-        key_coefs = []
-        for coef, base in metric.linear_expand_terms(self.obj):
-            if base in self.Ga.basis:
-                index = self.Ga.basis.index(base)
-                key_coefs.append((coef, index))
-                indexes.append(index)
-
-        for index in self.Ga.n_range:
-            if index not in indexes:
-                key_coefs.append((S(0), index))
-
-        key_coefs = sorted(key_coefs, key=operator.itemgetter(1))
-        coefs = [x[0] for x in key_coefs]
-        return coefs
+        return self.blade_coefs(self.Ga.mv_blades[1])
 
     def grade(self, r=0) -> 'Mv':
         return self.get_grade(r)
