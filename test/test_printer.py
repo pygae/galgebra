@@ -1,12 +1,16 @@
 import contextlib
 import io
 import textwrap
+import sys
 
 import pytest
 from sympy import Symbol
 
 from galgebra.printer import GaPrinter, GaLatexPrinter, oprint
 from galgebra.ga import Ga
+
+
+has_ordered_dictionaries = sys.version_info >= (3, 6)
 
 
 def test_latex_flg_GaPrinter():
@@ -61,14 +65,15 @@ def test_oprint():
             'str', 'a quote: "',
         )
 
-    assert s.getvalue() == textwrap.dedent("""\
-        int        = 1
-        dictionary = {a:1,b:2}
-        set        = {1}
-        tuple      = (1,2)
-        list       = [1,2,3]
-        str        = a quote: "
-        """)
+    if has_ordered_dictionaries:
+        assert s.getvalue() == textwrap.dedent("""\
+            int        = 1
+            dictionary = {a:1,b:2}
+            set        = {1}
+            tuple      = (1,2)
+            list       = [1,2,3]
+            str        = a quote: "
+            """)
 
 
 def test_oprint_dict_mode():
@@ -84,13 +89,14 @@ def test_oprint_dict_mode():
             dict_mode=True
         )
 
-    assert s.getvalue() == textwrap.dedent("""\
-        int   = 1
-        dictionary:
-        a -> 1
-        b -> 2
-        set   = {1}
-        tuple = (1,2)
-        list  = [1,2,3]
-        str   = a quote: "
-        """)
+    if has_ordered_dictionaries:
+        assert s.getvalue() == textwrap.dedent("""\
+            int   = 1
+            dictionary:
+            a -> 1
+            b -> 2
+            set   = {1}
+            tuple = (1,2)
+            list  = [1,2,3]
+            str   = a quote: "
+            """)
