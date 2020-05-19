@@ -2,6 +2,8 @@
 Changelog
 =========
 
+- :bug:`53` Calling :func:`sympy.sympify` (or any other sympy function) on a :class:`~galgebra.mv.Mv` instance no longer raises :exc:`RecursionError`, and instead raises :exc:`TypeError` with a helpful message.
+
 - :bug:`344` :func:`galgebra.metric.collect` no longer discards terms that were not requested.
 
 - :support:`338` The undocumented and mispelt static method :meth:`galgebra.lt.Mlt.extact_basis_indexes` (which just computed a value equivalent to :attr:`galgebra.ga.Ga.basis_super_scripts`) has been deprecated.

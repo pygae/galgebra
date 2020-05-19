@@ -11,7 +11,7 @@ from typing import List, Any, Tuple, Union, TYPE_CHECKING
 from sympy import (
     Symbol, Function, S, expand, Add,
     sin, cos, sinh, cosh, sqrt, trigsimp,
-    simplify, diff, Rational, Expr, Abs, collect,
+    simplify, diff, Rational, Expr, Abs, collect, SympifyError,
 )
 from sympy import exp as sympy_exp
 from sympy import N as Nsympy
@@ -378,6 +378,15 @@ class Mv(object):
             if isinstance(args[0], str):
                 self.title = args[0]
             self.characterise_Mv()
+
+    def _sympy_(self):
+        """ Hook used by sympy.sympify """
+        raise SympifyError(self, TypeError(
+            "Cannot safely convert an `Mv` instance to a sympy object. "
+            "Use `mv.obj` to obtain the internal sympy object, but note that "
+            "this does not overload the geometric operators, and will not "
+            "track the associated `Ga` instance."
+        ))
 
     ################# Multivector member functions #####################
 
