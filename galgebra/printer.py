@@ -288,7 +288,6 @@ class GaPrinter(StrPrinter):
                       'cosh', 'cot', 'coth', 'exp', 'floor', 'im', 'log', 're',
                       'root', 'sin', 'sinh', 'sqrt', 'sign', 'tan', 'tanh', 'Abs')
 
-    str_flg = True
     prev_fmt = 1
     fmt = 1
 
