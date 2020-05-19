@@ -4,7 +4,7 @@ import textwrap
 import sys
 
 import pytest
-from sympy import Symbol
+from sympy import Symbol, Derivative
 
 from galgebra.printer import GaPrinter, GaLatexPrinter, oprint
 from galgebra.ga import Ga
@@ -63,16 +63,18 @@ def test_oprint():
             'tuple', (1, 2),
             'list', [1, 2, 3],
             'str', 'a quote: "',
+            'deriv', Derivative(Symbol('x'), Symbol('x'), evaluate=False),
         )
 
     if has_ordered_dictionaries:
         assert s.getvalue() == textwrap.dedent("""\
             int        = 1
-            dictionary = {a:1,b:2}
+            dictionary = {a: 1, b: 2}
             set        = {1}
-            tuple      = (1,2)
-            list       = [1,2,3]
+            tuple      = (1, 2)
+            list       = [1, 2, 3]
             str        = a quote: "
+            deriv      = D{x}x
             """)
 
 
@@ -96,7 +98,7 @@ def test_oprint_dict_mode():
             a -> 1
             b -> 2
             set   = {1}
-            tuple = (1,2)
-            list  = [1,2,3]
+            tuple = (1, 2)
+            list  = [1, 2, 3]
             str   = a quote: "
             """)
