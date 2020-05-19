@@ -465,7 +465,7 @@ def signature_test():
 
     e3d = Ga('e1 e2 e3',g=[1,1,1])
     print('g =', e3d.g)
-    print(r'Signature = (3,0)\: I =', e3d.I(),'\: I^{2} =', e3d.I()*e3d.I())
+    print(r'Signature = (3,0)\: I =', e3d.I(), r'\: I^{2} =', e3d.I()*e3d.I())
 
     e3d = Ga('e1 e2 e3',g=[2,2,2])
     print('g =', e3d.g)
@@ -473,23 +473,23 @@ def signature_test():
 
     sp4d = Ga('e1 e2 e3 e4',g=[1,-1,-1,-1])
     print('g =', sp4d.g)
-    print(r'Signature = (1,3)\: I =', sp4d.I(),'\: I^{2} =', sp4d.I()*sp4d.I())
+    print(r'Signature = (1,3)\: I =', sp4d.I(), r'\: I^{2} =', sp4d.I()*sp4d.I())
 
     sp4d = Ga('e1 e2 e3 e4',g=[2,-2,-2,-2])
     print('g =', sp4d.g)
-    print(r'Signature = (1,3)\: I =', sp4d.I(),'\: I^{2} =', sp4d.I()*sp4d.I())
+    print(r'Signature = (1,3)\: I =', sp4d.I(), r'\: I^{2} =', sp4d.I()*sp4d.I())
 
     e4d = Ga('e1 e2 e3 e4',g=[1,1,1,1])
     print('g =', e4d.g)
-    print(r'Signature = (4,0)\: I =', e4d.I(),'\: I^{2} =', e4d.I()*e4d.I())
+    print(r'Signature = (4,0)\: I =', e4d.I(), r'\: I^{2} =', e4d.I()*e4d.I())
 
     cf3d = Ga('e1 e2 e3 e4 e5',g=[1,1,1,1,-1])
     print('g =', cf3d.g)
-    print(r'Signature = (4,1)\: I =', cf3d.I(),'\: I^{2} =', cf3d.I()*cf3d.I())
+    print(r'Signature = (4,1)\: I =', cf3d.I(), r'\: I^{2} =', cf3d.I()*cf3d.I())
 
     cf3d = Ga('e1 e2 e3 e4 e5',g=[2,2,2,2,-2])
     print('g =', cf3d.g)
-    print(r'Signature = (4,1)\: I =', cf3d.I(),'\: I^{2} =', cf3d.I()*cf3d.I())
+    print(r'Signature = (4,1)\: I =', cf3d.I(), r'\: I^{2} =', cf3d.I()*cf3d.I())
 
     return
 

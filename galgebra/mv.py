@@ -444,15 +444,9 @@ class Mv(object):
         if isinstance(A, Mv):
             diff = (self - A).expand().simplify()
             # diff = (self - A).expand()
-            if diff.obj == S(0):
-                return True
-            else:
-                return False
+            return diff.obj == S(0)
         else:
-            if self.is_scalar() and self.obj == A:
-                return True
-            else:
-                return False
+            return self.is_scalar() and self.obj == A
 
     """
     def __eq__(self, A):
@@ -897,17 +891,11 @@ class Mv(object):
 
     def is_scalar(self) -> bool:
         grades = self.Ga.grades(self.obj)
-        if len(grades) == 1 and grades[0] == 0:
-            return True
-        else:
-            return False
+        return grades == [0]
 
     def is_vector(self) -> bool:
         grades = self.Ga.grades(self.obj)
-        if len(grades) == 1 and grades[0] == 1:
-            return True
-        else:
-            return False
+        return grades == [1]
 
     def is_blade(self) -> bool:
         """
@@ -928,10 +916,7 @@ class Mv(object):
 
     def is_base(self) -> bool:
         coefs, _bases = metric.linear_expand(self.obj)
-        if len(coefs) > 1:
-            return False
-        else:
-            return coefs[0] == ONE
+        return coefs == [ONE]
 
     def is_versor(self) -> bool:
         """
@@ -957,9 +942,7 @@ class Mv(object):
         return self.versor_flg
 
     def is_zero(self) -> bool:
-        if self.obj == 0:
-            return True
-        return False
+        return self.obj == 0
 
     def scalar(self) -> Expr:
         """ return scalar part of multivector as sympy expression """
@@ -975,10 +958,29 @@ class Mv(object):
         return [self.Ga.mv(coef * base) for coef, base in cb]
 
     def get_coefs(self, grade: int) -> List[Expr]:
-        cb = metric.linear_expand_terms(self.obj)
-        cb = sorted(cb, key=lambda x: self.Ga.blades[grade].index(x[1]))
-        coefs, bases = list(zip(*cb))
-        return coefs
+        """
+        Like ``blade_coefs(self.Ga.mv_blades[grade])``, but requires all
+        components to be of that grade.
+
+        Raises
+        ------
+        ValueError:
+            If the multivector is not of the given grade.
+        """
+        blade_lst = self.Ga.blades[grade]
+        coef_lst = [S.Zero] * len(blade_lst)
+        for coef, blade in metric.linear_expand_terms(self.obj):
+            if coef == S.Zero:
+                continue  # TODO: why does expansion return this?
+            try:
+                base_i = blade_lst.index(blade)
+            except ValueError:
+                raise ValueError(
+                    "MultiVector has a {} component which is not grade {}"
+                    .format(blade, grade)
+                ) from None
+            coef_lst[base_i] += coef
+        return coef_lst
 
     def blade_coefs(self, blade_lst: List['Mv'] = None) -> List[Expr]:
         """
@@ -1315,21 +1317,7 @@ class Mv(object):
         return Mv(obj, ga=self.Ga)
 
     def list(self) -> List[Expr]:
-        indexes = []
-        key_coefs = []
-        for coef, base in metric.linear_expand_terms(self.obj):
-            if base in self.Ga.basis:
-                index = self.Ga.basis.index(base)
-                key_coefs.append((coef, index))
-                indexes.append(index)
-
-        for index in self.Ga.n_range:
-            if index not in indexes:
-                key_coefs.append((S(0), index))
-
-        key_coefs = sorted(key_coefs, key=operator.itemgetter(1))
-        coefs = [x[0] for x in key_coefs]
-        return coefs
+        return self.blade_coefs(self.Ga.mv_blades[1])
 
     def grade(self, r=0) -> 'Mv':
         return self.get_grade(r)
@@ -1431,7 +1419,7 @@ class Dop(dop._BaseDop):
     terms : list of tuples
     """
 
-    def __init_from_coef_and_pdop(self, coefs: List[Any], pdiffs: List['Pdop']):
+    def __init_from_coef_and_pdop(self, coefs: List[Any], pdiffs: List['dop.Pdop']):
         if len(coefs) != len(pdiffs):
             raise ValueError('In Dop.__init__ coefficent list and Pdop list must be same length.')
         self.terms = tuple(zip(coefs, pdiffs))
@@ -1679,12 +1667,12 @@ class Dop(dop._BaseDop):
         return latex_str
 
     def is_scalar(self) -> bool:
-        for coef, pdiff in self.terms:
-            if isinstance(coef, Mv) and not coef.is_scalar():
-                return False
-        return True
+        return all(
+            not isinstance(coef, Mv) or coef.is_scalar()
+            for coef, pdiff in self.terms
+        )
 
-    def components(self) -> Tuple['Dop']:
+    def components(self) -> Tuple['Dop', ...]:
         return tuple(
             Dop([(sdop, Mv(base, ga=self.Ga))], ga=self.Ga)
             for sdop, base in self.Dop_mv_expand()

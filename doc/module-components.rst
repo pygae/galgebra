@@ -251,21 +251,16 @@ Backward Compatibility Class MV
 
 In order to be backward compatible with older versions of *galgebra* we introduce the class MV which is inherits it’s functions from then class Mv. To instantiate a geometric algebra using MV use the static function
 
-.. method:: MV.setup(basis, metric=None, coords=None, rframe=False, debug=False, curv=(None,None))
+.. automethod:: galgebra.deprecated.MV.setup
    :noindex:
-
-   This function allows a single geometric algebra to be created. If the function is called more than once the old geometric algebra is overwritten by the new geometric algebra. The named input ``metric`` is the same as the named input ``g`` in the current version of *galgebra*. Likewise, ``basis``, ``coords``, and ``debug`` are the same in the old and current versions of *galgebra*\ \ [17]_. Due to improvements in *sympy* the inputs ``rframe`` and ``curv[1]`` are no longer required. ``curv[0]`` is
-   the vector function (list or tuple of scalar functions) of the coordinates required to define a vector manifold. For compatibility with the old version of *galgebra* if ``curv`` is used ``metric`` should be a orthonormal Euclidean metric of the same dimension as ``curv[0]``. It is strongly suggested that one use the new methods of defining a geometric algebra on a manifold.
 
 .. class:: MV(base, mvtype, fct=False, blade_rep=True)
    :noindex:
 
    For the instantiation of multivector using ``MV`` the ``base`` and ``mvtype`` arguments are the same as for new methods of multivector instantiation. The ``fct`` input is the same and the ``g`` input in the new methods. ``blade_rep`` is not used in the new methods so setting ``blade_rep=False`` will do nothing. Effectively ``blade_rep=False`` was not used in the old examples.
 
-.. method:: MV.Fmt(self, fmt=1, title=None)
+.. automethod:: galgebra.deprecated.MV.Fmt
    :noindex:
-
-   ``Fmt`` in ``MV`` has inputs identical to ``Fmt`` in ``Mv`` except that if ``A`` is a multivector then ``A.Fmt(2,'A')`` executes a print statement from ``MV`` and returns ``None``, while from ``Mv``, ``A.Fmt(2,'A')`` returns a string so that the function is compatible with use in *ipython notebook*.
 
 Basic Multivector Class Functions
 ---------------------------------
@@ -636,30 +631,20 @@ with output
 
 The member function of the ``Lt`` class are
 
-.. method:: Lt.__call__(A)
+.. automethod:: galgebra.lt.Lt.__call__(A)
    :noindex:
 
-   Returns the image of the multivector :math:`A` under the linear transformation :math:`L` where :math:`{{L}\lp {A} \rp }` is defined by the linearity of :math:`L`, the vector values :math:`{{L}\lp {{{\eb}}_{i}} \rp }`, and the definition :math:`{{L}\lp {{{\eb}}_{i_{1}}{\wedge}\dots{\wedge}{{\eb}}_{i_{r}}} \rp } = {{L}\lp {{{\eb}}_{i_{1}}} \rp }{\wedge}\dots{\wedge}{{L}\lp {{{\eb}}_{i_{r}}} \rp }`.
-
-.. method:: Lt.det()
+.. automethod:: galgebra.lt.Lt.det
    :noindex:
 
-   Returns the determinant (a scalar) of the linear transformation, :math:`L`, defined by :math:`{{\det}\lp {L} \rp }I = {{L}\lp {I} \rp }`.
-
-.. method:: Lt.adj()
+.. automethod:: galgebra.lt.Lt.adj
    :noindex:
 
-   Returns the adjoint (a linear transformation) of the linear transformation, :math:`L`, defined by :math:`a\cdot{{L}\lp {b} \rp } = b\cdot{{\bar{L}}\lp {a} \rp }` where :math:`a` and :math:`b` are any two vectors in the tangent space and :math:`\bar{L}` is the adjoint of :math:`L`.
-
-.. method:: Lt.tr()
+.. automethod:: galgebra.lt.Lt.tr
    :noindex:
 
-   Returns the trace (a scalar) of the linear transformation, :math:`L`, defined by :math:`{{\operatorname{tr}}\lp {L} \rp }=\nabla_{a}\cdot{{L}\lp {a} \rp }` where :math:`a` is a vector in the tangent space.
-
-.. method:: Lt.matrix()
+.. automethod:: galgebra.lt.Lt.matrix
    :noindex:
-
-   Returns the matrix representation (*sympy* ``Matrix``) of the linear transformation, :math:`L`, defined by :math:`{{L}\lp {{{\eb}}_{i}} \rp } = L_{ij}{{\eb}}_{j}` where :math:`L_{ij}` is the matrix representation.
 
 The ``Ltrans.py`` demonstrate the use of the various ``Lt`` member functions and operators. The operators that can be used with linear transformations are ``+``, ``-``, and ``*``. If :math:`A` and :math:`B` are linear transformations, :math:`V` a multivector, and :math:`\alpha` a scalar then :math:`{{{\lp {A\pm B} \rp }}\lp {V} \rp } = {{A}\lp {V} \rp }\pm{{B}\lp {V} \rp }`, :math:`{{{\lp {AB} \rp }}\lp {V} \rp } = {{A}\lp {{{B}\lp {V} \rp }} \rp }`, and
 :math:`{{{\lp {\alpha A} \rp }}\lp {V} \rp } = \alpha{{A}\lp {V} \rp }`.
@@ -717,25 +702,17 @@ Basic Multilinear Function Class Functions
 
 If we can instantiate multilinear functions we can use all the multilinear function class functions as described as follows. See section :ref:`MLtrans` for the mathematical description of each operation.
 
-.. method:: Mlt.__call__(kargs)
+.. automethod:: galgebra.lt.Mlt.__call__
    :noindex:
 
-   Calling function to evaluates multilinear function for ``kargs`` list of vector arguments and returns a value. Note that a sympy scalar is returned, *not* a multilinear function.
-
-.. method:: Mlt.contract(slot1,slot2)
+.. automethod:: galgebra.lt.Mlt.contract
    :noindex:
 
-   Returns contraction of tensor between ``slot1`` and ``slot2`` where ``slot1`` is the index of the first vector argument and ``slot2`` is the index of the second vector argument of the tensor. For example if we have a rank two tensor, ``T(a1,a2)``, then ``T.contract(1,2)`` is the contraction of ``T``. For this case since there are only two slots there can only be one contraction.
-
-.. method:: Mlt.pdiff(slot)
+.. automethod:: galgebra.lt.Mlt.pdiff
    :noindex:
 
-   Returns gradient of tensor, ``T``, with respect to slot vector. For example if the tensor is :math:`{{T}\lp {a_{1},a_{2}} \rp }` then ``T.pdiff(2)`` is :math:`\nabla_{a_{2}}T`. Since ``T`` is a scalar function, ``T.pdiff(2)`` is a vector function.
-
-.. method:: Mlt.cderiv()
+.. automethod:: galgebra.lt.Mlt.cderiv
    :noindex:
-
-   Returns covariant derivative of tensor field. If ``T`` is a tensor of rank :math:`k` then ``T.cderiv()`` is a tensor of rank :math:`k+1`. The operation performed is defined in section :ref:`MLtrans`.
 
 Standard Printing
 -----------------
@@ -969,9 +946,6 @@ Since the expressions for multivectors or differential operators can be very lon
 
 .. [16]
    Denoted in text output by ``A__x``, etc. so that for text output ``A`` would be printed as ``A__x*e_x+A__y*e_y+A__z*e_z``.
-
-.. [17]
-   If the metric is input as a list or list or lists the object is no longer quoted (input as a string). For example the old ``metric='[1,1,1]'`` becomes ``metric=[1,1,1]``.
 
 .. [18]
    In the future it should be possible to generate closed form expressions for :math:`e^{A}` if :math:`A^{r}` is a scalar for some interger :math:`r`.

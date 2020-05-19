@@ -35,6 +35,23 @@ class TestMv(unittest.TestCase):
         self.assertFalse((e_3 ^ e_1).is_base())
         self.assertFalse((e_2 ^ e_1 ^ e_3).is_base())
 
+    def test_get_coefs(self):
+        _g3d, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+
+        assert (e_1 * 3 + e_3).get_coefs(1) == [3, 0, 1]
+
+        # can always get coefficients of 0
+        assert (0*e_1).get_coefs(0) == [0]
+        assert (0*e_1).get_coefs(1) == [0, 0, 0]
+        assert (0*e_1).get_coefs(2) == [0, 0, 0]
+        assert (0*e_1).get_coefs(3) == [0]
+
+        # grade is wrong
+        with pytest.raises(ValueError):
+            (e_1 ^ e_2).get_coefs(1)
+        with pytest.raises(ValueError):
+            (e_1 ^ e_2).get_coefs(3)
+
 
     def test_blade_coefs(self):
         """
@@ -57,6 +74,9 @@ class TestMv(unittest.TestCase):
         self.assertTrue(m1.blade_coefs([e_1]) == [a])
         self.assertTrue(m1.blade_coefs([e_2]) == [1])
         self.assertTrue(m1.blade_coefs([e_3]) == [-1])
+        self.assertTrue(m1.blade_coefs([e_1, e_2, e_3]) == [a, 1, -1])
+        self.assertTrue(m1.list() == [a, 1, -1])  # alias
+
         self.assertTrue(m1.blade_coefs([e_1 ^ e_2]) == [b])
         self.assertTrue(m1.blade_coefs([e_2 ^ e_3]) == [0])
         self.assertTrue(m1.blade_coefs([e_1 ^ e_3]) == [0])

@@ -2,9 +2,36 @@
 Changelog
 =========
 
+- :bug:`344` :func:`galgebra.metric.collect` no longer discards terms that were not requested.
+
+- :support:`338` The undocumented and mispelt static method :meth:`galgebra.lt.Mlt.extact_basis_indexes` (which just computed a value equivalent to :attr:`galgebra.ga.Ga.basis_super_scripts`) has been deprecated.
+
+- :feature:`326` The :meth:`galgebra.ga.Ga.make_grad` function now accepts multivectors, not just vectors.
+
+- :support:`335` The undocumented method :meth:`galgebra.ga.Ga.X` (the same as :attr:`~galgebra.ga.Ga.coords_vec`) has been deprecated.
+
+- :support:`317` The undocumented attributes :attr:`galgebra.ga.Ga.lt_x` (the same as :attr:`~galgebra.ga.Ga.coords_vec`) and :attr:`galgebra.ga.Ga.lt_coords` (the same as :attr:`~galgebra.ga.Ga.coords`) have been deprecated.
+
 - :support:`280` The ``galgebra.utils`` module, which provided Python 2 compatibility helpers, has been deprecated.
 
-- :support:`245` (also :issue:`248`) The following attributes have been deprecated to reduce the number of similar members in :class:`~galgebra.ga.Ga`.
+- :support:`245` (also :issue:`248`, :issue:`334`) The following attributes have been deprecated to reduce the number of similar members in :class:`~galgebra.ga.Ga`.
+
+  * Unified into the :attr:`~galgebra.ga.ProductFunction.table_dict` attribute of :class:`~galgebra.ga.ProductFunction` instances:
+
+    * :attr:`galgebra.ga.Ga.wedge_table_dict` |rarr| ``wedge.table_dict``
+    * :attr:`galgebra.ga.Ga.left_contract_table_dict` |rarr| ``left_contract.table_dict``
+    * :attr:`galgebra.ga.Ga.right_contract_table_dict` |rarr| ``right_contract.table_dict``
+    * :attr:`galgebra.ga.Ga.dot_table_dict` |rarr| ``hestenes_dot.table_dict``
+    * :attr:`galgebra.ga.Ga.mul_table_dict` |rarr| ``mul.table_dict``
+    * :attr:`galgebra.ga.Ga.basic_mul_table_dict` |rarr| ``basic_mul.table_dict``
+
+  * Unified into methods of :class:`~galgebra.ga.ProductFunction` instances:
+
+    * :attr:`galgebra.ga.Ga.non_orthogonal_bases_products` |rarr| ``basic_mul.of_basis_bases``
+    * :attr:`galgebra.ga.Ga.wedge_product_basis_blades` |rarr| ``wedge.of_basis_blades``
+    * :attr:`galgebra.ga.Ga.geometric_product_basis_blades` |rarr| ``mul.of_basis_blades``
+    * :attr:`galgebra.ga.Ga.dot_product_basis_blades` and :attr:`galgebra.ga.Ga.non_orthogonal_dot_product_basis_blades` |rarr| ``<some_dot_type>.of_basis_blades``.
+      In future it will no longer be possible to call the non-ortho method for an orthogonal ga, or vice-versa.
 
   * Unified into :attr:`galgebra.ga.Ga.blade_expansion_dict`:
 

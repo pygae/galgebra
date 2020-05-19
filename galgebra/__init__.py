@@ -17,6 +17,7 @@ Submodules
     mv
     lt
     dop
+    atoms
     printer
     utils
 

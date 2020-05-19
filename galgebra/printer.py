@@ -7,9 +7,13 @@ import sys
 import io
 import builtins
 import functools
+import inspect
+import shutil
+from collections import ChainMap
+
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
-from itertools import islice
 from sympy.printing.str import StrPrinter
+from sympy.printing.conventions import split_super_sub
 from sympy.printing.latex import LatexPrinter, accepted_latex_functions
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
@@ -105,46 +109,12 @@ def isinteractive():  #Is ipython running
         return False
 
 
-def find_executable(executable, path=None):
-    """Try to find 'executable' in the directories listed in 'path' (a
-    string listing directories separated by 'os.pathsep'; defaults to
-    os.environ['PATH']).  Returns the complete filename or None if not
-    found
-    """
-    if path is None:
-        path = os.environ['PATH']
-    paths = path.split(os.pathsep)
-    extlist = ['']
-    if os.name == 'os2':
-        _base, ext = os.path.splitext(executable)
-        # executable files on OS/2 can have an arbitrary extension, but
-        # .exe is automatically appended if no dot is present in the name
-        if not ext:
-            executable = executable + ".exe"
-    elif sys.platform == 'win32':
-        pathext = os.environ['PATHEXT'].lower().split(os.pathsep)
-        _base, ext = os.path.splitext(executable)
-        if ext.lower() not in pathext:
-            extlist = pathext
-    for ext in extlist:
-        execname = executable + ext
-        if os.path.isfile(execname):
-            return execname
-        else:
-            for p in paths:
-                f = os.path.join(p, execname)
-                if os.path.isfile(f):
-                    return f
-    else:
-        return None
-
-
 def ostr(obj, dict_mode=False, indent=True):
     """
     Recursively convert iterated object (list/tuple/dict/set) to string.
     """
     def ostr_rec(obj, dict_mode):
-        global ostr_s
+        ostr_s = ""
         if isinstance(obj, Matrix):
             ostr_s += str(obj)
         elif isinstance(obj, tuple):
@@ -153,7 +123,7 @@ def ostr(obj, dict_mode=False, indent=True):
             else:
                 ostr_s += '('
                 for obj_i in obj:
-                    ostr_rec(obj_i, dict_mode)
+                    ostr_s += ostr_rec(obj_i, dict_mode)
                 ostr_s = ostr_s[:-1] + '),'
         elif isinstance(obj, list):
             if len(obj) == 0:
@@ -161,49 +131,45 @@ def ostr(obj, dict_mode=False, indent=True):
             else:
                 ostr_s += '['
                 for obj_i in obj:
-                    ostr_rec(obj_i, dict_mode)
+                    ostr_s += ostr_rec(obj_i, dict_mode)
                 ostr_s = ostr_s[:-1] + '],'
         elif isinstance(obj, dict):
             if dict_mode:
                 ostr_s += '\n'
                 for key in list(obj.keys()):
-                    ostr_rec(key, dict_mode)
+                    ostr_s += ostr_rec(key, dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
                     ostr_s += ' -> '
-                    ostr_rec(obj[key], dict_mode)
+                    ostr_s += ostr_rec(obj[key], dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
                     ostr_s += '\n'
             else:
                 ostr_s += '{'
                 for key in list(obj.keys()):
-                    ostr_rec(key, dict_mode)
+                    ostr_s += ostr_rec(key, dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
                     ostr_s += ':'
-                    ostr_rec(obj[key], dict_mode)
+                    ostr_s += ostr_rec(obj[key], dict_mode)
                 ostr_s = ostr_s[:-1] + '} '
         elif isinstance(obj, set):
             tmp_obj = list(obj)
             ostr_s += '{'
             for obj_i in tmp_obj:
-                ostr_rec(obj_i, dict_mode)
+                ostr_s += ostr_rec(obj_i, dict_mode)
             ostr_s = ostr_s[:-1] + '},'
         else:
             ostr_s += str(obj) + ','
-        return
-    global ostr_s
-    ostr_s = ''
-    if isinstance(obj, Matrix):
-        ostr_s += '\n' + str(obj)
         return ostr_s
+
+    if isinstance(obj, Matrix):
+        return '\n' + str(obj)
     elif isinstance(obj, (tuple, list, dict, set)):
-        ostr_rec(obj, dict_mode)
-        ostr_s = ostr_s[:-1]
+        return ostr_rec(obj, dict_mode)[:-1]
     else:
-        ostr_s = str(obj)
-    return ostr_s
+        return str(obj)
 
 
 def find_functions(expr):
@@ -236,33 +202,30 @@ def oprint(*args, dict_mode=False):
     """
 
     if isinstance(args[0], str) or args[0] is None:
-        titles = list(islice(args, None, None, 2))
-        objs = tuple(islice(args, 1, None, 2))
-        if len(args) > 2:
-            if objs[0] is None:
-                n = 0
-            else:
-                n = len(titles[0])
-            for title, obj in zip(titles[1:], objs[1:]):
-                if obj is None:
-                    if not (dict_mode and isinstance(obj, dict)):
-                        n = max(n, len(title))
-        else:
-            n = len(titles[0])
+        titles = args[0::2]
+        objs = args[1::2]
+        strs = [
+            ostr(obj, dict_mode) if obj is not None else None
+            for obj in objs
+        ]
+        n = max((
+            len(title)
+            for title, s in zip(titles, strs)
+            if s is not None and '\n' not in s
+        ), default=0)
 
-        for title, obj in zip(titles, objs):
-            if obj is None:
+        for title, s in zip(titles, strs):
+            if s is None:
                 print(title)
             else:
                 npad = n - len(title)
-                if isinstance(obj, dict):
-                    print(title + ':' + ostr(obj, dict_mode))
+                if '\n' in s:
+                    print(title + ':' + s)
                 else:
-                    print(title + npad * ' ' + ' = ' + ostr(obj, dict_mode))
+                    print(title + npad * ' ' + ' = ' + s)
     else:
         for arg in args:
             print(ostr(arg, dict_mode))
-    return
 
 
 class Eprint:
@@ -386,10 +349,6 @@ class GaPrinter(StrPrinter):
         s += str(self._print(function))
         return Eprint.Deriv(s)
 
-    def _print_Matrix(self, expr):
-        out_str = ostr(list(expr))
-        return out_str
-
 
 Basic.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
 Matrix.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
@@ -481,6 +440,12 @@ class GaLatexPrinter(LatexPrinter):
     title is printed in equation mode. '%' has the same effect in title as
     in the Fmt() member function.
     """
+    # overrides of base class settings, and new settings for our printers
+    _default_settings = ChainMap({
+        "mat_str": "array",
+        "omit_function_args": False,
+        "omit_partial_derivative_fraction": False,
+    }, LatexPrinter._default_settings)
 
     fmt = 1
     prev_fmt = 1
@@ -492,8 +457,6 @@ class GaLatexPrinter(LatexPrinter):
     latex_flg = False
     latex_str = ''
     ipy = False
-
-    inv_trig_style = None
 
     preamble = \
 r"""
@@ -547,8 +510,6 @@ r"""
     postscript = '\\end{document}\n'
     macros = '\\newcommand{\\f}[2]{{#1}\\left ({#2}\\right )}'
 
-    Dmode = False  # True - Print derivative contracted
-    Fmode = False  # True - Print function contracted
     latex_flg = False
     ipy = False
 
@@ -564,38 +525,6 @@ r"""
                  'hbar', 'hslash', 'mho', 'infty'])
 
     special_alphabet = list(reversed(sorted(list(greek) + list(other), key=len)))
-
-    @staticmethod
-    def split_super_sub(text):
-        """
-        A wrapped version of a corresponding sympy function.
-
-        This is modified to handle basis blades and basis bases.
-        """
-        from sympy.printing.conventions import split_super_sub as sub_split_super_sub
-
-        if '*' not in text and '^' not in text:
-            name, supers, subs = sub_split_super_sub(text)
-            return '*', [name], [supers], [subs]
-
-        if '*' in text:
-            basis = text.split('*')
-            split_flg = '*'
-        if '^' in text:
-            basis = text.split('^')
-            split_flg = '^'
-
-        name_lst = []
-        supers_lst = []
-        subs_lst = []
-
-        for base in basis:
-            name, supers, subs = sub_split_super_sub(base)
-            name_lst.append(name)
-            supers_lst.append(supers)
-            subs_lst.append(subs)
-
-        return split_flg, name_lst, supers_lst, subs_lst
 
     @staticmethod
     def redirect():
@@ -682,14 +611,9 @@ r"""
                 return tex % (self._print(expr.base),
                               self._print(expr.exp))
 
-    def _print_Symbol(self, expr):
-
-        nc_flg = False
-
-        mode_dict = {'*': '', '^': '\\wedge '}
+    def _print_Symbol(self, expr, style='plain'):
 
         def str_symbol(name_str):
-            mode, name_lst, supers_lst, subs_lst = GaLatexPrinter.split_super_sub(name_str)
 
             def translate(s):
                 tmp = s
@@ -716,49 +640,26 @@ r"""
 
                 return tmp
 
-            s = ''
+            name, supers, subs = split_super_sub(name_str)
 
-            for name, supers, subs in zip(name_lst, supers_lst, subs_lst):
+            name = translate(name)
 
-                name = translate(name)
+            if style == 'bold':
+                name = '\\boldsymbol{' + name +'}'
 
-                if nc_flg:
-                    name = '\\boldsymbol{' + name +'}'
+            supers = list(map(translate, supers))
+            subs = list(map(translate, subs))
 
-                if supers != []:
-                    supers = list(map(translate, supers))
+            # glue all items together:
+            if len(supers) > 0:
+                name += "^{%s}" % " ".join(supers)
+            if len(subs) > 0:
+                name += "_{%s}" % " ".join(subs)
 
-                if subs != []:
-                    subs = list(map(translate, subs))
-
-                # glue all items together:
-                if len(supers) > 0:
-                    name += "^{%s}" % " ".join(supers)
-                if len(subs) > 0:
-                    name += "_{%s}" % " ".join(subs)
-
-                s += name + mode_dict[mode]
-
-            if mode == '^':
-                s = s[:-7]
-
-            return s
+            return name
 
         if expr in self._settings['symbol_names']:
             return self._settings['symbol_names'][expr]
-
-        name_str = expr.name
-
-        if isinstance(expr, Symbol) and not expr.is_commutative:
-            nc_flg = True
-
-        # Translate entry in general metric tensor a.b -> a \cdot b
-
-        if '.' in name_str and name_str[0] == '(' and name_str[-1] == ')':
-            name_str = name_str[1:-1]
-            name_lst = name_str.split('.')
-            name_str = r'\left ( ' + str_symbol(name_lst[0]) + r'\cdot ' + str_symbol(name_lst[1]) + r'\right ) '
-            return name_str
 
         return str_symbol(expr.name)
 
@@ -773,8 +674,7 @@ r"""
 
             # How inverse trig functions should be displayed, formats are:
             # abbreviated: asin, full: arcsin, power: sin^-1
-            #inv_trig_style = self._settings['inv_trig_style']
-            _inv_trig_style = GaLatexPrinter.inv_trig_style
+            inv_trig_style = self._settings['inv_trig_style']
             # If we are dealing with a power-style inverse trig function
             inv_trig_power_case = False
             # If it is applicable to fold the argument brackets
@@ -785,11 +685,11 @@ r"""
 
             # If the function is an inverse trig function, handle the style
             if func in inv_trig_table:
-                if GaLatexPrinter.inv_trig_style == "abbreviated":
+                if inv_trig_style == "abbreviated":
                     func = func
-                elif GaLatexPrinter.inv_trig_style == "full":
+                elif inv_trig_style == "full":
                     func = "arc" + func[1:]
-                elif GaLatexPrinter.inv_trig_style == "power":
+                elif inv_trig_style == "power":
                     func = func[1:]
                     inv_trig_power_case = True
 
@@ -828,23 +728,20 @@ r"""
                     # with the function name itself
                     name += r" {%s}"
                 else:
-                    if not GaLatexPrinter.Fmode:
+                    if not self._settings["omit_function_args"]:
                         name += r"%s"
             else:
-                if func in accepted_latex_functions or not GaLatexPrinter.Fmode:
+                if func in accepted_latex_functions or not self._settings["omit_function_args"]:
                     name += r"{\left (%s \right )}"
 
             if inv_trig_power_case and exp is not None:
                 name += r"^{%s}" % exp
 
-            if func in accepted_latex_functions or not GaLatexPrinter.Fmode:
+            if func in accepted_latex_functions or not self._settings["omit_function_args"]:
                 if len(args) == 1:
                     name = name % args[0]
                 else:
                     name = name % ",".join(args)
-
-            if 'det(g)' in name:
-                name = name.replace('det(g)', r'\det\left ( g \right )')
 
             return name
 
@@ -852,7 +749,7 @@ r"""
         dim = len(expr.variables)
         imax = 1
         if dim == 1:
-            if GaLatexPrinter.Dmode:
+            if self._settings["omit_partial_derivative_fraction"]:
                 tex = r"\partial_{%s}" % self._print(expr.variables[0])
             else:
                 tex = r"\frac{\partial}{\partial %s}" % self._print(expr.variables[0])
@@ -869,7 +766,7 @@ r"""
                 imax = max(imax, i)
                 multiplicity.append((current, i))
 
-            if GaLatexPrinter.Dmode:
+            if self._settings["omit_partial_derivative_fraction"]:
                 tex = ''
                 for x, i in multiplicity:
                     if i == 1:
@@ -890,18 +787,9 @@ r"""
             s = r"%s %s" % (tex, self._print(expr.expr))
         return s
 
-    def _print_MatrixBase(self, expr):
-        rows = expr.rows
-        cols = expr.cols
-
-        out_str = ' \\left [ \\begin{array}{' + (cols * 'c') + '} '
-        for row in range(rows):
-            for col in range(cols):
-                out_str += latex(expr[row, col]) + ' & '
-            out_str = out_str[:-2] + ' \\\\ '
-        out_str = out_str[:-4] + ' \\end{array}\\right ] '
-
-        return out_str
+    def _print_Determinant(self, expr):
+        # sympy `uses |X|` by default, we want `det (X)`
+        return r"\det\left ( {}\right )".format(self._print(expr.args[0]))
 
     @staticmethod
     def latex(expr, **settings):
@@ -944,9 +832,11 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
     """
     global Format_cnt
 
-    GaLatexPrinter.Dmode = Dmode
-    GaLatexPrinter.Fmode = Fmode
-    GaLatexPrinter.inv_trig_style = inverse
+    GaLatexPrinter.set_global_settings(
+        omit_partial_derivative_fraction=Dmode,
+        omit_function_args=Fmode,
+        inv_trig_style=inverse,
+    )
 
     if Format_cnt == 0:
         Format_cnt += 1
@@ -1069,7 +959,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
     if pdfprog is None:
         return
 
-    pdflatex = find_executable(pdfprog)
+    pdflatex = shutil.which(pdfprog)
 
     if debug:
         print('pdflatex path =', pdflatex)
@@ -1105,36 +995,27 @@ def xdvi(filename=None, debug=False, paper=(14, 11)):
 
 
 def LatexFormat(Fmode=True, Dmode=True, ipy=False):
-    GaLatexPrinter.Dmode = Dmode
-    GaLatexPrinter.Fmode = Fmode
+    GaLatexPrinter.set_global_settings(
+        omit_partial_derivative_fraction=Dmode,
+        omit_function_args=Fmode
+    )
     GaLatexPrinter.ipy = ipy
     GaLatexPrinter.redirect()
     return
 
-prog_str = ''
 off_mode = False
 
 
 def Get_Program(off=False):
-    global prog_str, off_mode
+    global off_mode
     off_mode = off
-    if off_mode:
-        return
-    prog_file = open(sys.argv[0], 'r')
-    prog_str = prog_file.read()
-    prog_file.close()
-    return
 
 
 def Print_Function():
-    global prog_str, off_mode
     if off_mode:
         return
-    fct_name = str(sys._getframe(1).f_code.co_name)
-    ifct = prog_str.find('def ' + fct_name)
-    iend = prog_str.find('def ', ifct + 4)
-    tmp_str = prog_str[ifct:iend - 1]
-    fct_name = fct_name.replace('_', ' ')
+
+    tmp_str = inspect.getsource(inspect.currentframe().f_back)
     if GaLatexPrinter.latex_flg:
         tmp_str = '\\begin{lstlisting}[language=Python,showspaces=false,' + \
                'showstringspaces=false,backgroundcolor=\color{gray},frame=single]\n'+\
@@ -1168,10 +1049,10 @@ def def_prec(gd: dict, op_ord: str = '<>|,^,*') -> None:
         precedence, followed by ``^``, and lastly ``*``.
     """
     global _eval_global_dict, _eval_parse_order
-    op_ord = op_ord.split(',')
-    _parser.validate_op_order(op_ord)
+    op_ord_list = op_ord.split(',')
+    _parser.validate_op_order(op_ord_list)
     _eval_global_dict = gd
-    _eval_parse_order = op_ord
+    _eval_parse_order = op_ord_list
 
 
 def GAeval(s: str, pstr: bool = False):
@@ -1207,15 +1088,6 @@ def GAeval(s: str, pstr: bool = False):
         print(s)
         print(seval)
     return eval(seval, _eval_global_dict)
-
-
-r"""
-\begin{array}{c}
-\left ( \begin{array}{c} F,\\ \end{array} \right . \\
-\begin{array}{c} F, \\ \end{array} \\
-\left .\begin{array}{c}         F \\ \end{array} \right ) \\
-\end{array}
-"""
 
 
 def Fmt(obj, fmt=0):
