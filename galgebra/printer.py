@@ -17,6 +17,7 @@ from sympy import init_printing
 
 try:
     from IPython.display import display, Latex, Math, display_latex
+    #from IPython.core.display import display as ldisplay
 except ImportError:
     pass
 try:
@@ -33,29 +34,47 @@ ZERO_STR = ' 0 '
 Format_cnt = 0
 
 ip_cmds = \
+r"""
+\newcommand{\abs}[1]{\left |{#1}\right | }
+\newcommand{\W}{\wedge}
+\newcommand{\lc}{\rfloor}
+\newcommand{\rc}{\lfloor}
+\newcommand{\T}[1]{\text{#1}}
 """
-$\\DeclareMathOperator{\\Tr}{Tr}
-\\DeclareMathOperator{\\Adj}{Adj}
-\\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
-\\newcommand{\\lp}{\\left (}
-\\newcommand{\\rp}{\\right )}
-\\newcommand{\\paren}[1]{\\lp {#1} \\rp}
-\\newcommand{\\half}{\\frac{1}{2}}
-\\newcommand{\\llt}{\\left <}
-\\newcommand{\\rgt}{\\right >}
-\\newcommand{\\abs}[1]{\\left |{#1}\\right | }
-\\newcommand{\\pdiff}[2]{\\bfrac{\\partial {#1}}{\\partial {#2}}}
-\\newcommand{\\npdiff}[3]{\\bfrac{\\partial^{#3} {#1}}{\\partial {#2}^{#3}}}
-\\newcommand{\\lbrc}{\\left \\{}
-\\newcommand{\\rbrc}{\\right \\}}
-\\newcommand{\\W}{\\wedge}
-\\newcommand{\\prm}[1]{{#1}'}
-\\newcommand{\\ddt}[1]{\\bfrac{d{#1}}{dt}}
-\\newcommand{\\R}{\\dagger}
-\\newcommand{\\deriv}[3]{\\bfrac{d^{#3}#1}{d{#2}^{#3}}}
-\\newcommand{\\grade}[1]{\\left < {#1} \\right >}
-\\newcommand{\\f}[2]{{#1}\\lp {#2} \\rp}
-\\newcommand{\\eval}[2]{\\left . {#1} \\right |_{#2}}$
+
+ip_cmds_extended = \
+r"""
+\newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
+\newcommand{\lp}{\left (}
+\newcommand{\rp}{\right )}
+\newcommand{\paren}[1]{\lp {#1} \rp}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\llt}{\left <}
+\newcommand{\rgt}{\right >}
+\newcommand{\abs}[1]{\left |{#1}\right | }
+\newcommand{\pdiff}[2]{\bfrac{\partial {#1}}{\partial {#2}}}
+\newcommand{\npdiff}[3]{\bfrac{\partial^{#3} {#1}}{\partial {#2}^{#3}}}
+\newcommand{\lbrc}{\left \{}
+\newcommand{\rbrc}{\right \}}
+\newcommand{\W}{\wedge}
+\newcommand{\prm}[1]{{#1}'}
+\newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
+\newcommand{\grade}[1]{\left < {#1} \right >}
+\newcommand{\f}[2]{{#1}\lp {#2} \rp}
+\newcommand{\eval}[2]{\left . {#1} \right |_{#2}}
+\newcommand{\R}{\dagger}
+\newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
+\newcommand{\grd}[2]{\left < {#1} \right >_{#2}}
+\newcommand{\f}[2]{{#1}\lp {#2} \rp}
+\newcommand{\eval}[2]{\left . {#1} \right |_{#2}}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\newcommand{\es}[1]{\boldsymbol{e}_{#1}}
+\newcommand{\eS}[1]{\boldsymbol{e}^{#1}}
+\newcommand{\lc}{\rfloor}
+\newcommand{\rc}{\lfloor}
+\newcommand{\T}[1]{\text{#1}}
+\newcommand{\lop}[1]{\overleftarrow{#1}}
+\newcommand{\rop}[1]{\overrightarrow{#1}}
 """
 
 print_replace_old = None
@@ -477,50 +496,53 @@ class GaLatexPrinter(LatexPrinter):
     inv_trig_style = None
 
     preamble = \
-"""
-\\pagestyle{empty}
-\\usepackage[latin1]{inputenc}
-\\usepackage{amsmath}
-\\usepackage{amsfonts}
-\\usepackage{amssymb}
-\\usepackage{amsbsy}
-\\usepackage{tensor}
-\\usepackage{listings}
-\\usepackage{color}
-\\usepackage{xcolor}
-\\usepackage{bm}
-\\usepackage{breqn}
-\\definecolor{gray}{rgb}{0.95,0.95,0.95}
-\\setlength{\\parindent}{0pt}
-\\DeclareMathOperator{\\Tr}{Tr}
-\\DeclareMathOperator{\\Adj}{Adj}
-\\newcommand{\\bfrac}[2]{\\displaystyle\\frac{#1}{#2}}
-\\newcommand{\\lp}{\\left (}
-\\newcommand{\\rp}{\\right )}
-\\newcommand{\\paren}[1]{\\lp {#1} \\rp}
-\\newcommand{\\half}{\\frac{1}{2}}
-\\newcommand{\\llt}{\\left <}
-\\newcommand{\\rgt}{\\right >}
-\\newcommand{\\abs}[1]{\\left |{#1}\\right | }
-\\newcommand{\\pdiff}[2]{\\bfrac{\\partial {#1}}{\\partial {#2}}}
-\\newcommand{\\lbrc}{\\left \\{}
-\\newcommand{\\rbrc}{\\right \\}}
-\\newcommand{\\W}{\\wedge}
-\\newcommand{\\prm}[1]{{#1}'}
-\\newcommand{\\ddt}[1]{\\bfrac{d{#1}}{dt}}
-\\newcommand{\\R}{\\dagger}
-\\newcommand{\\deriv}[3]{\\bfrac{d^{#3}#1}{d{#2}^{#3}}}
-\\newcommand{\\grade}[1]{\\left < {#1} \\right >}
-\\newcommand{\\f}[2]{{#1}\\lp{#2}\\rp}
-\\newcommand{\\eval}[2]{\\left . {#1} \\right |_{#2}}
-\\newcommand{\\Nabla}{\\boldsymbol{\\nabla}}
-\\newcommand{\\eb}{\\boldsymbol{e}}
-\\usepackage{float}
-\\floatstyle{plain} % optionally change the style of the new float
-\\newfloat{Code}{H}{myc}
-\\lstloadlanguages{Python}
+r"""
+\pagestyle{empty}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{tensor}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{bm}
+\usepackage{breqn}
+\definecolor{gray}{rgb}{0.95,0.95,0.95}
+\setlength{\parindent}{0pt}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Adj}{Adj}
+\newcommand{\bfrac}[2]{\displaystyle\frac{#1}{#2}}
+\newcommand{\lp}{\left (}
+\newcommand{\rp}{\right )}
+\newcommand{\paren}[1]{\lp {#1} \rp}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\llt}{\left <}
+\newcommand{\rgt}{\right >}
+\newcommand{\abs}[1]{\left |{#1}\right | }
+\newcommand{\pdiff}[2]{\bfrac{\partial {#1}}{\partial {#2}}}
+\newcommand{\lbrc}{\left \{}
+\newcommand{\rbrc}{\right \}}
+\newcommand{\W}{\wedge}
+\newcommand{\prm}[1]{{#1}'}
+\newcommand{\ddt}[1]{\bfrac{d{#1}}{dt}}
+\newcommand{\R}{\dagger}
+\newcommand{\deriv}[3]{\bfrac{d^{#3}#1}{d{#2}^{#3}}}
+\newcommand{\grade}[1]{\left < {#1} \right >}
+\newcommand{\f}[2]{{#1}\lp{#2}\rp}
+\newcommand{\eval}[2]{\left . {#1} \right |_{#2}}
+\newcommand{\Nabla}{\boldsymbol{\nabla}}
+\newcommand{\eb}{\boldsymbol{e}}
+\newcommand{\lc}{\rfloor}
+\newcommand{\rc}{\lfloor}
+\newcommand{\T}[1]{\text{#1}}
+\usepackage{float}
+\floatstyle{plain} % optionally change the style of the new float
+\newfloat{Code}{H}{myc}
+\lstloadlanguages{Python}
 
-\\begin{document}
+\begin{document}
 """
     postscript = '\\end{document}\n'
     macros = '\\newcommand{\\f}[2]{{#1}\\left ({#2}\\right )}'
@@ -931,7 +953,7 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
 
         GaLatexPrinter.dop = dop
         GaLatexPrinter.latex_flg = True
-        GaLatexPrinter.redirect()
+        #GaLatexPrinter.redirect()
 
         Basic.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
         Matrix.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
@@ -939,10 +961,14 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
         Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
 
         if isinteractive():
-            init_printing(use_latex= 'mathjax')
+            init_printing(use_latex= 'mathjax') #Use mathjax for LaTeX printing
+            from IPython.core.interactiveshell import InteractiveShell
+            InteractiveShell.ast_node_interactivity = "all" #Allow multiple outputs in a cell
+            display(Math(ip_cmds_extended))
+        else:
+            GaLatexPrinter.latex_str = ''
 
     return
-
 
 def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     """
@@ -952,9 +978,7 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     We assume that if tex() is called then Format() has been called at the beginning of the program.
     """
 
-    latex_str = GaLatexPrinter.latex_str + sys.stdout.getvalue()
-    GaLatexPrinter.latex_str = ''
-    GaLatexPrinter.restore()
+    latex_str = GaLatexPrinter.latex_str
     r"""
     Each line in the latex_str is interpreted to be an equation or align
     environment.  If the line does not begin with '\begin{align*}' then
@@ -966,78 +990,22 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     and a '\n' added to the end of the string to delimit it when the string
     is generated.
     """
+
     latex_lst = latex_str.split('\n')
     latex_str = ''
 
-    lhs = ''
-    code_flg = False
+    ppgm_flg = False
 
     for latex_line in latex_lst:
-        if len(latex_line) > 0 and '##' == latex_line[:2]:
-            if code_flg:
-                code_flg = False
-                latex_line = latex_line[2:]
+        if len(latex_line) > 1:
+            if latex_line[0] == '!':
+                latex_str += latex_line[1:]+'\n'
             else:
-                code_flg = True
-                latex_line = latex_line[2:]
-        elif code_flg:
-                    pass
-        elif len(latex_line) > 0 and '#' in latex_line:  # Non equation mode output (comment)
-            latex_line = latex_line.replace('#', '')
-            if '%' in latex_line:  # Equation mode with no variables to print (comment)
-                latex_line = latex_line.replace('%', '')
                 if r'\begin{align*}' in latex_line:
                     latex_line = r'\begin{align*}' + latex_line.replace(r'\begin{align*}', '')
                 else:
-                    latex_line = '\\begin{equation*} ' + latex_line + ' \\end{equation*}\n'
-
-        else:
-            latex_line = latex_line.replace(r'\left.', r'@@')  # Disabiguate '.' in '\left.'
-            latex_line = latex_line.replace(r'\right.', r'##')  # Disabiguate '.' in '\right.'
-            latex_line = latex_line.replace('.', r' \cdot ')  # For components of metric tensor
-            latex_line = latex_line.replace(r'@@', r'\left.')  # Restore '\left.'
-            latex_line = latex_line.replace(r'##', r'\right.')  # Restore '\right.'
-            if '=' in latex_line:  # determing lhs of equation/align
-                eq_index = latex_line.rindex('=') + 1
-                lhs = latex_line[:eq_index]
-                latex_line = latex_line.replace(lhs, '')
-                if '%' in lhs:  # Do not preprocess lhs of equation/align
-                    lhs = lhs.replace('%', '')
-                else:  # preprocess lhs of equation/align
-                    lhs = lhs.replace('|', r'\cdot ')
-                    lhs = lhs.replace('^{', r'@@ ')
-                    lhs = lhs.replace('^', r'\W ')
-                    lhs = lhs.replace(r'@@ ', '^{')
-                    lhs = lhs.replace('*', ' ')
-                    lhs = lhs.replace('rgrad', r'\bar{\boldsymbol{\nabla}} ')
-                    lhs = lhs.replace('grad', r'\boldsymbol{\nabla} ')
-                    lhs = lhs.replace(r'>>', r' \times ')
-                    lhs = lhs.replace(r'<<', r' \bar{\times} ')
-                    lhs = lhs.replace('<', r'\rfloor ')  # Check
-                    lhs = lhs.replace('>', r'\lfloor ')  # Check
-                latex_line = lhs + latex_line
-
-            if r'\begin{align*}' in latex_line:  # insert lhs of align environment
-                latex_line = latex_line.replace(lhs, '')
-                latex_line = latex_line.replace(r'\begin{align*}', r'\begin{align*} ' + lhs)
-                lhs = ''
-            else:  # normal sympy equation
-                latex_line = latex_line.strip()
-                if len(latex_line) > 0:
-                    latex_line = '\\begin{equation*} ' + latex_line + ' \\end{equation*}'
-
-        latex_str += latex_line + '\n'
-
-    latex_str = latex_str.replace('\n\n', '\n')
-
-    if prog:
-        prog_file = open(sys.argv[0], 'r')
-        prog_str = prog_file.read()
-        prog_file.close()
-        prog_str = '{\\Large \\bf Program:}\\begin{lstlisting}[language=Python,showspaces=false,' + \
-                   'showstringspaces=false]\n' + \
-                   prog_str + '\n\\end{lstlisting}\n {\\Large \\bf Code Output:} \n'
-        latex_str = prog_str + latex_str
+                    latex_line = r'\begin{equation*} ' + latex_line + ' \\end{equation*}\n'
+                latex_str += latex_line+'\n'
 
     if debug:
         print(latex_str)
@@ -1116,7 +1084,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
         print(print_cmd)
 
         os.system(print_cmd)
-        eval(input('!!!!Return to continue!!!!\n'))
+        print('!!!!Return to continue!!!!\n')
 
         if debug:
             os.system(sys_cmd['rm'] + ' ' + filename[:-4] + '.aux ' + filename[:-4] + '.log')
@@ -1168,12 +1136,11 @@ def Print_Function():
     tmp_str = prog_str[ifct:iend - 1]
     fct_name = fct_name.replace('_', ' ')
     if GaLatexPrinter.latex_flg:
-        #print '#Code for '+fct_name
-        print(r'##\\begin{lstlisting}[language=Python,showspaces=false,' + \
-              r'showstringspaces=false,backgroundcolor=\color{gray},frame=single]')
-        print(tmp_str)
-        print('##\\end{lstlisting}')
-        print('#Code Output:')
+        tmp_str = '\\begin{lstlisting}[language=Python,showspaces=false,' + \
+               'showstringspaces=false,backgroundcolor=\color{gray},frame=single]\n'+\
+               tmp_str + '\\end{lstlisting}'
+        tmp_str = '!'+tmp_str.replace('\n','\n!')
+        gprint(tmp_str)
     else:
         print('\n' + 80 * '*')
         #print '\nCode for '+fct_name
@@ -1319,3 +1286,19 @@ def Fmt(obj, fmt=0):
         return
     else:
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
+
+def gprint(*argv):
+    s = ''
+
+    for arg in argv:
+        if isinstance(arg,str):
+            s += arg
+        else:
+            s += repr(arg)
+
+    if isinteractive():  # For LaTeX printing from Ipython notebook
+        display(Math(s))
+    else:  # For LaTex printing from python script
+        GaLatexPrinter.latex_str += s+'\n'
+
+    return
