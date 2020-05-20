@@ -592,16 +592,14 @@ class Mv(object):
         return self.grade(key)
 
     def _sympystr(self, print_obj: printer.GaPrinter) -> str:
-        if self.obj == S.Zero:
-            return ZERO_STR
-
-        if self.i_grade == 0:
-            return print_obj.doprint(self.obj)
 
         # note: this just replaces `self` for the rest of this function
         obj = expand(self.obj)
         obj = metric.Simp.apply(obj)
         self = Mv(obj, ga=self.Ga)
+
+        if self.i_grade == 0:
+            return print_obj.doprint(self.obj)
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades.flat
