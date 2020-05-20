@@ -576,6 +576,9 @@ class Mv(object):
             return self * (S(1)/A)
 
     def __str__(self):
+        return printer.GaPrinter().doprint(self)
+
+    def __ga_print_str__(self):
         if printer.GaLatexPrinter.latex_flg:
             Printer = printer.GaLatexPrinter
         else:
@@ -1648,6 +1651,9 @@ class Dop(dop._BaseDop):
             return NotImplemented
 
     def __str__(self) -> str:
+        return printer.GaPrinter().doprint(self)
+
+    def __ga_print_str__(self) -> str:
         if printer.GaLatexPrinter.latex_flg:
             Printer = printer.GaLatexPrinter
         else:
