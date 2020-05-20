@@ -1,7 +1,7 @@
 import unittest
 
 import pytest
-from sympy import Symbol
+import sympy
 from galgebra.ga import Ga
 
 class TestMv(unittest.TestCase):
@@ -68,8 +68,8 @@ class TestMv(unittest.TestCase):
         self.assertTrue(m0.blade_coefs([e_2 ^ e_3, e_1 ^ e_3]) == [3, 4])
         self.assertTrue(m0.blade_coefs([e_1, e_2 ^ e_3]) == [2, 3])
 
-        a = Symbol('a')
-        b = Symbol('b')
+        a = sympy.Symbol('a')
+        b = sympy.Symbol('b')
         m1 = a * e_1 + e_2 - e_3 + b * (e_1 ^ e_2)
         self.assertTrue(m1.blade_coefs([e_1]) == [a])
         self.assertTrue(m1.blade_coefs([e_2]) == [1])
@@ -169,8 +169,19 @@ class TestMv(unittest.TestCase):
         B = ga.mv('B', 'bivector')
         B_inv = B.inv()
 
-        B_mag = Symbol('|B|')
+        B_mag = sympy.Symbol('|B|')
 
         # both of the sympy subs syntaxes work:
         assert (-B / B_mag**2).subs(B_mag, abs(B)) == B_inv
         assert (-B / B_mag**2).subs({B_mag: abs(B)}) == B_inv
+
+    def test_sympify(self):
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1])
+
+        # Letting this succeed silently and not return an Mv instance would be
+        # dangerous.
+        with pytest.raises(sympy.SympifyError):
+            sympy.sympify(e_1)
+
+        # this is fine
+        sympy.sympify(e_1.obj)
