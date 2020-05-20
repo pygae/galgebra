@@ -770,8 +770,6 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
 
         Basic.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
         Matrix.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
-        Basic.__repr__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
 
         if isinteractive():
             init_printing(use_latex= 'mathjax')
