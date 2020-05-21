@@ -12,12 +12,19 @@
     galgebra_guide
     sympy-representation
     module-components
-    bibliography
 
 .. toctree::
+    :caption: Tutorials
+    :maxdepth: 2
+
+    tutorials/algebra
+
+.. toctree::
+    :caption: Other information
     :maxdepth: 2
 
     changelog
+    bibliography
 
 Indices and tables
 ==================
