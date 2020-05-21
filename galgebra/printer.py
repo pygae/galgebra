@@ -234,9 +234,6 @@ class GaPrinter(StrPrinter):
                       'cosh', 'cot', 'coth', 'exp', 'floor', 'im', 'log', 're',
                       'root', 'sin', 'sinh', 'sqrt', 'sign', 'tan', 'tanh', 'Abs')
 
-    prev_fmt = 1
-    fmt = 1
-
     def _print_Function(self, expr):
         name = expr.func.__name__
 
@@ -376,9 +373,6 @@ class GaLatexPrinter(LatexPrinter):
         "omit_function_args": False,
         "omit_partial_derivative_fraction": False,
     }, LatexPrinter._default_settings)
-
-    fmt = 1
-    prev_fmt = 1
 
     latex_flg = False
     latex_str = ''
@@ -1108,7 +1102,7 @@ def Fmt(obj, fmt=0):
                 latex_cell = latex_cell.replace('\n', ' ')
                 latex_cell= latex_cell.replace(r'\begin{equation*}', ' ')
                 latex_cell= latex_cell.replace(r'\end{equation*}', ' ')
-                if GaLatexPrinter.fmt != 1:
+                if LatexPrinter()._settings['galgebra_mv_fmt'] != 1:
                     latex_cell= latex_cell.replace(r'\begin{align*}', r'\begin{array}{c} ')
                     latex_cell= latex_cell.replace('&', '')
                     latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
@@ -1128,8 +1122,7 @@ def Fmt(obj, fmt=0):
             return latex_str
 
     elif isinstance(obj, int):
-        GaLatexPrinter.prev_fmt = GaLatexPrinter.fmt
-        GaLatexPrinter.fmt = obj
+        LatexPrinter.set_global_settings(galgebra_mv_fmt=obj)
         return
     else:
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
