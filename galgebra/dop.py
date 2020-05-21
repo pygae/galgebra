@@ -178,16 +178,8 @@ class Sdop(_BaseDop):
         latex_str = printer.GaLatexPrinter().doprint(self)
         return ' ' + latex_str + ' '
 
-    def __str__(self):
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
-        else:
-            Printer = printer.GaPrinter
-
-        return Printer().doprint(self)
-
-    def __repr__(self):
-        return str(self)
+    __ga_print_str__ = printer.default__ga_print_str__
+    __repr__ = printer.default__repr__
 
     def __init_from_symbol(self, symbol: Symbol) -> None:
         self.terms = ((S(1), Pdop(symbol)),)
@@ -410,12 +402,5 @@ class Pdop(_BaseDop):
         latex_str = printer.GaLatexPrinter().doprint(self)
         return ' ' + latex_str + ' '
 
-    def __str__(self):
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
-        else:
-            Printer = printer.GaPrinter
-        return Printer().doprint(self)
-
-    def __repr__(self):
-        return str(self)
+    __ga_print_str__ = printer.default__ga_print_str__
+    __repr__ = printer.default__repr__
