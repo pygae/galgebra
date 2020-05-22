@@ -115,9 +115,10 @@ def test_texify():
     assert _texify('a<<b') == r'a \bar{\times} b'
 
     # grad
-    assert _texify('grada') == r'\boldsymbol{\nabla} a'
-    assert _texify('argrad') == r'a\bar{\boldsymbol{\nabla}} '
-    # assert _texify('gradual') == r'gradual'
+    assert _texify('grad(a)') == r'\boldsymbol{\nabla} (a)'
+    assert _texify('a rgrad') == r'a \bar{\boldsymbol{\nabla}} '
+    # does not affect words containing grad
+    assert _texify('gradual') == r'gradual'
 
     # superscripts with {} do not become wedges
     assert _texify('x^{2}') == r'x^{2}'
