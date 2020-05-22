@@ -164,6 +164,10 @@ def main():
 
     dirac_eq.Fmt(3,r'\nabla \bm{\psi} I \sigma_{z}-e\bm{A}\bm{\psi}-m\bm{\psi}\gamma_{t} = 0')
 
+    # bug: "value" ends up on both lines
+    print(r'value = 1')
+    print(r'\begin{align*} \text{untouched} \end{align*}')
+
     # xpdf()
     xpdf(pdfprog=None)
     return
