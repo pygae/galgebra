@@ -85,11 +85,7 @@ class _FmtResult:
             latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
         return latex_str
 
-    def __str__(self):
-        return printer.GaPrinter().doprint(self)
-
-    def __repr__(self):
-        return str(self)
+    __repr__ = printer.default__repr__
 
     def __ga_print_str__(self):
         if printer.GaLatexPrinter.latex_flg:
@@ -654,15 +650,8 @@ class Mv(object):
     def __str__(self):
         return printer.GaPrinter().doprint(self)
 
-    def __ga_print_str__(self):
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
-        else:
-            Printer = printer.GaPrinter
-        return Printer().doprint(self)
-
-    def __repr__(self):
-        return str(self)
+    __ga_print_str__ = printer.default__ga_print_str__
+    __repr__ = printer.default__repr__
 
     def __getitem__(self, key: int) -> 'Mv':
         '''
@@ -1695,19 +1684,8 @@ class Dop(dop._BaseDop):
         else:
             return NotImplemented
 
-    def __str__(self) -> str:
-        return printer.GaPrinter().doprint(self)
-
-    def __ga_print_str__(self) -> str:
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
-        else:
-            Printer = printer.GaPrinter
-
-        return Printer().doprint(self)
-
-    def __repr__(self) -> str:
-        return str(self)
+    __ga_print_str__ = printer.default__ga_print_str__
+    __repr__ = printer.default__repr__
 
     def _repr_latex_(self) -> str:
         return self.Fmt(fmt=None, title=self.title)._repr_latex_()

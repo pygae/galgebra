@@ -277,10 +277,22 @@ class GaPrinter(StrPrinter):
         )
 
 
-Basic.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
-Matrix.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
-Basic.__repr__ = lambda self: GaPrinter().doprint(self)
-Matrix.__repr__ = lambda self: GaPrinter().doprint(self)
+def default__ga_print_str__(self):
+    if GaLatexPrinter.latex_flg:
+        return GaLatexPrinter().doprint(self)
+    else:
+        return GaPrinter().doprint(self)
+
+
+def default__repr__(self):
+    return GaPrinter().doprint(self)
+
+
+Basic.__ga_print_str__ = default__ga_print_str__
+Matrix.__ga_print_str__ = default__ga_print_str__
+
+Basic.__repr__ = default__repr__
+Matrix.__repr__ = default__repr__
 
 
 # This is the lesser of two evils. Previously, we overwrote `Basic.__str__` in
@@ -446,10 +458,6 @@ class GaLatexPrinter(LatexPrinter):
     @staticmethod
     def redirect():
         GaLatexPrinter.latex_flg = True
-        GaLatexPrinter.Basic__ga_print_str__ = Basic.__ga_print_str__
-        GaLatexPrinter.Matrix__ga_print_str__ = Matrix.__ga_print_str__
-        Basic.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
         if GaLatexPrinter.ipy:
             pass
         else:
@@ -464,8 +472,6 @@ class GaLatexPrinter(LatexPrinter):
             GaLatexPrinter.latex_flg = False
             if not GaLatexPrinter.ipy:
                 sys.stdout = GaLatexPrinter.stdout
-            Basic.__ga_print_str__ = GaLatexPrinter.Basic__ga_print_str__
-            Matrix.__ga_print_str__ = GaLatexPrinter.Matrix__ga_print_str__
 
     def _print_Pow(self, expr):
         base = self._print(expr.base)
@@ -761,9 +767,6 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
         GaLatexPrinter.dop = dop
         GaLatexPrinter.latex_flg = True
         GaLatexPrinter.redirect()
-
-        Basic.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
 
         if isinteractive():
             init_printing(use_latex= 'mathjax')

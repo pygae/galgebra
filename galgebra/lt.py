@@ -338,9 +338,6 @@ class Lt(object):
         else:
             raise TypeError('Cannot have LT as left argument in Lt __rmul__\n')
 
-    def __repr__(self):
-        return str(self)
-
     def _repr_latex_(self):
         latex_str = printer.GaLatexPrinter().doprint(self)
         if r'\begin{align*}' not in latex_str:
@@ -465,12 +462,8 @@ class Lt(object):
         else:
             return latex_str
 
-    def __str__(self):
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
-        else:
-            Printer = printer.GaPrinter
-        return Printer().doprint(self)
+    __ga_print_str__ = printer.default__ga_print_str__
+    __repr__ = printer.default__repr__
 
     def matrix(self) -> Matrix:
         r"""
@@ -757,12 +750,8 @@ class Mlt(object):
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f
 
-    def __str__(self):
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
-        else:
-            Printer = printer.GaPrinter
-        return Printer().doprint(self)
+    __ga_print_str__ = printer.default__ga_print_str__
+    __repr__ = printer.default__repr__
 
     def __call__(self, *args):
         """
