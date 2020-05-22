@@ -122,5 +122,5 @@ def test_texify():
     # superscripts with {} do not become wedges
     assert _texify('x^{2}') == r'x^{2}'
 
-    # fails because @@ is used as an internal marker
-    # assert _texify('@@ is safe') == r'@@ is safe'
+    # @@ was previously an internal marker
+    assert _texify('@@ is safe') == r'@@ is safe'

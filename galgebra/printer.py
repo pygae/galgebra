@@ -8,6 +8,7 @@ import io
 import builtins
 import functools
 import inspect
+import re
 import shutil
 from collections import ChainMap
 
@@ -776,18 +777,27 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
 
 def _texify(s: str) -> str:
     """ Convert python GA operator notation to LaTeX """
-    s = s.replace('|', r'\cdot ')
-    s = s.replace('^{', r'@@ ')  # placeholder
-    s = s.replace('^', r'\W ')
-    s = s.replace(r'@@ ', '^{')
-    s = s.replace('*', ' ')
-    s = s.replace('rgrad', r'\bar{\boldsymbol{\nabla}} ')
-    s = s.replace('grad', r'\boldsymbol{\nabla} ')
-    s = s.replace(r'>>', r' \times ')
-    s = s.replace(r'<<', r' \bar{\times} ')
-    s = s.replace('<', r'\rfloor ')
-    s = s.replace('>', r'\lfloor ')
-    return s
+    repl_pairs = [
+        (r'\|', r'\cdot '),
+        (r'\^(?!{)', r'\W '),
+        (r'\*', ' '),
+        (r'rgrad', r'\bar{\boldsymbol{\nabla}} '),
+        (r'grad', r'\boldsymbol{\nabla} '),
+        (r'>>', r' \times '),
+        (r'<<', r' \bar{\times} '),
+        (r'<', r'\rfloor '),
+        (r'>', r'\lfloor '),
+    ]
+
+    def repl_func(m):
+        # only one group will be present, use the corresponding match
+        return next(
+            r
+            for (p, r), g in zip(repl_pairs, m.groups())
+            if g is not None
+        )
+    pattern = '|'.join("({})".format(p) for p, _ in repl_pairs)
+    return re.sub(pattern, repl_func, s)
 
 
 def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
