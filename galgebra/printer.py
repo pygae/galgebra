@@ -829,17 +829,18 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     code_flg = False
 
     for latex_line in latex_lst:
-        if len(latex_line) > 0 and '##' == latex_line[:2]:
-            # Starting a line with `##` is a post-processing toggle used by
-            # `Print_Function`
+        if not latex_line:
+            pass
+        elif latex_line.startswith('##'):
+            # a post-processing toggle used by `Print_Function`
             code_flg = not code_flg
             latex_line = latex_line[2:]
         elif code_flg:
                     pass
-        elif len(latex_line) > 0 and '#' in latex_line:  # Non equation mode output (comment)
-            latex_line = latex_line.replace('#', '')
-            if '%' in latex_line:  # Equation mode with no variables to print (comment)
-                latex_line = latex_line.replace('%', '')
+        elif latex_line.startswith('#'):  # Non equation mode output (comment)
+            latex_line = latex_line[1:]
+            if latex_line.startswith('%'):  # Equation mode with no variables to print (comment)
+                latex_line = latex_line[1:]
                 if r'\begin{align*}' in latex_line:
                     latex_line = r'\begin{align*}' + latex_line.replace(r'\begin{align*}', '')
                 else:
@@ -850,8 +851,8 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
                 eq_index = latex_line.rindex('=') + 1
                 lhs = latex_line[:eq_index]
                 latex_line = latex_line.replace(lhs, '')
-                if '%' in lhs:  # Do not preprocess lhs of equation/align
-                    lhs = lhs.replace('%', '')
+                if lhs.startswith('%'):  # Do not preprocess lhs of equation/align
+                    lhs = lhs[1:]
                 else:  # preprocess lhs of equation/align
                     lhs = _texify(lhs)
                 latex_line = lhs + latex_line
