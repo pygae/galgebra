@@ -6,7 +6,7 @@ import sys
 import pytest
 from sympy import Symbol, Derivative
 
-from galgebra.printer import GaPrinter, GaLatexPrinter, oprint
+from galgebra.printer import GaPrinter, GaLatexPrinter, oprint, _texify
 from galgebra.ga import Ga
 
 
@@ -102,3 +102,26 @@ def test_oprint_dict_mode():
             list  = [1, 2, 3]
             str   = a quote: "
             """)
+
+
+def test_texify():
+    # operators
+    assert _texify('a|b') == r'a\cdot b'
+    assert _texify('a^b') == r'a\W b'
+    assert _texify('a*b') == r'a b'
+    assert _texify('a<b') == r'a\rfloor b'
+    assert _texify('a>b') == r'a\lfloor b'
+    assert _texify('a>>b') == r'a \times b'
+    assert _texify('a<<b') == r'a \bar{\times} b'
+
+    # grad
+    assert _texify('grad(a)') == r'\boldsymbol{\nabla} (a)'
+    assert _texify('a rgrad') == r'a \bar{\boldsymbol{\nabla}} '
+    # does not affect words containing grad
+    assert _texify('gradual') == r'gradual'
+
+    # superscripts with {} do not become wedges
+    assert _texify('x^{2}') == r'x^{2}'
+
+    # @@ was previously an internal marker
+    assert _texify('@@ is safe') == r'@@ is safe'

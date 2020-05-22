@@ -8,6 +8,7 @@ import io
 import builtins
 import functools
 import inspect
+import re
 import shutil
 from collections import ChainMap
 
@@ -774,6 +775,31 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
     return
 
 
+def _texify(s: str) -> str:
+    """ Convert python GA operator notation to LaTeX """
+    repl_pairs = [
+        (r'\|', r'\cdot '),
+        (r'\^(?!{)', r'\W '),
+        (r'\*', ' '),
+        (r'\brgrad\b', r'\bar{\boldsymbol{\nabla}} '),
+        (r'\bgrad\b', r'\boldsymbol{\nabla} '),
+        (r'>>', r' \times '),
+        (r'<<', r' \bar{\times} '),
+        (r'<', r'\rfloor '),
+        (r'>', r'\lfloor '),
+    ]
+
+    def repl_func(m):
+        # only one group will be present, use the corresponding match
+        return next(
+            r
+            for (p, r), g in zip(repl_pairs, m.groups())
+            if g is not None
+        )
+    pattern = '|'.join("({})".format(p) for p, _ in repl_pairs)
+    return re.sub(pattern, repl_func, s)
+
+
 def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     """
     Post processes LaTeX output (see comments below), adds preamble and
@@ -829,17 +855,7 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
                 if '%' in lhs:  # Do not preprocess lhs of equation/align
                     lhs = lhs.replace('%', '')
                 else:  # preprocess lhs of equation/align
-                    lhs = lhs.replace('|', r'\cdot ')
-                    lhs = lhs.replace('^{', r'@@ ')
-                    lhs = lhs.replace('^', r'\W ')
-                    lhs = lhs.replace(r'@@ ', '^{')
-                    lhs = lhs.replace('*', ' ')
-                    lhs = lhs.replace('rgrad', r'\bar{\boldsymbol{\nabla}} ')
-                    lhs = lhs.replace('grad', r'\boldsymbol{\nabla} ')
-                    lhs = lhs.replace(r'>>', r' \times ')
-                    lhs = lhs.replace(r'<<', r' \bar{\times} ')
-                    lhs = lhs.replace('<', r'\rfloor ')  # Check
-                    lhs = lhs.replace('>', r'\lfloor ')  # Check
+                    lhs = _texify(lhs)
                 latex_line = lhs + latex_line
 
             if r'\begin{align*}' in latex_line:  # insert lhs of align environment
