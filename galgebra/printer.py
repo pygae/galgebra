@@ -801,11 +801,37 @@ def _texify(s: str) -> str:
 
 
 def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
-    """
+    r"""
     Post processes LaTeX output (see comments below), adds preamble and
     postscript.
 
-    We assume that if tex() is called then Format() has been called at the beginning of the program.
+    This postprocessing has two main behaviors:
+
+    1. Converting strings on the left hand side of the last ``=`` into TeX.
+       This translates the ``*``, ``^``, ``|``, ``>``, ``<``, ``<<``, ``>>``,
+       ``grad``, and ``rgrad`` operators of galgebra into the appropriate latex
+       operators. If there is no ``=`` in the line, no conversion is applied.
+
+    2. Wrapping lines of latex into ``equation*`` environments if they are not
+       already in environments, and moving labels that were prepended outside
+       ``align`` environments inside those environments.
+
+    Both behaviors are applied line by line, unless a line starts with the
+    following text:
+
+    ``#%`` or ``%``
+        Disables only behavior 1 for the rest of the line.
+
+    ``##``
+        Disables behaviors 1 and 2 until the end of the next line starting with
+        ``##``. This includes processing any of the other special characters,
+        which will be emitted verbatim.
+
+    ``#``
+        Disables behaviors 1 and 2 for the rest of the line.
+
+    We assume that if :func:`tex` is called, then :func:`Format` has been called
+    at the beginning of the program.
     """
 
     latex_str = GaLatexPrinter.latex_str + sys.stdout.getvalue()
