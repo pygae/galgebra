@@ -43,68 +43,6 @@ _StrPrinter._default_settings.update({
 })
 
 
-class _FmtResult:
-    """ Object returned from Mv.Fmt and Dop.Fmt, which can be printed as latex """
-    def __init__(self, obj, fmt: int = None, label: str = None):
-        self._obj = obj
-        self._fmt = fmt
-        self._label = label
-
-    def _latex(self, printer):
-        # make a copy of the printer with the specified setting applied
-        new_printer = copy.copy(printer)
-        new_printer._settings = copy.copy(new_printer._settings)
-        if self._fmt is not None:
-            new_printer._settings['galgebra_mv_fmt'] = self._fmt
-
-        # print and add the label, if present
-        latex_str = new_printer.doprint(self._obj)
-        if self._label is not None:
-            if r'\begin{align*}' in latex_str:
-                latex_str = latex_str.replace('&', ' ' + self._label + ' =&', 1)
-            else:
-                latex_str = self._label + ' = ' + latex_str
-        return latex_str
-
-    def _sympystr(self, printer):
-        # make a copy of the printer with the specified setting applied
-        new_printer = copy.copy(printer)
-        new_printer._settings = copy.copy(new_printer._settings)
-        if self._fmt is not None:
-            new_printer._settings['galgebra_mv_fmt'] = self._fmt
-
-        # print and add the label, if present
-        s = new_printer.doprint(self._obj)
-        if self._label is not None:
-            s = self._label + ' = ' + s
-        return s
-
-    def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter().doprint(self)
-        if r'\begin{align*}' not in latex_str:
-            latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-        return latex_str
-
-    __repr__ = printer.default__repr__
-
-    def __ga_print_str__(self):
-        if printer.GaLatexPrinter.latex_flg:
-            # unfortunately we cannot re-use `_latex` here, because the output
-            # of this function has to survive the post-processing in
-            # `galgebra.printer.tex`.
-            settings = {}
-            if self._fmt is not None:
-                settings['galgebra_mv_fmt'] = self._fmt
-            latex_str = printer.GaLatexPrinter(settings).doprint(self._obj)
-
-            if self._label:
-                latex_str = self._label + ' = ' + latex_str
-
-            return latex_str
-        else:
-            return str(self)
-
-
 ########################### Multivector Class ##########################
 
 
@@ -1222,7 +1160,7 @@ class Mv(object):
         else:
             self.obj += value * base
 
-    def Fmt(self, fmt: int = 1, title: str = None) -> Union['Mv', str]:
+    def Fmt(self, fmt: int = 1, title: str = None) -> printer._FmtResult:
         """
         Set format for printing of multivectors
 
@@ -1241,7 +1179,11 @@ class Mv(object):
         with one grade per line.  Works for both standard printing and
         for latex.
         """
-        return _FmtResult(self, fmt, title)
+        if fmt is not None:
+            obj = printer._WithSettings(self, dict(galgebra_mv_fmt=fmt))
+        else:
+            obj = self
+        return printer._FmtResult(obj, title)
 
     def _repr_latex_(self) -> str:
         return self.Fmt(fmt=None, title=self.title)._repr_latex_()
@@ -1811,8 +1753,12 @@ class Dop(dop._BaseDop):
         dop.Sdop.str_mode = False
         return s[:-3]
 
-    def Fmt(self, fmt: int = 1, title: str = None) -> Union['Dop', str]:
-        return _FmtResult(self, fmt, title)
+    def Fmt(self, fmt: int = 1, title: str = None) -> printer._FmtResult:
+        if fmt is not None:
+            obj = printer._WithSettings(self, dict(galgebra_mv_fmt=fmt))
+        else:
+            obj = self
+        return printer._FmtResult(obj, title)
 
     def _eval_derivative_n_times(self, x, n):
         return Dop(dop._eval_derivative_n_times_terms(self.terms, x, n), cmpflg=self.cmpflg, ga=self.Ga)
