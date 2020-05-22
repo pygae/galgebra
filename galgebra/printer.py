@@ -576,7 +576,7 @@ class GaLatexPrinter(LatexPrinter):
             name = translate(name)
 
             if style == 'bold':
-                name = '\\boldsymbol{' + name +'}'
+                name = '\\boldsymbol{' + name + '}'
 
             supers = list(map(translate, supers))
             subs = list(map(translate, subs))
@@ -1112,7 +1112,7 @@ def Fmt(obj, fmt=0):
             for cell in obj:
                 if isinstance(obj, dict):
                     #cell.title = None
-                    latex_cell = latex(cell) + ' : '+ latex(obj[cell])
+                    latex_cell = latex(cell) + ' : ' + latex(obj[cell])
                 else:
                     #title = cell.title
                     #cell.title = None
