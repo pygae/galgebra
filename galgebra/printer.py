@@ -2,6 +2,7 @@ r"""
 ANSI Enhanced Text Printing, Text Printer and LaTeX Printer for all Geometric Algebra classes
 """
 
+import copy
 import os
 import sys
 import io
@@ -1129,3 +1130,66 @@ def Fmt(obj, fmt=0):
         return
     else:
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
+
+
+class _WithSettings:
+    """ Helper class to attach print settings to an object """
+    def __init__(self, obj, settings: dict = {}):
+        self._obj = obj
+        self._settings = settings
+
+    def __do_print(self, printer):
+        # make a copy of the printer with the specified setting applied
+        new_printer = copy.copy(printer)
+        new_printer._settings = copy.copy(new_printer._settings)
+        new_printer._settings.update(self._settings)
+        return new_printer.doprint(self._obj)
+
+    _latex = _pretty = _sympystr = __do_print
+
+    __repr__ = default__repr__
+    __ga_print_str__ = default__ga_print_str__
+
+
+class _FmtResult:
+    """ Object returned from .Fmt methods, which can be printed as latex """
+    def __init__(self, obj, label: str = None):
+        self._obj = obj
+        self._label = label
+
+    def _latex(self, printer):
+        # print and add the label, if present
+        latex_str = printer.doprint(self._obj)
+        if self._label is not None:
+            if r'\begin{align*}' in latex_str:
+                latex_str = latex_str.replace('&', ' ' + self._label + ' =&', 1)
+            else:
+                latex_str = self._label + ' = ' + latex_str
+        return latex_str
+
+    def _sympystr(self, printer):
+        # print and add the label, if present
+        s = printer.doprint(self._obj)
+        if self._label is not None:
+            s = self._label + ' = ' + s
+        return s
+
+    def _repr_latex_(self):
+        latex_str = GaLatexPrinter().doprint(self)
+        if r'\begin{align*}' not in latex_str:
+            latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
+        return latex_str
+
+    __repr__ = default__repr__
+
+    def __ga_print_str__(self):
+        if GaLatexPrinter.latex_flg:
+            # unfortunately we cannot re-use `_latex` here, because the output
+            # of this function has to survive the post-processing in
+            # `tex`.
+            latex_str = GaLatexPrinter().doprint(self._obj)
+            if self._label:
+                latex_str = self._label + ' = ' + latex_str
+            return latex_str
+        else:
+            return str(self)
