@@ -830,12 +830,10 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
 
     for latex_line in latex_lst:
         if len(latex_line) > 0 and '##' == latex_line[:2]:
-            if code_flg:
-                code_flg = False
-                latex_line = latex_line[2:]
-            else:
-                code_flg = True
-                latex_line = latex_line[2:]
+            # Starting a line with `##` is a post-processing toggle used by
+            # `Print_Function`
+            code_flg = not code_flg
+            latex_line = latex_line[2:]
         elif code_flg:
                     pass
         elif len(latex_line) > 0 and '#' in latex_line:  # Non equation mode output (comment)
