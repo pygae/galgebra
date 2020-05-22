@@ -322,6 +322,7 @@ def _print(*values, **kwargs):
             values_new.append(f(v))
     _old_print(*values_new, **kwargs)
 
+
 builtins.print = _print
 
 
@@ -1006,6 +1007,7 @@ def LatexFormat(Fmode=True, Dmode=True, ipy=False):
     GaLatexPrinter.ipy = ipy
     GaLatexPrinter.redirect()
     return
+
 
 off_mode = False
 
