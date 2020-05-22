@@ -822,11 +822,6 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
                     latex_line = '\\begin{equation*} ' + latex_line + ' \\end{equation*}\n'
 
         else:
-            latex_line = latex_line.replace(r'\left.', r'@@')  # Disabiguate '.' in '\left.'
-            latex_line = latex_line.replace(r'\right.', r'##')  # Disabiguate '.' in '\right.'
-            latex_line = latex_line.replace('.', r' \cdot ')  # For components of metric tensor
-            latex_line = latex_line.replace(r'@@', r'\left.')  # Restore '\left.'
-            latex_line = latex_line.replace(r'##', r'\right.')  # Restore '\right.'
             if '=' in latex_line:  # determing lhs of equation/align
                 eq_index = latex_line.rindex('=') + 1
                 lhs = latex_line[:eq_index]
