@@ -774,6 +774,22 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
     return
 
 
+def _texify(s: str) -> str:
+    """ Convert python GA operator notation to LaTeX """
+    s = s.replace('|', r'\cdot ')
+    s = s.replace('^{', r'@@ ')  # placeholder
+    s = s.replace('^', r'\W ')
+    s = s.replace(r'@@ ', '^{')
+    s = s.replace('*', ' ')
+    s = s.replace('rgrad', r'\bar{\boldsymbol{\nabla}} ')
+    s = s.replace('grad', r'\boldsymbol{\nabla} ')
+    s = s.replace(r'>>', r' \times ')
+    s = s.replace(r'<<', r' \bar{\times} ')
+    s = s.replace('<', r'\rfloor ')
+    s = s.replace('>', r'\lfloor ')
+    return s
+
+
 def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     """
     Post processes LaTeX output (see comments below), adds preamble and
@@ -829,17 +845,7 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
                 if '%' in lhs:  # Do not preprocess lhs of equation/align
                     lhs = lhs.replace('%', '')
                 else:  # preprocess lhs of equation/align
-                    lhs = lhs.replace('|', r'\cdot ')
-                    lhs = lhs.replace('^{', r'@@ ')
-                    lhs = lhs.replace('^', r'\W ')
-                    lhs = lhs.replace(r'@@ ', '^{')
-                    lhs = lhs.replace('*', ' ')
-                    lhs = lhs.replace('rgrad', r'\bar{\boldsymbol{\nabla}} ')
-                    lhs = lhs.replace('grad', r'\boldsymbol{\nabla} ')
-                    lhs = lhs.replace(r'>>', r' \times ')
-                    lhs = lhs.replace(r'<<', r' \bar{\times} ')
-                    lhs = lhs.replace('<', r'\rfloor ')  # Check
-                    lhs = lhs.replace('>', r'\lfloor ')  # Check
+                    lhs = _texify(lhs)
                 latex_line = lhs + latex_line
 
             if r'\begin{align*}' in latex_line:  # insert lhs of align environment
