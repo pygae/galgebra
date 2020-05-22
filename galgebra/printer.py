@@ -290,6 +290,12 @@ def default__repr__(self):
     return GaPrinter().doprint(self)
 
 
+def default_repr_latex_(self):
+    # IPython expects latex in text mode, so we wrap in an environment
+    latex_str = GaLatexPrinter().doprint(self)
+    return r'\begin{equation*} ' + latex_str + r' \end{equation*}'
+
+
 Basic.__ga_print_str__ = default__ga_print_str__
 Matrix.__ga_print_str__ = default__ga_print_str__
 
@@ -1112,12 +1118,6 @@ def Fmt(obj, fmt=0):
                     #cell.title = None
                     latex_cell = latex(cell)
                 latex_cell = latex_cell.replace('\n', ' ')
-                latex_cell= latex_cell.replace(r'\begin{equation*}', ' ')
-                latex_cell= latex_cell.replace(r'\end{equation*}', ' ')
-                if cell.fmt != 1:
-                    latex_cell= latex_cell.replace(r'\begin{align*}', r'\begin{array}{c} ')
-                    latex_cell= latex_cell.replace('&', '')
-                    latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
                 latex_str += latex_cell + ', & '
                 #cell.title = title
             latex_str = latex_str[:-4]
@@ -1130,12 +1130,6 @@ def Fmt(obj, fmt=0):
                 #cell.title = None
                 latex_cell = latex(cell)
                 latex_cell = latex_cell.replace('\n', ' ')
-                latex_cell= latex_cell.replace(r'\begin{equation*}', ' ')
-                latex_cell= latex_cell.replace(r'\end{equation*}', ' ')
-                if LatexPrinter()._settings['galgebra_mv_fmt'] != 1:
-                    latex_cell= latex_cell.replace(r'\begin{align*}', r'\begin{array}{c} ')
-                    latex_cell= latex_cell.replace('&', '')
-                    latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
                 #cell.title = title
                 if i == 1:
                     latex_str += r'\begin{array}{c} \left ' + ldelim + r' ' + latex_cell + r', \right. \\ '
@@ -1145,8 +1139,7 @@ def Fmt(obj, fmt=0):
                     latex_str += r' ' + latex_cell + r', \\'
                 i += 1
         if isinteractive():  # For Ipython notebook
-            if r'\begin{align*}' not in latex_str:
-                latex_str = r'\begin{equation*} ' + latex_str + r'\end{equation*}'
+            latex_str = r'\begin{equation*} ' + latex_str + r'\end{equation*}'
             return latex_str
         else:
             return latex_str
@@ -1173,8 +1166,9 @@ class _WithSettings:
 
     _latex = _pretty = _sympystr = __do_print
 
-    __repr__ = default__repr__
     __ga_print_str__ = default__ga_print_str__
+    __repr__ = default__repr__
+    _repr_latex_ = default_repr_latex_
 
 
 class _FmtResult:
@@ -1187,10 +1181,7 @@ class _FmtResult:
         # print and add the label, if present
         latex_str = printer.doprint(self._obj)
         if self._label is not None:
-            if r'\begin{align*}' in latex_str:
-                latex_str = latex_str.replace('&', ' ' + self._label + ' =&', 1)
-            else:
-                latex_str = self._label + ' = ' + latex_str
+            latex_str = self._label + ' = ' + latex_str
         return latex_str
 
     def _sympystr(self, printer):
@@ -1200,22 +1191,6 @@ class _FmtResult:
             s = self._label + ' = ' + s
         return s
 
-    def _repr_latex_(self):
-        latex_str = GaLatexPrinter().doprint(self)
-        if r'\begin{align*}' not in latex_str:
-            latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-        return latex_str
-
+    __ga_print_str__ = default__ga_print_str__
     __repr__ = default__repr__
-
-    def __ga_print_str__(self):
-        if GaLatexPrinter.latex_flg:
-            # unfortunately we cannot re-use `_latex` here, because the output
-            # of this function has to survive the post-processing in
-            # `tex`.
-            latex_str = GaLatexPrinter().doprint(self._obj)
-            if self._label:
-                latex_str = self._label + ' = ' + latex_str
-            return latex_str
-        else:
-            return str(self)
+    _repr_latex_ = default_repr_latex_
