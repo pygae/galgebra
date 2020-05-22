@@ -825,7 +825,6 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     latex_lst = latex_str.split('\n')
     latex_str = ''
 
-    lhs = ''
     code_flg = False
 
     for latex_line in latex_lst:
@@ -856,11 +855,12 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
                 else:  # preprocess lhs of equation/align
                     lhs = _texify(lhs)
                 latex_line = lhs + latex_line
+            else:
+                lhs = ''
 
             if r'\begin{align*}' in latex_line:  # insert lhs of align environment
                 latex_line = latex_line.replace(lhs, '')
                 latex_line = latex_line.replace(r'\begin{align*}', r'\begin{align*} ' + lhs)
-                lhs = ''
             else:  # normal sympy equation
                 latex_line = latex_line.strip()
                 if len(latex_line) > 0:
