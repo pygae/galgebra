@@ -777,7 +777,7 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
         GaLatexPrinter.redirect()
 
         if isinteractive():
-            init_printing(use_latex= 'mathjax')
+            init_printing(use_latex='mathjax')
 
     return
 
