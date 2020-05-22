@@ -1024,7 +1024,7 @@ def Print_Function():
     tmp_str = inspect.getsource(inspect.currentframe().f_back)
     if GaLatexPrinter.latex_flg:
         #print '#Code for '+fct_name
-        print(r'##\\begin{lstlisting}[language=Python,showspaces=false,' + \
+        print(r'##\\begin{lstlisting}[language=Python,showspaces=false,'
               r'showstringspaces=false,backgroundcolor=\color{gray},frame=single]')
         print(tmp_str)
         print('##\\end{lstlisting}')
