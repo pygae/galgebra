@@ -741,7 +741,7 @@ def print_latex(expr, **settings):
     print(latex(expr, **settings))
 
 
-def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
+def Format(Fmode: bool = True, Dmode: bool = True, inverse='full'):
     r"""
     Turns on latex printing with configurable options.
 
@@ -769,7 +769,6 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
     if Format_cnt == 0:
         Format_cnt += 1
 
-        GaLatexPrinter.dop = dop
         GaLatexPrinter.latex_flg = True
         GaLatexPrinter.redirect()
 
