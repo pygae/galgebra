@@ -764,10 +764,10 @@ class Mv(object):
         if print_obj._settings['galgebra_mv_fmt'] >= 2:
             if len(lines) == 1:
                 return lines[0]
-            s = ' \\begin{align*} '
+            s = ' \\begin{aligned}[t] '
             for line in lines:
                 s += ' & ' + line + ' \\\\ '
-            s = s[:-3] + ' \\end{align*} \n'
+            s = s[:-3] + ' \\end{aligned} '
         return s
 
     def __xor__(self, A):  # wedge (^) product
