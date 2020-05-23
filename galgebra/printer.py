@@ -802,11 +802,37 @@ def _texify(s: str) -> str:
 
 
 def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
-    """
+    r"""
     Post processes LaTeX output (see comments below), adds preamble and
     postscript.
 
-    We assume that if tex() is called then Format() has been called at the beginning of the program.
+    This postprocessing has two main behaviors:
+
+    1. Converting strings on the left hand side of the last ``=`` into TeX.
+       This translates the ``*``, ``^``, ``|``, ``>``, ``<``, ``<<``, ``>>``,
+       ``grad``, and ``rgrad`` operators of galgebra into the appropriate latex
+       operators. If there is no ``=`` in the line, no conversion is applied.
+
+    2. Wrapping lines of latex into ``equation*`` environments if they are not
+       already in environments, and moving labels that were prepended outside
+       ``align`` environments inside those environments.
+
+    Both behaviors are applied line by line, unless a line starts with the
+    following text:
+
+    ``#%`` or ``%``
+        Disables only behavior 1 for the rest of the line.
+
+    ``##``
+        Disables behaviors 1 and 2 until the end of the next line starting with
+        ``##``. This includes processing any of the other special characters,
+        which will be emitted verbatim.
+
+    ``#``
+        Disables behaviors 1 and 2 for the rest of the line.
+
+    We assume that if :func:`tex` is called, then :func:`Format` has been called
+    at the beginning of the program.
     """
 
     latex_str = GaLatexPrinter.latex_str + sys.stdout.getvalue()
@@ -826,47 +852,36 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     latex_lst = latex_str.split('\n')
     latex_str = ''
 
-    lhs = ''
     code_flg = False
 
     for latex_line in latex_lst:
-        if len(latex_line) > 0 and '##' == latex_line[:2]:
-            if code_flg:
-                code_flg = False
-                latex_line = latex_line[2:]
-            else:
-                code_flg = True
-                latex_line = latex_line[2:]
+        if not latex_line:
+            pass
+        elif latex_line.startswith('##'):
+            # a post-processing toggle used by `Print_Function`
+            code_flg = not code_flg
+            latex_line = latex_line[2:]
         elif code_flg:
-                    pass
-        elif len(latex_line) > 0 and '#' in latex_line:  # Non equation mode output (comment)
-            latex_line = latex_line.replace('#', '')
-            if '%' in latex_line:  # Equation mode with no variables to print (comment)
-                latex_line = latex_line.replace('%', '')
-                if r'\begin{align*}' in latex_line:
-                    latex_line = r'\begin{align*}' + latex_line.replace(r'\begin{align*}', '')
-                else:
-                    latex_line = '\\begin{equation*} ' + latex_line + ' \\end{equation*}\n'
-
+            pass
+        elif latex_line.startswith('#') and not latex_line.startswith('#%'):
+            # do not process this line
+            latex_line = latex_line[1:]
         else:
-            if '=' in latex_line:  # determing lhs of equation/align
-                eq_index = latex_line.rindex('=') + 1
-                lhs = latex_line[:eq_index]
-                latex_line = latex_line.replace(lhs, '')
-                if '%' in lhs:  # Do not preprocess lhs of equation/align
-                    lhs = lhs.replace('%', '')
-                else:  # preprocess lhs of equation/align
-                    lhs = _texify(lhs)
-                latex_line = lhs + latex_line
+            # two different spellings of "do not process the LHS"
+            if latex_line.startswith('%'):
+                latex_line = latex_line[1:]
+            elif latex_line.startswith('#%'):
+                latex_line = latex_line[2:]
+            # otherwise, process it if we can find it
+            elif '=' in latex_line:
+                lhs, latex_line = latex_line.rsplit('=', 1)
+                latex_line = _texify(lhs) + '=' + latex_line
 
-            if r'\begin{align*}' in latex_line:  # insert lhs of align environment
-                latex_line = latex_line.replace(lhs, '')
-                latex_line = latex_line.replace(r'\begin{align*}', r'\begin{align*} ' + lhs)
-                lhs = ''
-            else:  # normal sympy equation
-                latex_line = latex_line.strip()
-                if len(latex_line) > 0:
-                    latex_line = '\\begin{equation*} ' + latex_line + ' \\end{equation*}'
+            # in either case, perform the environment wrapping
+            if r'\begin{align*}' in latex_line:
+                latex_line = r'\begin{align*} ' + latex_line.replace(r'\begin{align*}', '', 1).lstrip()
+            else:
+                latex_line = r'\begin{equation*} ' + latex_line.strip() + r' \end{equation*}'
 
         latex_str += latex_line + '\n'
 
