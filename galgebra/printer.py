@@ -447,9 +447,6 @@ class GaLatexPrinter(LatexPrinter):
     postscript = '\\end{document}\n'
     macros = '\\newcommand{\\f}[2]{{#1}\\left ({#2}\\right )}'
 
-    latex_flg = False
-    ipy = False
-
     # translate name, supers and subs to tex keywords
     greek = set(['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta',
                  'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu',
