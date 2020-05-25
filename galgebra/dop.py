@@ -69,7 +69,7 @@ def _eval_derivative_n_times_terms(terms, x, n):
 
 ################ Scalar Partial Differential Operator Class ############
 
-class _BaseDop(object):
+class _BaseDop(printer.GaPrintable):
     """ Base class for differential operators - used to avoid accidental promotion """
     pass
 
@@ -173,13 +173,6 @@ class Sdop(_BaseDop):
 
         s = s.replace('+ -', '- ')
         return s[:-3]
-
-    def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter().doprint(self)
-        return ' ' + latex_str + ' '
-
-    __ga_print_str__ = printer.default__ga_print_str__
-    __repr__ = printer.default__repr__
 
     def __init_from_symbol(self, symbol: Symbol) -> None:
         self.terms = ((S(1), Pdop(symbol)),)
@@ -397,10 +390,3 @@ class Pdop(_BaseDop):
                 s += '^{' + print_obj.doprint(i) + '}'
         s += '}'
         return s
-
-    def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter().doprint(self)
-        return ' ' + latex_str + ' '
-
-    __ga_print_str__ = printer.default__ga_print_str__
-    __repr__ = printer.default__repr__
