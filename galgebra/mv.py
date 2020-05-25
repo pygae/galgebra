@@ -75,8 +75,14 @@ class Mv(printer.GaPrintable):
 
     ################### Multivector initialization #####################
 
-    # This is read by one code path in `galgebra.printer.Fmt`. Only one example
-    # sets it.
+    is_number = False
+    is_Number = False
+    is_Rational = False
+    is_commutative = False
+
+    def sort_key(self, *args, **kwargs):
+        return self.obj.sort_key(*args, **kwargs)
+
     fmt = 1
 
     dual_mode_lst = ['+I', 'I+', '+Iinv', 'Iinv+', '-I', 'I-', '-Iinv', 'Iinv-']
@@ -359,6 +365,8 @@ class Mv(printer.GaPrintable):
                 self.is_blade_rep = x.is_blade_rep
                 self.i_grade = x.i_grade
             else:
+                if isinstance(x, dop.DiffOpExpr):
+                    raise TypeError("cannot embed a differential operator in a multivector")
                 if isinstance(x, Expr):  # copy constructor for obj expression
                     self.obj = x
                 else:  # copy constructor for scalar obj expression
@@ -497,8 +505,10 @@ class Mv(printer.GaPrintable):
         return Mv(-self.obj, ga=self.Ga)
 
     def __add__(self, A):
-        if isinstance(A, dop._BaseDop):
+        if isinstance(A, Dop):
             return NotImplemented
+        elif isinstance(A, dop.DiffOpExpr):
+            return self + self.Ga.dop(A)
 
         if not isinstance(A, Mv):
             return Mv(self.obj + A, ga=self.Ga)
@@ -519,27 +529,16 @@ class Mv(printer.GaPrintable):
         return self + A
 
     def __sub__(self, A):
-        if isinstance(A, dop._BaseDop):
-            return NotImplemented
-
-        if self.Ga != A.Ga:
-            raise ValueError('In - operation Mv arguments are not from same geometric algebra')
-
-        if self.is_blade_rep == A.is_blade_rep:
-            return Mv(self.obj - A.obj, ga=self.Ga)
-        else:
-            if self.is_blade_rep:
-                A = A.blade_rep()
-            else:
-                self = self.blade_rep()
-            return Mv(self.obj - A.obj, ga=self.Ga)
+        return self + -A
 
     def __rsub__(self, A):
         return -self + A
 
     def __mul__(self, A):
-        if isinstance(A, dop._BaseDop):
+        if isinstance(A, Dop):
             return NotImplemented
+        elif isinstance(A, dop.DiffOpExpr):
+            return self * self.Ga.dop(A)
 
         if not isinstance(A, Mv):
             return Mv(expand(A * self.obj), ga=self.Ga)
@@ -575,8 +574,10 @@ class Mv(printer.GaPrintable):
             return Mv(self.Ga.mul(self.obj, A.obj), ga=self.Ga)
 
     def __rmul__(self, A):
-        if isinstance(A, dop._BaseDop):
+        if isinstance(A, Dop):
             return NotImplemented
+        elif isinstance(A, dop.DiffOpExpr):
+            return self.Ga.dop(A) * A
         return Mv(expand(A * self.obj), ga=self.Ga)
 
     def __truediv__(self, A):
@@ -766,8 +767,10 @@ class Mv(printer.GaPrintable):
         return s
 
     def __xor__(self, A):  # wedge (^) product
-        if isinstance(A, dop._BaseDop):
+        if isinstance(A, Dop):
             return NotImplemented
+        elif isinstance(A, dop.DiffOpExpr):
+            return self ^ self.Ga.dop(A)
 
         if not isinstance(A, Mv):
             return Mv(A * self.obj, ga=self.Ga)
@@ -783,14 +786,17 @@ class Mv(printer.GaPrintable):
         return Mv(self.Ga.wedge(self.obj, A.obj), ga=self.Ga)
 
     def __rxor__(self, A):  # wedge (^) product
-        if isinstance(A, dop._BaseDop):
+        if isinstance(A, Dop):
             return NotImplemented
-        assert not isinstance(A, Mv)
+        elif isinstance(A, dop.DiffOpExpr):
+            return self.Ga.dop(A) ^ self
         return Mv(A * self.obj, ga=self.Ga)
 
     def __or__(self, A):  # dot (|) product
-        if isinstance(A, dop._BaseDop):
+        if isinstance(A, Dop):
             return NotImplemented
+        elif isinstance(A, dop.DiffOpExpr):
+            return self | self.Ga.dop(A)
 
         if not isinstance(A, Mv):
             return Mv(ga=self.Ga)
@@ -803,8 +809,10 @@ class Mv(printer.GaPrintable):
         return Mv(self.Ga.hestenes_dot(self.obj, A.obj), ga=self.Ga)
 
     def __ror__(self, A):  # dot (|) product
-        if isinstance(A, dop._BaseDop):
+        if isinstance(A, Dop):
             return NotImplemented
+        elif isinstance(A, dop.DiffOpExpr):
+            return self.Ga.dop(A) | self
         assert not isinstance(A, Mv)
         return Mv(ga=self.Ga)
 
@@ -832,12 +840,9 @@ class Mv(printer.GaPrintable):
     def __lt__(self, A):  # left contraction (<)
         if isinstance(A, Dop):
             # Cannot return `NotImplemented` here, as that would call `A > self`
-            return A.Mul(self, A, op='<')
-        elif isinstance(A, dop._BaseDop):
-            raise TypeError(
-                "'<' not supported between instances of 'Mv' and {!r}"
-                .format(type(A).__name__)
-            )
+            return Dop.Mul(self, A, op='<')
+        elif isinstance(A, dop.DiffOpExpr):
+            return Dop.Mul(self, self.Ga.dop(A), op='<')
 
         if not isinstance(A, Mv):  # sympy scalar
             return Mv(A * self.obj, ga=self.Ga)
@@ -853,12 +858,8 @@ class Mv(printer.GaPrintable):
         if isinstance(A, Dop):
             # Cannot return `NotImplemented` here, as that would call `A < self`
             return A.Mul(self, A, op='>')
-        elif isinstance(A, dop._BaseDop):
-            raise TypeError(
-                "'>' not supported between instances of 'Mv' and {!r}"
-                .format(type(A).__name__)
-            )
-
+        elif isinstance(A, dop.DiffOpExpr):
+            return Dop.Mul(self, self.Ga.dop(A), op='>')
         if not isinstance(A, Mv):  # sympy scalar
             return self.Ga.mv(A * self.scalar())
 
@@ -1428,12 +1429,20 @@ class Dop(dop._BaseDop):
             self.terms = dop._consolidate_terms(
                 (coef * mv, pdiff)
                 for (sdop, mv) in terms
-                for (coef, pdiff) in sdop.terms
+                for (coef, pdiff) in dop._as_terms(sdop)
             )
         else:
             raise TypeError(
                 'In Dop.__init__ terms are neither (Mv, Pdop) pairs or '
                 '(Sdop, Mv) pairs, got {}'.format(terms))
+
+    def __init_from_diff_op(self, diff_op):
+        terms = []
+        for coef, pdiff in dop._as_terms(diff_op):
+            if not isinstance(coef, Mv):
+                coef = self.Ga.mv(coef)
+            terms.append((coef, pdiff))
+        self.terms = tuple(terms)
 
     def __init__(self, *args, ga: 'Ga', cmpflg: bool = False, debug: bool = False) -> None:
         """
@@ -1455,7 +1464,10 @@ class Dop(dop._BaseDop):
         if len(args) == 2:
             self.__init_from_coef_and_pdop(*args)
         elif len(args) == 1:
-            self.__init_from_terms(*args)
+            if isinstance(args[0], dop.DiffOpExpr):
+                self.__init_from_diff_op(args[0])
+            else:
+                self.__init_from_terms(*args)
         else:
             # count include self, as python usually does
             raise TypeError(
@@ -1479,6 +1491,11 @@ class Dop(dop._BaseDop):
 
     @staticmethod
     def Add(dop1, dop2):
+        # promote pdops to dops
+        if isinstance(dop1, Dop) and isinstance(dop2, dop.DiffOpExpr):
+            dop2 = Dop(dop2, cmpflg=dop1.cmpflg, ga=dop1.Ga)
+        elif isinstance(dop2, Dop) and isinstance(dop1, dop.DiffOpExpr):
+            dop1 = Dop(dop1, cmpflg=dop2.cmpflg, ga=dop2.Ga)
 
         if isinstance(dop1, Dop) and isinstance(dop2, Dop):
             if dop1.Ga != dop2.Ga:
@@ -1524,6 +1541,12 @@ class Dop(dop._BaseDop):
     def Mul(dopl, dopr, op='*'):  # General multiplication of Dop's
         # cmpflg is True if the Dop operates on the left argument and
         # False if the Dop operates on the right argument
+
+        # promote pdops to dops
+        if isinstance(dopl, Dop) and isinstance(dopr, dop.DiffOpExpr):
+            dopr = Dop(dopr, cmpflg=dopl.cmpflg, ga=dopl.Ga)
+        elif isinstance(dopr, Dop) and isinstance(dopl, dop.DiffOpExpr):
+            dopl = Dop(dopl, cmpflg=dopr.cmpflg, ga=dopr.Ga)
 
         if isinstance(dopl, Dop) and isinstance(dopr, Dop):
             if dopl.Ga != dopr.Ga:
@@ -1662,7 +1685,7 @@ class Dop(dop._BaseDop):
                     coefs.append(dop.Sdop([(mv_coef, pdiff)]))
         if modes is not None:
             for i in range(len(coefs)):
-                coefs[i] = coefs[i].simplify(modes)
+                coefs[i] = coefs[i].simplify(modes=modes)
         terms = list(zip(coefs, bases))
         return sorted(terms, key=lambda x: self.Ga.blades.flat.index(x[1]))
 
@@ -1679,13 +1702,14 @@ class Dop(dop._BaseDop):
             if base == S(1):
                 s += str_sdop
             else:
-                if len(sdop.terms) > 1:
+                terms = list(dop._as_terms(sdop))
+                if len(terms) > 1:
                     if self.cmpflg:
                         s += '(' + str_sdop + ')*' + str_base
                     else:
                         s += str_base + '*(' + str_sdop + ')'
                 else:
-                    if str_sdop[0] == '-' and not isinstance(sdop.terms[0][0], Add):
+                    if str_sdop[0] == '-' and not isinstance(terms[0], Add):
                         if self.cmpflg:
                             s += str_sdop + '*' + str_base
                         else:
@@ -1722,13 +1746,14 @@ class Dop(dop._BaseDop):
                     if str_sdop[1:] != '1':
                         s += ' ' + str_sdop[1:]
                 else:
-                    if len(sdop.terms) > 1:
+                    terms = list(dop._as_terms(sdop))
+                    if len(terms) > 1:
                         if self.cmpflg:
                             s += r'\left ( ' + str_sdop + r'\right ) ' + str_base
                         else:
                             s += str_base + ' ' + r'\left ( ' + str_sdop + r'\right ) '
                     else:
-                        if str_sdop[0] == '-' and not isinstance(sdop.terms[0][0], Add):
+                        if str_sdop[0] == '-' and not isinstance(terms[0][0], Add):
                             if self.cmpflg:
                                 s += str_sdop + str_base
                             else:
