@@ -125,7 +125,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
     return Transpose(Matrix(lst_mat))
 
 
-class Lt(object):
+class Lt(printer.GaPrintable):
     r"""
     A Linear Transformation
 
@@ -436,12 +436,8 @@ class Lt(object):
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
 
-    def Fmt(self, fmt=1, title=None) -> printer._FmtResult:
+    def Fmt(self, fmt=1, title=None) -> printer.GaPrintable:
         return printer._FmtResult(self, title)
-
-    __ga_print_str__ = printer.default__ga_print_str__
-    __repr__ = printer.default__repr__
-    _repr_latex_ = printer.default_repr_latex_
 
     def matrix(self) -> Matrix:
         r"""
@@ -485,7 +481,7 @@ class Lt(object):
                 return self.mat
 
 
-class Mlt(object):
+class Mlt(printer.GaPrintable):
     r"""
     A multilinear transformation (mlt) is a multilinear multivector function of
     a list of vectors (``*args``) :math:`F(v_1,...,v_r)` where for any argument slot
@@ -600,7 +596,7 @@ class Mlt(object):
         latex_str = latex_str + ' \\end{aligned} '
         return latex_str
 
-    def Fmt(self, lcnt=1, title=None) -> printer._FmtResult:
+    def Fmt(self, lcnt=1, title=None) -> printer.GaPrintable:
         """
         Set format for printing of Tensors
 
@@ -708,10 +704,6 @@ class Mlt(object):
                 self.nargs = len(args)
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f
-
-    __ga_print_str__ = printer.default__ga_print_str__
-    __repr__ = printer.default__repr__
-    _repr_latex_ = printer.default_repr_latex_
 
     def __call__(self, *args):
         """

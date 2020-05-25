@@ -269,28 +269,28 @@ class GaPrinter(StrPrinter):
         )
 
 
-def default__ga_print_str__(self):
-    if GaLatexPrinter.latex_flg:
-        return GaLatexPrinter().doprint(self)
-    else:
+class GaPrintable:
+    """ Mixin class providing default implementations of printing hooks """
+    def __ga_print_str__(self):
+        if GaLatexPrinter.latex_flg:
+            return GaLatexPrinter().doprint(self)
+        else:
+            return GaPrinter().doprint(self)
+
+    def __repr__(self):
         return GaPrinter().doprint(self)
 
-
-def default__repr__(self):
-    return GaPrinter().doprint(self)
-
-
-def default_repr_latex_(self):
-    # IPython expects latex in text mode, so we wrap in an environment
-    latex_str = GaLatexPrinter().doprint(self)
-    return r'\begin{equation*} ' + latex_str + r' \end{equation*}'
+    def _repr_latex_(self):
+        # IPython expects latex in text mode, so we wrap in an environment
+        latex_str = GaLatexPrinter().doprint(self)
+        return r'\begin{equation*} ' + latex_str + r' \end{equation*}'
 
 
-Basic.__ga_print_str__ = default__ga_print_str__
-Matrix.__ga_print_str__ = default__ga_print_str__
+Basic.__ga_print_str__ = GaPrintable.__ga_print_str__
+Matrix.__ga_print_str__ = GaPrintable.__ga_print_str__
 
-Basic.__repr__ = default__repr__
-Matrix.__repr__ = default__repr__
+Basic.__repr__ = GaPrintable.__repr__
+Matrix.__repr__ = GaPrintable.__repr__
 
 
 # This is the lesser of two evils. Previously, we overwrote `Basic.__str__` in
@@ -1143,7 +1143,7 @@ def Fmt(obj, fmt=0):
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
 
 
-class _WithSettings:
+class _WithSettings(GaPrintable):
     """ Helper class to attach print settings to an object """
     def __init__(self, obj, settings: dict = {}):
         self._obj = obj
@@ -1158,31 +1158,19 @@ class _WithSettings:
 
     _latex = _pretty = _sympystr = __do_print
 
-    __ga_print_str__ = default__ga_print_str__
-    __repr__ = default__repr__
-    _repr_latex_ = default_repr_latex_
 
-
-class _FmtResult:
+class _FmtResult(GaPrintable):
     """ Object returned from .Fmt methods, which can be printed as latex """
-    def __init__(self, obj, label: str = None):
+    def __new__(cls, obj, label: str) -> GaPrintable:
+        if label is None:
+            return obj
+        self = super().__new__(cls)
         self._obj = obj
         self._label = label
+        return self
 
     def _latex(self, printer):
-        # print and add the label, if present
-        latex_str = printer.doprint(self._obj)
-        if self._label is not None:
-            latex_str = self._label + ' = ' + latex_str
-        return latex_str
+        return self._label + ' = ' + printer.doprint(self._obj)
 
     def _sympystr(self, printer):
-        # print and add the label, if present
-        s = printer.doprint(self._obj)
-        if self._label is not None:
-            s = self._label + ' = ' + s
-        return s
-
-    __ga_print_str__ = default__ga_print_str__
-    __repr__ = default__repr__
-    _repr_latex_ = default_repr_latex_
+        return self._label + ' = ' + printer.doprint(self._obj)
