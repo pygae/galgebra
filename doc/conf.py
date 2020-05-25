@@ -38,6 +38,7 @@ author = 'Alan Bromborsky'
 # ones.
 extensions = [
     'nbsphinx',
+    'nbsphinx_link',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
