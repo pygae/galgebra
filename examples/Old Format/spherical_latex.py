@@ -24,9 +24,6 @@ def derivatives_in_spherical_coordinates():
     print('-I*(grad^A) =',-MV.I*(grad^A))
     print('grad^B =',grad^B)
     return
-def dummy():
-    return
-
 def main():
     Get_Program()
     Format()

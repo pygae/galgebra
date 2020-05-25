@@ -28,9 +28,6 @@ def Mv_setup_options():
 
     return
 
-def dummy():
-    return
-
 def main():
     Get_Program()
     Eprint()

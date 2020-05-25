@@ -86,9 +86,6 @@ def Lorentz_Tranformation_in_Geometric_Algebra():
     print(r"%t\bm{\gamma_{t}}+x\bm{\gamma_{x}} =",Xpp.collect())
     return
 
-def dummy():
-    return
-
 def main():
     Get_Program()
     Format()

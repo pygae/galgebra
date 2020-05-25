@@ -35,9 +35,6 @@ def main():
 
     return
 
-def dummy():
-    return
-
 if __name__ == "__main__":
     #Eprint()
     Format()

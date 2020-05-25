@@ -430,9 +430,6 @@ def reciprocal_frame_test():
     print('%(E3\\cdot e3)/E^{2} =',simplify(w/Esq))
     return
 
-def dummy():
-    return
-
 def main():
     Get_Program()
 
