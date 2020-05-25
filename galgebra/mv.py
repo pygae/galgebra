@@ -659,8 +659,6 @@ class Mv(object):
                     s += term
             if s[-1] == '\n':
                 s = s[:-1]
-            if printer.print_replace_old is not None:
-                s = s.replace(printer.print_replace_old, printer.print_replace_new)
             return s
         else:
             return print_obj.doprint(self.obj)
