@@ -312,6 +312,7 @@ def _print(*values, **kwargs):
             values_new.append(f(v))
     _old_print(*values_new, **kwargs)
 
+
 builtins.print = _print
 
 
@@ -566,7 +567,7 @@ class GaLatexPrinter(LatexPrinter):
             name = translate(name)
 
             if style == 'bold':
-                name = '\\boldsymbol{' + name +'}'
+                name = '\\boldsymbol{' + name + '}'
 
             supers = list(map(translate, supers))
             subs = list(map(translate, subs))
@@ -767,7 +768,7 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
         GaLatexPrinter.redirect()
 
         if isinteractive():
-            init_printing(use_latex= 'mathjax')
+            init_printing(use_latex='mathjax')
 
     return
 
@@ -997,6 +998,7 @@ def LatexFormat(Fmode=True, Dmode=True, ipy=False):
     GaLatexPrinter.redirect()
     return
 
+
 off_mode = False
 
 
@@ -1012,7 +1014,7 @@ def Print_Function():
     tmp_str = inspect.getsource(inspect.currentframe().f_back)
     if GaLatexPrinter.latex_flg:
         #print '#Code for '+fct_name
-        print(r'##\\begin{lstlisting}[language=Python,showspaces=false,' + \
+        print(r'##\\begin{lstlisting}[language=Python,showspaces=false,'
               r'showstringspaces=false,backgroundcolor=\color{gray},frame=single]')
         print(tmp_str)
         print('##\\end{lstlisting}')
@@ -1102,7 +1104,7 @@ def Fmt(obj, fmt=0):
             for cell in obj:
                 if isinstance(obj, dict):
                     #cell.title = None
-                    latex_cell = latex(cell) + ' : '+ latex(obj[cell])
+                    latex_cell = latex(cell) + ' : ' + latex(obj[cell])
                 else:
                     #title = cell.title
                     #cell.title = None
