@@ -438,9 +438,6 @@ class GaLatexPrinter(LatexPrinter):
     postscript = '\\end{document}\n'
     macros = '\\newcommand{\\f}[2]{{#1}\\left ({#2}\\right )}'
 
-    latex_flg = False
-    ipy = False
-
     # translate name, supers and subs to tex keywords
     greek = set(['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta',
                  'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu',
@@ -735,7 +732,7 @@ def print_latex(expr, **settings):
     print(latex(expr, **settings))
 
 
-def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
+def Format(Fmode: bool = True, Dmode: bool = True, inverse='full'):
     r"""
     Turns on latex printing with configurable options.
 
@@ -763,7 +760,6 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
     if Format_cnt == 0:
         Format_cnt += 1
 
-        GaLatexPrinter.dop = dop
         GaLatexPrinter.latex_flg = True
         GaLatexPrinter.redirect()
 
