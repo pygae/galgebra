@@ -47,9 +47,6 @@ def basic_multivector_operations_2D():
     (A>X).Fmt(2,'A>X')
     return
 
-def dummy():
-    return
-
 def main():
     Get_Program(True)
     Format()

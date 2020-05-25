@@ -172,10 +172,6 @@ def derivatives_in_toroidal_coordinates():
     return
 
 
-def dummy():
-    return
-
-
 def main():
     #Get_Program()
     #Eprint()

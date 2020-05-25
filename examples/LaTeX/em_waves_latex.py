@@ -98,9 +98,6 @@ def EM_Waves_in_Geom_Calculus():
 
     return
 
-def dummy():
-    return
-
 def main():
     #Get_Program()
     Format()

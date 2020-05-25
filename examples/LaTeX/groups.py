@@ -65,9 +65,6 @@ def Product_of_Rotors():
           r' is a bivector blade.')
     return
 
-def dummy():
-    return
-
 def main():
     Get_Program()
     Format()
