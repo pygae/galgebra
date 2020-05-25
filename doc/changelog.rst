@@ -2,6 +2,89 @@
 Changelog
 =========
 
+- :bug:`387` :func:`galgebra.printer.Print_Function` no longer emits invalid LaTeX with an unwanted ``\\``
+
+- :support:`386` The ``title`` attribute of :class:`~galgebra.mv.Dop` has been removed. as it was always ``None``.
+
+- :support:`385` ``galgebra.printer.print_replace`` has been removed.
+
+- :support:`384` The ``dop`` argument to :function:`~galgebra.printer.Format`, along with the corresponding static member of :class:`~galgebra.printer.LatexPrinter`, has been removed, as had no effect.
+
+- :bug:`382` The result of calling :func:`~galgebra.printer.latex` on a multi-vector when the global ``galgebra_mv_fmt`` setting is not 1 is now valid to use within math mode.
+
+- :bug:`378` (also :issue:`379`) The post-processing performed by :func:`galgebra.printer.tex` is now better-behaved:
+
+  * It no longer translates ``grad`` into :math:`\nabla` if it is part of a longer word like ``gradual``.
+  * It no longer mangles occurrences of ``@@``.
+  * It no longer throws away ``#`` and ``%`` symbols that appear in the middle of lines.
+  * It no longer injects stale information from previous lines into subsequent lines.
+  * It now strips all leading and trailing whitespace before wrapping in ``equation`` or ``align``.
+
+- :support:`376` (also :issue:`258`, :issue:`371`) The ``repr()`` and ``str()`` of both :mod:`galgebra` and :mod:`sympy` objects will no longer ever return latex strings, instead always returning plaintext strings. If you want latex strings, use :func:`galgebra.printer.latex`.
+  Note that this does not affect support for ``print(sympy_object)``, which continues to print latex representations provided :func:`galgebra.printer.Format` has been called.
+
+- :bug:`372` For scalar multivectors, the printed result is now mathematically equivalent in plaintext and latex mode.
+
+- :bug:`369` (also :issue:`380`) The ``Fmt`` method of :meth:`Mv <galgebra.mv.Mv.Fmt>`, :meth:`Dop <galgebra.mv.Dop.Fmt>`, :meth:`Lt <galgebra.lt.Lt.Fmt>`, :meth:`Mv <galgebra.lt.Mlt.Fmt>` now works properly in both IPython (giving plaintext output) and Jupyter (giving LaTeX output).
+- :bug:`369` The ``fmt`` argument fo the ``Fmt`` method of :meth:`Mv <galgebra.mv.Mv.Fmt>`, :meth:`Dop <galgebra.mv.Dop.Fmt>`, :meth:`Lt <galgebra.lt.Lt.Fmt>`, :meth:`Mv <galgebra.lt.Mlt.Fmt>`  no longer has side effects on subsequent ``print`` statements.
+
+- :support:`367` The ``fmt_dop`` argument to and ``dop_fmt`` attribute of :class:`galgebra.mv.Dop` have been removed, as they had no effect.
+- :support:`367` (also :issue:`364`, :issue:`369`) The following properties of :class:`~galgebra.printer.GaLatexPrinter` and :class:`~galgebra.printer.GaPrinter` have been removed:
+
+  * ``fmt``
+  * ``prev_fmt``
+  * ``dop_fmt``
+  * ``prev_dop_fmt``
+  * ``lt_fmt``
+  * ``prev_dlt_fmt``
+  * ``Dmode``
+  * ``Fmode``
+
+- :feature:`364` The galgebra printer now respects the global ``inv_trig_style`` sympy print setting.
+- :feature:`364` The galgebra print customizations ``Dmode``, ``Fmode``, ``fmt``, and ``Mlt.lcnt`` can now be set via::
+    
+    sympy.init_printing(
+        omit_function_args=True,  # Fmode
+        omit_partial_derivative_fraction=True,  # Dmode
+        galgebra_mv_fmt=1,  # fmt
+        galgebra_mlt_lcnt=1,  # lcnt
+    )
+
+  These names are provisional, and may change in future.
+
+- :support:`358` ``galgebra.printer.find_executable`` has been removed, as the functionality is provided by :func:`shutil.which`.
+
+- :bug:`354` :func:`galgebra.printer.oprint` no longer strips the last ``)`` from :class:`sympy.Matrix` objects within lists.
+
+- :bug:`348` :func:`galgebra.printer.Print_Function` no longer emits code after the function body. Previously, examples had a ``def dummy(): pass`` function to work around this.
+
+- :bug:`345` :attr:`~galgebra.ga.Ga.e_sq` no longer contains a floating point term.
+
+- :feature:`336` The scalar product :math:`a * b` is now available via :meth:`galgebra.ga.Ga.scalar_product`.
+  Note that there is no operator overload on multivectors yet.
+
+- :bug:`323` (also :issue:`377`, :issue:`340`) Many non-``Mv`` objects now render better in the default sympy printer. This bug manifested most often when using ``Mv.obj``, and would result in misrenderings like :math:`e^e_xy` when :math:`e_x \wedge e_y` was intended, or :math:`e_{x.y}` when :math:`e_x \cdot e_y` was intended.
+
+- :bug:`320` :class:`galgebra.lt.Mlt` no longer crashes at construction, arithmetic, or multiplication.
+- :support:`320` The following attributes of :class:`galgebra.ga.Ga` have been removed:
+  - `a`
+
+- :bug:`319` :meth:`galgebra.mv.Mv.get_coefs` now returns ``0`` in the place of empty coefficients.
+- :bug:`319` :meth:`galgebra.mv.Ga.make_grad` no longer has a broken cache that ignores `cmpflg` if both the left and right gradient operator are requested for the same vector
+- :bug:`319` :meth:`galgebra.mv.Ga.make_grad` no longer crashes when called on an algebra with no :attr:`~galgebra.ga.Ga.coords`.
+
+- :bug:`264` :class:`~galgebra.mv.Dop` no longer emits latex strings when printed in non-latex mode.
+
+- :support:`259` ``galgebra.printer.oprint`` now aligns results in columns
+
+- :bug:`258` The result of simplifying sympy expressions is no longer dependent on whether :func:`galgebra.printer.Format` has been called.
+
+- :support:`216` ``galgebra.metric.test_init_slots`` has been removed. The functionality this provided is superceded by the language feature of keyword-only arguments.
+
+- :support:`200` :class:`~galgebra.dop.Pdop` and :class:`~galgebra.dop.Sdop` instance are no longer associated with a Ga. As a result, their ``.Ga`` attribute no longer exists, and the :meth:`~galgebra.ga.Ga.pdop` and :meth:`~galgebra.ga.Ga.sdop` methods of :class:`~galgebra.ga.Ga` are deprecated in favor of calling the constructors directly.
+  For Ga-aware operators, continue to use :class:`~galgebra.mv.Dop` .
+
+
 - :bug:`53` Calling :func:`sympy.sympify` (or any other sympy function) on a :class:`~galgebra.mv.Mv` instance no longer raises :exc:`RecursionError`, and instead raises :exc:`TypeError` with a helpful message.
 
 - :bug:`344` :func:`galgebra.metric.collect` no longer discards terms that were not requested.
