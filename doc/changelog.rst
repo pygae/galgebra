@@ -21,7 +21,7 @@ Changelog
 
 - :support:`385` ``galgebra.printer.print_replace`` has been removed.
 
-- :support:`384` The ``dop`` argument to :function:`~galgebra.printer.Format`, along with the corresponding static member of :class:`~galgebra.printer.LatexPrinter`, has been removed, as had no effect.
+- :support:`384` The ``dop`` argument to :func:`~galgebra.printer.Format`, along with the corresponding static member of :class:`~galgebra.printer.LatexPrinter`, has been removed, as had no effect.
 
 - :bug:`382` The result of calling :func:`galgebra.printer.latex` on a multi-vector when the global ``galgebra_mv_fmt`` setting is not 1 is now valid to use within math mode.
 
@@ -39,7 +39,7 @@ Changelog
 - :bug:`372` For scalar multivectors, the printed result is now mathematically equivalent in plaintext and latex mode.
 
 - :bug:`369` (also :issue:`380`) The ``Fmt`` method of :meth:`Mv <galgebra.mv.Mv.Fmt>`, :meth:`Dop <galgebra.mv.Dop.Fmt>`, :meth:`Lt <galgebra.lt.Lt.Fmt>`, :meth:`Mv <galgebra.lt.Mlt.Fmt>` now works properly in both IPython (giving plaintext output) and Jupyter (giving LaTeX output).
-- :bug:`369` The ``fmt`` argument fo the ``Fmt`` method of :meth:`Mv <galgebra.mv.Mv.Fmt>`, :meth:`Dop <galgebra.mv.Dop.Fmt>`, :meth:`Lt <galgebra.lt.Lt.Fmt>`, :meth:`Mv <galgebra.lt.Mlt.Fmt>`  no longer has side effects on subsequent ``print`` statements.
+- :bug:`369` The ``fmt`` argument fo the ``Fmt`` method of :meth:`Mv <galgebra.mv.Mv.Fmt>`, :meth:`Dop <galgebra.mv.Dop.Fmt>`, :meth:`Lt <galgebra.lt.Lt.Fmt>`, :meth:`Mlt <galgebra.lt.Mlt.Fmt>` no longer has side effects on subsequent ``print`` statements.
 
 - :support:`367` The ``fmt_dop`` argument to and ``dop_fmt`` attribute of :class:`galgebra.mv.Dop` have been removed, as they had no effect.
 - :support:`367` (also :issue:`364`, :issue:`369`) The following properties of :class:`~galgebra.printer.GaLatexPrinter` and :class:`~galgebra.printer.GaPrinter` have been removed:
@@ -96,11 +96,29 @@ Changelog
 
 - :bug:`258` The result of simplifying sympy expressions is no longer dependent on whether :func:`galgebra.printer.Format` has been called.
 
+- :support:`252` (also :issue:`310`) The ``inverse_metric()`` and ``derivatives_of_g()`` methods of :class:`~galgebra.metric.Metric` are deprecated, as the properties they computed (:attr:`~galgebra.metric.Metric.g_inv` and :attr:`~galgebra.metric.Metric.dg`) are now computed automatically.
+
+- :feature:`252` (also :issue:`310`) Many attributes of :class:`~galgebra.ga.Ga` instances are now _always_ present, rather than being conditionally present depending on the type of algebra. These include:
+
+  * :attr:`~galgebra.ga.Ga.r_basis`
+  * :attr:`~galgebra.ga.Ga.r_basis_mv`
+  * :attr:`~galgebra.ga.Ga.r_basis_dict`
+  * :attr:`~galgebra.metric.Metric.g_inv`
+  * :attr:`~galgebra.metric.Metric.g_adj`
+
+  Other properties that are still only meaningful for some algebras now exist but raise clearer error messages:
+
+  * :attr:`~galgebra.ga.Ga.coord_vec`
+  * :attr:`~galgebra.ga.Ga.bases`
+  * :attr:`~galgebra.ga.Ga.basic_mul`
+
+  These lists are not exhaustive.
+
 - :feature:`243` :meth:`galgebra.mv.Mv.subs` now accepts all the same arguments as :func:`sympy.subs`.
 
 - :support:`216` ``galgebra.metric.test_init_slots`` has been removed. The functionality this provided is superseded by the language feature of keyword-only arguments.
 
-- :support:`200` :class:`~galgebra.dop.Pdop` and :class:`~galgebra.dop.Sdop` instance are no longer associated with a Ga. As a result, their ``.Ga`` attribute no longer exists, and the :meth:`~galgebra.ga.Ga.pdop` and :meth:`~galgebra.ga.Ga.sdop` methods of :class:`~galgebra.ga.Ga` are deprecated in favor of calling the constructors directly.
+- :support:`202` :class:`~galgebra.dop.Pdop` and :class:`~galgebra.dop.Sdop` instance are no longer associated with a Ga. As a result, their ``.Ga`` attribute no longer exists, and the :meth:`~galgebra.ga.Ga.pdop` and :meth:`~galgebra.ga.Ga.sdop` methods of :class:`~galgebra.ga.Ga` are deprecated in favor of calling the constructors directly.
   For Ga-aware operators, continue to use :class:`~galgebra.mv.Dop`.
 
 

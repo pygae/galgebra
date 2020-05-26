@@ -430,7 +430,8 @@ class Metric(object):
         # galgebra 0.5.0
         warnings.warn(
             "Metric.derivatives_of_g is deprecated, and now does nothing. "
-            "the `.dg` property is now always available.")
+            "the `.dg` property is now always available.",
+            DeprecationWarning, stacklevel=2)
 
     @_cached_property
     def dg(self) -> List[List[List[Expr]]]:
@@ -483,7 +484,8 @@ class Metric(object):
         # galgebra 0.5.0
         warnings.warn(
             "Metric.inverse_metric is deprecated, and now does nothing. "
-            "the `.g_inv` property is now always available.")
+            "the `.g_inv` property is now always available.",
+            DeprecationWarning, stacklevel=2)
 
     @_cached_property
     def g_inv(self) -> Matrix:
