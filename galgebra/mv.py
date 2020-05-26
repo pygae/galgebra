@@ -496,46 +496,39 @@ class Mv(printer.GaPrintable):
     def __neg__(self):
         return Mv(-self.obj, ga=self.Ga)
 
-    def __add__(self, A):
+    def _arithmetic_op(self, A, op, name: str):
+        """ Common implementation for + and - """
         if isinstance(A, dop._BaseDop):
             return NotImplemented
 
         if not isinstance(A, Mv):
-            return Mv(self.obj + A, ga=self.Ga)
+            return Mv(op(self.obj, A), ga=self.Ga)
 
         if self.Ga != A.Ga:
-            raise ValueError('In + operation Mv arguments are not from same geometric algebra')
+            raise ValueError(
+                'In {} operation Mv arguments are not from same geometric '
+                'algebra'.format(name))
 
         if self.is_blade_rep == A.is_blade_rep:
-            return Mv(self.obj + A.obj, ga=self.Ga)
+            return Mv(op(self.obj, A.obj), ga=self.Ga)
         else:
             if self.is_blade_rep:
                 A = A.blade_rep()
             else:
                 self = self.blade_rep()
-            return Mv(self.obj + A.obj, ga=self.Ga)
+            return Mv(op(self.obj, A.obj), ga=self.Ga)
+
+    def __add__(self, A):
+        return self._arithmetic_op(A, lambda a, b: a + b, '+')
 
     def __radd__(self, A):
-        return self + A
+        return self._arithmetic_op(A, lambda a, b: b + a, '+')
 
     def __sub__(self, A):
-        if isinstance(A, dop._BaseDop):
-            return NotImplemented
-
-        if self.Ga != A.Ga:
-            raise ValueError('In - operation Mv arguments are not from same geometric algebra')
-
-        if self.is_blade_rep == A.is_blade_rep:
-            return Mv(self.obj - A.obj, ga=self.Ga)
-        else:
-            if self.is_blade_rep:
-                A = A.blade_rep()
-            else:
-                self = self.blade_rep()
-            return Mv(self.obj - A.obj, ga=self.Ga)
+        return self._arithmetic_op(A, lambda a, b: a - b, '-')
 
     def __rsub__(self, A):
-        return -self + A
+        return self._arithmetic_op(A, lambda a, b: b - a, '-')
 
     def __mul__(self, A):
         if isinstance(A, dop._BaseDop):
