@@ -2,6 +2,19 @@
 Changelog
 =========
 
+- :feature:`0` Broad-reaching documentation improvements, including:
+
+  * Code examples referenced from the text are no longer missing (:issue:`293`).
+  * Fixed footnote and citation references (:issue:`287`, :issue:`290`, :issue:`291`)
+  * Faster and smaller pages with less Mathjax loading time (:issue:`292`, :issue:`296`).
+  * An adapted version of a notebook tutorial from Alan Bromborsky is now present in the docs at :doc:`tutorials/algebra` (:issue:`375`).
+  * Type annotations on many functions in :doc:`api`(:issue:`305`).
+  * Correction of curly quotes that led to invalid python syntax (:issue:`294`).
+
+- :support:`393` ``galgebra.dop.Sdop.str_mode`` has been removed, as it was always ``False``.
+
+- :bug:`391` Subtracting a scalar from a :class:`~galgebra.mv.Mv` instance no longer fails.
+
 - :bug:`387` :func:`galgebra.printer.Print_Function` no longer emits invalid LaTeX with an unwanted ``\\``
 
 - :support:`386` The ``title`` attribute of :class:`~galgebra.mv.Dop` has been removed. as it was always ``None``.
@@ -75,11 +88,15 @@ Changelog
 - :bug:`319` :meth:`galgebra.ga.Ga.make_grad` no longer has a broken cache that ignores ``cmpflg`` if both the left and right gradient operator are requested for the same vector
 - :bug:`319` :meth:`galgebra.ga.Ga.make_grad` no longer crashes when called on an algebra with no :attr:`~galgebra.ga.Ga.coords`.
 
+- :support:`286` The :mod:`galgebra.deprecated` module, which provides old-style APIs, now emits :exc:`DeprecationWarning`\ s.
+
 - :bug:`264` :class:`~galgebra.mv.Dop` no longer emits latex strings when printed in non-latex mode.
 
 - :support:`259` ``galgebra.printer.oprint`` now aligns results in columns
 
 - :bug:`258` The result of simplifying sympy expressions is no longer dependent on whether :func:`galgebra.printer.Format` has been called.
+
+- :feature:`243` :meth:`galgebra.mv.Mv.subs` now accepts all the same arguments as :func:`sympy.subs`.
 
 - :support:`216` ``galgebra.metric.test_init_slots`` has been removed. The functionality this provided is superseded by the language feature of keyword-only arguments.
 
