@@ -8,7 +8,7 @@ Changelog
 
 - :support:`385` ``galgebra.printer.print_replace`` has been removed.
 
-- :support:`384` The ``dop`` argument to :function:`~galgebra.printer.Format`, along with the corresponding static member of :class:`~galgebra.printer.LatexPrinter`, has been removed, as had no effect.
+- :support:`384` The ``dop`` argument to :func:`~galgebra.printer.Format`, along with the corresponding static member of :class:`~galgebra.printer.LatexPrinter`, has been removed, as had no effect.
 
 - :bug:`382` The result of calling :func:`galgebra.printer.latex` on a multi-vector when the global ``galgebra_mv_fmt`` setting is not 1 is now valid to use within math mode.
 
@@ -26,7 +26,7 @@ Changelog
 - :bug:`372` For scalar multivectors, the printed result is now mathematically equivalent in plaintext and latex mode.
 
 - :bug:`369` (also :issue:`380`) The ``Fmt`` method of :meth:`Mv <galgebra.mv.Mv.Fmt>`, :meth:`Dop <galgebra.mv.Dop.Fmt>`, :meth:`Lt <galgebra.lt.Lt.Fmt>`, :meth:`Mv <galgebra.lt.Mlt.Fmt>` now works properly in both IPython (giving plaintext output) and Jupyter (giving LaTeX output).
-- :bug:`369` The ``fmt`` argument fo the ``Fmt`` method of :meth:`Mv <galgebra.mv.Mv.Fmt>`, :meth:`Dop <galgebra.mv.Dop.Fmt>`, :meth:`Lt <galgebra.lt.Lt.Fmt>`, :meth:`Mv <galgebra.lt.Mlt.Fmt>`  no longer has side effects on subsequent ``print`` statements.
+- :bug:`369` The ``fmt`` argument fo the ``Fmt`` method of :meth:`Mv <galgebra.mv.Mv.Fmt>`, :meth:`Dop <galgebra.mv.Dop.Fmt>`, :meth:`Lt <galgebra.lt.Lt.Fmt>`, :meth:`Mlt <galgebra.lt.Mlt.Fmt>` no longer has side effects on subsequent ``print`` statements.
 
 - :support:`367` The ``fmt_dop`` argument to and ``dop_fmt`` attribute of :class:`galgebra.mv.Dop` have been removed, as they had no effect.
 - :support:`367` (also :issue:`364`, :issue:`369`) The following properties of :class:`~galgebra.printer.GaLatexPrinter` and :class:`~galgebra.printer.GaPrinter` have been removed:
