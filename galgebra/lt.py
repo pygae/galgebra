@@ -125,7 +125,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
     return Transpose(Matrix(lst_mat))
 
 
-class Lt(object):
+class Lt(printer.GaPrintable):
     r"""
     A Linear Transformation
 
@@ -350,12 +350,6 @@ class Lt(object):
         else:
             raise TypeError('Cannot have LT as left argument in Lt __rmul__\n')
 
-    def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter().doprint(self)
-        if r'\begin{align*}' not in latex_str:
-            latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-        return latex_str
-
     def det(self) -> Expr:  # det(L) defined by L(I) = det(L)I
         r"""
         Returns the determinant (a scalar) of the linear transformation,
@@ -442,11 +436,8 @@ class Lt(object):
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
 
-    def Fmt(self, fmt=1, title=None) -> printer._FmtResult:
+    def Fmt(self, fmt=1, title=None) -> printer.GaPrintable:
         return printer._FmtResult(self, title)
-
-    __ga_print_str__ = printer.default__ga_print_str__
-    __repr__ = printer.default__repr__
 
     def matrix(self) -> Matrix:
         r"""
@@ -490,7 +481,7 @@ class Lt(object):
                 return self.mat
 
 
-class Mlt(object):
+class Mlt(printer.GaPrintable):
     r"""
     A multilinear transformation (mlt) is a multilinear multivector function of
     a list of vectors (``*args``) :math:`F(v_1,...,v_r)` where for any argument slot
@@ -574,7 +565,7 @@ class Mlt(object):
         if self.nargs <= 1:
             return print_obj.doprint(self.fvalue)
         expr_lst = Mlt.expand_expr(self.fvalue, self.Ga)
-        latex_str = '\\begin{align*} '
+        latex_str = '\\begin{aligned} '
         first = True
         lcnt = print_obj._settings['galgebra_mlt_lcnt']
         cnt = 1  # Component count on line
@@ -602,10 +593,10 @@ class Mlt(object):
                 cnt += 1
         if lcnt == len(expr_lst) or lcnt == 1:
             latex_str = latex_str[:-3]
-        latex_str = latex_str + ' \\end{align*} \n'
+        latex_str = latex_str + ' \\end{aligned} '
         return latex_str
 
-    def Fmt(self, lcnt=1, title=None) -> printer._FmtResult:
+    def Fmt(self, lcnt=1, title=None) -> printer.GaPrintable:
         """
         Set format for printing of Tensors
 
@@ -714,9 +705,6 @@ class Mlt(object):
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f
 
-    __ga_print_str__ = printer.default__ga_print_str__
-    __repr__ = printer.default__repr__
-
     def __call__(self, *args):
         """
         Evaluate the multilinear function for the given vector arguments.
@@ -779,12 +767,6 @@ class Mlt(object):
             return Mlt(value, self.Ga, nargs)
         else:
             return Mlt(X * self.fvalue, self.Ga, self.nargs)
-
-    def _repr_latex_(self):
-        latex_str = printer.GaLatexPrinter().doprint(self)
-        if r'\begin{align*}' not in latex_str:
-            latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-        return latex_str
 
     def dd(self):
         Mlt.increment_slots(self.nargs + 1, self.Ga)

@@ -89,9 +89,6 @@ def EM_Waves_in_Geom_Calculus_Real():
     hline()
     return
 
-def dummy():
-    return
-
 def main():
     Get_Program()
     Format()

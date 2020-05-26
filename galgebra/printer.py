@@ -127,20 +127,10 @@ preamble = \
 \\lstloadlanguages{Python}
 """
 
-print_replace_old = None
-print_replace_new = None
-
 SYS_CMD = {'linux2': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
            'linux': {'rm': 'rm', 'evince': 'evince', 'null': ' > /dev/null', '&': '&'},
            'win32': {'rm': 'del', 'evince': 'start', 'null': ' > NUL', '&': ''},
            'darwin': {'rm': 'rm', 'evince': 'open', 'null': ' > /dev/null', '&': '&'}}
-
-
-def print_replace(old='^', new='*'):
-    global print_replace_old, print_replace_new
-    print_replace_old = old
-    print_replace_new = new
-    return
 
 
 def isinteractive():  #Is ipython running
@@ -348,22 +338,28 @@ class GaPrinter(StrPrinter):
         )
 
 
-def default__ga_print_str__(self):
-    if GaLatexPrinter.latex_flg:
-        return GaLatexPrinter().doprint(self)
-    else:
+class GaPrintable:
+    """ Mixin class providing default implementations of printing hooks """
+    def __ga_print_str__(self):
+        if GaLatexPrinter.latex_flg:
+            return GaLatexPrinter().doprint(self)
+        else:
+            return GaPrinter().doprint(self)
+
+    def __repr__(self):
         return GaPrinter().doprint(self)
 
+    def _repr_latex_(self):
+        # IPython expects latex in text mode, so we wrap in an environment
+        latex_str = GaLatexPrinter().doprint(self)
+        return r'\begin{equation*} ' + latex_str + r' \end{equation*}'
 
-def default__repr__(self):
-    return GaPrinter().doprint(self)
 
+Basic.__ga_print_str__ = GaPrintable.__ga_print_str__
+Matrix.__ga_print_str__ = GaPrintable.__ga_print_str__
 
-Basic.__ga_print_str__ = default__ga_print_str__
-Matrix.__ga_print_str__ = default__ga_print_str__
-
-Basic.__repr__ = default__repr__
-Matrix.__repr__ = default__repr__
+Basic.__repr__ = GaPrintable.__repr__
+Matrix.__repr__ = GaPrintable.__repr__
 
 
 # This is the lesser of two evils. Previously, we overwrote `Basic.__str__` in
@@ -384,6 +380,7 @@ def _print(*values, **kwargs):
         else:
             values_new.append(f(v))
     _old_print(*values_new, **kwargs)
+
 
 builtins.print = _print
 
@@ -510,9 +507,6 @@ class GaLatexPrinter(LatexPrinter):
     postscript = '\\end{document}\n'
     macros = '\\newcommand{\\f}[2]{{#1}\\left ({#2}\\right )}'
 
-    latex_flg = False
-    ipy = False
-
     # translate name, supers and subs to tex keywords
     greek = set(['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta',
                  'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu',
@@ -636,7 +630,7 @@ class GaLatexPrinter(LatexPrinter):
             name = translate(name)
 
             if style == 'bold':
-                name = '\\boldsymbol{' + name +'}'
+                name = '\\boldsymbol{' + name + '}'
 
             supers = list(map(translate, supers))
             subs = list(map(translate, subs))
@@ -850,7 +844,7 @@ def print_latex(expr, **settings):
     print(latex(expr, **settings))
 
 
-def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
+def Format(Fmode: bool = True, Dmode: bool = True, inverse='full'):
     r"""
     Turns on latex printing with configurable options.
 
@@ -878,13 +872,12 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
     if Format_cnt == 0:  # Only execute first time Format is called
         Format_cnt += 1
 
-        GaLatexPrinter.dop = dop
         GaLatexPrinter.latex_flg = True
         # Overload python 3 print function
         GaLatexPrinter.redirect()
 
         if isinteractive():  # Set up for Jupyter Notebook/Lab
-            init_printing(use_latex= 'mathjax')
+            init_printing(use_latex='mathjax')
             from IPython.core.interactiveshell import InteractiveShell
             #  Allow multiple outputs in an output cell
             #  https://forums.fast.ai/t/jupyter-notebook-enhancements-tips-and-tricks/17064/2
@@ -1224,6 +1217,7 @@ def LatexFormat(Fmode=True, Dmode=True, ipy=False):
     GaLatexPrinter.redirect()
     return
 
+
 off_mode = False
 
 
@@ -1328,18 +1322,12 @@ def Fmt(obj, fmt=0):
             for cell in obj:
                 if isinstance(obj, dict):
                     #cell.title = None
-                    latex_cell = latex(cell) + ' : '+ latex(obj[cell])
+                    latex_cell = latex(cell) + ' : ' + latex(obj[cell])
                 else:
                     #title = cell.title
                     #cell.title = None
                     latex_cell = latex(cell)
                 latex_cell = latex_cell.replace('\n', ' ')
-                latex_cell= latex_cell.replace(r'\begin{equation*}', ' ')
-                latex_cell= latex_cell.replace(r'\end{equation*}', ' ')
-                if cell.fmt != 1:
-                    latex_cell= latex_cell.replace(r'\begin{align*}', r'\begin{array}{c} ')
-                    latex_cell= latex_cell.replace('&', '')
-                    latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
                 latex_str += latex_cell + ', & '
                 #cell.title = title
             latex_str = latex_str[:-4]
@@ -1352,12 +1340,6 @@ def Fmt(obj, fmt=0):
                 #cell.title = None
                 latex_cell = latex(cell)
                 latex_cell = latex_cell.replace('\n', ' ')
-                latex_cell= latex_cell.replace(r'\begin{equation*}', ' ')
-                latex_cell= latex_cell.replace(r'\end{equation*}', ' ')
-                if LatexPrinter()._settings['galgebra_mv_fmt'] != 1:
-                    latex_cell= latex_cell.replace(r'\begin{align*}', r'\begin{array}{c} ')
-                    latex_cell= latex_cell.replace('&', '')
-                    latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
                 #cell.title = title
                 if i == 1:
                     latex_str += r'\begin{array}{c} \left ' + ldelim + r' ' + latex_cell + r', \right. \\ '
@@ -1367,8 +1349,7 @@ def Fmt(obj, fmt=0):
                     latex_str += r' ' + latex_cell + r', \\'
                 i += 1
         if isinteractive():  # For Ipython notebook
-            if r'\begin{align*}' not in latex_str:
-                latex_str = r'\begin{equation*} ' + latex_str + r'\end{equation*}'
+            latex_str = r'\begin{equation*} ' + latex_str + r'\end{equation*}'
             return latex_str
         else:
             return latex_str
@@ -1380,7 +1361,7 @@ def Fmt(obj, fmt=0):
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
 
 
-class _WithSettings:
+class _WithSettings(GaPrintable):
     """ Helper class to attach print settings to an object """
     def __init__(self, obj, settings: dict = {}):
         self._obj = obj
@@ -1395,52 +1376,22 @@ class _WithSettings:
 
     _latex = _pretty = _sympystr = __do_print
 
-    __repr__ = default__repr__
-    __ga_print_str__ = default__ga_print_str__
 
-
-class _FmtResult:
+class _FmtResult(GaPrintable):
     """ Object returned from .Fmt methods, which can be printed as latex """
-    def __init__(self, obj, label: str = None):
+    def __new__(cls, obj, label: str) -> GaPrintable:
+        if label is None:
+            return obj
+        self = super().__new__(cls)
         self._obj = obj
         self._label = label
+        return self
 
     def _latex(self, printer):
-        # print and add the label, if present
-        latex_str = printer.doprint(self._obj)
-        if self._label is not None:
-            if r'\begin{align*}' in latex_str:
-                latex_str = latex_str.replace('&', ' ' + self._label + ' =&', 1)
-            else:
-                latex_str = self._label + ' = ' + latex_str
-        return latex_str
+        return self._label + ' = ' + printer.doprint(self._obj)
 
     def _sympystr(self, printer):
-        # print and add the label, if present
-        s = printer.doprint(self._obj)
-        if self._label is not None:
-            s = self._label + ' = ' + s
-        return s
-
-    def _repr_latex_(self):
-        latex_str = GaLatexPrinter().doprint(self)
-        if r'\begin{align*}' not in latex_str:
-            latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-        return latex_str
-
-    __repr__ = default__repr__
-
-    def __ga_print_str__(self):
-        if GaLatexPrinter.latex_flg:
-            # unfortunately we cannot re-use `_latex` here, because the output
-            # of this function has to survive the post-processing in
-            # `tex`.
-            latex_str = GaLatexPrinter().doprint(self._obj)
-            if self._label:
-                latex_str = self._label + ' = ' + latex_str
-            return latex_str
-        else:
-            return str(self)
+        return self._label + ' = ' + printer.doprint(self._obj)
 
 def tprint(s):
     """

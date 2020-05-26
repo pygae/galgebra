@@ -17,8 +17,23 @@ defaults: &defaults
     - run:
         name: Test
         command: |
+          # we can't pass lists of arguments with spaces through environment
+          # variables, so reassemble the list here
+          PYTEST_ARGS=();
+          if [[ ! -z "$PYTEST_K_FILTER" ]]; then
+            PYTEST_ARGS+=(-k "$PYTEST_K_FILTER");
+          fi;
+
           mkdir -p test-reports/pytest
-          pytest -n 2 --dist loadscope --cov=galgebra --nbval examples/ipython/ test --current-env --sanitize-with test/.nbval_sanitize.cfg --junitxml=test-reports/pytest/results.xml
+          pytest -n 2 \
+            --dist loadscope \
+            --cov=galgebra \
+            --nbval examples/ipython/ \
+            test \
+            --current-env \
+            --sanitize-with test/.nbval_sanitize.cfg \
+            --junitxml=test-reports/pytest/results.xml \
+            "${PYTEST_ARGS[@]}"
     - run:
         name: Coverage
         when: on_success
@@ -88,6 +103,9 @@ jobs:
       - image: circleci/python:3.6
   "python-3.5":
     <<: *defaults
+    environment:
+      # the tutorial uses Python 3.6 syntax, for convenience.
+      PYTEST_K_FILTER: not examples/ipython/tutorial_algebra.ipynb
     docker:
       - image: circleci/python:3.5
 

@@ -517,9 +517,6 @@ def Fmt_test():
 
     return
 
-def dummy():
-    return
-
 def main():
     Get_Program()
     Format()

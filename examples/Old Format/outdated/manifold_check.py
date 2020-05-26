@@ -97,9 +97,6 @@ def Simple_manifold_with_scalar_function_derivative():
     print 'Vector derivative =', dg.subs({u:1,v:0})
     return
 
-def dummy():
-    return
-
 def main():
     Get_Program(True)
     ga_print_on()

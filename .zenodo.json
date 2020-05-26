@@ -1,0 +1,37 @@
+{
+  "license": {
+    "id": "BSD-3-Clause"
+  }, 
+  "creators": [
+    {
+      "name": "Alan Bromborsky"
+    },
+    {
+      "name": "Utensil Song",
+      "orcid": "0000-0003-3994-4466"
+    },
+    {
+      "affiliation": "University of Cambridge",
+      "name": "Eric Wieser",
+      "orcid": "0000-0003-0412-4978"
+    },
+    {
+      "affiliation": "University of Cambridge",
+      "name": "Hugo Hadfield",
+      "orcid": "0000-0003-4318-050X"
+    },
+    {
+      "name": "{The Pygae Team}"
+    }
+  ],
+  "keywords": [
+    "python",
+    "clifford algebra",
+    "geometric algebra",
+    "computer algebra",
+    "symbolic algebra",
+    "symbolic computation",
+    "geometry"
+  ],
+  "upload_type": "software"
+}

@@ -41,9 +41,6 @@ def main():
 
     return
 
-def dummy():
-    return
-
 if __name__ == "__main__":
     Format()
     Get_Program()

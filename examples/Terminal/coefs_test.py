@@ -18,9 +18,6 @@ def coefs_test():
     print(A.blade_coefs())
     return
 
-def dummy():
-    return
-
 def main():
     Get_Program()
     Eprint()

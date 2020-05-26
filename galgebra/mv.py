@@ -46,7 +46,7 @@ _StrPrinter._default_settings.update({
 ########################### Multivector Class ##########################
 
 
-class Mv(object):
+class Mv(printer.GaPrintable):
     """
     Wrapper class for multivector objects (``self.obj``) so that it is easy
     to overload operators (``*``, ``^``, ``|``, ``<``, ``>``)  for the various
@@ -588,9 +588,6 @@ class Mv(object):
     def __str__(self):
         return printer.GaPrinter().doprint(self)
 
-    __ga_print_str__ = printer.default__ga_print_str__
-    __repr__ = printer.default__repr__
-
     def __getitem__(self, key: int) -> 'Mv':
         '''
         get a specified grade of a multivector
@@ -659,8 +656,6 @@ class Mv(object):
                     s += term
             if s[-1] == '\n':
                 s = s[:-1]
-            if printer.print_replace_old is not None:
-                s = s.replace(printer.print_replace_old, printer.print_replace_new)
             return s
         else:
             return print_obj.doprint(self.obj)
@@ -764,10 +759,10 @@ class Mv(object):
         if print_obj._settings['galgebra_mv_fmt'] >= 2:
             if len(lines) == 1:
                 return lines[0]
-            s = ' \\begin{aligned} '
+            s = ' \\begin{aligned}[t] '
             for line in lines:
                 s += ' & ' + line + ' \\\\ '
-            s = s[:-3] + ' \\end{aligned} \n'
+            s = s[:-3] + ' \\end{aligned} '
         return s
 
     def __xor__(self, A):  # wedge (^) product
@@ -1160,7 +1155,7 @@ class Mv(object):
         else:
             self.obj += value * base
 
-    def Fmt(self, fmt: int = 1, title: str = None) -> printer._FmtResult:
+    def Fmt(self, fmt: int = 1, title: str = None) -> printer.GaPrintable:
         """
         Set format for printing of multivectors
 
@@ -1186,7 +1181,10 @@ class Mv(object):
         return printer._FmtResult(obj, title)
 
     def _repr_latex_(self) -> str:
-        return self.Fmt(fmt=None, title=self.title)._repr_latex_()
+        # overloaded to include the inferred title
+        if self.title is not None:
+            return printer._FmtResult(self, self.title)._repr_latex_()
+        return super()._repr_latex_()
 
     def norm2(self) -> Expr:
         reverse = self.rev()
@@ -1454,7 +1452,6 @@ class Dop(dop._BaseDop):
 
         self.cmpflg = cmpflg
         self.Ga = ga
-        self.title = None
 
         if len(args) == 2:
             self.__init_from_coef_and_pdop(*args)
@@ -1627,12 +1624,6 @@ class Dop(dop._BaseDop):
         else:
             return NotImplemented
 
-    __ga_print_str__ = printer.default__ga_print_str__
-    __repr__ = printer.default__repr__
-
-    def _repr_latex_(self) -> str:
-        return self.Fmt(fmt=None, title=self.title)._repr_latex_()
-
     def is_scalar(self) -> bool:
         return all(
             not isinstance(coef, Mv) or coef.is_scalar()
@@ -1754,7 +1745,7 @@ class Dop(dop._BaseDop):
         dop.Sdop.str_mode = False
         return s[:-3]
 
-    def Fmt(self, fmt: int = 1, title: str = None) -> printer._FmtResult:
+    def Fmt(self, fmt: int = 1, title: str = None) -> printer.GaPrintable:
         if fmt is not None:
             obj = printer._WithSettings(self, dict(galgebra_mv_fmt=fmt))
         else:

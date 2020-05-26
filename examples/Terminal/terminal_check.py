@@ -503,9 +503,6 @@ def signature_test():
 
     return
 
-def dummy():
-    return
-
 
 def main():
     Get_Program(True)
