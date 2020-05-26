@@ -81,6 +81,24 @@ Changelog
 
 - :bug:`258` The result of simplifying sympy expressions is no longer dependent on whether :func:`galgebra.printer.Format` has been called.
 
+- :support:`252` (also :issue:`310`) The ``inverse_metric()`` and ``derivatives_of_g()`` methods of :class:`~galgebra.metric.Metric` are deprecated, as the properties they computed (:attr:`~galgebra.metric.Metric.g_inv` and :attr:`~galgebra.metric.Metric.dg`) are now computed automatically.
+
+- :feature:`252` (also :issue:`310`) Many attributes of :class:`~galgebra.ga.Ga` instances are now _always_ present, rather than being conditionally present depending on the type of algebra. These include:
+
+  * :attr:`~galgebra.ga.Ga.r_basis`
+  * :attr:`~galgebra.ga.Ga.r_basis_mv`
+  * :attr:`~galgebra.ga.Ga.r_basis_dict`
+  * :attr:`~galgebra.metric.Metric.g_inv`
+  * :attr:`~galgebra.metric.Metric.g_adj`
+
+  Other properties that are still only meaningful for some algebras now exist but raise clearer error messages:
+
+  * :attr:`~galgebra.ga.Ga.coord_vec`
+  * :attr:`~galgebra.ga.Ga.bases`
+  * :attr:`~galgebra.ga.Ga.basic_mul`
+
+  These lists are not exhaustive.
+
 - :support:`216` ``galgebra.metric.test_init_slots`` has been removed. The functionality this provided is superseded by the language feature of keyword-only arguments.
 
 - :support:`200` :class:`~galgebra.dop.Pdop` and :class:`~galgebra.dop.Sdop` instance are no longer associated with a Ga. As a result, their ``.Ga`` attribute no longer exists, and the :meth:`~galgebra.ga.Ga.pdop` and :meth:`~galgebra.ga.Ga.sdop` methods of :class:`~galgebra.ga.Ga` are deprecated in favor of calling the constructors directly.
