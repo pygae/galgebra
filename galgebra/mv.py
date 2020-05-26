@@ -1741,7 +1741,6 @@ class Dop(dop._BaseDop):
             s += ' + '
 
         s = s.replace('+ -', '-')
-        dop.Sdop.str_mode = False
         return s[:-3]
 
     def Fmt(self, fmt: int = 1, title: str = None) -> printer.GaPrintable:

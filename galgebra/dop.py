@@ -89,8 +89,6 @@ class Sdop(_BaseDop):
         the structure :math:`((c_{1},D_{1}),(c_{2},D_{2}), ...)`
     """
 
-    str_mode = False
-
     def TSimplify(self):
         return Sdop([
             (metric.Simp.apply(coef), pdiff) for coef, pdiff in self.terms
@@ -139,9 +137,6 @@ class Sdop(_BaseDop):
 
         s = s.replace('+ -', '- ')
         s = s[:-3]
-        if Sdop.str_mode:
-            if len(self.terms) > 1 or isinstance(self.terms[0][0], Add):
-                s = '(' + s + ')'
         return s
 
     def _latex(self, print_obj):
