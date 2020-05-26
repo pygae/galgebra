@@ -148,12 +148,13 @@ autoclass_content = "both"  # include both class docstring and __init__
 autodoc_default_options = {
         # Make sure that any autodoc declarations show the right members
         "members": True,
-        "inherited-members": True,
+        # do not show inherited, as this pull in all the sympy members
+        # "inherited-members": True,
         "member-order": "bysource",
         # "undoc-members": True,
         # "special-members": True,
         # "private-members": True,
-        # "show-inheritance": True,
+        "show-inheritance": True,
 }
 
 #autodoc_default_flags='members'

@@ -1,4 +1,4 @@
-""" Sympy primitives for representing atos ga expressions """
+""" Sympy primitives for representing atoms of ga expressions """
 
 from typing import Union
 
