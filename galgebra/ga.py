@@ -12,7 +12,7 @@ from ._backports.typing import OrderedDict
 from sympy import (
     diff, Rational, Symbol, S, Mul, Add, Expr,
     expand, simplify, eye, trigsimp,
-    symbols, sqrt, Function
+    symbols, sqrt, Matrix,
 )
 
 from . import printer
@@ -20,7 +20,9 @@ from . import metric
 from . import mv
 from . import dop
 from . import lt
-from .atoms import BasisBaseSymbol, BasisBladeSymbol, BasisBladeNoWedgeSymbol
+from .atoms import (
+    BasisBaseSymbol, BasisBladeSymbol, BasisBladeNoWedgeSymbol,
+)
 from ._utils import cached_property as _cached_property
 
 half = Rational(1, 2)
@@ -519,16 +521,10 @@ class Ga(metric.Metric):
 
     .. rubric:: Reciprocal basis data structures
 
-    .. attribute:: r_symbols
-
-        Reciprocal basis vector symbols (list of non-commutative sympy variables)
-
-    .. attribute:: r_basis
-
-        List of reciprocal basis vectors expanded as linear combination of basis vector symbols.
-
     .. autosummary::
 
+        ~galgebra.metric.Metric.r_symbols
+        ~galgebra.ga.Ga.r_basis
         ~galgebra.ga.Ga.r_basis_dict
         ~galgebra.ga.Ga.r_basis_mv
 
@@ -681,13 +677,10 @@ class Ga(metric.Metric):
             self.coords = list(self.coords)
 
         self.e = mv.Mv(self.blades.flat[-1], ga=self)  # Pseudo-scalar for geometric algebra
-        self.e_sq = simplify(expand((self.e*self.e).scalar()))
 
         if self.coords is not None:
-            self._build_reciprocal_basis(self.gsym)
+            self._update_de_from_rbasis()
             self._build_grads()
-        else:
-            self.r_basis = None
 
         if self.connect_flg:
             self._build_connection()
@@ -761,8 +754,6 @@ class Ga(metric.Metric):
     @_cached_property
     def _reciprocal_blade_dict(self) -> lazy_dict:
         """ A dictionary mapping basis blades to their reciprocal blades. """
-        if self.r_basis is None:
-            self._build_reciprocal_basis(self.gsym)
         return lazy_dict({}, self._reciprocal_of_basis_blade)
 
     def make_grad(self, a: Union[_mv.Mv, Sequence[Expr]], cmpflg: bool = False) -> mv.Dop:
@@ -921,9 +912,6 @@ class Ga(metric.Metric):
 
         .. math:: e_{i}\cdot e^{j} = I^{2}\delta_{i}^{j}.
         """
-
-        if self.r_basis is None:
-            self._build_reciprocal_basis(self.gsym)
         if norm and not self.is_ortho:
             return tuple([self.r_basis_mv[i] / self.e_sq for i in self.n_range])
         else:
@@ -1838,15 +1826,34 @@ class Ga(metric.Metric):
                     s += Mul._from_args(c) * blade
         return s
 
+    @_cached_property
+    def e_sq(self) -> Expr:
+        r"""
+        If ``self.gsym = True`` then :math:`E_{n}^2` is not evaluated, but is represented
+        as :math:`E_{n}^2 = (-1)^{n*(n-1)/2}\operatorname{det}(g)` where
+        :math:`\operatorname{det}(g)` the determinant
+        of the metric tensor can be general scalar function of the coordinates.
+        """
+        if self.gsym is not None:
+            # Define square of pseudo-scalar in terms of metric tensor
+            # determinant
+            n = self.n
+            return (-1) ** (n*(n - 1)//2) * self.detg
+        else:
+            return simplify(expand((self.e*self.e).scalar()))
+
     ##################### Multivector derivatives ######################
 
-    def _build_reciprocal_basis(self, gsym):
+    @_cached_property
+    def r_basis(self) -> List[Expr]:
         r"""
-        Calculate reciprocal basis vectors :math:`e^{j}` where
+        Reciprocal basis vectors :math:`e^{j}` as linear combination of basis vector symbols.
+
+        These satisfy
 
         .. math:: e^{j}\cdot e_{k} = \delta_{k}^{j}
 
-        and :math:`\delta_{k}^{j}` is the kronecker delta.  We use the formula
+        where :math:`\delta_{k}^{j}` is the kronecker delta.  We use the formula
         from Doran and Lasenby 4.94:
 
         .. math:: e^{j} = (-1)^{j-1}e_{1} \wedge ...e_{j-1} \wedge e_{j+1} \wedge ... \wedge e_{n}*E_{n}^{-1}
@@ -1855,44 +1862,21 @@ class Ga(metric.Metric):
 
         For non-orthogonal basis :math:`e^{j}` is not normalized and must be
         divided by :math:`E_{n}^2` (``self.e_sq``) in any relevant calculations.
-
-        If ``gsym = True`` then :math:`E_{n}^2` is not evaluated, but is represented
-        as :math:`E_{n}^2 = (-1)^{n*(n-1)/2}\operatorname{det}(g)` where
-        :math:`\operatorname{det}(g)` the determinant
-        of the metric tensor can be general scalar function of the coordinates.
         """
 
         if self.debug:
-            print('Enter _build_reciprocal_basis.\n')
+            print('Enter r_basis.\n')
 
         if self.is_ortho:
-            self.r_basis = [self.basis[i] / self.g[i, i] for i in self.n_range]
+            r_basis = [self.basis[i] / self.g[i, i] for i in self.n_range]
         else:
-            if gsym is not None:
-                # Define name of metric tensor determinant as sympy symbol
-                if printer.GaLatexPrinter.latex_flg:
-                    det_str = r'\det\left ( ' + gsym + r'\right ) '
-                else:
-                    det_str = 'det(' + gsym + ')'
-                # Define square of pseudo-scalar in terms of metric tensor
-                # determinant
-                n = self.n
-                if self.coords is None:  # Metric tensor is constant
-                    self.e_sq = (-1) ** (n*(n - 1)//2) * Symbol(det_str, real=True)
-                else:  # Metric tensor is function of coordinates
-                    n = len(self.coords)
-                    self.e_sq = (-1) ** (n*(n - 1)//2) * Function(det_str, real=True)(*self.coords)
-            else:
-                self.e_sq = simplify((self.e * self.e).obj)
-            if self.debug:
-                print('E**2 =', self.e_sq)
 
             duals = list(self.blades[self.n - 1])
             # After reverse, the j-th of them is exactly e_{1}^...e_{j-1}^e_{j+1}^...^e_{n}
             duals.reverse()
 
             sgn = 1
-            self.r_basis = []
+            r_basis = []
             for dual in duals:
                 dual_base_rep = self.blade_to_base_rep(dual)
                 # {E_n}^{-1} = \frac{E_n}{{E_n}^{2}}
@@ -1903,35 +1887,39 @@ class Ga(metric.Metric):
                 print('collect arg =', expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))))
                 """
                 r_basis_j = metric.collect(expand(self.base_to_blade_rep(self.mul(sgn * dual_base_rep, self.e.obj))), self.blades.flat)
-                self.r_basis.append(r_basis_j)
+                r_basis.append(r_basis_j)
                 # sgn = (-1)**{j-1}
                 sgn = -sgn
 
-            if self.debug:
-                printer.oprint('E', self.e, 'E**2', self.e_sq, 'unnormalized reciprocal basis =\n', self.r_basis)
-                print('reciprocal basis test =')
-                for ei in self.basis:
-                    for ej in self.r_basis:
-                        ei_dot_ej = self.hestenes_dot(ei, ej)
-                        if ei_dot_ej == zero:
-                            print('e_{i}|e_{j} = ' + str(ei_dot_ej))
-                        else:
-                            print('e_{i}|e_{j} = ' + str(expand(ei_dot_ej / self.e_sq)))
+        if self.debug:
+            printer.oprint('E', self.e, 'E**2', self.e_sq, 'unnormalized reciprocal basis =\n', r_basis)
+            print('reciprocal basis test =')
+            for ei in self.basis:
+                for ej in r_basis:
+                    ei_dot_ej = self.hestenes_dot(ei, ej)
+                    if ei_dot_ej == zero:
+                        print('e_{i}|e_{j} = ' + str(ei_dot_ej))
+                    else:
+                        print('e_{i}|e_{j} = ' + str(expand(ei_dot_ej / self.e_sq)))
 
+        return r_basis
+
+    def _update_de_from_rbasis(self):
         # Replace reciprocal basis vectors with expansion in terms of
-        # basis vectors in derivatives of basis vectors
-
-        if self.connect_flg:
+        # basis vectors in derivatives of basis vectors.
+        de = self.de
+        if de is not None:
             for x_i in self.n_range:
                 for jb in self.n_range:
                     if not self.is_ortho:
-                        self.de[x_i][jb] = metric.Simp.apply(self.de[x_i][jb].subs(self.r_basis_dict) / self.e_sq)
+                        de[x_i][jb] = metric.Simp.apply(de[x_i][jb].subs(self.r_basis_dict) / self.e_sq)
                     else:
-                        self.de[x_i][jb] = metric.Simp.apply(self.de[x_i][jb].subs(self.r_basis_dict))
+                        de[x_i][jb] = metric.Simp.apply(de[x_i][jb].subs(self.r_basis_dict))
 
+    @_cached_property
+    def g_inv(self) -> Matrix:
+        """ inverse of metric tensor, g^{ij} """
         g_inv = eye(self.n)
-
-        # Calculate inverse of metric tensor, g^{ij}
 
         for i in self.n_range:
             rx_i = self.r_symbols[i]
@@ -1944,10 +1932,7 @@ class Ga(metric.Metric):
                 else:
                     g_inv[i, j] = g_inv[j, i]
 
-        self.g_inv = simplify(g_inv)
-
-        if self.debug:
-            print('reciprocal basis dictionary =\n', self.r_basis_dict)
+        return simplify(g_inv)
 
     @_cached_property
     def r_basis_dict(self) -> Dict[Symbol, Expr]:

@@ -8,8 +8,11 @@ import io
 import builtins
 import subprocess
 import functools
+import inspect
+import shutil
+from collections import ChainMap
+
 from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
-from itertools import islice
 from sympy.printing.str import StrPrinter
 from sympy.printing.conventions import split_super_sub
 from sympy.printing.latex import LatexPrinter, accepted_latex_functions
@@ -150,46 +153,12 @@ def isinteractive():  #Is ipython running
         return False
 
 
-def find_executable(executable, path=None):
-    """Try to find 'executable' in the directories listed in 'path' (a
-    string listing directories separated by 'os.pathsep'; defaults to
-    os.environ['PATH']).  Returns the complete filename or None if not
-    found
-    """
-    if path is None:
-        path = os.environ['PATH']
-    paths = path.split(os.pathsep)
-    extlist = ['']
-    if os.name == 'os2':
-        _base, ext = os.path.splitext(executable)
-        # executable files on OS/2 can have an arbitrary extension, but
-        # .exe is automatically appended if no dot is present in the name
-        if not ext:
-            executable = executable + ".exe"
-    elif sys.platform == 'win32':
-        pathext = os.environ['PATHEXT'].lower().split(os.pathsep)
-        _base, ext = os.path.splitext(executable)
-        if ext.lower() not in pathext:
-            extlist = pathext
-    for ext in extlist:
-        execname = executable + ext
-        if os.path.isfile(execname):
-            return execname
-        else:
-            for p in paths:
-                f = os.path.join(p, execname)
-                if os.path.isfile(f):
-                    return f
-    else:
-        return None
-
-
 def ostr(obj, dict_mode=False, indent=True):
     """
     Recursively convert iterated object (list/tuple/dict/set) to string.
     """
     def ostr_rec(obj, dict_mode):
-        global ostr_s
+        ostr_s = ""
         if isinstance(obj, Matrix):
             ostr_s += str(obj)
         elif isinstance(obj, tuple):
@@ -198,7 +167,7 @@ def ostr(obj, dict_mode=False, indent=True):
             else:
                 ostr_s += '('
                 for obj_i in obj:
-                    ostr_rec(obj_i, dict_mode)
+                    ostr_s += ostr_rec(obj_i, dict_mode)
                 ostr_s = ostr_s[:-1] + '),'
         elif isinstance(obj, list):
             if len(obj) == 0:
@@ -206,49 +175,45 @@ def ostr(obj, dict_mode=False, indent=True):
             else:
                 ostr_s += '['
                 for obj_i in obj:
-                    ostr_rec(obj_i, dict_mode)
+                    ostr_s += ostr_rec(obj_i, dict_mode)
                 ostr_s = ostr_s[:-1] + '],'
         elif isinstance(obj, dict):
             if dict_mode:
                 ostr_s += '\n'
                 for key in list(obj.keys()):
-                    ostr_rec(key, dict_mode)
+                    ostr_s += ostr_rec(key, dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
                     ostr_s += ' -> '
-                    ostr_rec(obj[key], dict_mode)
+                    ostr_s += ostr_rec(obj[key], dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
                     ostr_s += '\n'
             else:
                 ostr_s += '{'
                 for key in list(obj.keys()):
-                    ostr_rec(key, dict_mode)
+                    ostr_s += ostr_rec(key, dict_mode)
                     if ostr_s[-1] == ',':
                         ostr_s = ostr_s[:-1]
                     ostr_s += ':'
-                    ostr_rec(obj[key], dict_mode)
+                    ostr_s += ostr_rec(obj[key], dict_mode)
                 ostr_s = ostr_s[:-1] + '} '
         elif isinstance(obj, set):
             tmp_obj = list(obj)
             ostr_s += '{'
             for obj_i in tmp_obj:
-                ostr_rec(obj_i, dict_mode)
+                ostr_s += ostr_rec(obj_i, dict_mode)
             ostr_s = ostr_s[:-1] + '},'
         else:
             ostr_s += str(obj) + ','
-        return
-    global ostr_s
-    ostr_s = ''
-    if isinstance(obj, Matrix):
-        ostr_s += '\n' + str(obj)
         return ostr_s
+
+    if isinstance(obj, Matrix):
+        return '\n' + str(obj)
     elif isinstance(obj, (tuple, list, dict, set)):
-        ostr_rec(obj, dict_mode)
-        ostr_s = ostr_s[:-1]
+        return ostr_rec(obj, dict_mode)[:-1]
     else:
-        ostr_s = str(obj)
-    return ostr_s
+        return str(obj)
 
 
 def find_functions(expr):
@@ -281,33 +246,30 @@ def oprint(*args, dict_mode=False):
     """
 
     if isinstance(args[0], str) or args[0] is None:
-        titles = list(islice(args, None, None, 2))
-        objs = tuple(islice(args, 1, None, 2))
-        if len(args) > 2:
-            if objs[0] is None:
-                n = 0
-            else:
-                n = len(titles[0])
-            for title, obj in zip(titles[1:], objs[1:]):
-                if obj is None:
-                    if not (dict_mode and isinstance(obj, dict)):
-                        n = max(n, len(title))
-        else:
-            n = len(titles[0])
+        titles = args[0::2]
+        objs = args[1::2]
+        strs = [
+            ostr(obj, dict_mode) if obj is not None else None
+            for obj in objs
+        ]
+        n = max((
+            len(title)
+            for title, s in zip(titles, strs)
+            if s is not None and '\n' not in s
+        ), default=0)
 
-        for title, obj in zip(titles, objs):
-            if obj is None:
+        for title, s in zip(titles, strs):
+            if s is None:
                 print(title)
             else:
                 npad = n - len(title)
-                if isinstance(obj, dict):
-                    print(title + ':' + ostr(obj, dict_mode))
+                if '\n' in s:
+                    print(title + ':' + s)
                 else:
-                    print(title + npad * ' ' + ' = ' + ostr(obj, dict_mode))
+                    print(title + npad * ' ' + ' = ' + s)
     else:
         for arg in args:
             print(ostr(arg, dict_mode))
-    return
 
 
 def hline():
@@ -436,10 +398,6 @@ class GaPrinter(StrPrinter):
         s += str(self._print(function))
         return Eprint.Deriv(s)
 
-    def _print_Matrix(self, expr):
-        out_str = ostr(list(expr))
-        return out_str
-
 
 Basic.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
 Matrix.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
@@ -531,6 +489,10 @@ class GaLatexPrinter(LatexPrinter):
     title is printed in equation mode. '%' has the same effect in title as
     in the Fmt() member function.
     """
+    # overrides of base class settings
+    _default_settings = ChainMap({
+        "mat_str": "array",
+    }, LatexPrinter._default_settings)
 
     fmt = 1
     prev_fmt = 1
@@ -827,9 +789,6 @@ class GaLatexPrinter(LatexPrinter):
                 else:
                     name = name % ",".join(args)
 
-            if 'det(g)' in name:
-                name = name.replace('det(g)', r'\det\left ( g \right )')
-
             return name
 
     def _print_Derivative(self, expr):
@@ -874,18 +833,9 @@ class GaLatexPrinter(LatexPrinter):
             s = r"%s %s" % (tex, self._print(expr.expr))
         return s
 
-    def _print_MatrixBase(self, expr):
-        rows = expr.rows
-        cols = expr.cols
-
-        out_str = ' \\left [ \\begin{array}{' + (cols * 'c') + '} '
-        for row in range(rows):
-            for col in range(cols):
-                out_str += latex(expr[row, col]) + ' & '
-            out_str = out_str[:-2] + ' \\\\ '
-        out_str = out_str[:-4] + ' \\end{array}\\right ] '
-
-        return out_str
+    def _print_Determinant(self, expr):
+        # sympy `uses |X|` by default, we want `det (X)`
+        return r"\det\left ( {}\right )".format(self._print(expr.args[0]))
 
     @staticmethod
     def latex(expr, **settings):
@@ -1090,9 +1040,8 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     latex_str = latex_str.replace('\n\n', '\n')
 
     if prog:
-        prog_file = open(sys.argv[0], 'r')
-        prog_str = prog_file.read()
-        prog_file.close()
+        with open(sys.argv[0], 'r') as prog_file:
+            prog_str = prog_file.read()
         prog_str = '{\\Large \\bf Program:}\\begin{lstlisting}[language=Python,showspaces=false,' + \
                    'showstringspaces=false]\n' + \
                    prog_str + '\n\\end{lstlisting}\n {\\Large \\bf Code Output:} \n'
@@ -1160,7 +1109,7 @@ def xpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug
     if pdfprog is None:
         return
 
-    pdflatex = find_executable(pdfprog)
+    pdflatex = shutil.which(pdfprog)
 
     if debug:
         print('pdflatex path =', pdflatex)
@@ -1306,30 +1255,19 @@ def LatexFormat(Fmode=True, Dmode=True, ipy=False):
     GaLatexPrinter.redirect()
     return
 
-prog_str = ''
 off_mode = False
 
 
 def Get_Program(off=False):
-    global prog_str, off_mode
+    global off_mode
     off_mode = off
-    if off_mode:
-        return
-    prog_file = open(sys.argv[0], 'r')
-    prog_str = prog_file.read()
-    prog_file.close()
-    return
 
 
 def Print_Function():
-    global prog_str, off_mode
     if off_mode or isinteractive():
         return
-    fct_name = str(sys._getframe(1).f_code.co_name)
-    ifct = prog_str.find('def ' + fct_name)
-    iend = prog_str.find('def ', ifct + 4)
-    tmp_str = prog_str[ifct:iend - 1]
-    fct_name = fct_name.replace('_', ' ')
+
+    tmp_str = inspect.getsource(inspect.currentframe().f_back)
     if GaLatexPrinter.latex_flg:
         global _global_latex_str
         _global_latex_str += '\\begin{lstlisting}[language=Python,showspaces=false,' + \

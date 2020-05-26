@@ -1,10 +1,18 @@
+import warnings
+
 from . import ga
 from .mv import Mv
+
+# galgebra 0.5.0
+warnings.warn(
+    "The `galgebra.deprecated` module is deprecated",
+    DeprecationWarning, stacklevel=2)
 
 ################################# MV class for backward compatibility ###################
 
 
 class MV(Mv):
+    """ A deprecated version of :class:`galgebra.mv.Mv`. """
 
     @staticmethod
     def convert_metric(gstr):
@@ -58,6 +66,11 @@ class MV(Mv):
             return list(MV.GA.mv())
 
     def __init__(self, base, mvtype, fct=None, blade_rep=True):
+        # galgebra 0.5.0
+        warnings.warn(
+            "The `galgebra.deprecated.MV` class is deprecated in favor of "
+            "`galgebra.mv.Mv`.",
+            DeprecationWarning, stacklevel=2)
         kwargs = {}
         if fct is not None:
             kwargs['f'] = fct  # only forward this argument if we received it
@@ -75,5 +88,10 @@ class MV(Mv):
 
 
 def ReciprocalFrame(basis, mode='norm'):
+    # galgebra 0.5.0
+    warnings.warn(
+        "The `galgebra.deprecated.ReciprocalFrame` function is deprecated in "
+        "favor of the `ReciprocalFrame` method of `Ga` objects.",
+        DeprecationWarning, stacklevel=2)
     GA = basis[0].Ga
     return GA.ReciprocalFrame(basis, mode=mode)

@@ -9,12 +9,14 @@ from typing import List, Optional
 from sympy import (
     diff, trigsimp, Matrix, Rational,
     sqf_list, sqrt, eye, S, expand, Mul,
-    Add, simplify, Expr, Function
+    Add, simplify, Expr, Function, MatrixSymbol
 )
 
 from . import printer
 from ._utils import cached_property as _cached_property
-from .atoms import BasisVectorSymbol, DotProductSymbol
+from .atoms import (
+    BasisVectorSymbol, DotProductSymbol, MatrixFunction, Determinant,
+)
 
 half = Rational(1, 2)
 
@@ -477,22 +479,29 @@ class Metric(object):
 
         return de
 
-    def inverse_metric(self):
+    def inverse_metric(self) -> None:
+        # galgebra 0.5.0
+        warnings.warn(
+            "Metric.inverse_metric is deprecated, and now does nothing. "
+            "the `.g_inv` property is now always available.")
 
-        if self.g_inv is not None:
-            return
-
+    @_cached_property
+    def g_inv(self) -> Matrix:
+        """ Inverse of g """
         if self.is_ortho:  # Orthogonal metric
-            self.g_inv = eye(self.n)
+            g_inv = eye(self.n)
             for i in range(self.n):
-                self.g_inv[i, i] = S(1)/self.g(i, i)
+                g_inv[i, i] = S(1)/self.g(i, i)
+            return g_inv
+        elif self.gsym is None:
+            return simplify(self.g.inv())
         else:
-            if self.gsym is None:
-                self.g_inv = simplify(self.g.inv())
-            else:
-                self.detg = Function('|' + self.gsym + '|', real=True)(*self.coords)
-                self.g_adj = simplify(self.g.adjugate())
-                self.g_inv = self.g_adj/self.detg
+            return self.g_adj/self.detg
+
+    @_cached_property
+    def g_adj(self) -> Matrix:
+        """ Adjugate of g """
+        return simplify(self.g.adjugate())
 
     def Christoffel_symbols(self, mode=1):
         """
@@ -531,8 +540,6 @@ class Metric(object):
         elif mode == 2:
             # TODO handle None
             Gamma1 = self.Christoffel_symbols(mode=1)
-
-            self.inverse_metric()
 
             # Christoffel symbols of the second kind, \Gamma_{ij}^{k} = \Gamma_{ijl}g^{lk}
             # \partial_{x^{i}}e_{j} = \Gamma_{ij}^{k}e_{k}
@@ -617,6 +624,19 @@ class Metric(object):
             return
         raise ValueError(str(self.sig) + ' is not allowed value for self.sig')
 
+    @_cached_property
+    def detg(self) -> Expr:
+        r""" Determinant of :math:`g`, :math:`\det g` """
+        if self.gsym is None:
+            g = self.g
+        else:
+            # Define name of metric tensor determinant as sympy symbol
+            if self.coords is None:
+                g = MatrixSymbol(self.gsym, self.n, self.n)
+            else:
+                g = MatrixFunction(self.gsym, self.n, self.n)(*self.coords)
+        return Determinant(g)
+
     def __init__(
         self, basis, *,
         g=None,
@@ -665,9 +685,6 @@ class Metric(object):
         self.is_ortho = False  # Is basis othogonal
         self.coords = coords  # Manifold coordinates
         self.norm = norm  # True to normalize basis vectors
-        self.detg = None  #: Determinant of g
-        self.g_adj = None  #: Adjugate of g
-        self.g_inv = None  #: Inverse of g
         # Generate list of basis vectors and reciprocal basis vectors
         # as non-commutative symbols
 
