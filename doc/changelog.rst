@@ -8,7 +8,7 @@ Changelog
   * Fixed footnote and citation references (:issue:`287`, :issue:`290`, :issue:`291`)
   * Faster and smaller pages with less MathJax loading time (:issue:`292`, :issue:`296`).
   * An adapted version of a notebook tutorial from Alan Bromborsky is now present in the docs at :doc:`tutorials/algebra` (:issue:`375`).
-  * Type annotations on many functions in :doc:`api`(:issue:`305`).
+  * Type annotations on many functions in the :doc:`API docs <api>` (:issue:`305`).
   * Correction of curly quotes that led to invalid python syntax (:issue:`294`).
 
 - :support:`393` ``galgebra.dop.Sdop.str_mode`` has been removed, as it was always ``False``.
