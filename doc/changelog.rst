@@ -2,9 +2,9 @@
 Changelog
 =========
 
-- :feature:`0` Broad-reaching documentation improvements, including:
+- :feature:`0` Generally improved documentation, including:
 
-  * Code examples referenced from the text are no longer missing (:issue:`293`).
+  * The re-inclusion of missing code examples that were already referenced from the text (:issue:`293`).
   * Fixed footnote and citation references (:issue:`287`, :issue:`290`, :issue:`291`)
   * Faster and smaller pages with less Mathjax loading time (:issue:`292`, :issue:`296`).
   * An adapted version of a notebook tutorial from Alan Bromborsky is now present in the docs at :doc:`tutorials/algebra` (:issue:`375`).
