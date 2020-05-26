@@ -592,6 +592,12 @@ class TestTest:
         with pytest.warns(DeprecationWarning):
             assert ga.non_orthogonal_dot_product_basis_blades((e_1.obj, e_12.obj), mode='>') == (e_1 > e_12).obj
 
+        # these methods don't do anything
+        with pytest.warns(DeprecationWarning):
+            ga.inverse_metric()
+        with pytest.warns(DeprecationWarning):
+            ga.derivatives_of_g()
+        
         # test the member that is nonsense unless in an orthonormal algebra
         ga_ortho, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1])
         e_12 = e_1 ^ e_2
