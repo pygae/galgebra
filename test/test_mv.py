@@ -185,3 +185,13 @@ class TestMv(unittest.TestCase):
 
         # this is fine
         sympy.sympify(e_1.obj)
+
+    def test_arithmetic(self):
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1])
+        one = ga.mv(sympy.S.One)
+
+        # test that scalars are promoted to Mvs correctly
+        assert e_1 + 1 == e_1 + one
+        assert 1 + e_1 == one + e_1
+        assert e_1 - 1 == e_1 - one
+        assert 1 - e_1 == one - e_1
