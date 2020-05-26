@@ -11,7 +11,7 @@ from typing import List, Any, Tuple, Union, TYPE_CHECKING
 from sympy import (
     Symbol, Function, S, expand, Add,
     sin, cos, sinh, cosh, sqrt, trigsimp,
-    simplify, diff, Rational, Expr, Abs, collect,
+    simplify, diff, Rational, Expr, Abs, collect, SympifyError,
 )
 from sympy import exp as sympy_exp
 from sympy import N as Nsympy
@@ -32,6 +32,16 @@ ZERO = S(0)
 HALF = Rational(1, 2)
 
 half = Rational(1, 2)
+
+
+# Add custom settings to the builtin latex printer
+_LatexPrinter._default_settings.update({
+    'galgebra_mv_fmt': 1
+})
+_StrPrinter._default_settings.update({
+    'galgebra_mv_fmt': 1
+})
+
 
 ########################### Multivector Class ##########################
 
@@ -379,6 +389,15 @@ class Mv(object):
                 self.title = args[0]
             self.characterise_Mv()
 
+    def _sympy_(self):
+        """ Hook used by sympy.sympify """
+        raise SympifyError(self, TypeError(
+            "Cannot safely convert an `Mv` instance to a sympy object. "
+            "Use `mv.obj` to obtain the internal sympy object, but note that "
+            "this does not overload the geometric operators, and will not "
+            "track the associated `Ga` instance."
+        ))
+
     ################# Multivector member functions #####################
 
     def reflect_in_blade(self, blade: 'Mv') -> 'Mv':  # Reflect mv in blade
@@ -444,15 +463,9 @@ class Mv(object):
         if isinstance(A, Mv):
             diff = (self - A).expand().simplify()
             # diff = (self - A).expand()
-            if diff.obj == S(0):
-                return True
-            else:
-                return False
+            return diff.obj == S(0)
         else:
-            if self.is_scalar() and self.obj == A:
-                return True
-            else:
-                return False
+            return self.is_scalar() and self.obj == A
 
     """
     def __eq__(self, A):
@@ -573,14 +586,10 @@ class Mv(object):
             return self * (S(1)/A)
 
     def __str__(self):
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
-        else:
-            Printer = printer.GaPrinter
-        return Printer().doprint(self)
+        return printer.GaPrinter().doprint(self)
 
-    def __repr__(self):
-        return str(self)
+    __ga_print_str__ = printer.default__ga_print_str__
+    __repr__ = printer.default__repr__
 
     def __getitem__(self, key: int) -> 'Mv':
         '''
@@ -589,16 +598,14 @@ class Mv(object):
         return self.grade(key)
 
     def _sympystr(self, print_obj: printer.GaPrinter) -> str:
-        if self.obj == S.Zero:
-            return ZERO_STR
-
-        if self.i_grade == 0:
-            return print_obj.doprint(self.obj)
 
         # note: this just replaces `self` for the rest of this function
         obj = expand(self.obj)
         obj = metric.Simp.apply(obj)
         self = Mv(obj, ga=self.Ga)
+
+        if self.i_grade == 0:
+            return print_obj.doprint(self.obj)
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades.flat
@@ -632,21 +639,21 @@ class Mv(object):
             sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
             s = print_obj.doprint(sorted_terms[0][1][0] * sorted_terms[0][1][1])
-            if print_obj.fmt == 3:
+            if print_obj._settings['galgebra_mv_fmt'] == 3:
                 s = ' ' + s + '\n'
-            if print_obj.fmt == 2:
+            if print_obj._settings['galgebra_mv_fmt'] == 2:
                 s = ' ' + s
             old_grade = sorted_terms[0][1][2]
             for (key, (c, base, grade)) in sorted_terms[1:]:
                 term = print_obj.doprint(c * base)
-                if print_obj.fmt == 2 and old_grade != grade:  # one grade per line
+                if print_obj._settings['galgebra_mv_fmt'] == 2 and old_grade != grade:  # one grade per line
                     old_grade = grade
                     s += '\n'
                 if term[0] == '-':
                     term = ' - ' + term[1:]
                 else:
                     term = ' + ' + term
-                if print_obj.fmt == 3:  # one base per line
+                if print_obj._settings['galgebra_mv_fmt'] == 3:  # one base per line
                     s += term + '\n'
                 else:  # one multivector per line
                     s += term
@@ -740,9 +747,9 @@ class Mv(object):
                 cb_str = '\\left ( ' + l_coef + '\\right ) ' + l_base
             else:
                 cb_str = l_coef + ' ' + l_base
-            if print_obj.fmt == 3:  # One base per line
+            if print_obj._settings['galgebra_mv_fmt'] == 3:  # One base per line
                 lines.append(append_plus(cb_str))
-            elif print_obj.fmt == 2:  # One grade per line
+            elif print_obj._settings['galgebra_mv_fmt'] == 2:  # One grade per line
                 if grade != old_grade:
                     old_grade = grade
                     if not first_line:
@@ -752,9 +759,9 @@ class Mv(object):
                     s += append_plus(cb_str)
             else:  # One multivector per line
                 s += append_plus(cb_str)
-        if print_obj.fmt == 2:
+        if print_obj._settings['galgebra_mv_fmt'] == 2:
             lines.append(s)
-        if print_obj.fmt >= 2:
+        if print_obj._settings['galgebra_mv_fmt'] >= 2:
             if len(lines) == 1:
                 return lines[0]
             s = ' \\begin{aligned} '
@@ -897,17 +904,11 @@ class Mv(object):
 
     def is_scalar(self) -> bool:
         grades = self.Ga.grades(self.obj)
-        if len(grades) == 1 and grades[0] == 0:
-            return True
-        else:
-            return False
+        return grades == [0]
 
     def is_vector(self) -> bool:
         grades = self.Ga.grades(self.obj)
-        if len(grades) == 1 and grades[0] == 1:
-            return True
-        else:
-            return False
+        return grades == [1]
 
     def is_blade(self) -> bool:
         """
@@ -928,10 +929,7 @@ class Mv(object):
 
     def is_base(self) -> bool:
         coefs, _bases = metric.linear_expand(self.obj)
-        if len(coefs) > 1:
-            return False
-        else:
-            return coefs[0] == ONE
+        return coefs == [ONE]
 
     def is_versor(self) -> bool:
         """
@@ -957,9 +955,7 @@ class Mv(object):
         return self.versor_flg
 
     def is_zero(self) -> bool:
-        if self.obj == 0:
-            return True
-        return False
+        return self.obj == 0
 
     def scalar(self) -> Expr:
         """ return scalar part of multivector as sympy expression """
@@ -1164,7 +1160,7 @@ class Mv(object):
         else:
             self.obj += value * base
 
-    def Fmt(self, fmt: int = 1, title: str = None) -> Union['Mv', str]:
+    def Fmt(self, fmt: int = 1, title: str = None) -> printer._FmtResult:
         """
         Set format for printing of multivectors
 
@@ -1183,41 +1179,14 @@ class Mv(object):
         with one grade per line.  Works for both standard printing and
         for latex.
         """
-        if printer.GaLatexPrinter.latex_flg:
-            printer.GaLatexPrinter.prev_fmt = printer.GaLatexPrinter.fmt
-            printer.GaLatexPrinter.fmt = fmt
+        if fmt is not None:
+            obj = printer._WithSettings(self, dict(galgebra_mv_fmt=fmt))
         else:
-            printer.GaPrinter.prev_fmt = printer.GaPrinter.fmt
-            printer.GaPrinter.fmt = fmt
-
-        if title is not None:
-            self.title = title
-
-        if printer.isinteractive():
-            return self
-
-        if printer.GaLatexPrinter.latex_flg:
-            s = printer.GaLatexPrinter().doprint(self)
-        else:
-            s = printer.GaPrinter().doprint(self)
-
-        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-        if title is not None:
-            return title + ' = ' + s
-        else:
-            return s
+            obj = self
+        return printer._FmtResult(obj, title)
 
     def _repr_latex_(self) -> str:
-        latex_str = printer.GaLatexPrinter().doprint(self)
-        if r'\begin{align*}' not in latex_str:
-            if self.title is None:
-                latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-            else:
-                latex_str = r'\begin{equation*} ' + self.title + ' = ' + latex_str + r' \end{equation*}'
-        else:
-            if self.title is not None:
-                latex_str = latex_str.replace('&', ' ' + self.title + ' =&', 1)
-        return latex_str
+        return self.Fmt(fmt=None, title=self.title)._repr_latex_()
 
     def norm2(self) -> Expr:
         reverse = self.rev()
@@ -1330,21 +1299,7 @@ class Mv(object):
         return Mv(obj, ga=self.Ga)
 
     def list(self) -> List[Expr]:
-        indexes = []
-        key_coefs = []
-        for coef, base in metric.linear_expand_terms(self.obj):
-            if base in self.Ga.basis:
-                index = self.Ga.basis.index(base)
-                key_coefs.append((coef, index))
-                indexes.append(index)
-
-        for index in self.Ga.n_range:
-            if index not in indexes:
-                key_coefs.append((S(0), index))
-
-        key_coefs = sorted(key_coefs, key=operator.itemgetter(1))
-        coefs = [x[0] for x in key_coefs]
-        return coefs
+        return self.blade_coefs(self.Ga.mv_blades[1])
 
     def grade(self, r=0) -> 'Mv':
         return self.get_grade(r)
@@ -1483,7 +1438,7 @@ class Dop(dop._BaseDop):
                 'In Dop.__init__ terms are neither (Mv, Pdop) pairs or '
                 '(Sdop, Mv) pairs, got {}'.format(terms))
 
-    def __init__(self, *args, ga: 'Ga', cmpflg: bool = False, debug: bool = False, fmt_dop: int = 1) -> None:
+    def __init__(self, *args, ga: 'Ga', cmpflg: bool = False, debug: bool = False) -> None:
         """
         Parameters
         ----------
@@ -1493,15 +1448,12 @@ class Dop(dop._BaseDop):
             Complement flag for Dop
         debug : bool
             True to print out debugging information
-        fmt_dop :
-            1 for normal dop partial derivative formatting
         """
         if ga is None:
             raise ValueError('ga argument to Dop() must not be None')
 
         self.cmpflg = cmpflg
         self.Ga = ga
-        self.dop_fmt = fmt_dop
         self.title = None
 
         if len(args) == 2:
@@ -1675,34 +1627,17 @@ class Dop(dop._BaseDop):
         else:
             return NotImplemented
 
-    def __str__(self) -> str:
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
-        else:
-            Printer = printer.GaPrinter
-
-        return Printer().doprint(self)
-
-    def __repr__(self) -> str:
-        return str(self)
+    __ga_print_str__ = printer.default__ga_print_str__
+    __repr__ = printer.default__repr__
 
     def _repr_latex_(self) -> str:
-        latex_str = printer.GaLatexPrinter().doprint(self)
-        if r'\begin{align*}' not in latex_str:
-            if self.title is None:
-                latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-            else:
-                latex_str = r'\begin{equation*} ' + self.title + ' = ' + latex_str + r' \end{equation*}'
-        else:
-            if self.title is not None:
-                latex_str = latex_str.replace('&', ' ' + self.title + ' =&', 1)
-        return latex_str
+        return self.Fmt(fmt=None, title=self.title)._repr_latex_()
 
     def is_scalar(self) -> bool:
-        for coef, pdiff in self.terms:
-            if isinstance(coef, Mv) and not coef.is_scalar():
-                return False
-        return True
+        return all(
+            not isinstance(coef, Mv) or coef.is_scalar()
+            for coef, pdiff in self.terms
+        )
 
     def components(self) -> Tuple['Dop', ...]:
         return tuple(
@@ -1819,32 +1754,12 @@ class Dop(dop._BaseDop):
         dop.Sdop.str_mode = False
         return s[:-3]
 
-    def Fmt(self, fmt: int = 1, title: str = None, dop_fmt: int = None) -> Union['Dop', str]:
-        if printer.GaLatexPrinter.latex_flg:
-            printer.GaLatexPrinter.prev_fmt = printer.GaLatexPrinter.fmt
-            printer.GaLatexPrinter.prev_dop_fmt = printer.GaLatexPrinter.dop_fmt
+    def Fmt(self, fmt: int = 1, title: str = None) -> printer._FmtResult:
+        if fmt is not None:
+            obj = printer._WithSettings(self, dict(galgebra_mv_fmt=fmt))
         else:
-            printer.GaPrinter.prev_fmt = printer.GaPrinter.fmt
-            printer.GaPrinter.prev_dop_fmt = printer.GaPrinter.dop_fmt
-
-        if title is not None:
-            self.title = title
-
-        if printer.isinteractive():
-            return self
-
-        if printer.GaLatexPrinter.latex_flg:
-            s = printer.GaLatexPrinter().doprint(self)
-        else:
-            s = printer.GaPrinter().doprint(self)
-
-        printer.GaPrinter.fmt = printer.GaPrinter.prev_fmt
-        printer.GaPrinter.dop_fmt = printer.GaPrinter.prev_dop_fmt
-
-        if title is not None:
-            return title + ' = ' + s
-        else:
-            return s
+            obj = self
+        return printer._FmtResult(obj, title)
 
     def odot(self, dot_flg=True):
         new_self = copy.deepcopy(self)

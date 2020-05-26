@@ -2,6 +2,7 @@ r"""
 ANSI Enhanced Text Printing, Text Printer and LaTeX Printer for all Geometric Algebra classes
 """
 
+import copy
 import os
 import sys
 import io
@@ -9,6 +10,7 @@ import builtins
 import subprocess
 import functools
 import inspect
+import re
 import shutil
 from collections import ChainMap
 
@@ -154,66 +156,7 @@ def isinteractive():  #Is ipython running
 
 
 def ostr(obj, dict_mode=False, indent=True):
-    """
-    Recursively convert iterated object (list/tuple/dict/set) to string.
-    """
-    def ostr_rec(obj, dict_mode):
-        ostr_s = ""
-        if isinstance(obj, Matrix):
-            ostr_s += str(obj)
-        elif isinstance(obj, tuple):
-            if len(obj) == 0:
-                ostr_s += '(),'
-            else:
-                ostr_s += '('
-                for obj_i in obj:
-                    ostr_s += ostr_rec(obj_i, dict_mode)
-                ostr_s = ostr_s[:-1] + '),'
-        elif isinstance(obj, list):
-            if len(obj) == 0:
-                ostr_s += '[],'
-            else:
-                ostr_s += '['
-                for obj_i in obj:
-                    ostr_s += ostr_rec(obj_i, dict_mode)
-                ostr_s = ostr_s[:-1] + '],'
-        elif isinstance(obj, dict):
-            if dict_mode:
-                ostr_s += '\n'
-                for key in list(obj.keys()):
-                    ostr_s += ostr_rec(key, dict_mode)
-                    if ostr_s[-1] == ',':
-                        ostr_s = ostr_s[:-1]
-                    ostr_s += ' -> '
-                    ostr_s += ostr_rec(obj[key], dict_mode)
-                    if ostr_s[-1] == ',':
-                        ostr_s = ostr_s[:-1]
-                    ostr_s += '\n'
-            else:
-                ostr_s += '{'
-                for key in list(obj.keys()):
-                    ostr_s += ostr_rec(key, dict_mode)
-                    if ostr_s[-1] == ',':
-                        ostr_s = ostr_s[:-1]
-                    ostr_s += ':'
-                    ostr_s += ostr_rec(obj[key], dict_mode)
-                ostr_s = ostr_s[:-1] + '} '
-        elif isinstance(obj, set):
-            tmp_obj = list(obj)
-            ostr_s += '{'
-            for obj_i in tmp_obj:
-                ostr_s += ostr_rec(obj_i, dict_mode)
-            ostr_s = ostr_s[:-1] + '},'
-        else:
-            ostr_s += str(obj) + ','
-        return ostr_s
-
-    if isinstance(obj, Matrix):
-        return '\n' + str(obj)
-    elif isinstance(obj, (tuple, list, dict, set)):
-        return ostr_rec(obj, dict_mode)[:-1]
-    else:
-        return str(obj)
+    return GaPrinter(dict(dict_mode=dict_mode)).doprint(obj)
 
 
 def find_functions(expr):
@@ -264,7 +207,7 @@ def oprint(*args, dict_mode=False):
             else:
                 npad = n - len(title)
                 if '\n' in s:
-                    print(title + ':' + s)
+                    print(title + ':\n' + s)
                 else:
                     print(title + npad * ' ' + ' = ' + s)
     else:
@@ -352,18 +295,15 @@ class Eprint:
 
 class GaPrinter(StrPrinter):
 
+    _default_settings = ChainMap({
+        # if true, print dicts with `->` instead of `:`, one entry per line
+        "dict_mode": False,
+    }, StrPrinter._default_settings)
+
     function_names = ('acos', 'acosh', 'acot', 'acoth', 'arg', 'asin', 'asinh',
                       'atan', 'atan2', 'atanh', 'ceiling', 'conjugate', 'cos',
                       'cosh', 'cot', 'coth', 'exp', 'floor', 'im', 'log', 're',
                       'root', 'sin', 'sinh', 'sqrt', 'sign', 'tan', 'tanh', 'Abs')
-
-    str_flg = True
-    prev_fmt = 1
-    fmt = 1
-    dop_fmt =1
-    prev_dop_fmt = 1
-    lt_fmt = 1
-    prev_lt_fmt = 1
 
     def _print_Function(self, expr):
         name = expr.func.__name__
@@ -398,11 +338,32 @@ class GaPrinter(StrPrinter):
         s += str(self._print(function))
         return Eprint.Deriv(s)
 
+    def _print_dict(self, expr):
+        if not self._settings['dict_mode']:
+            return super()._print_dict(expr)
 
-Basic.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
-Matrix.__ga_print_str__ = lambda self: GaPrinter().doprint(self)
-Basic.__repr__ = lambda self: GaPrinter().doprint(self)
-Matrix.__repr__ = lambda self: GaPrinter().doprint(self)
+        return '\n'.join(
+            '{} -> {}'.format(self._print(k), self._print(v))
+            for k, v in expr.items()
+        )
+
+
+def default__ga_print_str__(self):
+    if GaLatexPrinter.latex_flg:
+        return GaLatexPrinter().doprint(self)
+    else:
+        return GaPrinter().doprint(self)
+
+
+def default__repr__(self):
+    return GaPrinter().doprint(self)
+
+
+Basic.__ga_print_str__ = default__ga_print_str__
+Matrix.__ga_print_str__ = default__ga_print_str__
+
+Basic.__repr__ = default__repr__
+Matrix.__repr__ = default__repr__
 
 
 # This is the lesser of two evils. Previously, we overwrote `Basic.__str__` in
@@ -489,23 +450,16 @@ class GaLatexPrinter(LatexPrinter):
     title is printed in equation mode. '%' has the same effect in title as
     in the Fmt() member function.
     """
-    # overrides of base class settings
+    # overrides of base class settings, and new settings for our printers
     _default_settings = ChainMap({
         "mat_str": "array",
+        "omit_function_args": False,
+        "omit_partial_derivative_fraction": False,
     }, LatexPrinter._default_settings)
-
-    fmt = 1
-    prev_fmt = 1
-    dop_fmt =1
-    prev_dop_fmt = 1
-    lt_fmt = 1
-    prev_lt_fmt = 1
 
     latex_flg = False
     latex_str = ''
     ipy = False
-
-    inv_trig_style = None
 
     preamble = \
 """
@@ -556,8 +510,6 @@ class GaLatexPrinter(LatexPrinter):
     postscript = '\\end{document}\n'
     macros = '\\newcommand{\\f}[2]{{#1}\\left ({#2}\\right )}'
 
-    Dmode = False  # True - Print derivative contracted
-    Fmode = False  # True - Print function contracted
     latex_flg = False
     ipy = False
 
@@ -580,10 +532,6 @@ class GaLatexPrinter(LatexPrinter):
         GaLatexPrinter.text_printer = print   #Save original print function
         builtins.print = latex_print  #Redefine original print function
         GaLatexPrinter.latex_flg = True
-        GaLatexPrinter.Basic__ga_print_str__ = Basic.__ga_print_str__
-        GaLatexPrinter.Matrix__ga_print_str__ = Matrix.__ga_print_str__
-        Basic.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
         return
 
     @staticmethod
@@ -591,8 +539,6 @@ class GaLatexPrinter(LatexPrinter):
         if GaLatexPrinter.latex_flg:
             builtins.print = GaLatexPrinter.text_printer  #Redefine orginal print function
             GaLatexPrinter.latex_flg = False
-            Basic.__ga_print_str__ = GaLatexPrinter.Basic__ga_print_str__
-            Matrix.__ga_print_str__ = GaLatexPrinter.Matrix__ga_print_str__
         return
 
     def _print_Pow(self, expr):
@@ -719,8 +665,7 @@ class GaLatexPrinter(LatexPrinter):
 
             # How inverse trig functions should be displayed, formats are:
             # abbreviated: asin, full: arcsin, power: sin^-1
-            #inv_trig_style = self._settings['inv_trig_style']
-            _inv_trig_style = GaLatexPrinter.inv_trig_style
+            inv_trig_style = self._settings['inv_trig_style']
             # If we are dealing with a power-style inverse trig function
             inv_trig_power_case = False
             # If it is applicable to fold the argument brackets
@@ -731,11 +676,11 @@ class GaLatexPrinter(LatexPrinter):
 
             # If the function is an inverse trig function, handle the style
             if func in inv_trig_table:
-                if GaLatexPrinter.inv_trig_style == "abbreviated":
+                if inv_trig_style == "abbreviated":
                     func = func
-                elif GaLatexPrinter.inv_trig_style == "full":
+                elif inv_trig_style == "full":
                     func = "arc" + func[1:]
-                elif GaLatexPrinter.inv_trig_style == "power":
+                elif inv_trig_style == "power":
                     func = func[1:]
                     inv_trig_power_case = True
 
@@ -774,16 +719,16 @@ class GaLatexPrinter(LatexPrinter):
                     # with the function name itself
                     name += r" {%s}"
                 else:
-                    if not GaLatexPrinter.Fmode:
+                    if not self._settings["omit_function_args"]:
                         name += r"%s"
             else:
-                if func in accepted_latex_functions or not GaLatexPrinter.Fmode:
+                if func in accepted_latex_functions or not self._settings["omit_function_args"]:
                     name += r"{\left (%s \right )}"
 
             if inv_trig_power_case and exp is not None:
                 name += r"^{%s}" % exp
 
-            if func in accepted_latex_functions or not GaLatexPrinter.Fmode:
+            if func in accepted_latex_functions or not self._settings["omit_function_args"]:
                 if len(args) == 1:
                     name = name % args[0]
                 else:
@@ -795,7 +740,7 @@ class GaLatexPrinter(LatexPrinter):
         dim = len(expr.variables)
         imax = 1
         if dim == 1:
-            if GaLatexPrinter.Dmode:
+            if self._settings["omit_partial_derivative_fraction"]:
                 tex = r"\partial_{%s}" % self._print(expr.variables[0])
             else:
                 tex = r"\frac{\partial}{\partial %s}" % self._print(expr.variables[0])
@@ -812,7 +757,7 @@ class GaLatexPrinter(LatexPrinter):
                 imax = max(imax, i)
                 multiplicity.append((current, i))
 
-            if GaLatexPrinter.Dmode:
+            if self._settings["omit_partial_derivative_fraction"]:
                 tex = ''
                 for x, i in multiplicity:
                     if i == 1:
@@ -924,9 +869,11 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
     """
     global Format_cnt
 
-    GaLatexPrinter.Dmode = Dmode
-    GaLatexPrinter.Fmode = Fmode
-    GaLatexPrinter.inv_trig_style = inverse
+    GaLatexPrinter.set_global_settings(
+        omit_partial_derivative_fraction=Dmode,
+        omit_function_args=Fmode,
+        inv_trig_style=inverse,
+    )
 
     if Format_cnt == 0:  # Only execute first time Format is called
         Format_cnt += 1
@@ -935,11 +882,6 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
         GaLatexPrinter.latex_flg = True
         # Overload python 3 print function
         GaLatexPrinter.redirect()
-
-        Basic.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__ga_print_str__ = lambda self: GaLatexPrinter().doprint(self)
-        Basic.__repr__ = lambda self: GaLatexPrinter().doprint(self)
-        Matrix.__repr__ = lambda self: GaLatexPrinter().doprint(self)
 
         if isinteractive():  # Set up for Jupyter Notebook/Lab
             init_printing(use_latex= 'mathjax')
@@ -953,12 +895,63 @@ def Format(Fmode: bool = True, Dmode: bool = True, dop=1, inverse='full'):
     return
 
 
+def _texify(s: str) -> str:
+    """ Convert python GA operator notation to LaTeX """
+    repl_pairs = [
+        (r'\|', r'\cdot '),
+        (r'\^(?!{)', r'\W '),
+        (r'\*', ' '),
+        (r'\brgrad\b', r'\bar{\boldsymbol{\nabla}} '),
+        (r'\bgrad\b', r'\boldsymbol{\nabla} '),
+        (r'>>', r' \times '),
+        (r'<<', r' \bar{\times} '),
+        (r'<', r'\rfloor '),
+        (r'>', r'\lfloor '),
+    ]
+
+    def repl_func(m):
+        # only one group will be present, use the corresponding match
+        return next(
+            r
+            for (p, r), g in zip(repl_pairs, m.groups())
+            if g is not None
+        )
+    pattern = '|'.join("({})".format(p) for p, _ in repl_pairs)
+    return re.sub(pattern, repl_func, s)
+
+
 def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
-    """
+    r"""
     Post processes LaTeX output (see comments below), adds preamble and
     postscript.
 
-    We assume that if tex() is called then Format() has been called at the beginning of the program.
+    This postprocessing has two main behaviors:
+
+    1. Converting strings on the left hand side of the last ``=`` into TeX.
+       This translates the ``*``, ``^``, ``|``, ``>``, ``<``, ``<<``, ``>>``,
+       ``grad``, and ``rgrad`` operators of galgebra into the appropriate latex
+       operators. If there is no ``=`` in the line, no conversion is applied.
+
+    2. Wrapping lines of latex into ``equation*`` environments if they are not
+       already in environments, and moving labels that were prepended outside
+       ``align`` environments inside those environments.
+
+    Both behaviors are applied line by line, unless a line starts with the
+    following text:
+
+    ``#%`` or ``%``
+        Disables only behavior 1 for the rest of the line.
+
+    ``##``
+        Disables behaviors 1 and 2 until the end of the next line starting with
+        ``##``. This includes processing any of the other special characters,
+        which will be emitted verbatim.
+
+    ``#``
+        Disables behaviors 1 and 2 for the rest of the line.
+
+    We assume that if :func:`tex` is called, then :func:`Format` has been called
+    at the beginning of the program.
     """
 
     latex_str = GaLatexPrinter.latex_str + sys.stdout.getvalue()
@@ -978,62 +971,36 @@ def tex(paper=(14, 11), debug=False, prog=False, pt='10pt'):
     latex_lst = latex_str.split('\n')
     latex_str = ''
 
-    lhs = ''
     code_flg = False
 
     for latex_line in latex_lst:
-        if len(latex_line) > 0 and '##' == latex_line[:2]:
-            if code_flg:
-                code_flg = False
-                latex_line = latex_line[2:]
-            else:
-                code_flg = True
-                latex_line = latex_line[2:]
+        if not latex_line:
+            pass
+        elif latex_line.startswith('##'):
+            # a post-processing toggle used by `Print_Function`
+            code_flg = not code_flg
+            latex_line = latex_line[2:]
         elif code_flg:
-                    pass
-        elif len(latex_line) > 0 and '#' in latex_line:  # Non equation mode output (comment)
-            latex_line = latex_line.replace('#', '')
-            if '%' in latex_line:  # Equation mode with no variables to print (comment)
-                latex_line = latex_line.replace('%', '')
-                if r'\begin{align*}' in latex_line:
-                    latex_line = r'\begin{align*}' + latex_line.replace(r'\begin{align*}', '')
-                else:
-                    latex_line = '\\begin{equation*} ' + latex_line + ' \\end{equation*}\n'
-
+            pass
+        elif latex_line.startswith('#') and not latex_line.startswith('#%'):
+            # do not process this line
+            latex_line = latex_line[1:]
         else:
-            latex_line = latex_line.replace(r'\left.', r'@@')  # Disabiguate '.' in '\left.'
-            latex_line = latex_line.replace(r'\right.', r'##')  # Disabiguate '.' in '\right.'
-            latex_line = latex_line.replace('.', r' \cdot ')  # For components of metric tensor
-            latex_line = latex_line.replace(r'@@', r'\left.')  # Restore '\left.'
-            latex_line = latex_line.replace(r'##', r'\right.')  # Restore '\right.'
-            if '=' in latex_line:  # determing lhs of equation/align
-                eq_index = latex_line.rindex('=') + 1
-                lhs = latex_line[:eq_index]
-                latex_line = latex_line.replace(lhs, '')
-                if '%' in lhs:  # Do not preprocess lhs of equation/align
-                    lhs = lhs.replace('%', '')
-                else:  # preprocess lhs of equation/align
-                    lhs = lhs.replace('|', r'\cdot ')
-                    lhs = lhs.replace('^{', r'@@ ')
-                    lhs = lhs.replace('^', r'\W ')
-                    lhs = lhs.replace(r'@@ ', '^{')
-                    lhs = lhs.replace('*', ' ')
-                    lhs = lhs.replace('rgrad', r'\bar{\boldsymbol{\nabla}} ')
-                    lhs = lhs.replace('grad', r'\boldsymbol{\nabla} ')
-                    lhs = lhs.replace(r'>>', r' \times ')
-                    lhs = lhs.replace(r'<<', r' \bar{\times} ')
-                    lhs = lhs.replace('<', r'\rfloor ')  # Check
-                    lhs = lhs.replace('>', r'\lfloor ')  # Check
-                latex_line = lhs + latex_line
+            # two different spellings of "do not process the LHS"
+            if latex_line.startswith('%'):
+                latex_line = latex_line[1:]
+            elif latex_line.startswith('#%'):
+                latex_line = latex_line[2:]
+            # otherwise, process it if we can find it
+            elif '=' in latex_line:
+                lhs, latex_line = latex_line.rsplit('=', 1)
+                latex_line = _texify(lhs) + '=' + latex_line
 
-            if r'\begin{align*}' in latex_line:  # insert lhs of align environment
-                latex_line = latex_line.replace(lhs, '')
-                latex_line = latex_line.replace(r'\begin{align*}', r'\begin{align*} ' + lhs)
-                lhs = ''
-            else:  # normal sympy equation
-                latex_line = latex_line.strip()
-                if len(latex_line) > 0:
-                    latex_line = '\\begin{equation*} ' + latex_line + ' \\end{equation*}'
+            # in either case, perform the environment wrapping
+            if r'\begin{align*}' in latex_line:
+                latex_line = r'\begin{align*} ' + latex_line.replace(r'\begin{align*}', '', 1).lstrip()
+            else:
+                latex_line = r'\begin{equation*} ' + latex_line.strip() + r' \end{equation*}'
 
         latex_str += latex_line + '\n'
 
@@ -1249,8 +1216,10 @@ def xdvi(filename=None, debug=False, paper=(14, 11)):
 
 
 def LatexFormat(Fmode=True, Dmode=True, ipy=False):
-    GaLatexPrinter.Dmode = Dmode
-    GaLatexPrinter.Fmode = Fmode
+    GaLatexPrinter.set_global_settings(
+        omit_partial_derivative_fraction=Dmode,
+        omit_function_args=Fmode
+    )
     GaLatexPrinter.ipy = ipy
     GaLatexPrinter.redirect()
     return
@@ -1385,7 +1354,7 @@ def Fmt(obj, fmt=0):
                 latex_cell = latex_cell.replace('\n', ' ')
                 latex_cell= latex_cell.replace(r'\begin{equation*}', ' ')
                 latex_cell= latex_cell.replace(r'\end{equation*}', ' ')
-                if GaLatexPrinter.fmt != 1:
+                if LatexPrinter()._settings['galgebra_mv_fmt'] != 1:
                     latex_cell= latex_cell.replace(r'\begin{align*}', r'\begin{array}{c} ')
                     latex_cell= latex_cell.replace('&', '')
                     latex_cell= latex_cell.replace(r'\end{align*}', r'\\ \end{array} ')
@@ -1405,12 +1374,73 @@ def Fmt(obj, fmt=0):
             return latex_str
 
     elif isinstance(obj, int):
-        GaLatexPrinter.prev_fmt = GaLatexPrinter.fmt
-        GaLatexPrinter.fmt = obj
+        LatexPrinter.set_global_settings(galgebra_mv_fmt=obj)
         return
     else:
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
 
+
+class _WithSettings:
+    """ Helper class to attach print settings to an object """
+    def __init__(self, obj, settings: dict = {}):
+        self._obj = obj
+        self._settings = settings
+
+    def __do_print(self, printer):
+        # make a copy of the printer with the specified setting applied
+        new_printer = copy.copy(printer)
+        new_printer._settings = copy.copy(new_printer._settings)
+        new_printer._settings.update(self._settings)
+        return new_printer.doprint(self._obj)
+
+    _latex = _pretty = _sympystr = __do_print
+
+    __repr__ = default__repr__
+    __ga_print_str__ = default__ga_print_str__
+
+
+class _FmtResult:
+    """ Object returned from .Fmt methods, which can be printed as latex """
+    def __init__(self, obj, label: str = None):
+        self._obj = obj
+        self._label = label
+
+    def _latex(self, printer):
+        # print and add the label, if present
+        latex_str = printer.doprint(self._obj)
+        if self._label is not None:
+            if r'\begin{align*}' in latex_str:
+                latex_str = latex_str.replace('&', ' ' + self._label + ' =&', 1)
+            else:
+                latex_str = self._label + ' = ' + latex_str
+        return latex_str
+
+    def _sympystr(self, printer):
+        # print and add the label, if present
+        s = printer.doprint(self._obj)
+        if self._label is not None:
+            s = self._label + ' = ' + s
+        return s
+
+    def _repr_latex_(self):
+        latex_str = GaLatexPrinter().doprint(self)
+        if r'\begin{align*}' not in latex_str:
+            latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
+        return latex_str
+
+    __repr__ = default__repr__
+
+    def __ga_print_str__(self):
+        if GaLatexPrinter.latex_flg:
+            # unfortunately we cannot re-use `_latex` here, because the output
+            # of this function has to survive the post-processing in
+            # `tex`.
+            latex_str = GaLatexPrinter().doprint(self._obj)
+            if self._label:
+                latex_str = self._label + ' = ' + latex_str
+            return latex_str
+        else:
+            return str(self)
 
 def tprint(s):
     """

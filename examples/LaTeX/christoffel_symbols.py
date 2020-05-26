@@ -1,8 +1,8 @@
 from __future__ import print_function
 import sys
-from galgebra.printer import  Format, xtex
+from galgebra.printer import  Format, xtex, latex
 Format()
-from sympy import symbols, sin, pi, latex, Array, permutedims
+from sympy import symbols, sin, pi, Array, permutedims
 from galgebra.ga import Ga
 
 print(r'\bm{\mbox{Base manifold (three dimensional)}}')
@@ -43,12 +43,12 @@ print(r'\text{g\_inv = }', latex(sp2.g_inv))
 Cf1 = sp2.Christoffel_symbols(mode=1)
 Cf1 = permutedims(Array(Cf1), (2, 0, 1))
 print(r'\text{Christoffel symbols of the first kind: }')
-print(r'\Gamma_{1, \alpha, \beta} = ', latex(Cf1[0, :, :]), r'\quad', r'\Gamma_{2, \alpha, \beta} = ', latex(Cf1[1, :, :]))
+print(r'\Gamma_{1, \alpha, \beta} = ', latex(Cf1[0, :, :], mat_str=None), r'\quad', r'\Gamma_{2, \alpha, \beta} = ', latex(Cf1[1, :, :], mat_str=None))
 
 Cf2 = sp2.Christoffel_symbols(mode=2)
 Cf2 = permutedims(Array(Cf2), (2, 0, 1))
 print(r'\text{Christoffel symbols of the second kind: }')
-print(r'\Gamma^{1}_{\phantom{1,}\alpha, \beta} = ', latex(Cf2[0, :, :]), r'\quad', r'\Gamma^{2}_{\phantom{2,}\alpha, \beta} = ', latex(Cf2[1, :, :]))
+print(r'\Gamma^{1}_{\phantom{1,}\alpha, \beta} = ', latex(Cf2[0, :, :], mat_str=None), r'\quad', r'\Gamma^{2}_{\phantom{2,}\alpha, \beta} = ', latex(Cf2[1, :, :], mat_str=None))
 
 F = sp2.mv('F','vector',f=True) #scalar function)
 f = sp2.mv('f','scalar',f=True) #vector function)

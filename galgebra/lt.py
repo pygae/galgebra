@@ -12,10 +12,22 @@ from functools import reduce
 from sympy import (
     expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add, Expr
 )
+from sympy.printing.latex import LatexPrinter as _LatexPrinter
+from sympy.printing.str import StrPrinter as _StrPrinter
+
 
 from . import printer
 from . import metric
 from . import mv
+
+
+# Add custom settings to the builtin latex printer
+_LatexPrinter._default_settings.update({
+    'galgebra_mlt_lcnt': 1
+})
+_StrPrinter._default_settings.update({
+    'galgebra_mlt_lcnt': 1
+})
 
 
 def Symbolic_Matrix(root, coords=None, mode='g', f=False, sub=True):
@@ -338,9 +350,6 @@ class Lt(object):
         else:
             raise TypeError('Cannot have LT as left argument in Lt __rmul__\n')
 
-    def __repr__(self):
-        return str(self)
-
     def _repr_latex_(self):
         latex_str = printer.GaLatexPrinter().doprint(self)
         if r'\begin{align*}' not in latex_str:
@@ -433,44 +442,11 @@ class Lt(object):
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
 
-    def Fmt(self, fmt=1, title=None):
+    def Fmt(self, fmt=1, title=None) -> printer._FmtResult:
+        return printer._FmtResult(self, title)
 
-        if printer.isinteractive():
-            return self
-
-        latex_str = printer.GaLatexPrinter().doprint(self)
-
-        r"""
-        if printer.GaLatexPrinter.ipy:
-            if title is None:
-                if r'\begin{align*}' not in latex_str:
-                    latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-            else:
-                if r'\begin{align*}' not in latex_str:
-                    latex_str = r'\begin{equation*} ' + title + ' = ' + latex_str + r' \end{equation*}'
-                else:
-                    latex_str = latex_str.replace(r'\begin{align*}', r'\begin{align*} ' + title)
-                    latex_str = latex_str.replace('&', '=&', 1)
-
-            from IPython.core.display import display, Math
-            display(Math(latex_str))
-        else:
-            if title is not None:
-                return title + ' = ' + latex_str
-            else:
-                    return latex_str
-        """
-        if title is not None:
-            return title + ' = ' + latex_str
-        else:
-            return latex_str
-
-    def __str__(self):
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
-        else:
-            Printer = printer.GaPrinter
-        return Printer().doprint(self)
+    __ga_print_str__ = printer.default__ga_print_str__
+    __repr__ = printer.default__repr__
 
     def matrix(self) -> Matrix:
         r"""
@@ -600,6 +576,7 @@ class Mlt(object):
         expr_lst = Mlt.expand_expr(self.fvalue, self.Ga)
         latex_str = '\\begin{align*} '
         first = True
+        lcnt = print_obj._settings['galgebra_mlt_lcnt']
         cnt = 1  # Component count on line
         for term in expr_lst:
             coef_str = str(term[0])
@@ -618,17 +595,17 @@ class Mlt(object):
                 latex_str += ' & ' + coef_latex
             else:
                 latex_str += coef_latex
-            if cnt % self.lcnt == 0:
+            if cnt % lcnt == 0:
                 latex_str += '\\\\ '
                 cnt = 1
             else:
                 cnt += 1
-        if self.lcnt == len(expr_lst) or self.lcnt == 1:
+        if lcnt == len(expr_lst) or lcnt == 1:
             latex_str = latex_str[:-3]
         latex_str = latex_str + ' \\end{align*} \n'
         return latex_str
 
-    def Fmt(self, lcnt=1, title=None):
+    def Fmt(self, lcnt=1, title=None) -> printer._FmtResult:
         """
         Set format for printing of Tensors
 
@@ -650,27 +627,8 @@ class Mlt(object):
         with two components per line.  Works for both standard printing and
         for latex.
         """
-        self.lcnt = lcnt
-        latex_str = printer.GaLatexPrinter().doprint(self)
-        self.lcnt = 1
-
-        if printer.GaLatexPrinter.ipy:
-            if title is None:
-                if r'\begin{align*}' not in latex_str:
-                    latex_str = r'\begin{equation*} ' + latex_str + r' \end{equation*}'
-            else:
-                if r'\begin{align*}' not in latex_str:
-                    latex_str = r'\begin{equation*} ' + title + ' = ' + latex_str + r' \end{equation*}'
-                else:
-                    latex_str = latex_str.replace(r'\begin{align*}', r'\begin{align*} ' + title)
-                    latex_str = latex_str.replace('&', '=&', 1)
-            from IPython.core.display import display, Math
-            display(Math(latex_str))
-        else:
-            if title is not None:
-                print(title + ' = ' + latex_str)
-            else:
-                print(latex_str)
+        obj = printer._WithSettings(self, dict(galgebra_mlt_lcnt=lcnt))
+        return printer._FmtResult(obj, title)
 
     @staticmethod
     def expand_expr(expr, ga):
@@ -714,7 +672,6 @@ class Mlt(object):
         #  T_x*a_1__x+T_y*a_1__y+T_z*a_1__z for a rank 1 tensor in 3 space and all
         #  symbols are sympy real scalar symbols
         self.Ga = Ga
-        self.lcnt = 1
         if isinstance(f, mv.Mv):
             if f.is_vector():  # f is vector T = f | a1
                 self.nargs = 1
@@ -757,12 +714,8 @@ class Mlt(object):
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f
 
-    def __str__(self):
-        if printer.GaLatexPrinter.latex_flg:
-            Printer = printer.GaLatexPrinter
-        else:
-            Printer = printer.GaPrinter
-        return Printer().doprint(self)
+    __ga_print_str__ = printer.default__ga_print_str__
+    __repr__ = printer.default__repr__
 
     def __call__(self, *args):
         """
