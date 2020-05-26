@@ -2,6 +2,10 @@
 Changelog
 =========
 
+- :release:`0.5.0 <2020.05.27>`
+
+- :feature:`0` Python 3.8 is now supported and tested.
+
 - :feature:`0` Generally improved documentation, including:
 
   * The re-inclusion of missing code examples that were already referenced from the text (:issue:`293`).
