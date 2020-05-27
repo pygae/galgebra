@@ -3,7 +3,7 @@ import sys
 
 from sympy import symbols,sin,cos,latex
 from galgebra.ga import Ga
-from galgebra.printer import Format, xpdf
+from galgebra.printer import Format, xtex
 
 g = '# 0 0 0,0 # 0 0,0 0 # 0,0 0 0 #'
 
@@ -12,13 +12,12 @@ Format()
 
 psi = sp4d.mv('psi','even')
 
-print(psi)
+print(r'\psi =',psi)
 
 B = sp4d.mv('B','bivector')
 
-print(B)
+print('B =',B)
 
-print(B*psi-psi*B)
+print(r'B\psi-\psi B =', (B*psi-psi*B).Fmt(3))
 
-# xpdf()
-xpdf(pdfprog=None)
+xtex()

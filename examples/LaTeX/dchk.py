@@ -1,6 +1,6 @@
 from __future__ import print_function
 from sympy import symbols, sin
-from galgebra.printer import Format, xpdf, Fmt
+from galgebra.printer import Format, xpdf, Fmt, xtex
 from galgebra.ga import Ga
 
 Format()
@@ -18,4 +18,4 @@ print(v)
 print(B)
 
 # xpdf()
-xpdf(pdfprog=None)
+xtex()

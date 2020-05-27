@@ -1281,11 +1281,7 @@ class Mv(printer.GaPrintable):
         return Mv(obj, ga=self.Ga)
 
     def subs(self, *args, **kwargs) -> 'Mv':
-        """ Perform a substitution on each coefficient separately """
-        obj = sum((
-            coef.subs(*args, **kwargs) * base for coef, base in metric.linear_expand_terms(self.obj)
-        ), S(0))
-        return Mv(obj, ga=self.Ga)
+        return Mv(self.obj.subs(*args, **kwargs), ga=self.Ga)
 
     def expand(self) -> 'Mv':
         obj = sum((
@@ -1313,6 +1309,11 @@ class Mv(printer.GaPrintable):
         for i in range(n):
             self = self.Ga.pDiff(self, x)
         return self
+
+    def odot(self, dot_flg=True):
+        new_self = copy.deepcopy(self)
+        new_self.dot_flg = dot_flg
+        return new_self
 
 
 def compare(A: Mv, B: Mv) -> Union[Expr, int]:
@@ -1742,6 +1743,11 @@ class Dop(dop._BaseDop):
         else:
             obj = self
         return printer._FmtResult(obj, title)
+
+    def odot(self, dot_flg=True):
+        new_self = copy.deepcopy(self)
+        new_self.dot_flg = dot_flg
+        return new_self
 
     def _eval_derivative_n_times(self, x, n):
         return Dop(dop._eval_derivative_n_times_terms(self.terms, x, n), cmpflg=self.cmpflg, ga=self.Ga)
