@@ -285,16 +285,12 @@ class Metric(object):
 
     g : sympy matrix[,]
         metric tensor
-    g_inv : sympy matrix[,]
-        inverse of metric tensor
     norm : list of sympy numbers
         normalized diagonal metric tensor
     coords : list[] of sympy symbols
         coordinate variables
     is_ortho : bool
         True if basis is orthogonal
-    connect_flg : bool
-        True if connection is non-zero
     basis : list[] of non-commutative sympy variables
         basis vector symbols
     r_symbols : list[] of non-commutative sympy variables
@@ -489,7 +485,7 @@ class Metric(object):
 
     @_cached_property
     def g_inv(self) -> Matrix:
-        """ Inverse of g """
+        """ Inverse of metric tensor :attr:`g` """
         if self.is_ortho:  # Orthogonal metric
             g_inv = eye(self.n)
             for i in range(self.n):
