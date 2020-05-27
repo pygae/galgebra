@@ -12,7 +12,6 @@ ipykernel
 nbsphinx
 numba
 sphinx_rtd_theme
-recommonmark
 sphinx-markdown-tables
 notedown
 semantic-version==2.6.0
@@ -22,3 +21,6 @@ nbsphinx-link
 
 # the first release to support f-strings
 pygments >= 2.5.0
+
+# previous releases did not render our README badges correctly
+recommonmark>=0.6.0
