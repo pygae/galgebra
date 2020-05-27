@@ -10,6 +10,6 @@ class release_uri:
         self._path = releases_github_path
 
     def __mod__(self, release):
-        if release.isdigit():
+        if release[0].isdigit():
             release = "v" + release
         return 'https://github.com/%s/tree/%s' % (self._path, release)
