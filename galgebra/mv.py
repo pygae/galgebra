@@ -278,21 +278,27 @@ class Mv(printer.GaPrintable):
         positional arguments:
 
         .. class:: Mv(*, ga, recp=None)
+            :noindex:
 
             Create a zero multivector
         .. class:: Mv(expr, /, *, ga, recp=None)
+            :noindex:
 
             Create a multivector from an existing vector or sympy expression
         .. class:: Mv(coeffs, grade, /, ga, recp=None)
+            :noindex:
 
             Create a multivector constant with a given grade
         .. class:: Mv(name, category, /, *cat_args, ga, recp=None, f=False)
+            :noindex:
 
             Create a multivector constant with a given category
         .. class:: Mv(name, grade, /, ga, recp=None, f=False)
+            :noindex:
 
             Create a multivector variable or function of a given grade
         .. class:: Mv(coeffs, category, /, *cat_args, ga, recp=None)
+            :noindex:
 
             Create a multivector variable or function of a given category
 
@@ -1071,8 +1077,10 @@ class Mv(printer.GaPrintable):
 
     def Grad(self, coords, mode: str = '*', left: bool = True) -> 'Mv':
         """
-        Returns various derivatives (*,^,|,<,>) of multivector functions
-        with respect to arbitrary coordinates, 'coords'.  This would be
+        Returns various derivatives (``*``, ``^``, ``|``, ``<``, ``>``) of
+        multivector functions with respect to arbitrary coordinates, 'coords'.
+
+        This would be
         used where you have a multivector function of both the basis
         coordinate set and and auxiliary coordinate set.  Consider for
         example a linear transformation in which the matrix coefficients
