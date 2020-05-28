@@ -58,6 +58,10 @@ extensions = [
     'md_include',
 ]
 
+# This is not actually used as we have a template overload to render this with
+# latex. Leaving it here in case we change theme.
+html_logo = "images/galgebra.svg"
+
 # -- nbsphinx configuration ---------------------------------------------------
 
 import galgebra
@@ -121,7 +125,7 @@ galgebra_latex_macros = R"""
 # enable autonumbering
 mathjax_config = dict(TeX=dict(
     equationNumbers=dict(autoNumber="AMS"),
-    extensions=["[Contrib]/preamble/preamble.js"],
+    extensions=["[Contrib]/preamble/preamble.js", "color.js"],
     preamble=[galgebra_latex_macros]
 ))
 
@@ -215,7 +219,9 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = dict(
+    logo_only=True,
+)
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

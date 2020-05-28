@@ -1,0 +1,32 @@
+{% extends "!layout.html" %}
+{% block sidebartitle %}
+
+  {% if logo and theme_logo_only %}
+    <a href="{{ pathto(master_doc) }}">
+  {% else %}
+    <a href="{{ pathto(master_doc) }}" class="icon icon-home" alt="{{ _("Documentation Home") }}"> {{ project }}
+  {% endif %}
+
+  {# this div is instead of the usual logo. The height is picked to avoid a jump
+     when mathjax renders #}
+  <div class="math notranslate nohighlight" style="height: 4.4em; display: table; color: transparent">
+  	\[\color{white}{\huge\mathcal{G\!A}\hspace{0.01in}\mathbf{lgebra}}\]
+  </div>
+
+  </a>
+
+  {% if theme_display_version %}
+    {%- set nav_version = version %}
+    {% if READTHEDOCS and current_version %}
+      {%- set nav_version = current_version %}
+    {% endif %}
+    {% if nav_version %}
+      <div class="version">
+        {{ nav_version }}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% include "searchbox.html" %}
+
+{% endblock %}
