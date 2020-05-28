@@ -723,7 +723,7 @@ For a windows user the simplest way to implement *ConEmu* is to use the *geany* 
 
 ``"C:\Program Files\ConEmu\ConEmu64.exe" /WndW 180 /cmd %c``
 
-and then run an example *galgeba* program that used ``Eprint``. The default background and foreground colors make the output unreadable. To change these parameters to reasonable values:\ [23]_
+and then run an example *galgebra* program that used ``Eprint``. The default background and foreground colors make the output unreadable. To change these parameters to reasonable values:\ [23]_
 
 1. Right click on title bar of console.
 
