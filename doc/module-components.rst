@@ -1,6 +1,8 @@
 Module Components
 =================
 
+.. currentmodule:: galgebra
+
 .. warning::
 
    This page is converted from the original :math:`\LaTeX` documentation, but
@@ -357,7 +359,7 @@ If we can instantiate multivectors we can use all the multivector class function
    3       Print each base of multivector on one line.
    ======= ============================================
 
-   ``title`` appends a title string to the beginning of the output. An equal sign in the title string is not required, but is added as a default. Note that ``Fmt`` only overrides the the global multivector printing format for the particular instance being printed. To reset the global multivector printing format use the function ``Fmt()`` in the printer module.
+   ``title`` appends a title string to the beginning of the output. An equal sign in the title string is not required, but is added as a default. Note that ``Fmt`` only overrides the the global multivector printing format for the particular instance being printed. To reset the global multivector printing format use the function :func:`~galgebra.printer.Fmt` in the :mod:`galgebra.printer` module.
 
 .. method:: galgebra.mv.Mv.func(self,fct)
    :noindex:
@@ -717,7 +719,7 @@ If we can instantiate multilinear functions we can use all the multilinear funct
 Standard Printing
 -----------------
 
-Printing of multivectors is handled by the module ``printer`` which contains a string printer class derived from the *sympy* string printer class and a latex printer class derived from the *sympy* latex printer class. Additionally, there is an ``Eprint`` class that enhances the console output of *sympy* to make the printed output multivectors, functions, and derivatives more readable. ``Eprint`` requires an ansi console such as is supplied in linux or the program *ConEmu* replaces ``cmd.exe``.
+Printing of multivectors is handled by the module :mod:`printer` which contains a string printer class derived from the *sympy* string printer class and a latex printer class derived from the *sympy* latex printer class. Additionally, there is an :class:`printer.Eprint` class that enhances the console output of *sympy* to make the printed output multivectors, functions, and derivatives more readable. :class:`printer.Eprint` requires an ansi console such as is supplied in linux or the program *ConEmu* replaces ``cmd.exe``.
 
 For a windows user the simplest way to implement *ConEmu* is to use the *geany* editor and in the Edit\ :math:`\rightarrow`\ Preferences\ :math:`\rightarrow`\ Tools menu replace ``cmd.exe`` with\ [22]_
 
