@@ -269,27 +269,27 @@ Basic Multivector Class Functions
 
 If we can instantiate multivectors we can use all the multivector class functions as described as follows.
 
-.. method:: galgebra.mv.Mv.blade_coefs(self, basis_lst)
+.. method:: galgebra.mv.Mv.blade_coefs(basis_lst)
    :noindex:
 
    Find coefficients (sympy expressions) of multivector basis blade expansion corresponding to basis blades in ``basis_lst``. For example if :math:`V = V^{x}{{\eb}}_{x}+V^{y}{{\eb}}_{x}+V^{z}{{\eb}}_{x}` Then :math:`V\text{.blade_coefs}([{{\eb}}_{z},{{\eb}}_{x}]) = [V^{z},V^{x}]` or if :math:`B = B^{xy}{{\eb}}_{x}{\wedge}{{\eb}}_{y}+V^{yz}{{\eb}}_{y}{\wedge}{{\eb}}_{z}` then :math:`B\text{.blade_coefs}([{{\eb}}_{x}{\wedge}{{\eb}}_{y}]) = [B^{xy}]`.
 
-.. method:: galgebra.mv.Mv.convert_to_blades(self)
+.. method:: galgebra.mv.Mv.convert_to_blades()
    :noindex:
 
    Convert multivector from the base representation to the blade representation. If multivector is already in blade representation nothing is done.
 
-.. method:: galgebra.mv.Mv.convert_from_blades(self)
+.. method:: galgebra.mv.Mv.convert_from_blades()
    :noindex:
 
    Convert multivector from the blade representation to the base representation. If multivector is already in base representation nothing is done.
 
-.. method:: galgebra.mv.Mv.diff(self, var)
+.. method:: galgebra.mv.Mv.diff(var)
    :noindex:
 
    Calculate derivative of each multivector coefficient with respect to variable ``var`` and form new multivector from coefficients.
 
-.. method:: galgebra.mv.Mv.dual(self)
+.. method:: galgebra.mv.Mv.dual()
    :noindex:
 
    The mode of the ``dual()`` function is set by the ``Ga`` class static member function, ``GA.dual_mode(mode='I+')`` of the ``GA`` geometric galgebra which sets the following return values (:math:`I` is the pseudo-scalar for the geometric algebra ``GA``)
@@ -313,12 +313,12 @@ If we can instantiate multivectors we can use all the multivector class function
 
    Note that ``Ga.dual(mode)`` used the function ``Ga.I()`` to calculate the normalized pseudoscalar. Thus if the metric tensor is not numerical and orthogonal the correct hint for then ``sig`` input of the *Ga* constructor is required.
 
-.. method:: galgebra.mv.Mv.even(self)
+.. method:: galgebra.mv.Mv.even()
    :noindex:
 
    Return the even grade components of the multivector.
 
-.. method:: galgebra.mv.Mv.exp(self, hint='-')
+.. method:: galgebra.mv.Mv.exp(hint='-')
    :noindex:
 
    If :math:`A` is a multivector then :math:`e^{A}` is defined for any :math:`A` via the series expansion for :math:`e`. However as a practical matter we only have a simple closed form formula for :math:`e^{A}` if :math:`A^{2}` is a scalar\ [18]_. If :math:`A^{2}` is a scalar and we know the sign of :math:`A^{2}` we have the following formulas for :math:`e^{A}`.
@@ -336,17 +336,17 @@ If we can instantiate multivectors we can use all the multivector class function
 
    The hint is required for symbolic multivectors :math:`A` since in general *sympy* cannot determine if :math:`A^{2}` is positive or negative. If :math:`A` is purely numeric the hint is ignored since the sign can be calculated.
 
-.. method:: galgebra.mv.Mv.expand(self)
+.. method:: galgebra.mv.Mv.expand()
    :noindex:
 
    Return multivector in which each coefficient has been expanded using *sympy* ``expand()`` function.
 
-.. method:: galgebra.mv.Mv.factor(self)
+.. method:: galgebra.mv.Mv.factor()
    :noindex:
 
    Apply the ``sympy`` ``factor`` function to each coefficient of the multivector.
 
-.. method:: galgebra.mv.Mv.Fmt(self, fmt=1, title=None)
+.. method:: galgebra.mv.Mv.Fmt(fmt=1, title=None)
    :noindex:
 
    Fuction to print multivectors in different formats where
@@ -361,80 +361,80 @@ If we can instantiate multivectors we can use all the multivector class function
 
    ``title`` appends a title string to the beginning of the output. An equal sign in the title string is not required, but is added as a default. Note that ``Fmt`` only overrides the the global multivector printing format for the particular instance being printed. To reset the global multivector printing format use the function :func:`~galgebra.printer.Fmt` in the :mod:`galgebra.printer` module.
 
-.. method:: galgebra.mv.Mv.func(self, fct)
+.. method:: galgebra.mv.Mv.func(fct)
    :noindex:
 
    Apply the ``sympy`` scalar function ``fct`` to each coefficient of the multivector.
 
-.. method:: galgebra.mv.Mv.grade(self, igrade=0)
+.. method:: galgebra.mv.Mv.grade(igrade=0)
    :noindex:
 
    Return a multivector that consists of the part of the multivector of grade equal to ``igrade``. If the multivector has no ``igrade`` part return a zero multivector.
 
-.. method:: galgebra.mv.Mv.inv(self)
+.. method:: galgebra.mv.Mv.inv()
    :noindex:
 
    Return the inverse of the multivector :math:`M` (``M.inv()``). If :math:`M` is a non-zero scalar return :math:`1/M`. If :math:`M^{2}` is a non-zero scalar return :math:`M/{\lp {M^{2}} \rp }`, If :math:`MM^{{\dagger}}` is a non-zero scalar return :math:`M^{{\dagger}}/{\lp {MM^{{\dagger}}} \rp }`. Otherwise exit the program with an error message.
 
    All division operators (``/``, ``/=``) use right multiplication by the inverse.
 
-.. method:: galgebra.mv.Mv.norm(self, hint='+')
+.. method:: galgebra.mv.Mv.norm(hint='+')
    :noindex:
 
    Return the norm of the multivector :math:`M` (``M.norm()``) defined by :math:`\sqrt{{\left |{MM^{{\dagger}}}\right |}}`. If :math:`MM^{{\dagger}}` is a scalar (a *sympy* scalar is returned). If :math:`MM^{{\dagger}}` is not a scalar the program exits with an error message. If :math:`MM^{{\dagger}}` is a number *sympy* can determine if it is positive or negative and calculate the absolute value. If :math:`MM^{{\dagger}}` is a *sympy* expression (function) *sympy* cannot determine the sign of
    the expression so that ``hint='+'`` or ``hint='-'`` is needed to determine if the program should calculate :math:`\sqrt{MM^{{\dagger}}}` or :math:`\sqrt{-MM^{{\dagger}}}`. For example if we are in a Euclidean space and ``M`` is a vector then ``hint='+'``, if ``M`` is a bivector then let ``hint='-'``. If ``hint='0'`` and :math:`MM^{{\dagger}}` is a symbolic scalar ``sqrt(Abs(M*M.rev()))`` is returned where ``Abs()`` is the *sympy* symbolic absolute value function.
 
-.. method:: galgebra.mv.Mv.norm2(self)
+.. method:: galgebra.mv.Mv.norm2()
    :noindex:
 
    Return the the scalar defined by :math:`MM^{{\dagger}}` if :math:`MM^{{\dagger}}` is a scalar. If :math:`MM^{{\dagger}}` is not a scalar the program exits with an error message.
 
-.. method:: galgebra.mv.Mv.proj(self, bases_lst)
+.. method:: galgebra.mv.Mv.proj(bases_lst)
    :noindex:
 
    Return the projection of the multivector :math:`M` (``M.proj(bases_lst)``) onto the subspace defined by the list of bases (``bases_lst``).
 
-.. method:: galgebra.mv.Mv.proj(self, lst)
+.. method:: galgebra.mv.Mv.proj(lst)
    :noindex:
 
    Return the projection of the mutivector :math:`A` onto the list, :math:`lst`, of basis blades. For example if :math:`A = A^{x}{{\eb}}_{x}+A^{y}{{\eb}}_{y}+A^{z}{{\eb}}_{z}` then :math:`A.proj{\lp {[{{\eb}}_{x},{{\eb}}_{y}]} \rp } = A^{x}{{\eb}}_{x}+A^{y}{{\eb}}_{y}`. Similarly if :math:`A = A^{xy}{{\eb}}_{x}{\wedge}{{\eb}}_{y}+A^{yz}{{\eb}}_{y}{\wedge}{{\eb}}_{z}` then :math:`A.proj{\lp {[{{\eb}}_{x}{\wedge}{{\eb}}_{y}]} \rp } = A^{xy}{{\eb}}_{x}{\wedge}{{\eb}}_{y}`.
 
-.. method:: galgebra.mv.Mv.project_in_blade(self, blade)
+.. method:: galgebra.mv.Mv.project_in_blade(blade)
    :noindex:
 
    Return the projection of the mutivector :math:`A` in subspace defined by the blade, :math:`B`, using the formula :math:`{\lp {A\rfloor B} \rp }B^{-1}` in :cite:`Macdonald1`, page 121.
 
-.. method:: galgebra.mv.Mv.pure_grade(self)
+.. method:: galgebra.mv.Mv.pure_grade()
    :noindex:
 
    If the multivector :math:`A` is pure (only contains one grade) return, :math:`A.pure\_grade()`, the index ('0' for a scalar, '1' for vector, '2' for a bi-vector, etc.) of the non-zero grade. If :math:`A` is not pure return the negative of the highest non-zero grade index.
 
-.. method:: galgebra.mv.Mv.odd(self)
+.. method:: galgebra.mv.Mv.odd()
    :noindex:
 
    Return odd part of multivector.
 
-.. method:: galgebra.mv.Mv.reflect_in_blade(self, blade)
+.. method:: galgebra.mv.Mv.reflect_in_blade(blade)
    :noindex:
 
    Return the reflection of the mutivector :math:`A` in the subspace defined by the :math:`r`-grade blade, :math:`B_{r}`, using the formula (extended to multivectors) :math:`\sum_{i} {\lp {-1} \rp }^{r{\lp {i+1} \rp }}{B}_{r}{\left < {A} \right >}_{i}B_{r}^{-1}` in :cite:`Macdonald1`, page 129.
 
-.. method:: galgebra.mv.Mv.rev(self)
+.. method:: galgebra.mv.Mv.rev()
    :noindex:
 
    Return the reverse of the multivector.
 
-.. method:: galgebra.mv.Mv.rotate_multivector(self, itheta, hint='-')
+.. method:: galgebra.mv.Mv.rotate_multivector(itheta, hint='-')
    :noindex:
 
    Rotate the multivector :math:`A` via the operation :math:`e^{-\theta i/2}Ae^{\theta i/2}` where itheta = :math:`\theta i`, :math:`\theta` is a scalar, and :math:`i` is a unit, :math:`i^{2} = \pm 1`, 2-blade. If :math:`{\lp {\theta i} \rp }^{2}` is not a number ``hint`` is required to determine the sign of the square of ``itheta``. The default chosen, ``hint='-'``, is correct for any Euclidean space.
 
-.. method:: galgebra.mv.Mv.scalar(self)
+.. method:: galgebra.mv.Mv.scalar()
    :noindex:
 
    Return the coefficient (*sympy* scalar) of the scalar part of a multivector.
 
-.. method:: galgebra.mv.Mv.simplify(self, mode=simplify)
+.. method:: galgebra.mv.Mv.simplify(mode=simplify)
    :noindex:
 
    ``mode`` is a *sympy* simplification function of a list/tuple of *sympy* simplification functions that are applied in sequence (if more than one function) each coefficient of the multivector. For example if we wished to applied ``trigsimp`` and ``ratsimp`` *sympy* functions to the multivector ``F`` the code would be
@@ -445,17 +445,17 @@ If we can instantiate multivectors we can use all the multivector class function
 
    Actually ``simplify`` could be used to apply any scalar *sympy* function to the coefficients of the multivector.
 
-.. method:: galgebra.mv.Mv.set_coef(self, grade, base, value)
+.. method:: galgebra.mv.Mv.set_coef(grade, base, value)
    :noindex:
 
    Set the multivector coefficient of index ``(grade, base)`` to ``value``.
 
-.. method:: galgebra.mv.Mv.subs(self, x)
+.. method:: galgebra.mv.Mv.subs(x)
    :noindex:
 
    Return multivector where *sympy* subs function has been applied to each coefficient of multivector for argument dictionary/list ``x``.
 
-.. method:: galgebra.mv.Mv.trigsimp(self, **kwargs)
+.. method:: galgebra.mv.Mv.trigsimp(**kwargs)
    :noindex:
 
    Apply the ``sympy`` trigonometric simplification function ``trigsimp`` to each coefficient of the multivector. ``**kwargs`` are the arguments of trigsimp. See ``sympy`` documentation on ``trigsimp`` for more information.
@@ -679,7 +679,7 @@ Instantiating a Multi-linear Functions (Tensors)
 
 The mathematical background for multi-linear functions is in section :ref:`MLtrans`. To instantiate a multi-linear function use
 
-.. class:: galgebra.lt.Mlt(self, f, Ga, nargs=None, fct=False)
+.. class:: galgebra.lt.Mlt(f, Ga, nargs=None, fct=False)
    :noindex:
 
    Where the arguments are
@@ -743,7 +743,7 @@ and then run an example *galgebra* program that used ``Eprint``. The default bac
 
 If ``Eprint`` is called in a program (linux) when multivectors are printed the basis blades or bases are printed in bold text, functions are printed in red, and derivative operators in green.
 
-For formatting the multivector output there is the member function ``Fmt(self, fmt=1, title=None)`` which is documented in the multivector member functions. This member function works in the same way for LaTeX printing.
+For formatting the multivector output there is the member function ``self.Fmt(fmt=1, title=None)`` which is documented in the multivector member functions. This member function works in the same way for LaTeX printing.
 
 If ``A`` is a multivector then ``str(A)`` returns a string in which the scalar coefficients of the multivector bases have been simplified (grouped, factored, etc.).
 
