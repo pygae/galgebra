@@ -733,11 +733,11 @@ and then run an example *galgebra* program that used ``Eprint``. The default bac
 
 4. Set the following parameters to the indicated values:
 
--  Text: #0
--  Back: #7
--  Popup: #0
--  Back: #7
--  :math:`\rlap{ \checkmark }\square` Extend foreground colors with background #13
+   - Text: #0
+   - Back: #7
+   - Popup: #0
+   - Back: #7
+   - :math:`\rlap{ \checkmark }\square` Extend foreground colors with background #13
 
 If ``Eprint`` is called in a program (linux) when multivectors are printed the basis blades or bases are printed in bold text, functions are printed in red, and derivative operators in green.
 
