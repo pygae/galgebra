@@ -102,7 +102,7 @@ M.grade(3).Fmt(3,r'\langle \mathbf{M} \rangle _3')
 
 You will see:
 
-![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/st4_M3.svg?sanitize=true)
+<img src="https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/st4_M3.svg?sanitize=true" role="math" />
 
 You may also check out more examples [here](https://github.com/pygae/galgebra/blob/master/examples/).
 
