@@ -745,7 +745,7 @@ If ``Eprint`` is called in a program (linux) when multivectors are printed the b
 
 For formatting the multivector output there is the member function ``Fmt(self,fmt=1,title=None)`` which is documented in the multivector member functions. This member function works in the same way for LaTeX printing.
 
-There are two functions for returning string representations of multivectors. If ``A`` is a multivector then ``str(A)`` returns a string in which the scalar coefficients of the multivector bases have been simplified (grouped, factored, etc.). The member function ``A.raw_str()`` returns a string in which the scalar coefficients of the multivector bases have not been simplified.
+If ``A`` is a multivector then ``str(A)`` returns a string in which the scalar coefficients of the multivector bases have been simplified (grouped, factored, etc.).
 
 Latex Printing
 --------------
@@ -887,7 +887,7 @@ original   replacement         displayed latex
 
 If the first character in the string to be printed is a ``%`` none of the above substitutions are made before the latex processor is applied. In general for the latex printer strings are assumed to be in a math environment (equation or align) unless the first character in the string is a ``#``\ [25]_.
 
-There are two member functions for returning LaTeX string representations of multivectors. If ``A`` is a multivector then ``A.Mv_latex_str()`` returns a LaTeX string in which the scalar coefficients of the multivector bases have been simplified (grouped, factored, etc.). This function is used when using ``print`` in the LaTeX mode. The member function ``A.raw_latex_str()`` returns a LaTeX string in which the scalar coefficients of the multivector bases have not been simplified.
+To get the latex string representation of a multivector ``A``, the :func:`printer.latex` function can be used as ``latex(A)``.
 
 Printing Lists/Tuples of Multivectors/Differential Operators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
