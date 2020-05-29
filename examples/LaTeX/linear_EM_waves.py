@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 from sympy import symbols,sin,cos,exp,I,Matrix,solve,simplify
-from galgebra.printer import Format,xpdf,Get_Program,Print_Function
+from galgebra.printer import Format,xpdf,Print_Function
 from galgebra.ga import Ga
 from galgebra.metric import linear_expand
 
@@ -88,7 +88,6 @@ def EM_Waves_in_Geom_Calculus_Real():
     return
 
 def main():
-    Get_Program()
     Format()
 
     EM_Waves_in_Geom_Calculus_Complex()

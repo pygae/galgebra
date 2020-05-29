@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 from sympy import Symbol,symbols,sin,cos,Rational,expand,simplify,collect
-from galgebra.printer import xpdf, Get_Program, Print_Function, Format
+from galgebra.printer import xpdf, Print_Function, Format
 from galgebra.ga import Ga
 from galgebra.mv import Nga,ONE,ZERO
 from galgebra.deprecated import MV
@@ -431,7 +431,6 @@ def reciprocal_frame_test():
     return
 
 def main():
-    Get_Program()
 
     Format()
     basic_multivector_operations_3D()

@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import sys
 from sympy import symbols,sin,cos
-from galgebra.printer import xpdf,Get_Program,Print_Function,Format
+from galgebra.printer import xpdf,Print_Function,Format
 from galgebra.deprecated import MV
 
 def Maxwells_Equations_in_Geometric_Calculus():
@@ -87,7 +87,6 @@ def Lorentz_Tranformation_in_Geometric_Algebra():
     return
 
 def main():
-    Get_Program()
     Format()
 
     Maxwells_Equations_in_Geometric_Calculus()

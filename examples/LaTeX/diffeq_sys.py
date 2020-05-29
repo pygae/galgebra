@@ -1,7 +1,7 @@
 from __future__ import print_function
 from sympy import symbols, sin, cos
 from galgebra.ga import Ga
-from galgebra.printer import Format, xpdf, Eprint, Print_Function, Get_Program
+from galgebra.printer import Format, xpdf, Eprint, Print_Function
 
 
 def main():
@@ -38,7 +38,6 @@ def main():
 if __name__ == "__main__":
     #Eprint()
     Format()
-    Get_Program()
     main()
     # xpdf()
     xpdf(pdfprog=None)

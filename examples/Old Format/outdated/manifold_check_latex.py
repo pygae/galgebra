@@ -2,7 +2,7 @@
 from sympy import symbols,log,simplify,diff,cos,sin
 from sympy.ga import MV,ReciprocalFrame,Format
 from sympy.ga import oprint
-from sympy.ga import xdvi,Get_Program,Print_Function
+from sympy.ga import xdvi,Print_Function
 from sympy import symbols,log,simplify,diff,cos,sin
 from sympy.ga import Manifold
 
@@ -133,7 +133,6 @@ def Simple_manifold_with_vector_function_derivative():
     return
 
 def main():
-    Get_Program()
 
     Test_Reciprocal_Frame()
     Distorted_manifold_with_scalar_function()

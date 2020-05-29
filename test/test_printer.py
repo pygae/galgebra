@@ -6,7 +6,7 @@ import sys
 import pytest
 from sympy import Symbol, Derivative
 
-from galgebra.printer import GaPrinter, GaLatexPrinter, oprint, _texify
+from galgebra.printer import GaPrinter, GaLatexPrinter, oprint, _texify, Get_Program
 from galgebra.ga import Ga
 
 
@@ -51,6 +51,12 @@ def test_latex_flg_Symbol_sortkey():
         GaLatexPrinter.restore()
 
     assert t_sort == t_latex_sort
+
+
+def test_deprecated_get_program():
+    with pytest.warns(DeprecationWarning):
+        # returns nothing and does very little
+        assert Get_Program() is None
 
 
 def test_oprint():

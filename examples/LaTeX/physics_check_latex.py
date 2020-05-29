@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import sys
 from sympy import symbols,sin,cos
-from galgebra.printer import Format,xpdf,Get_Program,Print_Function
+from galgebra.printer import Format,xpdf,Print_Function
 from galgebra.ga import Ga
 
 def Maxwells_Equations_in_Geom_Calculus():
@@ -115,7 +115,6 @@ def Lie_Group():
     return
 
 def main():
-    Get_Program()
     Format()
 
     #Maxwells_Equations_in_Geom_Calculus()

@@ -3,7 +3,7 @@ import sys
 
 from sympy import symbols,sin,cos,sinh,cosh
 from galgebra.ga import Ga
-from galgebra.printer import Format, xpdf, Get_Program, Print_Function, Eprint
+from galgebra.printer import Format, xpdf, Print_Function, Eprint
 
 def derivatives_in_spherical_coordinates():
     #Print_Function()
@@ -179,7 +179,6 @@ def derivatives_in_toroidal_coordinates():
 
 
 def main():
-    #Get_Program()
     #Eprint()
     Format()
     derivatives_in_spherical_coordinates()

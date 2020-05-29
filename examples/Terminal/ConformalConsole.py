@@ -2,7 +2,7 @@ from __future__ import print_function
 
 from sympy import Symbol, symbols, sin, cos, Rational, expand, simplify, collect
 from sympy import Rational as Rat
-from galgebra.printer import Format, Eprint, Get_Program
+from galgebra.printer import Format, Eprint
 from galgebra.ga import Ga
 from math import sqrt
 
@@ -40,7 +40,6 @@ def norm(X):
     Y=sqrt((X*X).scalar())
     return Y
 
-Get_Program(True)
 Eprint()
 
 g='1 0 0 0, \

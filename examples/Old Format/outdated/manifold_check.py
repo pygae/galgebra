@@ -1,12 +1,11 @@
 
 from sympy.ga.ga import MV,ReciprocalFrame,ga_print_on,ga_print_off
 from sympy.ga.ga_debug import oprint
-from sympy.ga.ga_print import enhance_print,Get_Program,Print_Function
+from sympy.ga.ga_print import enhance_print
 from sympy import symbols,log,simplify,diff,cos,sin
 from sympy.ga.manifold import Manifold
 
 def Test_Reciprocal_Frame():
-    Print_Function()
     coords = symbols('x y z')
     (ex,ey,ez,grad) = MV.setup('ex ey ez',metric='[1,1,1]',coords=coords)
 
@@ -38,7 +37,6 @@ def Test_Reciprocal_Frame():
     return
 
 def Plot_Mobius_Strip_Manifold():
-    Print_Function()
     coords = symbols('x y z')
     (ex,ey,ez,grad) = MV.setup('ex ey ez',metric='[1,1,1]',coords=coords)
     mfvar = (u,v) = symbols('u v')
@@ -48,7 +46,6 @@ def Plot_Mobius_Strip_Manifold():
     return
 
 def Distorted_manifold_with_scalar_function():
-    Print_Function()
     coords = symbols('x y z')
     (ex,ey,ez,grad) = MV.setup('ex ey ez',metric='[1,1,1]',coords=coords)
     mfvar = (u,v) = symbols('u v')
@@ -76,7 +73,6 @@ def Distorted_manifold_with_scalar_function():
     return
 
 def Simple_manifold_with_scalar_function_derivative():
-    Print_Function()
     coords = (x,y,z) = symbols('x y z')
     basis = (e1, e2, e3, grad) = MV.setup('e_1 e_2 e_3',metric='[1,1,1]',coords=coords)
     # Define surface
@@ -98,7 +94,6 @@ def Simple_manifold_with_scalar_function_derivative():
     return
 
 def main():
-    Get_Program(True)
     ga_print_on()
     enhance_print()
     Test_Reciprocal_Frame()

@@ -3,7 +3,7 @@ import sys
 
 from sympy import symbols,sin,cos
 from galgebra.deprecated import MV
-from galgebra.printer import xpdf,Get_Program,Print_Function,Format
+from galgebra.printer import xpdf,Print_Function,Format
 
 def derivatives_in_spherical_coordinates():
     Print_Function()
@@ -25,7 +25,6 @@ def derivatives_in_spherical_coordinates():
     print('grad^B =',grad^B)
     return
 def main():
-    Get_Program()
     Format()
     derivatives_in_spherical_coordinates()
     # xpdf()

@@ -1,6 +1,6 @@
 from __future__ import print_function
 from sympy import Symbol, symbols, sin, cos, Rational, expand, simplify, collect
-from galgebra.printer import Format, Eprint, Get_Program, Print_Function, xpdf, Fmt
+from galgebra.printer import Format, Eprint, Print_Function, xpdf, Fmt
 from galgebra.ga import Ga, one, zero
 from galgebra.mv import Nga, cross
 
@@ -518,7 +518,6 @@ def Fmt_test():
     return
 
 def main():
-    Get_Program()
     Format()
 
     basic_multivector_operations_3D()
