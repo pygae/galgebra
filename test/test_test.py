@@ -566,6 +566,11 @@ class TestTest:
         with pytest.warns(DeprecationWarning):
             ga.lt_coords
 
+        # useless method relating to those aliases
+        from galgebra.lt import Lt
+        with pytest.warns(DeprecationWarning):
+            Lt.setup(ga)
+
         # more aliases
         with pytest.warns(DeprecationWarning):
             ga.mul_table_dict

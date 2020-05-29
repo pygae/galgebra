@@ -159,6 +159,10 @@ class Lt(printer.GaPrintable):
 
     @staticmethod
     def setup(ga):
+        # galgebra 0.5.0
+        warnings.warn(
+            "Lt.setup(ga) is deprecated, use `ga.coords` and `ga.coord_vec` "
+            "directly.", DeprecationWarning, stacklevel=2)
         return ga.coords, ga.coord_vec
 
     @staticmethod
