@@ -1,5 +1,80 @@
 r"""
 ANSI Enhanced Text Printing, Text Printer and LaTeX Printer for all Geometric Algebra classes
+
+:math:`\LaTeX` printing
+-----------------------
+
+.. note::
+
+    :mod:`galgebra` works out of the box with the usual
+    :ref:`sympy printing <sympy:tutorial-printing>` and will show Latex in
+    IPython by default. In many cases, all that is needed is::
+
+        sympy.init_printing(
+            use_latex='mathjax',
+            latex_printer=galgebra.printer.latex,
+            # described below in `GaLatexPrinter`
+            omit_function_args=True,
+            omit_partial_derivative_fraction=True,
+        )
+
+    The rest of this section primarily describes an orthogonal feature for
+    writing out ``.tex`` files with :func:`print`.
+
+The latex printer is turned on with the :func:`Format` function
+
+.. function:: Format(Fmode=True, Dmode=True, ipy=False)
+
+where ``Fmode`` is the function printing mode that suppresses printing arguments,
+``Dmode`` is the derivative printing mode that does not use fractions, and
+``ipy=True`` is the IPython notebook mode that does not redirect the print output.
+
+The latex output is post processed and displayed with the function
+
+.. function:: xpdf(filename='tmplatex.tex', debug=False)
+
+where ``filename`` is the name of the tex file one would keep for future
+inclusion in documents and ``debug=True`` would display the tex file
+immediately.
+
+There are three options for printing multivectors in latex.  They are
+accessed with the multivector member function
+
+.. function:: galgebra.mv.Mv.Fmt(self, fmt=1, title=None)
+
+where ``fmt`` of 1, 2, or 3 determines whether the entire multivector A is
+printed entirely on one line, or one grade is printed per line, or
+one base is printed per line.  If ``title`` is not None then the latex
+string generated is of the form::
+
+    title + ' = ' + str(A)
+
+where it is assumed that title is a latex math mode string. If title
+contains '%' it is treated as a pure latex math mode string.  If it
+does not contain '%' then the following character mappings are applied::
+
+    'grad' -> '\bm{\nabla} '
+    '*'    -> ''
+    '^'    -> '\W '
+    '|'    -> '\cdot '
+    '>'    -> '\lfloor '
+    '<'    -> '\rfloor '
+
+In the case of a print statement of the form::
+
+    print(title, A)
+
+everything in the title processing still applies except that the multivector
+formatting is one multivector per line.
+
+For print statements of the form::
+
+    print(title)
+
+where no program variables are printed if title contains `#` then title
+is printed as regular latex line.  If title does not contain `#` then
+title is printed in equation mode. `%` has the same effect in title as
+in the ``Fmt()`` member function.
 """
 
 import copy
@@ -96,23 +171,21 @@ def find_functions(expr):
 
 
 def coef_simplify(expr):
-    """
-    fcts = find_functions(expr)
-    return expr.collect(fcts)
-    """
+    # fcts = find_functions(expr)
+    # return expr.collect(fcts)
     return expr
 
 
 def oprint(*args, dict_mode=False):
     """
     Debug printing for iterated (list/tuple/dict/set) objects. args is
-    of form (title1, object1, title2, object2, ...) and prints:
+    of form ``(title1, object1, title2, object2, ...)`` and prints::
 
         title1 = object1
         title2 = object2
         ...
 
-    If you only wish to print a title set object = None.
+    If you only wish to print a title set ``object = None``.
     """
 
     if isinstance(args[0], str) or args[0] is None:
@@ -216,6 +289,25 @@ class Eprint:
 
 
 class GaPrinter(StrPrinter):
+    """
+    This subclass of the builtin string printer makes some customizations which
+    make output a little more readable for GA usage.
+
+    The customizations are:
+
+    * :class:`~sympy.core.function.Derivative` objects are printed as ``D{x}y``
+      instead of ``Derivative(y, x)``.
+    * :class:`~sympy.core.function.Function` objects are printed without
+      arguments. This is useful for defining fields over
+      :attr:`~galgebra.ga.Ga.coords`, but sometimes misfires.
+    * A new ``dict_mode`` setting, which when ``True`` prints :class:`dict`
+      objects with ``->`` and one entry per line.
+
+    When :mod:`galgebra.printer` is imported, builtin sympy objects are patched
+    to use this printer for their ``__repr__`` instead of the builtin
+    :class:`~sympy.printing.str.StrPrinter`. There is currently no way to
+    disable this patching.
+    """
 
     _default_settings = ChainMap({
         # if true, print dicts with `->` instead of `:`, one entry per line
@@ -324,60 +416,32 @@ def enhance_print():
 
 class GaLatexPrinter(LatexPrinter):
     r"""
-    The latex printer is turned on with the function (in ga.py) -
+    This subclass of the builtin string printer makes some customizations which
+    make output a little more readable for GA usage.
 
-        Format(Fmode=True, Dmode=True, ipy=False)
+    The customizations are:
 
-    where Fmode is the function printing mode that surpresses printing arguments,
-    Dmode is the derivative printing mode that does not use fractions, and
-    ipy=True is the Ipython notebook mode that does not redirect the print output.
+    * A new ``omit_partial_derivative_fraction`` setting that affects the
+      printing of :class:`~sympy.core.function.Derivative` objects, with
+      possible values:
 
-    The latex output is post processed and displayed with the function (in GAPrint.py) -
+      * ``False``, to use the *sympy* default, :math:`\pdiff{f}{x}`.
+      * ``True``, to use a condensed notation, :math:`\partial_{x}f`.
 
-        xpdf(filename='tmplatex.tex', debug=False)
+    * A new ``omit_function_args`` setting which affects the printing of
+      :class:`~sympy.core.function.Function` objects, with possible values:
 
-    where filename is the name of the tex file one would keep for future
-    inclusion in documents and debug=True would display the tex file
-    immediately.
+      * ``False``, to use the sympy default, :math:`{{f}\lp {x,y,z} \rp }`.
+      * ``True``, to print as :math:`f`. This is similar to the behavior of
+        :class:`GaPrinter`.
 
-    There are three options for printing multivectors in latex.  They are
-    acessed with the multivector member function -
+    * A change to function printing to allow function names to contain
+      subscripts and superscripts.
 
-        A.Fmt(self, fmt=1, title=None)
+    * Use of ``boldsymbol`` instead of ``mathbf`` for bold symbol names.
 
-    where fmt=1, 2, or 3 determines whether the entire multivector A is
-    printed entirely on one line, or one grade is printed per line, or
-    one base is printed per line.  If title is not None then the latex
-    string generated is of the form -
-
-        title+' = '+str(A)
-
-    where it is assumed that title is a latex math mode string. If title
-    contains '%' it is treated as a pure latex math mode string.  If it
-    does not contain '%' then the following character mappings are applied -
-
-        'grad' -> '\bm{\nabla} '
-        '*'    -> ''
-        '^'    -> '\W '
-        '|'    -> '\cdot '
-        '>'    -> '\lfloor '
-        '<'    -> '\rfloor '
-
-    In the case of a print statement of the form -
-
-        print title, A
-
-    everthing in the title processing still applies except that the multivector
-    formatting is one multivector per line.
-
-    For print statements of the form -
-
-        print title
-
-    where no program variables are printed if title contains '#' then title
-    is printed as regular latex line.  If title does not contain '#' then
-    title is printed in equation mode. '%' has the same effect in title as
-    in the Fmt() member function.
+    Note that this printer is not *required* for using GA objects, the base
+    class printer will work fine too.
     """
     # overrides of base class settings, and new settings for our printers
     _default_settings = ChainMap({
@@ -724,12 +788,24 @@ class GaLatexPrinter(LatexPrinter):
             return s
 
 
-def latex(expr, **settings):
+def latex(expr, **settings) -> str:
+    """
+    Get the latex representation of expr using :class:`GaLatexPrinter`.
+
+    Takes the same options as :func:`sympy.printing.latex.latex`; see that
+    function for more information.
+
+    This can be used as the ``latex_printer`` argument to
+    :func:`~sympy.interactive.printing.init_printing` to make IPython always
+    use :class:`GaLatexPrinter`.
+    """
     return GaLatexPrinter(settings).doprint(expr)
 
 
 def print_latex(expr, **settings):
-    """Prints LaTeX representation of the given expression."""
+    """Prints LaTeX representation of the given expression.
+
+    Takes the same settings as :func:`latex`."""
     print(latex(expr, **settings))
 
 
@@ -744,11 +820,11 @@ def Format(Fmode: bool = True, Dmode: bool = True, inverse='full'):
     Parameters
     ----------
     Fmode:
-        * ``True`` -- Print functions without argument list, :math:`f`
-        * ``False`` -- Print functions with standard *sympy* latex formatting, :math:`{{f}\lp {x,y,z} \rp }`
+        Value for the ``omit_function_args`` setting of
+        :class:`GaLatexPrinter`.
     Dmode:
-        * ``True`` -- Print partial derivatives with condensed notation, :math:`\partial_{x}f`
-        * ``False`` -- Print partial derivatives with standard *sympy* latex formatting, :math:`\pdiff{f}{x}`
+        Value for the ``omit_partial_derivative_fraction`` setting of
+        :class:`GaLatexPrinter`.
     """
     global Format_cnt
 
