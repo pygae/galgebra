@@ -183,8 +183,8 @@ from galgebra.ga import *
 The `setgapth.py` way to install is now deprecated by `pip install galgebra` and all modules in GAlgebra should be imported from `galgebra`, for example:
 
 ```python
-from galgebra.printer import Format, Eprint, Get_Program, latex, GaPrinter
-from galgebra.ga import Ga, one, zero
+from galgebra.printer import Format, Eprint, latex, GaPrinter
+from galgebra.ga import Ga
 from galgebra.mv import Mv, Nga
 ```
 
