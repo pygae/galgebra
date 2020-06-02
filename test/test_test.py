@@ -497,6 +497,34 @@ class TestTest:
 
         assert metric.collect(2*e1 + e2, [e1]) == 2*e1 + e2
 
+    def test_dual_mode(self):
+        ga, e1, e2 = Ga.build('e*1|2', g=[1, 1])
+
+        default = Ga.dual_mode_value
+        assert default == 'I+'
+        with pytest.raises(ValueError):
+            Ga.dual_mode('illegal')
+
+        d_default = e1.dual()
+
+        # note: this is a global setting, so we have to make sure we put it back
+        try:
+            Ga.dual_mode('I-')
+            d_negated = e1.dual()
+        finally:
+            Ga.dual_mode(default)
+
+        assert d_negated == -d_default
+
+    def test_basis_dict(self):
+        ga = Ga('e*1|2', g=[1, 1])
+        b = ga.bases_dict()
+        assert b == {
+            'e1': ga.blades[1][0],
+            'e2': ga.blades[1][1],
+            'e12': ga.blades[2][0],
+        }
+
     def test_deprecations(self):
         coords = symbols('x y z')
         ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', coords=coords)
