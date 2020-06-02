@@ -492,7 +492,7 @@ class TestTest:
                     assert ga.scalar_product(b1, rb2).simplify() == S.Zero
 
     def test_metric_collect(self):
-        ga = Ga('e*1|2', g=[1, 1, 1])
+        ga = Ga('e*1|2', g=[1, 1])
         e1, e2 = ga.basis
 
         assert metric.collect(2*e1 + e2, [e1]) == 2*e1 + e2
