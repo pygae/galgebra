@@ -588,6 +588,8 @@ class TestTest:
         with pytest.warns(DeprecationWarning):
             assert ga.geometric_product_basis_blades((e_1.obj, e_2.obj)) == (e_1 * e_2).obj
         with pytest.warns(DeprecationWarning):
+            assert ga.non_orthogonal_bases_products((e_1.obj, e_2.obj)) == (e_1 * e_2).base_rep().obj
+        with pytest.warns(DeprecationWarning):
             assert ga.wedge_product_basis_blades((e_1.obj, e_2.obj)) == (e_1 ^ e_2).obj
         e_12 = e_1 ^ e_2
         with pytest.warns(DeprecationWarning):
@@ -602,7 +604,7 @@ class TestTest:
             ga.inverse_metric()
         with pytest.warns(DeprecationWarning):
             ga.derivatives_of_g()
-        
+
         # test the member that is nonsense unless in an orthonormal algebra
         ga_ortho, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1])
         e_12 = e_1 ^ e_2
