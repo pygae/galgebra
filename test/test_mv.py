@@ -1,10 +1,9 @@
-import unittest
 
 import pytest
 import sympy
 from galgebra.ga import Ga
 
-class TestMv(unittest.TestCase):
+class TestMv:
 
     def test_deprecations(self):
         ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
@@ -19,21 +18,21 @@ class TestMv(unittest.TestCase):
         """
         _g3d, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
-        self.assertTrue((e_1).is_base())
-        self.assertTrue((e_2).is_base())
-        self.assertTrue((e_3).is_base())
-        self.assertTrue((e_1 ^ e_2).is_base())
-        self.assertTrue((e_2 ^ e_3).is_base())
-        self.assertTrue((e_1 ^ e_3).is_base())
-        self.assertTrue((e_1 ^ e_2 ^ e_3).is_base())
+        assert (e_1).is_base()
+        assert (e_2).is_base()
+        assert (e_3).is_base()
+        assert (e_1 ^ e_2).is_base()
+        assert (e_2 ^ e_3).is_base()
+        assert (e_1 ^ e_3).is_base()
+        assert (e_1 ^ e_2 ^ e_3).is_base()
 
-        self.assertFalse((2 * e_1).is_base())
-        self.assertFalse((e_1 + e_2).is_base())
-        self.assertFalse((e_3 * 4).is_base())
-        self.assertFalse(((3 * e_1) ^ e_2).is_base())
-        self.assertFalse((2 * (e_2 ^ e_3)).is_base())
-        self.assertFalse((e_3 ^ e_1).is_base())
-        self.assertFalse((e_2 ^ e_1 ^ e_3).is_base())
+        assert not (2 * e_1).is_base()
+        assert not (e_1 + e_2).is_base()
+        assert not (e_3 * 4).is_base()
+        assert not ((3 * e_1) ^ e_2).is_base()
+        assert not (2 * (e_2 ^ e_3)).is_base()
+        assert not (e_3 ^ e_1).is_base()
+        assert not (e_2 ^ e_1 ^ e_3).is_base()
 
     def test_get_coefs(self):
         _g3d, e_1, e_2, e_3 = Ga.build('e*1|2|3')
@@ -60,34 +59,34 @@ class TestMv(unittest.TestCase):
         _g3d, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         m0 =  2 * e_1 + e_2 - e_3 + 3 * (e_1 ^ e_3) + (e_1 ^ e_3) + (e_2 ^ (3 * e_3))
-        self.assertTrue(m0.blade_coefs([e_1]) == [2])
-        self.assertTrue(m0.blade_coefs([e_2]) == [1])
-        self.assertTrue(m0.blade_coefs([e_1, e_2]) == [2, 1])
-        self.assertTrue(m0.blade_coefs([e_1 ^ e_3]) == [4])
-        self.assertTrue(m0.blade_coefs([e_1 ^ e_3, e_2 ^ e_3]) == [4, 3])
-        self.assertTrue(m0.blade_coefs([e_2 ^ e_3, e_1 ^ e_3]) == [3, 4])
-        self.assertTrue(m0.blade_coefs([e_1, e_2 ^ e_3]) == [2, 3])
+        assert m0.blade_coefs([e_1]) == [2]
+        assert m0.blade_coefs([e_2]) == [1]
+        assert m0.blade_coefs([e_1, e_2]) == [2, 1]
+        assert m0.blade_coefs([e_1 ^ e_3]) == [4]
+        assert m0.blade_coefs([e_1 ^ e_3, e_2 ^ e_3]) == [4, 3]
+        assert m0.blade_coefs([e_2 ^ e_3, e_1 ^ e_3]) == [3, 4]
+        assert m0.blade_coefs([e_1, e_2 ^ e_3]) == [2, 3]
 
         a = sympy.Symbol('a')
         b = sympy.Symbol('b')
         m1 = a * e_1 + e_2 - e_3 + b * (e_1 ^ e_2)
-        self.assertTrue(m1.blade_coefs([e_1]) == [a])
-        self.assertTrue(m1.blade_coefs([e_2]) == [1])
-        self.assertTrue(m1.blade_coefs([e_3]) == [-1])
-        self.assertTrue(m1.blade_coefs([e_1, e_2, e_3]) == [a, 1, -1])
-        self.assertTrue(m1.list() == [a, 1, -1])  # alias
+        assert m1.blade_coefs([e_1]) == [a]
+        assert m1.blade_coefs([e_2]) == [1]
+        assert m1.blade_coefs([e_3]) == [-1]
+        assert m1.blade_coefs([e_1, e_2, e_3]) == [a, 1, -1]
+        assert m1.list() == [a, 1, -1]  # alias
 
-        self.assertTrue(m1.blade_coefs([e_1 ^ e_2]) == [b])
-        self.assertTrue(m1.blade_coefs([e_2 ^ e_3]) == [0])
-        self.assertTrue(m1.blade_coefs([e_1 ^ e_3]) == [0])
-        self.assertTrue(m1.blade_coefs([e_1 ^ e_2 ^ e_3]) == [0])
+        assert m1.blade_coefs([e_1 ^ e_2]) == [b]
+        assert m1.blade_coefs([e_2 ^ e_3]) == [0]
+        assert m1.blade_coefs([e_1 ^ e_3]) == [0]
+        assert m1.blade_coefs([e_1 ^ e_2 ^ e_3]) == [0]
 
         # Invalid parameters
-        self.assertRaises(ValueError, lambda: m1.blade_coefs([e_1 + e_2]))
-        self.assertRaises(ValueError, lambda: m1.blade_coefs([e_2 ^ e_1]))
-        self.assertRaises(ValueError, lambda: m1.blade_coefs([e_1, e_2 ^ e_1]))
-        self.assertRaises(ValueError, lambda: m1.blade_coefs([a * e_1]))
-        self.assertRaises(ValueError, lambda: m1.blade_coefs([3 * e_3]))
+        pytest.raises(ValueError, lambda: m1.blade_coefs([e_1 + e_2]))
+        pytest.raises(ValueError, lambda: m1.blade_coefs([e_2 ^ e_1]))
+        pytest.raises(ValueError, lambda: m1.blade_coefs([e_1, e_2 ^ e_1]))
+        pytest.raises(ValueError, lambda: m1.blade_coefs([a * e_1]))
+        pytest.raises(ValueError, lambda: m1.blade_coefs([3 * e_3]))
 
     def test_rep_switching(self):
         # this ga has a non-diagonal metric
@@ -96,29 +95,29 @@ class TestMv(unittest.TestCase):
         m0 =  2 * e_1 + e_2 - e_3 + 3 * (e_1 ^ e_3) + (e_1 ^ e_3) + (e_2 ^ (3 * e_3))
         m1 = (-4*(e_1 | e_3)-3*(e_2 | e_3))+2*e_1+e_2-e_3+4*e_1*e_3+3*e_2*e_3
         # m1 was chosen to make this true
-        self.assertEqual(m0, m1)
+        assert m0 == m1
 
         # all objects start off in blade rep
-        self.assertTrue(m0.is_blade_rep)
+        assert m0.is_blade_rep
 
         # convert to base rep
         m0_base = m0.base_rep()
-        self.assertTrue(m0.is_blade_rep)  # original should not change
-        self.assertFalse(m0_base.is_blade_rep)
-        self.assertEqual(m0, m0_base)
+        assert m0.is_blade_rep  # original should not change
+        assert not m0_base.is_blade_rep
+        assert m0 == m0_base
 
         # convert back
         m0_base_blade = m0_base.blade_rep()
-        self.assertFalse(m0_base.is_blade_rep)  # original should not change
-        self.assertTrue(m0_base_blade.is_blade_rep)
-        self.assertEqual(m0, m0_base_blade)
+        assert not m0_base.is_blade_rep  # original should not change
+        assert m0_base_blade.is_blade_rep
+        assert m0 == m0_base_blade
 
     def test_construction(self):
         ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
         def check(x, expected_grades):
-            self.assertEqual(x.grades, expected_grades)
-            self.assertNotEqual(x, 0)
+            assert x.grades == expected_grades
+            assert x != 0
 
         # non-function symbol construction
         check(ga.mv('A', 'scalar'), [0])
@@ -140,13 +139,13 @@ class TestMv(unittest.TestCase):
         check(ga.mv([1, 2, 3], 'vector'), [1])
 
         # illegal arguments
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             ga.mv('A', 'vector', "too many arguments")
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             ga.mv('A', 'grade')  # too few arguments
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             ga.mv('A', 'grade', not_an_argument=True)  # invalid kwarg
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             ga.mv([1, 2, 3], 'vector', f=True)  # can't pass f with coefficients
 
     def test_abs(self):
