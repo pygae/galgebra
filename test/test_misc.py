@@ -6,7 +6,7 @@ import textwrap
 import pytest
 from IPython.lib.pretty import pretty
 
-from galgebra.ga import lazy_dict, OrderedBiMap
+from galgebra.ga import lazy_dict, OrderedBiMap, GradedTuple
 from galgebra._utils import cached_property
 
 
@@ -87,3 +87,18 @@ class TestLazyDict:
         assert pretty(l) == textwrap.dedent("""\
             lazy_dict({'abcdefghijklmnopqrstuvwxyz': 'abcdefghijklmnopqrstuvwxyz'},
                       f_value=<class 'int'>)""")
+
+
+class TestGradedTuple:
+
+    def test_basic(self):
+        t = GradedTuple((
+            ([0],),
+            ([1], [1]),
+            ([2],),
+        ))
+        assert isinstance(t, tuple)
+
+        assert t.flat == ([0], [1], [1], [2])
+        with pytest.raises(AttributeError):
+            t.flat = ()
