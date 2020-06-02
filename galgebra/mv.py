@@ -839,7 +839,7 @@ class Mv(printer.GaPrintable):
             )
 
         if not isinstance(A, Mv):  # sympy scalar
-            return Mv(A * self.obj, ga=self.Ga)
+            return Mv(A * self.scalar(), ga=self.Ga)
 
         if self.Ga != A.Ga:
             raise ValueError('In < operation Mv arguments are not from same geometric algebra')
@@ -859,7 +859,7 @@ class Mv(printer.GaPrintable):
             )
 
         if not isinstance(A, Mv):  # sympy scalar
-            return self.Ga.mv(A * self.scalar())
+            return Mv(A * self.obj, ga=self.Ga)
 
         if self.Ga != A.Ga:
             raise ValueError('In > operation Mv arguments are not from same geometric algebra')
