@@ -164,7 +164,7 @@ This could take more than 10 minutes, please be patient.
 Migration Guide
 ----------------
 
-> Note: The APIs have changed since the era of `sympy.galgebra` and `brombo/galgebra`, some properties and methods are deprecated, the supported versions of Python and SymPy have also changed, please check [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html) and further update your scripts accordingly besides the following. If you encounter any problems, feel free to open an issue!
+> Note: The APIs have changed since the era of `sympy.galgebra` and `brombo/galgebra`, some properties and methods are deprecated, the supported versions of Python and SymPy have also changed, please check [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html) and further update your scripts accordingly besides the following. If you encounter any problems, feel free to [open an issue](https://github.com/pygae/galgebra/issues/new)!
 
 ### Migrating from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/)
 
