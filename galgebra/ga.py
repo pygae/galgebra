@@ -411,7 +411,7 @@ class BaseProductFunction(ProductFunction):
     """ Base class for implementations of products between base blade representations """
     def of_basis_bases(self, base1: Symbol, base2: Symbol) -> Expr:
         """ Compute the product of two basis bases """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class _BaseGeometricProductFunction(BaseProductFunction):
