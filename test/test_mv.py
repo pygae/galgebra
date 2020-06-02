@@ -1,3 +1,4 @@
+import distutils.version
 
 import pytest
 import sympy
@@ -194,3 +195,22 @@ class TestMv:
         assert 1 + e_1 == one + e_1
         assert e_1 - 1 == e_1 - one
         assert 1 - e_1 == one - e_1
+
+    @pytest.mark.parametrize('make_one', [
+        lambda ga: 1,
+        lambda ga: ga.mv(sympy.S.One),
+        pytest.param(lambda ga: sympy.S.One, marks=pytest.mark.skipif(
+            distutils.version.LooseVersion(sympy.__version__) < "1.6",
+            # until sympy/sympy@bec42df53cf2486d485065ddad1c31011a48bf3b
+            reason="Cannot override < and > on sympy.Expr"
+        ))
+    ])
+    def test_contraction(self, make_one):
+        ga, e_1, e_2 = Ga.build('e*1|2', g=[1, 1])
+        e12 = e_1 ^ e_2
+        one = make_one(ga)
+
+        assert (one < e12) == e12
+        assert (e12 > one) == e12
+        assert (e12 < one) == 0
+        assert (one > e12) == 0
