@@ -14,7 +14,11 @@ Symbolic Geometric Algebra/Calculus package for SymPy.
 Development Status
 --------------------
 
-![PyPI - Status](https://img.shields.io/pypi/status/galgebra.svg) ![GitHub contributors](https://img.shields.io/github/contributors/pygae/galgebra.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fe7642c639a54d909a36c75db6c2fa49)](https://app.codacy.com/app/utensilcandel/galgebra?utm_source=github.com&utm_medium=referral&utm_content=pygae/galgebra&utm_campaign=Badge_Grade_Settings) [![Codecov](https://img.shields.io/codecov/c/github/pygae/galgebra.svg)](https://codecov.io/gh/pygae/galgebra)
+![PyPI - Status](https://img.shields.io/pypi/status/galgebra.svg)
+![GitHub contributors](https://img.shields.io/github/contributors/pygae/galgebra.svg)
+[![Codecov](https://img.shields.io/codecov/c/github/pygae/galgebra.svg)](https://codecov.io/gh/pygae/galgebra)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/pygae/galgebra.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/pygae/galgebra/context:python)
+[![Maintainability](https://api.codeclimate.com/v1/badges/26d1c1b351d32d2b1097/maintainability)](https://codeclimate.com/github/pygae/galgebra/maintainability)
 
 [brombo/galgebra](https://github.com/brombo/galgebra) was originally written by Alan Bromborsky, but was no longer actively maintained, and as of 2019-11-25 no longer exists.
 
