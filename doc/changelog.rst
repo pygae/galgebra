@@ -2,7 +2,7 @@
 Changelog
 =========
 
-- :release:`0.5.0 <2020.05.27>`
+- :release:`0.5.0 <2020.06.05>`
 
 - :bug:`431` Left and right contraction are no longer swapped on scalar :class:`~sympy.core.expr.Expr` instances.
 - :feature:`232` Python 3.8 is now supported and tested.
