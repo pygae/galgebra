@@ -719,7 +719,8 @@ class Ga(metric.Metric):
         self._mlt_acoefs = []  # List of dummy vectors coefficients
         self._mlt_pdiffs = []  # List of lists dummy vector coefficients
 
-        self._XOX = self.mv('XOX', 'vector')  # cached vector for use in is_versor
+        if self.n > 0:
+            self._XOX = self.mv('XOX', 'vector')  # cached vector for use in is_versor
 
     @_cached_property
     def coord_vec(self) -> Expr:

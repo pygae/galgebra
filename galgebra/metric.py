@@ -698,7 +698,7 @@ class Metric(object):
         # Generate list of basis vectors and reciprocal basis vectors
         # as non-commutative symbols
 
-        if ' ' in basis or ',' in basis or '*' in basis:  # bases defined by substrings separated by spaces or commas
+        if ' ' in basis or ',' in basis or '*' in basis or basis == '':  # bases defined by substrings separated by spaces or commas
             self.basis = symbols_list(basis)
             self.r_symbols = symbols_list(basis, sub=False)
         else:
@@ -764,7 +764,7 @@ class Metric(object):
                 if isinstance(g, Matrix):
                     self.g = g
                 else:
-                    if isinstance(g[0], list):
+                    if len(g) > 0 and isinstance(g[0], list):
                         self.g = Matrix(g)
                     else:
                         m = eye(len(g))
