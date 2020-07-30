@@ -2,6 +2,9 @@
 Changelog
 =========
 
+- :feature:`436` The ``Ga`` constructor now allows algebras with only a single basis vector, via a trailing comma in the list of bases.
+  This enables algebras like the complex (``Ga('i,', g=[-1])``) and dual (``Ga('delta,', g=[0])``) numbers to be used.
+
 - :release:`0.5.0 <2020.06.05>`
 
 - :bug:`431` Left and right contraction are no longer swapped on scalar :class:`~sympy.core.expr.Expr` instances.

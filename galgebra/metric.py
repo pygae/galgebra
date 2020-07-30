@@ -191,6 +191,13 @@ def symbols_list(s, indices=None, sub=True, commutative=False):
     >>> symbols_list('a b,c')
     [a b, c]
 
+    A trailing comma is allowed, and required to generate lists of one element:
+
+    >>> symbols_list('a,')
+    [a]
+    >>> symbols_list('')
+    []
+
     Subscripts will be converted to superscripts if requested:
 
     >>> symbols_list('a_1 a_2', sub=False)
@@ -245,8 +252,13 @@ def symbols_list(s, indices=None, sub=True, commutative=False):
                     raise ValueError(index + 'is not an integer')
                 s_lst = [base + pos + str(i) for i in range(n)]
         else:
-            if ',' in s:
+            if not s:
+                s_lst = []
+            elif ',' in s:
                 s_lst = s.split(',')
+                # allow trailing commas
+                if not s_lst[-1]:
+                    del s_lst[-1]
             else:
                 s_lst = s.split(' ')
             if not sub:
