@@ -71,7 +71,7 @@ class _JoinedPrinterMixin(Basic):
 
     def _sympystr(self, printer):
         return self._op_sympystr.join(
-            printer.doprint(v)
+            printer._print(v)
             for v in self.args
         )
 

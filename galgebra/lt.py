@@ -409,15 +409,15 @@ class Lt(printer.GaPrintable):
     def _sympystr(self, print_obj):
 
         if self.spinor:
-            return 'R = ' + print_obj.doprint(self.R)
+            return 'R = ' + print_obj._print(self.R)
         else:
             pre = 'Lt('
             s = ''
             for base in self.Ga.basis:
                 if base in self.lt_dict:
-                    s += pre + print_obj.doprint(base) + ') = ' + print_obj.doprint(mv.Mv(self.lt_dict[base], ga=self.Ga)) + '\n'
+                    s += pre + print_obj._print(base) + ') = ' + print_obj._print(mv.Mv(self.lt_dict[base], ga=self.Ga)) + '\n'
                 else:
-                    s += pre + print_obj.doprint(base) + ') = 0\n'
+                    s += pre + print_obj._print(base) + ') = 0\n'
             return s[:-1]
 
     def _latex(self, print_obj):
@@ -425,16 +425,16 @@ class Lt(printer.GaPrintable):
         if self.spinor:
             s = '\\left \\{ \\begin{array}{ll} '
             for base in self.Ga.basis:
-                str_base = print_obj.doprint(base)
-                s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj.doprint(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
+                str_base = print_obj._print(base)
+                s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj._print(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
         else:
             s = '\\left \\{ \\begin{array}{ll} '
             for base in self.Ga.basis:
-                str_base = print_obj.doprint(base)
+                str_base = print_obj._print(base)
                 if base in self.lt_dict:
-                    s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj.doprint(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
+                    s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj._print(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
                 else:
                     s += 'L \\left ( ' + str_base + '\\right ) =& 0 \\\\ '
             s = s[:-3] + ' \\end{array} \\right \\} \n'
@@ -563,11 +563,11 @@ class Mlt(printer.GaPrintable):
         return Ga.basis_super_scripts
 
     def _sympystr(self, print_obj):
-        return print_obj.doprint(self.fvalue)
+        return print_obj._print(self.fvalue)
 
     def _latex(self, print_obj):
         if self.nargs <= 1:
-            return print_obj.doprint(self.fvalue)
+            return print_obj._print(self.fvalue)
         expr_lst = Mlt.expand_expr(self.fvalue, self.Ga)
         latex_str = '\\begin{aligned} '
         first = True
@@ -575,7 +575,7 @@ class Mlt(printer.GaPrintable):
         cnt = 1  # Component count on line
         for term in expr_lst:
             coef_str = str(term[0])
-            coef_latex = print_obj.doprint(term[0])
+            coef_latex = print_obj._print(term[0])
             term_add_flg = isinstance(term[0], Add)
             if term_add_flg:
                 coef_latex = r'\left ( ' + coef_latex + r'\right ) '
@@ -585,7 +585,7 @@ class Mlt(printer.GaPrintable):
                 if coef_str[0].strip() != '-' or term_add_flg:
                     coef_latex = ' + ' + coef_latex
             for aij in term[1]:
-                coef_latex += print_obj.doprint(aij) + ' '
+                coef_latex += print_obj._print(aij) + ' '
             if cnt == 1:
                 latex_str += ' & ' + coef_latex
             else:

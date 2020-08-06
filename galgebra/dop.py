@@ -121,8 +121,8 @@ class Sdop(_BaseDop):
         self = self._with_sorted_terms()
         s = ''
         for coef, pdop in self.terms:
-            coef_str = print_obj.doprint(coef)
-            pd_str = print_obj.doprint(pdop)
+            coef_str = print_obj._print(coef)
+            pd_str = print_obj._print(pdop)
 
             if coef == S(1):
                 s += pd_str
@@ -147,8 +147,8 @@ class Sdop(_BaseDop):
 
         s = ''
         for coef, pdop in self.terms:
-            coef_str = print_obj.doprint(coef)
-            pd_str = print_obj.doprint(pdop)
+            coef_str = print_obj._print(coef)
+            pd_str = print_obj._print(pdop)
             if coef == S(1):
                 if pd_str == '':
                     s += '1'
@@ -363,10 +363,10 @@ class Pdop(_BaseDop):
             return 'D{}'
         s = 'D'
         for x in self.pdiffs:
-            s += '{' + print_obj.doprint(x) + '}'
+            s += '{' + print_obj._print(x) + '}'
             n = self.pdiffs[x]
             if n > 1:
-                s += '^' + print_obj.doprint(n)
+                s += '^' + print_obj._print(n)
         return s
 
     def _latex(self, print_obj):
@@ -374,14 +374,14 @@ class Pdop(_BaseDop):
             return ''
         s = r'\frac{\partial'
         if self.order > 1:
-            s += '^{' + print_obj.doprint(self.order) + '}'
+            s += '^{' + print_obj._print(self.order) + '}'
         s += '}{'
         keys = list(self.pdiffs.keys())
         keys.sort(key=lambda x: x.sort_key())
         for key in keys:
             i = self.pdiffs[key]
-            s += r'\partial ' + print_obj.doprint(key)
+            s += r'\partial ' + print_obj._print(key)
             if i > 1:
-                s += '^{' + print_obj.doprint(i) + '}'
+                s += '^{' + print_obj._print(i) + '}'
         s += '}'
         return s

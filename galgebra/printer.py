@@ -1234,7 +1234,7 @@ class _WithSettings(GaPrintable):
         new_printer = copy.copy(printer)
         new_printer._settings = copy.copy(new_printer._settings)
         new_printer._settings.update(self._settings)
-        return new_printer.doprint(self._obj)
+        return new_printer._print(self._obj)
 
     _latex = _pretty = _sympystr = __do_print
 
@@ -1250,7 +1250,7 @@ class _FmtResult(GaPrintable):
         return self
 
     def _latex(self, printer):
-        return self._label + ' = ' + printer.doprint(self._obj)
+        return self._label + ' = ' + printer._print(self._obj)
 
     def _sympystr(self, printer):
-        return self._label + ' = ' + printer.doprint(self._obj)
+        return self._label + ' = ' + printer._print(self._obj)

@@ -585,7 +585,7 @@ class Mv(printer.GaPrintable):
             return self * (S(1)/A)
 
     def __str__(self):
-        return printer.GaPrinter().doprint(self)
+        return printer.GaPrinter()._print(self)
 
     def __getitem__(self, key: int) -> 'Mv':
         '''
@@ -601,7 +601,7 @@ class Mv(printer.GaPrintable):
         self = Mv(obj, ga=self.Ga)
 
         if self.i_grade == 0:
-            return print_obj.doprint(self.obj)
+            return print_obj._print(self.obj)
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades.flat
@@ -634,14 +634,14 @@ class Mv(printer.GaPrintable):
             terms = list(terms.items())
             sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
-            s = print_obj.doprint(sorted_terms[0][1][0] * sorted_terms[0][1][1])
+            s = print_obj._print(sorted_terms[0][1][0] * sorted_terms[0][1][1])
             if print_obj._settings['galgebra_mv_fmt'] == 3:
                 s = ' ' + s + '\n'
             if print_obj._settings['galgebra_mv_fmt'] == 2:
                 s = ' ' + s
             old_grade = sorted_terms[0][1][2]
             for (key, (c, base, grade)) in sorted_terms[1:]:
-                term = print_obj.doprint(c * base)
+                term = print_obj._print(c * base)
                 if print_obj._settings['galgebra_mv_fmt'] == 2 and old_grade != grade:  # one grade per line
                     old_grade = grade
                     s += '\n'
@@ -657,7 +657,7 @@ class Mv(printer.GaPrintable):
                 s = s[:-1]
             return s
         else:
-            return print_obj.doprint(self.obj)
+            return print_obj._print(self.obj)
 
     def _latex(self, print_obj: _LatexPrinter) -> str:
 
@@ -720,7 +720,7 @@ class Mv(printer.GaPrintable):
         sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
         if len(sorted_terms) == 1 and sorted_terms[0][1][2] == 0:  # scalar
-            return print_obj.doprint(printer.coef_simplify(sorted_terms[0][1][0]))
+            return print_obj._print(printer.coef_simplify(sorted_terms[0][1][0]))
 
         lines = []
         old_grade = -1
@@ -728,7 +728,7 @@ class Mv(printer.GaPrintable):
         for (index, (coef, base, grade)) in sorted_terms:
             coef = printer.coef_simplify(coef)
             # coef = simplify(coef)
-            l_coef = print_obj.doprint(coef)
+            l_coef = print_obj._print(coef)
             if l_coef == '1' and base != S(1):
                 l_coef = ''
             if l_coef == '-1' and base != S(1):
@@ -736,7 +736,7 @@ class Mv(printer.GaPrintable):
             if base == S(1):
                 l_base = ''
             else:
-                l_base = print_obj.doprint(base)
+                l_base = print_obj._print(base)
             if isinstance(coef, Add):
                 cb_str = '\\left ( ' + l_coef + '\\right ) ' + l_base
             else:
@@ -1675,8 +1675,8 @@ class Dop(dop._BaseDop):
         s = ''
 
         for sdop, base in mv_terms:
-            str_base = print_obj.doprint(base)
-            str_sdop = print_obj.doprint(sdop)
+            str_base = print_obj._print(base)
+            str_sdop = print_obj._print(sdop)
             if base == S(1):
                 s += str_sdop
             else:
@@ -1711,8 +1711,8 @@ class Dop(dop._BaseDop):
         s = ''
 
         for sdop, base in mv_terms:
-            str_base = print_obj.doprint(base)
-            str_sdop = print_obj.doprint(sdop)
+            str_base = print_obj._print(base)
+            str_sdop = print_obj._print(sdop)
             if base == S(1):
                 s += str_sdop
             else:
