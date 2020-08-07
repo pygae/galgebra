@@ -98,6 +98,11 @@ from sympy.core.operations import AssocOp
 from sympy import init_printing
 
 try:
+    from sympy.printing.defaults import Printable as SympyPrintable
+except ImportError:
+    # sympy < 1.7
+    SympyPrintable = object
+try:
     from IPython.display import display, Latex, Math, display_latex
 except ImportError:
     pass
@@ -379,10 +384,20 @@ class GaPrintable:
         return r'\begin{equation*} ' + latex_str + r' \end{equation*}'
 
 
-Basic.__ga_print_str__ = GaPrintable.__ga_print_str__
-Matrix.__ga_print_str__ = GaPrintable.__ga_print_str__
+# Change sympy builtins to use our printer by default.
+# We do this because we always have done, and stopping now would break
+# compatibility.
+if SympyPrintable is not object:
+    SympyPrintable.__ga_print_str__ = GaPrintable.__ga_print_str__
+    SympyPrintable.__repr__ = GaPrintable.__repr__
+else:
+    # sympy < 1.7
+    Basic.__ga_print_str__ = GaPrintable.__ga_print_str__
+    Basic.__repr__ = GaPrintable.__repr__
 
-Basic.__repr__ = GaPrintable.__repr__
+# TODO: Change this to MatrixBase on sympy < 1.7, remove if for >= 1.7.
+#       Doing so will change test outputs to have unicode printing.
+Matrix.__ga_print_str__ = GaPrintable.__ga_print_str__
 Matrix.__repr__ = GaPrintable.__repr__
 
 
