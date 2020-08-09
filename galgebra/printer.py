@@ -89,7 +89,7 @@ import shutil
 import warnings
 from collections import ChainMap
 
-from sympy import Matrix, Basic, S, Symbol, Function, Derivative, Pow
+from sympy import MatrixBase, Basic, S, Symbol, Function, Derivative, Pow
 from sympy.printing.str import StrPrinter
 from sympy.printing.conventions import split_super_sub
 from sympy.printing.latex import LatexPrinter, accepted_latex_functions
@@ -395,10 +395,8 @@ else:
     Basic.__ga_print_str__ = GaPrintable.__ga_print_str__
     Basic.__repr__ = GaPrintable.__repr__
 
-# TODO: Change this to MatrixBase on sympy < 1.7, remove if for >= 1.7.
-#       Doing so will change test outputs to have unicode printing.
-Matrix.__ga_print_str__ = GaPrintable.__ga_print_str__
-Matrix.__repr__ = GaPrintable.__repr__
+    MatrixBase.__ga_print_str__ = GaPrintable.__ga_print_str__
+    MatrixBase.__repr__ = GaPrintable.__repr__
 
 
 # This is the lesser of two evils. Previously, we overwrote `Basic.__str__` in
