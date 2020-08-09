@@ -379,9 +379,7 @@ class GaPrintable:
         return GaPrinter().doprint(self)
 
     def _repr_latex_(self):
-        # IPython expects latex in text mode, so we wrap in an environment
-        latex_str = GaLatexPrinter().doprint(self)
-        return r'\begin{equation*} ' + latex_str + r' \end{equation*}'
+        return GaLatexPrinter(dict(mode="equation*")).doprint(self)
 
 
 # Change sympy builtins to use our printer by default.
