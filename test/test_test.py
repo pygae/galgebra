@@ -525,6 +525,22 @@ class TestTest:
             'e12': ga.blades[2][0],
         }
 
+    def test_single_basis(self):
+        # dual numbers
+        g, delta = Ga.build('delta,', g=[0])
+        assert delta*delta == 0
+        # which work for automatic differentiation
+        x = Symbol('x')
+        xd = x + delta
+        f = lambda x: x**3 + 2*x*2 + 1
+        assert f(xd) == f(x) + f(x).diff(x) * delta
+
+    def test_no_basis(self):
+        # real numbers!
+        g = Ga('', g=[])
+        one = g.mv(1)
+        assert (3*one) ^ (2*one) == (6*one)
+
     def test_deprecations(self):
         coords = symbols('x y z')
         ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', coords=coords)

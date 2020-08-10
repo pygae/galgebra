@@ -191,6 +191,13 @@ def symbols_list(s, indices=None, sub=True, commutative=False):
     >>> symbols_list('a b,c')
     [a b, c]
 
+    A trailing comma is allowed, and required to generate lists of one element:
+
+    >>> symbols_list('a,')
+    [a]
+    >>> symbols_list('')
+    []
+
     Subscripts will be converted to superscripts if requested:
 
     >>> symbols_list('a_1 a_2', sub=False)
@@ -245,8 +252,13 @@ def symbols_list(s, indices=None, sub=True, commutative=False):
                     raise ValueError(index + 'is not an integer')
                 s_lst = [base + pos + str(i) for i in range(n)]
         else:
-            if ',' in s:
+            if not s:
+                s_lst = []
+            elif ',' in s:
                 s_lst = s.split(',')
+                # allow trailing commas
+                if not s_lst[-1]:
+                    del s_lst[-1]
             else:
                 s_lst = s.split(' ')
             if not sub:
@@ -686,7 +698,7 @@ class Metric(object):
         # Generate list of basis vectors and reciprocal basis vectors
         # as non-commutative symbols
 
-        if ' ' in basis or ',' in basis or '*' in basis:  # bases defined by substrings separated by spaces or commas
+        if ' ' in basis or ',' in basis or '*' in basis or basis == '':  # bases defined by substrings separated by spaces or commas
             self.basis = symbols_list(basis)
             self.r_symbols = symbols_list(basis, sub=False)
         else:
@@ -752,7 +764,7 @@ class Metric(object):
                 if isinstance(g, Matrix):
                     self.g = g
                 else:
-                    if isinstance(g[0], list):
+                    if len(g) > 0 and isinstance(g[0], list):
                         self.g = Matrix(g)
                     else:
                         m = eye(len(g))
