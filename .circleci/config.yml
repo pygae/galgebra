@@ -72,11 +72,11 @@ jobs:
       USE_SYMENGINE: 1
     docker:
       - image: circleci/python:3.7
-  # sympy 1.3 does not claim to support Python 3.8
-  "python-3.7-sympy-1.3":
+  # sympy 1.4 does not claim to support Python 3.8
+  "python-3.7-sympy-1.4":
     <<: *defaults
     environment:
-      PIP_EXTRA_INSTALLATION: sympy==1.3
+      PIP_EXTRA_INSTALLATION: sympy==1.4
     docker:
       - image: circleci/python:3.7
 
@@ -141,7 +141,7 @@ workflows:
           requires: ["flake8"]
       - "python-3.7-symengine":
           requires: ["flake8"]
-      - "python-3.7-sympy-1.3":
+      - "python-3.7-sympy-1.4":
           requires: ["flake8"]
       - "python-3.8-sympy-master":
           requires: ["flake8"]

@@ -852,7 +852,11 @@ def Format(Fmode: bool = True, Dmode: bool = True, inverse='full'):
         GaLatexPrinter.redirect()
 
         if isinteractive():
-            init_printing(use_latex='mathjax')
+            init_printing(
+                use_latex='mathjax',
+                latex_mode='equation*',
+                latex_printer=latex
+            )
 
     return
 
