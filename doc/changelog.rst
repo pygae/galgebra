@@ -81,7 +81,7 @@ Changelog
 - :bug:`354` :func:`galgebra.printer.oprint` no longer strips the last ``)`` from :class:`sympy.Matrix` objects within lists.
 
 - :support:`349` :func:`galegbra.printer.Get_Program` is deprecated. This
-  function used to have to be called before func:`galegbra.printer.Print_Function`,
+  function used to have to be called before func:`galgebra.printer.Print_Function`,
   but now all it does is act as an enable/disable flag for the latter, such that ``Get_Program(True); Print_Function()`` was a no-op.
 
 - :bug:`348` :func:`galgebra.printer.Print_Function` no longer emits code after the function body. Previously, examples had a ``def dummy(): pass`` function to work around this.
@@ -95,6 +95,7 @@ Changelog
 
 - :bug:`320` :class:`galgebra.lt.Mlt` no longer crashes at construction, arithmetic, or multiplication.
 - :support:`320` The following attributes of :class:`galgebra.ga.Ga` have been removed:
+
   - `a`
 
 - :bug:`319` :meth:`galgebra.mv.Mv.get_coefs` now returns ``0`` in the place of empty coefficients.
