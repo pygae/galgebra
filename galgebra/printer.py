@@ -92,10 +92,13 @@ from collections import ChainMap
 from sympy import MatrixBase, Basic, S, Symbol, Function, Derivative, Pow
 from sympy.printing.str import StrPrinter
 from sympy.printing.conventions import split_super_sub
-from sympy.printing.latex import LatexPrinter, accepted_latex_functions
+from sympy.printing.latex import (
+    LatexPrinter, accepted_latex_functions, other_symbols
+)
 from sympy.core.function import _coeff_isneg
 from sympy.core.operations import AssocOp
 from sympy import init_printing
+from sympy.core.alphabets import greeks
 
 try:
     from IPython.display import display, Latex, Math, display_latex
@@ -509,18 +512,10 @@ class GaLatexPrinter(LatexPrinter):
     postscript = '\\end{document}\n'
     macros = '\\newcommand{\\f}[2]{{#1}\\left ({#2}\\right )}'
 
-    # translate name, supers and subs to tex keywords
-    greek = set(['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta',
-                 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu',
-                 'xi', 'omicron', 'pi', 'rho', 'sigma', 'tau', 'upsilon',
-                 'phi', 'chi', 'psi', 'omega'])
-
+    # Used by _print_Symbol
     greek_translated = {'lamda': 'lambda', 'Lamda': 'Lambda'}
-
-    other = set(['aleph', 'beth', 'daleth', 'gimel', 'ell', 'eth',
-                 'hbar', 'hslash', 'mho', 'infty'])
-
-    special_alphabet = list(reversed(sorted(list(greek) + list(other), key=len)))
+    other = other_symbols | {'infty'}
+    special_alphabet = list(reversed(sorted(list(greeks) + list(other), key=len)))
 
     @staticmethod
     def redirect():
