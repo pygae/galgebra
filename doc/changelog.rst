@@ -2,6 +2,8 @@
 Changelog
 =========
 
+- :bug:`448` Calling :func:`galgebra.printer.Eprint` no longer causes ansi escape codes to appear in the names of the coefficients of ``ga.mv('A', 'vector')``.
+
 - :feature:`436` The ``Ga`` constructor now allows algebras with only a single basis vector, via a trailing comma in the list of bases.
   This enables algebras like the complex (``Ga('i,', g=[-1])``) and dual (``Ga('delta,', g=[0])``) numbers to be used.
 

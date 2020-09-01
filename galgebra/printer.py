@@ -332,6 +332,9 @@ class GaPrinter(StrPrinter):
 
         return Eprint.Fct("%s" % (name,))
 
+    def _print_BasisVectorSymbol(self, expr):
+        return Eprint.Base(self._print_Symbol(expr))
+
     def _print_Derivative(self, expr):
         # Break the following to support both py 2 & 3
         # function, *diff_args = expr.args
