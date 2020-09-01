@@ -9,8 +9,6 @@ from sympy.core.function import AppliedUndef, UndefinedFunction
 from sympy.printing.pretty.stringpict import prettyForm, stringPict
 from sympy.printing.pretty.pretty_symbology import U
 
-from . import printer
-
 __all__ = [
     'BasisVectorSymbol',
     'BasisBladeSymbol',
@@ -27,9 +25,6 @@ def _all_same(items):
 class BasisVectorSymbol(Symbol):
     """ A symbol representing a basis vector """
     is_commutative = False
-
-    def _sympystr(self, print_obj):
-        return printer.Eprint.Base(print_obj._print_Symbol(self))
 
     def _latex(self, print_obj):
         try:
