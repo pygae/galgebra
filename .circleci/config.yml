@@ -20,13 +20,18 @@ defaults: &defaults
           # we can't pass lists of arguments with spaces through environment
           # variables, so reassemble the list here
           PYTEST_ARGS=();
+
+          # xdist crashes on 3.5, https://github.com/pygae/galgebra/issues/438
+          if [[ "$CIRCLE_JOB" != "python-3.5" ]]; then
+            PYTEST_ARGS+=(-n 2 --dist loadscope);
+          fi;
+
           if [[ ! -z "$PYTEST_K_FILTER" ]]; then
             PYTEST_ARGS+=(-k "$PYTEST_K_FILTER");
           fi;
 
           mkdir -p test-reports/pytest
-          pytest -n 2 \
-            --dist loadscope \
+          pytest \
             --cov=galgebra \
             --nbval examples/ipython/ \
             test \
