@@ -22,7 +22,7 @@ def _consolidate_terms(terms):
     new_coefs = []
     new_pdiffs = []
     for coef, pd in terms:
-        if coef != S(0):
+        if coef != S.Zero:
             if pd in new_pdiffs:
                 index = new_pdiffs.index(pd)
                 new_coefs[index] += coef
@@ -38,7 +38,7 @@ def _merge_terms(terms1, terms2):
     pdiffs2 = [pdiff for _, pdiff in terms2]
 
     pdiffs = pdiffs1 + [x for x in pdiffs2 if x not in pdiffs1]
-    coefs = len(pdiffs) * [S(0)]
+    coefs = len(pdiffs) * [S.Zero]
 
     for coef, pdiff in terms1:
         index = pdiffs.index(pdiff)
@@ -49,7 +49,7 @@ def _merge_terms(terms1, terms2):
         coefs[index] += coef
 
     # remove zeros
-    return [(coef, pdiff) for coef, pdiff in zip(coefs, pdiffs) if coef != S(0)]
+    return [(coef, pdiff) for coef, pdiff in zip(coefs, pdiffs) if coef != S.Zero]
 
 
 def _eval_derivative_n_times_terms(terms, x, n):
@@ -124,9 +124,9 @@ class Sdop(_BaseDop):
             coef_str = print_obj._print(coef)
             pd_str = print_obj._print(pdop)
 
-            if coef == S(1):
+            if coef == S.One:
                 s += pd_str
-            elif coef == S(-1):
+            elif coef == S.NegativeOne:
                 s += '-' + pd_str
             else:
                 if isinstance(coef, Add):
@@ -149,12 +149,12 @@ class Sdop(_BaseDop):
         for coef, pdop in self.terms:
             coef_str = print_obj._print(coef)
             pd_str = print_obj._print(pdop)
-            if coef == S(1):
+            if coef == S.One:
                 if pd_str == '':
                     s += '1'
                 else:
                     s += pd_str
-            elif coef == S(-1):
+            elif coef == S.NegativeOne:
                 if pd_str == '':
                     s += '-1'
                 else:
@@ -170,7 +170,7 @@ class Sdop(_BaseDop):
         return s[:-3]
 
     def __init_from_symbol(self, symbol: Symbol) -> None:
-        self.terms = ((S(1), Pdop(symbol)),)
+        self.terms = ((S.One, Pdop(symbol)),)
 
     def __init_from_coef_and_pdiffs(self, coefs: List[Any], pdiffs: List['Pdop']) -> None:
         if not isinstance(coefs, list) or not isinstance(pdiffs, list):
@@ -204,7 +204,7 @@ class Sdop(_BaseDop):
         # do this by adding `0 * d(arg)/d(nonexistant)`, which must be zero, but
         # will be a zero of the right type.
         dummy_var = Dummy('nonexistant')
-        terms = self.terms or ((S(0), Pdop(dummy_var)),)
+        terms = self.terms or ((S.Zero, Pdop(dummy_var)),)
         return sum([coef * pdiff(arg) for coef, pdiff in terms])
 
     def __neg__(self):
@@ -308,7 +308,7 @@ class Pdop(_BaseDop):
         if isinstance(A, Pdop) and self.pdiffs == A.pdiffs:
             return True
         else:
-            if len(self.pdiffs) == 0 and A == S(1):
+            if len(self.pdiffs) == 0 and A == S.One:
                 return True
             return False
 
