@@ -3,7 +3,10 @@ sympy == 1.5
 pytest-cov
 ipython == 5.8.0; python_version == "2.7"
 nbval
-pytest-xdist
 
 # needed by pytest-xdist
-pytest >= 4.4.0
+pytest-xdist; python_version >= '3.6'
+pytest >= 4.4.0; python_version >= '3.6'
+
+# our CI run disables tests on 3.5 using -k syntax that does not work in pytest 6
+pytest < 6; python_version < '3.6'
