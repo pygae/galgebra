@@ -77,7 +77,6 @@ title is printed in equation mode. `%` has the same effect in title as
 in the ``Fmt()`` member function.
 """
 
-import copy
 import os
 import sys
 import io
@@ -172,12 +171,6 @@ def find_functions(expr):
             f_lst.append(f)
     f_lst += list(expr.atoms(Derivative))
     return f_lst
-
-
-def coef_simplify(expr):
-    # fcts = find_functions(expr)
-    # return expr.collect(fcts)
-    return expr
 
 
 def oprint(*args, dict_mode=False):
@@ -353,9 +346,8 @@ class GaPrinter(StrPrinter):
         )
 
 
-# Inheriting from SympyPrintable ensure we take part in interactive printing
-# customization
-class GaPrintable(SympyPrintable):
+# dummy namespace to keep these methods private
+class _GaPrintable:
     """ Mixin class providing default implementations of printing hooks """
     def __ga_print_str__(self):
         if GaLatexPrinter.latex_flg:
@@ -370,16 +362,15 @@ class GaPrintable(SympyPrintable):
 # Change sympy builtins to use our printer by default.
 # We do this because we always have done, and stopping now would break
 # compatibility.
-if issubclass(Basic, SympyPrintable):
-    SympyPrintable.__ga_print_str__ = GaPrintable.__ga_print_str__
-    SympyPrintable.__repr__ = GaPrintable.__repr__
-else:
+SympyPrintable.__ga_print_str__ = _GaPrintable.__ga_print_str__
+SympyPrintable.__repr__ = _GaPrintable.__repr__
+if not issubclass(Basic, SympyPrintable):
     # sympy < 1.7
-    Basic.__ga_print_str__ = GaPrintable.__ga_print_str__
-    Basic.__repr__ = GaPrintable.__repr__
+    Basic.__ga_print_str__ = _GaPrintable.__ga_print_str__
+    Basic.__repr__ = _GaPrintable.__repr__
 
-    MatrixBase.__ga_print_str__ = GaPrintable.__ga_print_str__
-    MatrixBase.__repr__ = GaPrintable.__repr__
+    MatrixBase.__ga_print_str__ = _GaPrintable.__ga_print_str__
+    MatrixBase.__repr__ = _GaPrintable.__repr__
 
 
 # This is the lesser of two evils. Previously, we overwrote `Basic.__str__` in
@@ -1211,36 +1202,3 @@ def Fmt(obj, fmt=0):
         return
     else:
         raise TypeError(str(type(obj)) + ' not allowed arg type in Fmt')
-
-
-class _WithSettings(GaPrintable):
-    """ Helper class to attach print settings to an object """
-    def __init__(self, obj, settings: dict = {}):
-        self._obj = obj
-        self._settings = settings
-
-    def __do_print(self, printer):
-        # make a copy of the printer with the specified setting applied
-        new_printer = copy.copy(printer)
-        new_printer._settings = copy.copy(new_printer._settings)
-        new_printer._settings.update(self._settings)
-        return new_printer._print(self._obj)
-
-    _latex = _pretty = _sympystr = __do_print
-
-
-class _FmtResult(GaPrintable):
-    """ Object returned from .Fmt methods, which can be printed as latex """
-    def __new__(cls, obj, label: str) -> GaPrintable:
-        if label is None:
-            return obj
-        self = super().__new__(cls)
-        self._obj = obj
-        self._label = label
-        return self
-
-    def _latex(self, printer):
-        return self._label + ' = ' + printer._print(self._obj)
-
-    def _sympystr(self, printer):
-        return self._label + ' = ' + printer._print(self._obj)

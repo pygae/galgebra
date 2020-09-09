@@ -12,7 +12,6 @@ from sympy import (
     Add, simplify, Expr, Function, MatrixSymbol
 )
 
-from . import printer
 from ._utils import cached_property as _cached_property
 from .atoms import (
     BasisVectorSymbol, DotProductSymbol, MatrixFunction, Determinant,
@@ -482,6 +481,7 @@ class Metric(object):
         ] for i in n_range]
 
         if self.debug:
+            from . import printer
             printer.oprint('D_{i}e^{j}', de)
 
         return de
@@ -542,6 +542,7 @@ class Metric(object):
                 for i in n_range]
 
             if self.debug:
+                from . import printer
                 printer.oprint('Gamma_{ijk}', dG)
             return dG
 
@@ -595,6 +596,7 @@ class Metric(object):
                 self.g[ib, jb] = Simp.apply(self.g[ib, jb] / (self.e_norm[ib] * self.e_norm[jb]))
 
         if self.debug:
+            from . import printer
             printer.oprint('e^{i}->e^{i}/|e_{i}|', renorm)
             printer.oprint('renorm(g)', self.g)
 
@@ -705,11 +707,13 @@ class Metric(object):
                 self.r_symbols = symbols_list(basis, coords, sub=False)
                 self.coords = coords
                 if self.debug:
+                    from . import printer
                     printer.oprint('x^{i}', self.coords)
             else:
                 raise ValueError('for basis "' + basis + '" coords must be entered')
 
         if self.debug:
+            from . import printer
             printer.oprint('e_{i}', self.basis, 'e^{i}', self.r_symbols)
         self.n = len(self.basis)
         self.n_range = list(range(self.n))
@@ -737,6 +741,7 @@ class Metric(object):
                         for dx1 in dX
                     ])
                     if self.debug:
+                        from . import printer
                         printer.oprint('X_{i}', X, 'D_{i}X_{j}', dX)
 
         else:  # metric is symbolic or list of lists of functions of coordinates
@@ -773,6 +778,7 @@ class Metric(object):
         self.g_raw = copy.deepcopy(self.g)  # save original metric tensor for use with submanifolds
 
         if self.debug:
+            from . import printer
             printer.oprint('g', self.g)
 
         # Determine if metric is orthogonal
@@ -800,6 +806,7 @@ class Metric(object):
                     for i in self.n_range
                 ]
                 if debug:
+                    from . import printer
                     printer.oprint('|e_{i}|', self.e_norm)
             else:
                 self.e_norm = None

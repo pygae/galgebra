@@ -16,9 +16,11 @@ from sympy.printing.latex import LatexPrinter as _LatexPrinter
 from sympy.printing.str import StrPrinter as _StrPrinter
 
 
-from . import printer
 from . import metric
 from . import mv
+from ._utils.printable import Printable as _Printable
+from ._utils.printable_objects import FmtResult as _FmtResult
+from ._utils.printable_objects import WithSettings as _WithSettings
 
 
 # Add custom settings to the builtin latex printer
@@ -125,7 +127,7 @@ def Dictionary_to_Matrix(dict_rep, ga):
     return Transpose(Matrix(lst_mat))
 
 
-class Lt(printer.GaPrintable):
+class Lt(_Printable):
     r"""
     A Linear Transformation
 
@@ -440,8 +442,8 @@ class Lt(printer.GaPrintable):
             s = s[:-3] + ' \\end{array} \\right \\} \n'
             return s
 
-    def Fmt(self, fmt=1, title=None) -> printer.GaPrintable:
-        return printer._FmtResult(self, title)
+    def Fmt(self, fmt=1, title=None) -> _Printable:
+        return _FmtResult(self, title)
 
     def matrix(self) -> Matrix:
         r"""
@@ -485,7 +487,7 @@ class Lt(printer.GaPrintable):
                 return self.mat
 
 
-class Mlt(printer.GaPrintable):
+class Mlt(_Printable):
     r"""
     A multilinear transformation (mlt) is a multilinear multivector function of
     a list of vectors (``*args``) :math:`F(v_1,...,v_r)` where for any argument slot
@@ -600,7 +602,7 @@ class Mlt(printer.GaPrintable):
         latex_str = latex_str + ' \\end{aligned} '
         return latex_str
 
-    def Fmt(self, lcnt=1, title=None) -> printer.GaPrintable:
+    def Fmt(self, lcnt=1, title=None) -> _Printable:
         """
         Set format for printing of Tensors
 
@@ -622,8 +624,8 @@ class Mlt(printer.GaPrintable):
         with two components per line.  Works for both standard printing and
         for latex.
         """
-        obj = printer._WithSettings(self, dict(galgebra_mlt_lcnt=lcnt))
-        return printer._FmtResult(obj, title)
+        obj = _WithSettings(self, dict(galgebra_mlt_lcnt=lcnt))
+        return _FmtResult(obj, title)
 
     @staticmethod
     def expand_expr(expr, ga):

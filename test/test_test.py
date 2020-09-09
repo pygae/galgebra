@@ -105,34 +105,38 @@ class TestTest:
 
         X = x, y, z = symbols('x y z')
         o3d = Ga('e_x e_y e_z', g=[1, 1, 1], coords=X)
+        f = o3d.mv('f', 'scalar', f=True)
         ex, ey, ez = o3d.mv()
         grad = o3d.grad
+
+        # like sympy.sstr but using our printer
+        sstr = lambda x: GaPrinter().doprint(x)
 
         f = o3d.mv('f', 'scalar', f=True)
         A = o3d.mv('A', 'vector', f=True)
         B = o3d.mv('B', 'bivector', f=True)
         C = o3d.mv('C', 'mv', f=True)
 
-        assert str(f) == 'f'
-        assert str(A) == 'A__x*e_x + A__y*e_y + A__z*e_z'
-        assert str(B) == 'B__xy*e_x^e_y + B__xz*e_x^e_z + B__yz*e_y^e_z'
-        assert str(C) == 'C + C__x*e_x + C__y*e_y + C__z*e_z + C__xy*e_x^e_y + C__xz*e_x^e_z + C__yz*e_y^e_z + C__xyz*e_x^e_y^e_z'
+        assert sstr(f) == 'f'
+        assert sstr(A) == 'A__x*e_x + A__y*e_y + A__z*e_z'
+        assert sstr(B) == 'B__xy*e_x^e_y + B__xz*e_x^e_z + B__yz*e_y^e_z'
+        assert sstr(C) == 'C + C__x*e_x + C__y*e_y + C__z*e_z + C__xy*e_x^e_y + C__xz*e_x^e_z + C__yz*e_y^e_z + C__xyz*e_x^e_y^e_z'
 
-        assert str(grad*f) == 'D{x}f*e_x + D{y}f*e_y + D{z}f*e_z'
-        assert str(grad|A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
-        assert str(grad*A) == 'D{x}A__x + D{y}A__y + D{z}A__z + (-D{y}A__x + D{x}A__y)*e_x^e_y + (-D{z}A__x + D{x}A__z)*e_x^e_z + (-D{z}A__y + D{y}A__z)*e_y^e_z'
+        assert sstr(grad*f) == 'D{x}f*e_x + D{y}f*e_y + D{z}f*e_z'
+        assert sstr(grad|A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
+        assert sstr(grad*A) == 'D{x}A__x + D{y}A__y + D{z}A__z + (-D{y}A__x + D{x}A__y)*e_x^e_y + (-D{z}A__x + D{x}A__z)*e_x^e_z + (-D{z}A__y + D{y}A__z)*e_y^e_z'
 
-        assert str(-o3d.I()*(grad^A)) == '(-D{z}A__y + D{y}A__z)*e_x + (D{z}A__x - D{x}A__z)*e_y + (-D{y}A__x + D{x}A__y)*e_z'
-        assert str(grad*B) == '(-D{y}B__xy - D{z}B__xz)*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z + (D{z}B__xy - D{y}B__xz + D{x}B__yz)*e_x^e_y^e_z'
-        assert str(grad^B) == '(D{z}B__xy - D{y}B__xz + D{x}B__yz)*e_x^e_y^e_z'
-        assert str(grad|B) == '(-D{y}B__xy - D{z}B__xz)*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z'
+        assert sstr(-o3d.I()*(grad^A)) == '(-D{z}A__y + D{y}A__z)*e_x + (D{z}A__x - D{x}A__z)*e_y + (-D{y}A__x + D{x}A__y)*e_z'
+        assert sstr(grad*B) == '(-D{y}B__xy - D{z}B__xz)*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z + (D{z}B__xy - D{y}B__xz + D{x}B__yz)*e_x^e_y^e_z'
+        assert sstr(grad^B) == '(D{z}B__xy - D{y}B__xz + D{x}B__yz)*e_x^e_y^e_z'
+        assert sstr(grad|B) == '(-D{y}B__xy - D{z}B__xz)*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z'
 
-        assert str(grad<A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
-        assert str(grad>A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
-        assert str(grad<B) == '(-D{y}B__xy - D{z}B__xz)*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z'
-        assert str(grad>B) == '0'
-        assert str(grad<C) == 'D{x}C__x + D{y}C__y + D{z}C__z + (-D{y}C__xy - D{z}C__xz)*e_x + (D{x}C__xy - D{z}C__yz)*e_y + (D{x}C__xz + D{y}C__yz)*e_z + D{z}C__xyz*e_x^e_y - D{y}C__xyz*e_x^e_z + D{x}C__xyz*e_y^e_z'
-        assert str(grad>C) == 'D{x}C__x + D{y}C__y + D{z}C__z + D{x}C*e_x + D{y}C*e_y + D{z}C*e_z'
+        assert sstr(grad<A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
+        assert sstr(grad>A) == 'D{x}A__x + D{y}A__y + D{z}A__z'
+        assert sstr(grad<B) == '(-D{y}B__xy - D{z}B__xz)*e_x + (D{x}B__xy - D{z}B__yz)*e_y + (D{x}B__xz + D{y}B__yz)*e_z'
+        assert sstr(grad>B) == '0'
+        assert sstr(grad<C) == 'D{x}C__x + D{y}C__y + D{z}C__z + (-D{y}C__xy - D{z}C__xz)*e_x + (D{x}C__xy - D{z}C__yz)*e_y + (D{x}C__xz + D{y}C__yz)*e_z + D{z}C__xyz*e_x^e_y - D{y}C__xyz*e_x^e_z + D{x}C__xyz*e_y^e_z'
+        assert sstr(grad>C) == 'D{x}C__x + D{y}C__y + D{z}C__z + D{x}C*e_x + D{y}C*e_y + D{z}C*e_z'
 
     def test_derivatives_in_spherical_coordinates(self):
 
@@ -141,22 +145,25 @@ class TestTest:
         er, eth, ephi = s3d.mv()
         grad = s3d.grad
 
+        # like sympy.sstr but using our printer
+        sstr = lambda x: GaPrinter().doprint(x)
+
         f = s3d.mv('f', 'scalar', f=True)
         A = s3d.mv('A', 'vector', f=True)
         B = s3d.mv('B', 'bivector', f=True)
 
-        assert str(f) == 'f'
-        assert str(A) == 'A__r*e_r + A__theta*e_theta + A__phi*e_phi'
-        assert str(B) == 'B__rtheta*e_r^e_theta + B__rphi*e_r^e_phi + B__thetaphi*e_theta^e_phi'
+        assert sstr(f) == 'f'
+        assert sstr(A) == 'A__r*e_r + A__theta*e_theta + A__phi*e_phi'
+        assert sstr(B) == 'B__rtheta*e_r^e_theta + B__rphi*e_r^e_phi + B__thetaphi*e_theta^e_phi'
 
-        assert str(grad*f) == 'D{r}f*e_r + D{theta}f*e_theta/r + D{phi}f*e_phi/(r*sin(theta))'
-        assert str((grad|A).simplify()) == '(r*D{r}A__r + 2*A__r + A__theta/tan(theta) + D{theta}A__theta + D{phi}A__phi/sin(theta))/r'
-        assert str(-s3d.I()*(grad^A)) == '(A__phi/tan(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))*e_r/r + (-r*D{r}A__phi - A__phi + D{phi}A__r/sin(theta))*e_theta/r + (r*D{r}A__theta + A__theta - D{theta}A__r)*e_phi/r'
+        assert sstr(grad*f) == 'D{r}f*e_r + D{theta}f*e_theta/r + D{phi}f*e_phi/(r*sin(theta))'
+        assert sstr((grad|A).simplify()) == '(r*D{r}A__r + 2*A__r + A__theta/tan(theta) + D{theta}A__theta + D{phi}A__phi/sin(theta))/r'
+        assert sstr(-s3d.I()*(grad^A)) == '(A__phi/tan(theta) + D{theta}A__phi - D{phi}A__theta/sin(theta))*e_r/r + (-r*D{r}A__phi - A__phi + D{phi}A__r/sin(theta))*e_theta/r + (r*D{r}A__theta + A__theta - D{theta}A__r)*e_phi/r'
 
         assert latex(grad) == r'\boldsymbol{e}_{r} \frac{\partial}{\partial r} + \boldsymbol{e}_{\theta } \frac{1}{r} \frac{\partial}{\partial \theta } + \boldsymbol{e}_{\phi } \frac{1}{r \sin{\left (\theta  \right )}} \frac{\partial}{\partial \phi }'
         assert latex(B|(eth^ephi)) == r'- B^{\theta \phi } {\left (r,\theta ,\phi  \right )}'
 
-        assert str(grad^B) == '(r*D{r}B__thetaphi - B__rphi/tan(theta) + 2*B__thetaphi - D{theta}B__rphi + D{phi}B__rtheta/sin(theta))*e_r^e_theta^e_phi/r'
+        assert sstr(grad^B) == '(r*D{r}B__thetaphi - B__rphi/tan(theta) + 2*B__thetaphi - D{theta}B__rphi + D{phi}B__rtheta/sin(theta))*e_r^e_theta^e_phi/r'
 
     def test_rounding_numerical_components(self):
 
