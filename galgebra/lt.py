@@ -169,6 +169,22 @@ class Lt(printer.GaPrintable):
     def format(mat_fmt=False):
         Lt.mat_fmt = mat_fmt
 
+    @property
+    def coords(self):
+        # galgebra 0.6.0
+        warnings.warn(
+            "lt.coords is deprecated, use `lt.Ga.coords` instead.",
+            DeprecationWarning, stacklevel=2)
+        return self.Ga.coords
+
+    @property
+    def X(self):
+        # galgebra 0.6.0
+        warnings.warn(
+            "lt.X is deprecated, use `lt.Ga.coord_vec` instead.",
+            DeprecationWarning, stacklevel=2)
+        return self.Ga.coord_vec
+
     def __init__(self, *args, ga, f=False, mode='g'):
         """
         Parameters
@@ -184,8 +200,6 @@ class Lt(printer.GaPrintable):
         self.fct_flg = f
         self.mode = mode
         self.Ga = ga
-        self.coords = ga.coords
-        self.X = ga.coord_vec
         self.spinor = False
         self.rho_sq = None
 
