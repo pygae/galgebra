@@ -155,8 +155,6 @@ class Lt(printer.GaPrintable):
 
     """
 
-    mat_fmt = False
-
     @staticmethod
     def setup(ga):
         # galgebra 0.5.0
@@ -164,10 +162,6 @@ class Lt(printer.GaPrintable):
             "Lt.setup(ga) is deprecated, use `ga.coords` and `ga.coord_vec` "
             "directly.", DeprecationWarning, stacklevel=2)
         return ga.coords, ga.coord_vec
-
-    @staticmethod
-    def format(mat_fmt=False):
-        Lt.mat_fmt = mat_fmt
 
     def __init__(self, *args, ga, f=False, mode='g'):
         """
