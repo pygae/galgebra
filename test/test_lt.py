@@ -1,7 +1,7 @@
 import unittest
 
 import pytest
-from sympy import symbols
+from sympy import symbols, S, Matrix
 
 from galgebra.ga import Ga
 from galgebra.lt import Mlt
@@ -16,6 +16,27 @@ class TestLt(unittest.TestCase):
         A = base.lt([a+b, 2*a-b])
         assert str(A) == 'Lt(a) = a + b\nLt(b) = 2*a - b'
         assert str(A.matrix()) == 'Matrix([[1, 2], [1, -1]])'
+
+    def test_lt_function(self):
+        """ Test construction from a function """
+        base = Ga('a b', g=[1, 1], coords=symbols('x, y', real=True))
+        a, b = base.mv()
+
+        def not_linear(x):
+            return x * x
+        with pytest.raises(ValueError, match='linear'):
+            base.lt(not_linear)
+
+        def not_vector(x):
+            return x + S.One
+        with pytest.raises(ValueError, match='vector'):
+            base.lt(not_vector)
+
+        def ok(x):
+            return (x | b) * a + 2*x
+        f = base.lt(ok)
+        x = base.mv('x', 'vector')
+        assert f(x) == ok(x)
 
     def test_deprecations(self):
         base = Ga('a b', g=[1, 1], coords=symbols('x, y', real=True))

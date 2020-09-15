@@ -233,19 +233,21 @@ class Lt(printer.GaPrintable):
             Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords, mode=self.mode, f=self.fct_flg)
             self.__init__(Amat, ga=self.Ga)
 
-        else:  # Linear multivector function input
+        elif callable(mat_rep):  # Linear multivector function input
             # F is a multivector function to be tested for linearity
             F = mat_rep
             a = mv.Mv('a', 'vector', ga=self.Ga)
             b = mv.Mv('b', 'vector', ga=self.Ga)
-            if F(a + b) == F(a) + F(b):
-                self.lt_dict = {}
-                for base in self.Ga.basis:
-                    self.lt_dict[base] = (F(mv.Mv(base, ga=self.Ga))).obj
-                    if not self.lt_dict[base].is_vector():
-                        raise ValueError(str(mat_rep) + ' is not supported for Lt definition\n')
-            else:
-                raise ValueError(str(mat_rep) + ' is not supported for Lt definition\n')
+            if F(a + b) != F(a) + F(b):
+                raise ValueError('{} is not linear'.format(F))
+            self.lt_dict = {}
+            for base in self.Ga.basis:
+                out = F(mv.Mv(base, ga=self.Ga))
+                if not out.is_vector():
+                    raise ValueError('{} must return vectors'.format(F))
+                self.lt_dict[base] = out.obj
+        else:
+            raise TypeError("Unsupported argument type {}".format(type(mat_rep)))
 
     def __call__(self, v, obj=False):
         r"""
