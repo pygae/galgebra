@@ -116,7 +116,8 @@ def Dictionary_to_Matrix(dict_rep, ga):
             lst_mat_row[index] = coef
 
         lst_mat.append(lst_mat_row)
-    return Transpose(Matrix(lst_mat))
+    # expand the transpose
+    return Transpose(Matrix(lst_mat)).doit()
 
 
 class Lt(printer.GaPrintable):
