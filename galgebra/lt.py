@@ -90,16 +90,16 @@ def Symbolic_Matrix(root, coords=None, mode='g', f=False, sub=True):
 
 def Matrix_to_dictionary(mat_rep, basis):
     """ Convert matrix representation of linear transformation to dictionary """
-    dict_rep = {}
     n = len(basis)
     if mat_rep.rows != n or mat_rep.cols != n:
         raise ValueError('Matrix and Basis dimensions not equal for Matrix = ' + str(mat_rep))
     n_range = list(range(n))
-    for row in n_range:
-        dict_rep[basis[row]] = S.Zero
-        for col in n_range:
-            dict_rep[basis[row]] += mat_rep[col, row]*basis[col]
-    return dict_rep
+    return {
+        basis[row]: sum(
+            (mat_rep[col, row]*basis[col] for col in n_range), S.Zero
+        )
+        for row in n_range
+    }
 
 
 def Dictionary_to_Matrix(dict_rep, ga):
