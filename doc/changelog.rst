@@ -2,6 +2,10 @@
 Changelog
 =========
 
+- :support:`454` The ``l.coords`` and ``l.X`` attributes of :class:`galgebra.lt.Lt` objects are deprecated in favor of using ``l.Ga.coords`` and ``l.Ga.coord_vec``.
+
+- :feature:`454` :class:`galgebra.lt.Lt` objects can now be used with :class:`~galgebra.ga.Ga`\ s that are not constructed with a ``coords`` argument.
+
 - :feature:`450` ANSI printing can now be turned off with ``Eprint(deriv=None, fct=None, base=None)``.
 
 - :support:`450` Many undocumented parts of :func:`galgebra.printer.Eprint` have been removed:
