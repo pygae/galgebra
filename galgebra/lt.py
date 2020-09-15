@@ -95,10 +95,10 @@ def Matrix_to_dictionary(mat_rep, basis):
         raise ValueError('Matrix and Basis dimensions not equal for Matrix = ' + str(mat_rep))
     n_range = list(range(n))
     return {
-        basis[row]: sum(
-            (mat_rep[col, row]*basis[col] for col in n_range), S.Zero
+        basis[col]: sum(
+            (mat_rep[row, col]*basis[row] for row in n_range), S.Zero
         )
-        for row in n_range
+        for col in n_range
     }
 
 
