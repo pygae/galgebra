@@ -827,7 +827,10 @@ def Format(Fmode: bool = True, Dmode: bool = True, inverse='full'):
             init_printing(
                 use_latex='mathjax',
                 latex_mode='equation*',
-                latex_printer=latex
+                latex_printer=latex,
+                # Affects only the plaintext printing, and makes our printing
+                # tests easier to maintain
+                wrap_line=False,
             )
 
     return

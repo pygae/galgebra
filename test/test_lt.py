@@ -17,6 +17,14 @@ class TestLt(unittest.TestCase):
         assert str(A) == 'Lt(a) = a + b\nLt(b) = 2*a - b'
         assert str(A.matrix()) == 'Matrix([[1, 2], [1, -1]])'
 
+    def test_deprecations(self):
+        base = Ga('a b', g=[1, 1], coords=symbols('x, y', real=True))
+        l = base.lt([[1, 2], [3, 4]])
+        with pytest.warns(DeprecationWarning):
+            assert l.X == l.Ga.coord_vec
+        with pytest.warns(DeprecationWarning):
+            assert l.coords == l.Ga.coords
+
 
 class TestMlt(unittest.TestCase):
 
