@@ -104,22 +104,16 @@ def Matrix_to_dictionary(mat_rep, basis):
 
 def Dictionary_to_Matrix(dict_rep, ga):
     """ Convert dictionary representation of linear transformation to matrix """
-    basis = list(dict_rep.keys())
-    n = len(basis)
-    n_range = list(range(n))
     lst_mat = []  # list representation of sympy matrix
-    for row in n_range:
-        e_row = ga.basis[row]
-        lst_mat_row = n * [S.Zero]
+    for e_row in ga.basis:
+        lst_mat_row = len(ga.basis) * [S.Zero]
 
-        if e_row in basis:  # If not in basis row all zeros
-            element = dict_rep[e_row]
-            if isinstance(element, mv.Mv):
-                element = element.obj
-            coefs, bases = metric.linear_expand(element)
-            for coef, base in zip(coefs, bases):
-                index = ga.basis.index(base)
-                lst_mat_row[index] = coef
+        element = dict_rep.get(e_row, S.Zero)
+        if isinstance(element, mv.Mv):
+            element = element.obj
+        for coef, base in metric.linear_expand_terms(element):
+            index = ga.basis.index(base)
+            lst_mat_row[index] = coef
 
         lst_mat.append(lst_mat_row)
     return Transpose(Matrix(lst_mat))
