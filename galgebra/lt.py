@@ -429,24 +429,14 @@ class Lt(printer.GaPrintable):
             return s[:-1]
 
     def _latex(self, print_obj):
-
-        if self.spinor:
-            s = '\\left \\{ \\begin{array}{ll} '
-            for base in self.Ga.basis:
-                str_base = print_obj._print(base)
-                s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj._print(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
-            s = s[:-3] + ' \\end{array} \\right \\} \n'
-            return s
-        else:
-            s = '\\left \\{ \\begin{array}{ll} '
-            for base in self.Ga.basis:
-                str_base = print_obj._print(base)
-                if base in self.lt_dict:
-                    s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj._print(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
-                else:
-                    s += 'L \\left ( ' + str_base + '\\right ) =& 0 \\\\ '
-            s = s[:-3] + ' \\end{array} \\right \\} \n'
-            return s
+        parts = []
+        for base in self.Ga.basis:
+            if self.spinor:
+                val = self.R * mv.Mv(base, ga=self.Ga) * self.Rrev
+            else:
+                val = mv.Mv(self.lt_dict.get(base, S.Zero), ga=self.Ga)
+            parts.append(print_obj._print(base) + ' &\\mapsto ' + print_obj._print(val))
+        return '\\left\\{ \\begin{aligned} ' + ' \\\\ '.join(parts) + ' \\end{aligned} \\right\\}'
 
     def Fmt(self, fmt=1, title=None) -> printer.GaPrintable:
         return printer._FmtResult(self, title)
