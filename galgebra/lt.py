@@ -8,6 +8,7 @@ import itertools
 import warnings
 from copy import copy
 from functools import reduce
+from typing import Mapping
 
 from sympy import (
     expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add, Expr
@@ -15,6 +16,7 @@ from sympy import (
 from sympy.printing.latex import LatexPrinter as _LatexPrinter
 from sympy.printing.str import StrPrinter as _StrPrinter
 
+from ._utils import cached_property as _cached_property
 
 from . import printer
 from . import metric
@@ -193,7 +195,6 @@ class Lt(printer.GaPrintable):
         self.rho_sq = None
 
         self.lt_dict = {}
-        self.mv_dict = None
         self.mat = None
 
         if isinstance(mat_rep, dict):  # Dictionary input
@@ -249,6 +250,22 @@ class Lt(printer.GaPrintable):
         else:
             raise TypeError("Unsupported argument type {}".format(type(mat_rep)))
 
+    @_cached_property
+    def mv_dict(self) -> Mapping[Expr, Expr]:
+        # dict for linear transformation of multivector
+        if self.spinor:
+            # no lt_dict
+            return None
+
+        return {
+            blade: reduce(
+                self.Ga.wedge,
+                (self.Ga.basis[i].xreplace(self.lt_dict) for i in index),
+                S.One
+            )
+            for index, blade in self.Ga.indexes_to_blades_dict.items()
+        }
+
     def __call__(self, v, obj=False):
         r"""
         Returns the image of the multivector :math:`A` under the linear transformation :math:`L`.
@@ -284,19 +301,6 @@ class Lt(printer.GaPrintable):
                 mv_obj = v.obj
         else:
             mv_obj = mv.Mv(v, ga=self.Ga).obj
-
-        if self.mv_dict is None:  # Build dict for linear transformation of multivector
-            self.mv_dict = copy(self.lt_dict)
-            for key in self.Ga.blades[2:]:
-                for blade in key:
-                    index = self.Ga.indexes_to_blades_dict.inverse[blade]
-
-                    self.mv_dict[blade] = reduce(
-                        self.Ga.wedge,
-                        # note: this recurses!
-                        (self(self.Ga.basis[i], obj=True) for i in index),
-                        S.One
-                    )
 
         lt_v = mv_obj.xreplace(self.mv_dict)
         if obj:

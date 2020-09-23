@@ -36,7 +36,10 @@ class TestLt(unittest.TestCase):
             return (x | b) * a + 2*x
         f = base.lt(ok)
         x = base.mv('x', 'vector')
+        y = base.mv('y', 'vector')
         assert f(x) == ok(x)
+        assert f(x^y) == ok(x)^ok(y)
+        assert f(1 + 2*(x^y)) == 1 + 2*(ok(x)^ok(y))
 
     def test_deprecations(self):
         base = Ga('a b', g=[1, 1], coords=symbols('x, y', real=True))
