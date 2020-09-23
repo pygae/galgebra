@@ -90,39 +90,34 @@ def Symbolic_Matrix(root, coords=None, mode='g', f=False, sub=True):
 
 def Matrix_to_dictionary(mat_rep, basis):
     """ Convert matrix representation of linear transformation to dictionary """
-    dict_rep = {}
     n = len(basis)
     if mat_rep.rows != n or mat_rep.cols != n:
         raise ValueError('Matrix and Basis dimensions not equal for Matrix = ' + str(mat_rep))
     n_range = list(range(n))
-    for row in n_range:
-        dict_rep[basis[row]] = S.Zero
-        for col in n_range:
-            dict_rep[basis[row]] += mat_rep[col, row]*basis[col]
-    return dict_rep
+    return {
+        basis[col]: sum(
+            (mat_rep[row, col]*basis[row] for row in n_range), S.Zero
+        )
+        for col in n_range
+    }
 
 
 def Dictionary_to_Matrix(dict_rep, ga):
     """ Convert dictionary representation of linear transformation to matrix """
-    basis = list(dict_rep.keys())
-    n = len(basis)
-    n_range = list(range(n))
     lst_mat = []  # list representation of sympy matrix
-    for row in n_range:
-        e_row = ga.basis[row]
-        lst_mat_row = n * [S.Zero]
+    for e_row in ga.basis:
+        lst_mat_row = len(ga.basis) * [S.Zero]
 
-        if e_row in basis:  # If not in basis row all zeros
-            element = dict_rep[e_row]
-            if isinstance(element, mv.Mv):
-                element = element.obj
-            coefs, bases = metric.linear_expand(element)
-            for coef, base in zip(coefs, bases):
-                index = ga.basis.index(base)
-                lst_mat_row[index] = coef
+        element = dict_rep.get(e_row, S.Zero)
+        if isinstance(element, mv.Mv):
+            element = element.obj
+        for coef, base in metric.linear_expand_terms(element):
+            index = ga.basis.index(base)
+            lst_mat_row[index] = coef
 
         lst_mat.append(lst_mat_row)
-    return Transpose(Matrix(lst_mat))
+    # expand the transpose
+    return Transpose(Matrix(lst_mat)).doit()
 
 
 class Lt(printer.GaPrintable):
@@ -201,11 +196,7 @@ class Lt(printer.GaPrintable):
         self.mv_dict = None
         self.mat = None
 
-        if isinstance(mat_rep, tuple):  # tuple input
-            for key in mat_rep:
-                self.lt_dict[key] = mat_rep[key]
-
-        elif isinstance(mat_rep, dict):  # Dictionary input
+        if isinstance(mat_rep, dict):  # Dictionary input
             for key in mat_rep:
                 self.lt_dict[key] = mat_rep[key]
 
@@ -242,19 +233,21 @@ class Lt(printer.GaPrintable):
             Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords, mode=self.mode, f=self.fct_flg)
             self.__init__(Amat, ga=self.Ga)
 
-        else:  # Linear multivector function input
+        elif callable(mat_rep):  # Linear multivector function input
             # F is a multivector function to be tested for linearity
             F = mat_rep
             a = mv.Mv('a', 'vector', ga=self.Ga)
             b = mv.Mv('b', 'vector', ga=self.Ga)
-            if F(a + b) == F(a) + F(b):
-                self.lt_dict = {}
-                for base in self.Ga.basis:
-                    self.lt_dict[base] = (F(mv.Mv(base, ga=self.Ga))).obj
-                    if not self.lt_dict[base].is_vector():
-                        raise ValueError(str(mat_rep) + ' is not supported for Lt definition\n')
-            else:
-                raise ValueError(str(mat_rep) + ' is not supported for Lt definition\n')
+            if F(a + b) != F(a) + F(b):
+                raise ValueError('{} is not linear'.format(F))
+            self.lt_dict = {}
+            for base in self.Ga.basis:
+                out = F(mv.Mv(base, ga=self.Ga))
+                if not out.is_vector():
+                    raise ValueError('{} must return vectors'.format(F))
+                self.lt_dict[base] = out.obj
+        else:
+            raise TypeError("Unsupported argument type {}".format(type(mat_rep)))
 
     def __call__(self, v, obj=False):
         r"""
