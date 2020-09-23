@@ -290,10 +290,13 @@ class Lt(printer.GaPrintable):
             for key in self.Ga.blades[2:]:
                 for blade in key:
                     index = self.Ga.indexes_to_blades_dict.inverse[blade]
-                    lt_blade = self(self.Ga.basis[index[0]], obj=True)
-                    for i in index[1:]:
-                        lt_blade = self.Ga.wedge(lt_blade, self(self.Ga.basis[i], obj=True))
-                    self.mv_dict[blade] = lt_blade
+
+                    self.mv_dict[blade] = reduce(
+                        self.Ga.wedge,
+                        # note: this recurses!
+                        (self(self.Ga.basis[i], obj=True) for i in index),
+                        S.One
+                    )
 
         lt_v = mv_obj.xreplace(self.mv_dict)
         if obj:
