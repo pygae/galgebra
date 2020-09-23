@@ -176,6 +176,32 @@ class Lt(printer.GaPrintable):
             DeprecationWarning, stacklevel=2)
         return self.Ga.coord_vec
 
+    @property
+    def mode(self):
+        # galgebra 0.6.0
+        warnings.warn(
+            "lt.mode is deprecated, inspect lt.matrix() and its transpose to "
+            "determine symmetry",
+            DeprecationWarning, stacklevel=2)
+        m = self.matrix()
+        if m == m.T:
+            return 's'
+        elif m == -m.T:
+            return 'a'
+        else:
+            return 'g'
+
+    @property
+    def fct_flg(self):
+        # galgebra 0.6.0
+        warnings.warn(
+            "lt.fct_flg is deprecated, inspect lt.matrix().free_symbols to "
+            "determine coordinate-dependence",
+            DeprecationWarning, stacklevel=2)
+        if self.Ga.coords is None:
+            return False
+        return set(self.Ga.coords) <= self.matrix().free_symbols
+
     def __init__(self, *args, ga, f=False, mode='g'):
         """
         __init__(self, *args, ga, **kwargs)
@@ -222,8 +248,6 @@ class Lt(printer.GaPrintable):
             Only supported in the string constructor.
         """
         mat_rep = args[0]
-        self.fct_flg = f
-        self.mode = mode
         self.Ga = ga
         self.spinor = False
         self.rho_sq = None
@@ -265,7 +289,7 @@ class Lt(printer.GaPrintable):
                 raise ValueError('In Spinor input for Lt, S*S.rev() not a scalar!\n')
 
         elif isinstance(mat_rep, str):  # String input
-            Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords, mode=self.mode, f=self.fct_flg)
+            Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords, mode=mode, f=f)
             self.__init__(Amat, ga=self.Ga)
 
         elif callable(mat_rep):  # Linear multivector function input

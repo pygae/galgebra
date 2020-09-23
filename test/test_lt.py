@@ -49,6 +49,19 @@ class TestLt(unittest.TestCase):
         with pytest.warns(DeprecationWarning):
             assert l.coords == l.Ga.coords
 
+        l = base.lt('L', mode='a')
+        with pytest.warns(DeprecationWarning):
+            assert l.mode == 'a'
+        with pytest.warns(DeprecationWarning):
+            assert not l.fct_flg
+
+        l = base.lt('L', mode='s', f=True)
+        with pytest.warns(DeprecationWarning):
+            assert l.mode == 's'
+        with pytest.warns(DeprecationWarning):
+            assert l.fct_flg
+
+
 
 class TestMlt(unittest.TestCase):
 
