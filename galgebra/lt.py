@@ -178,14 +178,48 @@ class Lt(printer.GaPrintable):
 
     def __init__(self, *args, ga, f=False, mode='g'):
         """
+        __init__(self, *args, ga, **kwargs)
+
+        Note this constructor is overloaded, based on the type of the
+        positional argument:
+
+        .. class:: Lt(lt_dict: Dict[Expr, Expr], /, *, ga)
+            :noindex:
+
+            Construct from a dictionary mapping source basis blade expressions
+            to multivectors.
+
+        .. class:: Lt(lt_matrix: Matrix, /, *, ga)
+            :noindex:
+
+            Construct from the operation of matrix pre-multiplication.
+
+        .. class:: Lt(spinor: mv.Mv, /, *, ga)
+            :noindex:
+
+            Construct from a spinor / rotor, which need not square to one.
+
+        .. class:: Lt(func: Callable[[mv.Mv], mv.Mv], /, *, ga)
+            :noindex:
+
+            Construct from a function, which is tested for linearity.
+
+        .. class:: Lt(s: str, /, *, ga, f=False, mode='g')
+            :noindex:
+
+            Construct an appropriate matrix from a string `s`.
+
+
         Parameters
         ----------
-        ga :
-            Name of metric (geometric algebra)
+        ga : Ga
+            Geometric algebra which is the domain and codomain of this transform
         f : bool
-            True if Lt if function of coordinates
+            True if Lt if function of coordinates. Only supported in the string
+            constructor
         mode : str
-            g:general, s:symmetric, a:antisymmetric transformation
+            g:general, s:symmetric, a:antisymmetric transformation.
+            Only supported in the string constructor.
         """
         mat_rep = args[0]
         self.fct_flg = f
