@@ -36,7 +36,10 @@ class TestLt(unittest.TestCase):
             return (x | b) * a + 2*x
         f = base.lt(ok)
         x = base.mv('x', 'vector')
+        y = base.mv('y', 'vector')
         assert f(x) == ok(x)
+        assert f(x^y) == ok(x)^ok(y)
+        assert f(1 + 2*(x^y)) == 1 + 2*(ok(x)^ok(y))
 
     def test_deprecations(self):
         base = Ga('a b', g=[1, 1], coords=symbols('x, y', real=True))
@@ -45,6 +48,19 @@ class TestLt(unittest.TestCase):
             assert l.X == l.Ga.coord_vec
         with pytest.warns(DeprecationWarning):
             assert l.coords == l.Ga.coords
+
+        l = base.lt('L', mode='a')
+        with pytest.warns(DeprecationWarning):
+            assert l.mode == 'a'
+        with pytest.warns(DeprecationWarning):
+            assert not l.fct_flg
+
+        l = base.lt('L', mode='s', f=True)
+        with pytest.warns(DeprecationWarning):
+            assert l.mode == 's'
+        with pytest.warns(DeprecationWarning):
+            assert l.fct_flg
+
 
 
 class TestMlt(unittest.TestCase):
