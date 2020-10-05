@@ -567,35 +567,32 @@ class Metric(object):
 
     def normalize_metric(self):
 
-        if self.de is None:
-            return
+        # normalize derivatives
+        if self.de is not None:
+            # Generate mapping for renormalizing reciprocal basis vectors
+            renorm = [
+                (self.r_symbols[ib], self.r_symbols[ib] / self.e_norm[ib])
+                for ib in self.n_range  # e^{ib} --> e^{ib}/|e_{ib}|
+            ]
 
-        #  Generate mapping for renormalizing reciprocal basis vectors
-        renorm = [
-            (self.r_symbols[ib], self.r_symbols[ib] / self.e_norm[ib])
-            for ib in self.n_range  # e^{ib} --> e^{ib}/|e_{ib}|
-        ]
-
-        # Normalize derivatives of basis vectors
-
-        for x_i in self.n_range:
-            for jb in self.n_range:
-                self.de[x_i][jb] = Simp.apply((((self.de[x_i][jb].subs(renorm)
-                                              - diff(self.e_norm[jb], self.coords[x_i]) *
-                                              self.basis[jb]) / self.e_norm[jb])))
-        if self.debug:
+            # Normalize derivatives of basis vectors
             for x_i in self.n_range:
                 for jb in self.n_range:
-                    print(r'\partial_{' + str(self.coords[x_i]) + r'}\hat{e}_{' + str(self.coords[jb]) + '} =', self.de[x_i][jb])
+                    self.de[x_i][jb] = Simp.apply((((self.de[x_i][jb].subs(renorm)
+                                                  - diff(self.e_norm[jb], self.coords[x_i]) *
+                                                  self.basis[jb]) / self.e_norm[jb])))
+            if self.debug:
+                printer.oprint('e^{i}->e^{i}/|e_{i}|', renorm)
+                for x_i in self.n_range:
+                    for jb in self.n_range:
+                        print(r'\partial_{' + str(self.coords[x_i]) + r'}\hat{e}_{' + str(self.coords[jb]) + '} =', self.de[x_i][jb])
 
         # Normalize metric tensor
-
         for ib in self.n_range:
             for jb in self.n_range:
                 self.g[ib, jb] = Simp.apply(self.g[ib, jb] / (self.e_norm[ib] * self.e_norm[jb]))
 
         if self.debug:
-            printer.oprint('e^{i}->e^{i}/|e_{i}|', renorm)
             printer.oprint('renorm(g)', self.g)
 
     def signature(self):

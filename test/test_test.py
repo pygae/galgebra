@@ -1,6 +1,6 @@
 import sys
 import pytest
-from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol, Add, S
+from sympy import symbols, sin, cos, Rational, expand, collect, simplify, Symbol, Add, S, eye
 from galgebra.printer import Format, Eprint, latex, GaPrinter
 from galgebra.ga import Ga
 from galgebra.mv import Mv, Nga
@@ -157,6 +157,27 @@ class TestTest:
         assert latex(B|(eth^ephi)) == r'- B^{\theta \phi } {\left (r,\theta ,\phi  \right )}'
 
         assert str(grad^B) == '(r*D{r}B__thetaphi - B__rphi/tan(theta) + 2*B__thetaphi - D{theta}B__rphi + D{phi}B__rtheta/sin(theta))*e_r^e_theta^e_phi/r'
+
+    def test_norm_flag(self):
+        # gh-466
+        rho = symbols('rho', positive=True)
+        theta, phi = symbols('theta phi', real=True)
+        sph_coords = (rho, theta, phi)
+
+        p = (rho*sin(theta)*cos(phi), rho*sin(theta)*sin(phi), rho*cos(theta))
+        g_sph = Ga('e', coords=sph_coords, X=p, norm=True)
+        assert g_sph.g == eye(3)
+
+    def test_norm_flag_subspace(self):
+        # gh-466
+        # the coordinates here describe a submanifold
+        R = symbols('R', positive=True)
+        theta, z = symbols('theta z', real=True)
+        cyl2_coords = (theta, z)
+
+        p = (R*cos(theta), R*sin(theta), z)
+        g_cyl2 = Ga('e', coords=cyl2_coords, X=p, norm=True)
+        assert g_cyl2.g == eye(2)
 
     def test_rounding_numerical_components(self):
 
