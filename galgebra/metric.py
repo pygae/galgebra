@@ -788,24 +788,18 @@ class Metric(object):
             if i < j
         )
 
-        if self.coords is not None:
-            if self.norm:  # normalize basis, metric, and derivatives of normalized basis
-                if not self.is_ortho:
-                    raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
-                self.e_norm = [
-                    square_root_of_expr(self.g[i, i])
-                    for i in self.n_range
-                ]
-                if debug:
-                    printer.oprint('|e_{i}|', self.e_norm)
-            else:
-                self.e_norm = None
-
-        if self.norm:
-            if self.is_ortho:
-                self.normalize_metric()
-            else:
+        if self.norm:  # normalize basis, metric, and derivatives of normalized basis
+            if not self.is_ortho:
                 raise ValueError('!!!!Basis normalization only implemented for orthogonal basis!!!!')
+            self.e_norm = [
+                square_root_of_expr(self.g[i, i])
+                for i in self.n_range
+            ]
+            if debug:
+                printer.oprint('|e_{i}|', self.e_norm)
+            self.normalize_metric()
+        else:
+            self.e_norm = None
 
         if not self.g_is_numeric:
             self.signature()
