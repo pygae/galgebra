@@ -137,8 +137,9 @@ def main():
     print(r"#%t\bm{\gamma_{t}}+x\bm{\gamma_{x}} = t'\bm{\gamma'_{t}}+x'\bm{\gamma'_{x}} = R\lp t'\bm{\gamma_{t}}+x'\bm{\gamma_{x}}\rp R^{\dagger}")
 
     Xpp = R*Xp*R.rev()
-    Xpp = Xpp.collect()
-    Xpp = Xpp.trigsimp()
+    # note: slightly clumsy, as sympy/sympy#19917 made trigsimp not powerful enough by itself, and Mv.collect
+    # doesn't expose the full API of `Expr.collect`.
+    Xpp = Xpp.Ga.mv(Xpp.obj.collect([tp, xp]).trigsimp())
     print(r"%t\bm{\gamma_{t}}+x\bm{\gamma_{x}} =",Xpp)
     Xpp = Xpp.subs({sinh(alpha):gamma*beta,cosh(alpha):gamma})
 
