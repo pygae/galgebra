@@ -8,6 +8,7 @@ import itertools
 import warnings
 from copy import copy
 from functools import reduce
+from typing import Mapping
 
 from sympy import (
     expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add, Expr
@@ -15,6 +16,7 @@ from sympy import (
 from sympy.printing.latex import LatexPrinter as _LatexPrinter
 from sympy.printing.str import StrPrinter as _StrPrinter
 
+from ._utils import cached_property as _cached_property
 
 from . import metric
 from . import mv
@@ -92,39 +94,34 @@ def Symbolic_Matrix(root, coords=None, mode='g', f=False, sub=True):
 
 def Matrix_to_dictionary(mat_rep, basis):
     """ Convert matrix representation of linear transformation to dictionary """
-    dict_rep = {}
     n = len(basis)
     if mat_rep.rows != n or mat_rep.cols != n:
         raise ValueError('Matrix and Basis dimensions not equal for Matrix = ' + str(mat_rep))
     n_range = list(range(n))
-    for row in n_range:
-        dict_rep[basis[row]] = S.Zero
-        for col in n_range:
-            dict_rep[basis[row]] += mat_rep[col, row]*basis[col]
-    return dict_rep
+    return {
+        basis[col]: sum(
+            (mat_rep[row, col]*basis[row] for row in n_range), S.Zero
+        )
+        for col in n_range
+    }
 
 
 def Dictionary_to_Matrix(dict_rep, ga):
     """ Convert dictionary representation of linear transformation to matrix """
-    basis = list(dict_rep.keys())
-    n = len(basis)
-    n_range = list(range(n))
     lst_mat = []  # list representation of sympy matrix
-    for row in n_range:
-        e_row = ga.basis[row]
-        lst_mat_row = n * [S.Zero]
+    for e_row in ga.basis:
+        lst_mat_row = len(ga.basis) * [S.Zero]
 
-        if e_row in basis:  # If not in basis row all zeros
-            element = dict_rep[e_row]
-            if isinstance(element, mv.Mv):
-                element = element.obj
-            coefs, bases = metric.linear_expand(element)
-            for coef, base in zip(coefs, bases):
-                index = ga.basis.index(base)
-                lst_mat_row[index] = coef
+        element = dict_rep.get(e_row, S.Zero)
+        if isinstance(element, mv.Mv):
+            element = element.obj
+        for coef, base in metric.linear_expand_terms(element):
+            index = ga.basis.index(base)
+            lst_mat_row[index] = coef
 
         lst_mat.append(lst_mat_row)
-    return Transpose(Matrix(lst_mat))
+    # expand the transpose
+    return Transpose(Matrix(lst_mat)).doit()
 
 
 class Lt(_Printable):
@@ -157,8 +154,6 @@ class Lt(_Printable):
 
     """
 
-    mat_fmt = False
-
     @staticmethod
     def setup(ga):
         # galgebra 0.5.0
@@ -167,39 +162,102 @@ class Lt(_Printable):
             "directly.", DeprecationWarning, stacklevel=2)
         return ga.coords, ga.coord_vec
 
-    @staticmethod
-    def format(mat_fmt=False):
-        Lt.mat_fmt = mat_fmt
+    @property
+    def coords(self):
+        # galgebra 0.6.0
+        warnings.warn(
+            "lt.coords is deprecated, use `lt.Ga.coords` instead.",
+            DeprecationWarning, stacklevel=2)
+        return self.Ga.coords
+
+    @property
+    def X(self):
+        # galgebra 0.6.0
+        warnings.warn(
+            "lt.X is deprecated, use `lt.Ga.coord_vec` instead.",
+            DeprecationWarning, stacklevel=2)
+        return self.Ga.coord_vec
+
+    @property
+    def mode(self):
+        # galgebra 0.6.0
+        warnings.warn(
+            "lt.mode is deprecated, inspect lt.matrix() and its transpose to "
+            "determine symmetry",
+            DeprecationWarning, stacklevel=2)
+        m = self.matrix()
+        if m == m.T:
+            return 's'
+        elif m == -m.T:
+            return 'a'
+        else:
+            return 'g'
+
+    @property
+    def fct_flg(self):
+        # galgebra 0.6.0
+        warnings.warn(
+            "lt.fct_flg is deprecated, inspect lt.matrix().free_symbols to "
+            "determine coordinate-dependence",
+            DeprecationWarning, stacklevel=2)
+        if self.Ga.coords is None:
+            return False
+        return set(self.Ga.coords) <= self.matrix().free_symbols
 
     def __init__(self, *args, ga, f=False, mode='g'):
         """
+        __init__(self, *args, ga, **kwargs)
+
+        Note this constructor is overloaded, based on the type of the
+        positional argument:
+
+        .. class:: Lt(lt_dict: Dict[Expr, Expr], /, *, ga)
+            :noindex:
+
+            Construct from a dictionary mapping source basis blade expressions
+            to multivectors.
+
+        .. class:: Lt(lt_matrix: Matrix, /, *, ga)
+            :noindex:
+
+            Construct from the operation of matrix pre-multiplication.
+
+        .. class:: Lt(spinor: mv.Mv, /, *, ga)
+            :noindex:
+
+            Construct from a spinor / rotor, which need not square to one.
+
+        .. class:: Lt(func: Callable[[mv.Mv], mv.Mv], /, *, ga)
+            :noindex:
+
+            Construct from a function, which is tested for linearity.
+
+        .. class:: Lt(s: str, /, *, ga, f=False, mode='g')
+            :noindex:
+
+            Construct an appropriate matrix from a string `s`.
+
+
         Parameters
         ----------
-        ga :
-            Name of metric (geometric algebra)
+        ga : Ga
+            Geometric algebra which is the domain and codomain of this transform
         f : bool
-            True if Lt if function of coordinates
+            True if Lt if function of coordinates. Only supported in the string
+            constructor
         mode : str
-            g:general, s:symmetric, a:antisymmetric transformation
+            g:general, s:symmetric, a:antisymmetric transformation.
+            Only supported in the string constructor.
         """
         mat_rep = args[0]
-        self.fct_flg = f
-        self.mode = mode
         self.Ga = ga
-        self.coords = ga.coords
-        self.X = ga.coord_vec
         self.spinor = False
         self.rho_sq = None
 
         self.lt_dict = {}
-        self.mv_dict = None
         self.mat = None
 
-        if isinstance(mat_rep, tuple):  # tuple input
-            for key in mat_rep:
-                self.lt_dict[key] = mat_rep[key]
-
-        elif isinstance(mat_rep, dict):  # Dictionary input
+        if isinstance(mat_rep, dict):  # Dictionary input
             for key in mat_rep:
                 self.lt_dict[key] = mat_rep[key]
 
@@ -233,22 +291,40 @@ class Lt(_Printable):
                 raise ValueError('In Spinor input for Lt, S*S.rev() not a scalar!\n')
 
         elif isinstance(mat_rep, str):  # String input
-            Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords, mode=self.mode, f=self.fct_flg)
+            Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords, mode=mode, f=f)
             self.__init__(Amat, ga=self.Ga)
 
-        else:  # Linear multivector function input
+        elif callable(mat_rep):  # Linear multivector function input
             # F is a multivector function to be tested for linearity
             F = mat_rep
             a = mv.Mv('a', 'vector', ga=self.Ga)
             b = mv.Mv('b', 'vector', ga=self.Ga)
-            if F(a + b) == F(a) + F(b):
-                self.lt_dict = {}
-                for base in self.Ga.basis:
-                    self.lt_dict[base] = (F(mv.Mv(base, ga=self.Ga))).obj
-                    if not self.lt_dict[base].is_vector():
-                        raise ValueError(str(mat_rep) + ' is not supported for Lt definition\n')
-            else:
-                raise ValueError(str(mat_rep) + ' is not supported for Lt definition\n')
+            if F(a + b) != F(a) + F(b):
+                raise ValueError('{} is not linear'.format(F))
+            self.lt_dict = {}
+            for base in self.Ga.basis:
+                out = F(mv.Mv(base, ga=self.Ga))
+                if not out.is_vector():
+                    raise ValueError('{} must return vectors'.format(F))
+                self.lt_dict[base] = out.obj
+        else:
+            raise TypeError("Unsupported argument type {}".format(type(mat_rep)))
+
+    @_cached_property
+    def mv_dict(self) -> Mapping[Expr, Expr]:
+        # dict for linear transformation of multivector
+        if self.spinor:
+            # no lt_dict
+            return None
+
+        return {
+            blade: reduce(
+                self.Ga.wedge,
+                (self.Ga.basis[i].xreplace(self.lt_dict) for i in index),
+                S.One
+            )
+            for index, blade in self.Ga.indexes_to_blades_dict.items()
+        }
 
     def __call__(self, v, obj=False):
         r"""
@@ -285,16 +361,6 @@ class Lt(_Printable):
                 mv_obj = v.obj
         else:
             mv_obj = mv.Mv(v, ga=self.Ga).obj
-
-        if self.mv_dict is None:  # Build dict for linear transformation of multivector
-            self.mv_dict = copy(self.lt_dict)
-            for key in self.Ga.blades[2:]:
-                for blade in key:
-                    index = self.Ga.indexes_to_blades_dict.inverse[blade]
-                    lt_blade = self(self.Ga.basis[index[0]], obj=True)
-                    for i in index[1:]:
-                        lt_blade = self.Ga.wedge(lt_blade, self(self.Ga.basis[i], obj=True))
-                    self.mv_dict[blade] = lt_blade
 
         lt_v = mv_obj.xreplace(self.mv_dict)
         if obj:
@@ -423,24 +489,14 @@ class Lt(_Printable):
             return s[:-1]
 
     def _latex(self, print_obj):
-
-        if self.spinor:
-            s = '\\left \\{ \\begin{array}{ll} '
-            for base in self.Ga.basis:
-                str_base = print_obj._print(base)
-                s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj._print(self.R * mv.Mv(base, ga=self.Ga) * self.Rrev) + ' \\\\ '
-            s = s[:-3] + ' \\end{array} \\right \\} \n'
-            return s
-        else:
-            s = '\\left \\{ \\begin{array}{ll} '
-            for base in self.Ga.basis:
-                str_base = print_obj._print(base)
-                if base in self.lt_dict:
-                    s += 'L \\left ( ' + str_base + '\\right ) =& ' + print_obj._print(mv.Mv(self.lt_dict[base], ga=self.Ga)) + ' \\\\ '
-                else:
-                    s += 'L \\left ( ' + str_base + '\\right ) =& 0 \\\\ '
-            s = s[:-3] + ' \\end{array} \\right \\} \n'
-            return s
+        parts = []
+        for base in self.Ga.basis:
+            if self.spinor:
+                val = self.R * mv.Mv(base, ga=self.Ga) * self.Rrev
+            else:
+                val = mv.Mv(self.lt_dict.get(base, S.Zero), ga=self.Ga)
+            parts.append(print_obj._print(base) + ' &\\mapsto ' + print_obj._print(val))
+        return '\\left\\{ \\begin{aligned} ' + ' \\\\ '.join(parts) + ' \\end{aligned} \\right\\}'
 
     def Fmt(self, fmt=1, title=None) -> _Printable:
         return _FmtResult(self, title)
