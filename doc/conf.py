@@ -62,6 +62,8 @@ extensions = [
 # latex. Leaving it here in case we change theme.
 html_logo = "images/galgebra.svg"
 
+bibtex_bibfiles = ['refs.bib']
+
 # -- nbsphinx configuration ---------------------------------------------------
 
 import galgebra
