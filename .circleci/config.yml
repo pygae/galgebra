@@ -21,7 +21,7 @@ defaults: &defaults
           # variables, so reassemble the list here
           PYTEST_ARGS=();
 
-          PYTEST_ARGS+=(-n 2 --dist loadscope);;
+          PYTEST_ARGS+=(-n 2 --dist loadscope);
 
           if [[ ! -z "$PYTEST_K_FILTER" ]]; then
             PYTEST_ARGS+=(-k "$PYTEST_K_FILTER");
