@@ -21,10 +21,7 @@ defaults: &defaults
           # variables, so reassemble the list here
           PYTEST_ARGS=();
 
-          # xdist crashes on 3.5, https://github.com/pygae/galgebra/issues/438
-          if [[ "$CIRCLE_JOB" != "python-3.5" ]]; then
-            PYTEST_ARGS+=(-n 2 --dist loadscope);
-          fi;
+          PYTEST_ARGS+=(-n 2 --dist loadscope);;
 
           if [[ ! -z "$PYTEST_K_FILTER" ]]; then
             PYTEST_ARGS+=(-k "$PYTEST_K_FILTER");
@@ -94,6 +91,10 @@ jobs:
       - image: circleci/python:3.8
 
   # make sure to keep setup.py in sync with these
+  "python-3.9":
+    <<: *defaults
+    docker:
+      - image: circleci/python:3.9
   "python-3.8":
     <<: *defaults
     docker:
@@ -106,13 +107,6 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/python:3.6
-  "python-3.5":
-    <<: *defaults
-    environment:
-      # the tutorial uses Python 3.6 syntax, for convenience.
-      PYTEST_K_FILTER: not examples/ipython/tutorial_algebra.ipynb
-    docker:
-      - image: circleci/python:3.5
 
   "publish":
     docker:
@@ -133,16 +127,16 @@ workflows:
             tags:
               only: /^v.*$/
 
-      - "python-3.8":
+      - "python-3.9":
           filters:
             tags:
               only: /^v.*$/
           requires: ["flake8"]
+      - "python-3.8":
+          requires: ["flake8"]
       - "python-3.7":
           requires: ["flake8"]
       - "python-3.6":
-          requires: ["flake8"]
-      - "python-3.5":
           requires: ["flake8"]
       - "python-3.7-symengine":
           requires: ["flake8"]
@@ -153,7 +147,7 @@ workflows:
 
       - publish:
           requires:
-            - "python-3.8"
+            - "python-3.9"
           filters:
             branches:
               ignore: /.*/
