@@ -62,6 +62,8 @@ extensions = [
 # latex. Leaving it here in case we change theme.
 html_logo = "images/galgebra.svg"
 
+bibtex_bibfiles = ['refs.bib']
+
 # -- nbsphinx configuration ---------------------------------------------------
 
 import galgebra
@@ -200,7 +202,6 @@ autodoc_default_options = {
 # you have to list all files with automodule here due to bug in sphinx and nbsphinx
 # https://github.com/spatialaudio/nbsphinx/issues/14
 autosummary_generate=['api']
-numpydoc_show_class_members = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
