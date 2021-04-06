@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import os
 from IPython.display import display_pretty
 
 
@@ -13,14 +14,17 @@ def check(name):
 
 
 def run(name):
+    # this makes Python < 3.9 behave like 3.9
+    abs_name = os.path.abspath(name)
     # stdout and stderr do not seem to go the right place in jupyter
     p = subprocess.run(
-        [sys.executable, '-Wdefault', name + '.py'],
+        [sys.executable, '-Wdefault', abs_name + '.py'],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         universal_newlines=True)
     sys.stdout.write(p.stdout)
     sys.stdout.flush()
-    sys.stderr.write(p.stderr)
+    # remove the absolute paths from deprecation warnings
+    sys.stderr.write(p.stderr.replace(abs_name, name))
     sys.stderr.flush()
 
     # this makes the error easier to read in nbval
