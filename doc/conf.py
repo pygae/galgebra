@@ -78,7 +78,7 @@ nbsphinx_timeout = 60
 # Some change in dependencies made us need to replace `var` with
 # `env.config.html_context['var']`.
 nbsphinx_prolog = r"""
-{% set docname = 'docs/' + env.doc2path(env.docname, base=None) %}
+{% set docname = 'doc/' + env.doc2path(env.docname, base=None) %}
 {% set git_ref = 'master' if not env.config.html_context['READTHEDOCS'] else
                  env.config.html_context['github_version']
                  if '.' not in env.config.html_context['current_version'] else
