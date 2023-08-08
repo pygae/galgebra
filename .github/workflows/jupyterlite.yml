@@ -17,22 +17,33 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.11'
       - name: Install the dependencies
         run: |
           python -m pip install -r doc/jupyterlite/requirements.txt
+      - name: Build galgebra wheel
+        # NOTE: This is how we include the current github version of the package into the
+        # jupyterlite instance; if we used a different method, we would only get the version
+        # currently on PyPI or conda-forge.
+        run: |
+          python setup.py bdist_wheel
+          mkdir -p pypi  # Must be relative to cwd of the jupyterlite build step below
+          cp dist/*.whl pypi/
       - name: Build the JupyterLite site
         run: |
+          shopt -s globstar  # Allow ** below
+          mkdir -p doc/jupyterlite/content/examples
+          cp examples/**/*.ipynb doc/jupyterlite/content/examples
           cp README.md doc/jupyterlite/content
-          jupyter lite build --contents doc/jupyterlite/content --output-dir dist
+          jupyter lite build --contents doc/jupyterlite/content --output-dir jupyterlite_dist
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./dist
+          path: ./jupyterlite_dist
 
   deploy:
     needs: build
-    #if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     permissions:
       pages: write
       id-token: write
