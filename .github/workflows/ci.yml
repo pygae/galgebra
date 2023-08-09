@@ -53,7 +53,7 @@ jobs:
       run: |
         python -m pip install flake8 flake8_formatter_junit_xml
         mkdir -p test-reports/flake8
-        flake8 --format=junit-xml --output-file=test-reports/flake8/results.xml
+        flake8
     - name: Test
       run: |
         PYTEST_ARGS=();
