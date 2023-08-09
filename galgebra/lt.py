@@ -754,13 +754,14 @@ class Mlt(printer.GaPrintable):
 
         else:
             if isinstance(f, types.FunctionType):  # Tensor defined by general multi-linear function
-                self.nargs = len(inspect.getfullargspec(f)[0])
+                args = inspect.getfullargspec(f)[0]
+                self.nargs = len(args)
                 self.f = f
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f(*tuple(Ga._mlt_a[0:self.nargs]))
             else:  # Tensor defined by component expression
                 self.f = None
-                self.nargs = len(args)
+                self.nargs = 0
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f
 
