@@ -9,12 +9,9 @@ Symbolic Geometric Algebra/Calculus package for SymPy.
 [![Documentation Status](https://readthedocs.org/projects/galgebra/badge/?version=latest)](https://galgebra.readthedocs.io/en/latest/?badge=latest)
 [![DOI](https://zenodo.org/badge/113447311.svg)](https://zenodo.org/badge/latestdoi/113447311)
 
+[![jupyterlite-badge](https://jupyterlite.rtfd.io/en/latest/_static/badge.svg)](https://pygae.github.io/galgebra/)
+
 ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/n_vector_positive_spherical.svg?sanitize=true)
-
-[![lite-badge]][lite]
-[lite-badge]: https://jupyterlite.rtfd.io/en/latest/_static/badge.svg
-[lite]: https://moble.github.io/MatchedFiltering/
-
 
 Development Status
 --------------------
