@@ -23,7 +23,7 @@ setup(
     package_dir={'galgebra': 'galgebra'},
     # Sympy 1.4 is needed for printing tests to pass, but 1.3 will still work
     install_requires=['sympy'],
-    python_requires='>=3.6.*',
+    python_requires='>=3.6',
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=[
