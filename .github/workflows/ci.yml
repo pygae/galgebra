@@ -27,7 +27,7 @@ jobs:
         include:
           - python-version: "3.7"
           - python-version: "3.7"
-            extra-env: "PIP_EXTRA_INSTALLATION='numpy symengine==0.5.0'"
+            extra-env: "PIP_EXTRA_INSTALLATION='numpy symengine==0.5.0' USE_SYMENGINE=1"
           - python-version: "3.7"
             extra-env: "PIP_EXTRA_INSTALLATION='sympy==1.4'"
           - python-version: "3.8"
