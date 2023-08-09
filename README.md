@@ -5,11 +5,16 @@ Symbolic Geometric Algebra/Calculus package for SymPy.
 
 [![PyPI](https://img.shields.io/pypi/v/galgebra.svg)](https://pypi.org/project/galgebra/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/galgebra.svg)](https://pypi.org/project/galgebra/)
-[![Build Status on CircleCI](https://circleci.com/gh/pygae/galgebra.svg?style=shield)](https://circleci.com/gh/pygae/galgebra)
+[![Python CI](https://github.com/pygae/galgebra/actions/workflows/ci.yml/badge.svg)](https://github.com/pygae/galgebra/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/galgebra/badge/?version=latest)](https://galgebra.readthedocs.io/en/latest/?badge=latest)
 [![DOI](https://zenodo.org/badge/113447311.svg)](https://zenodo.org/badge/latestdoi/113447311)
 
 ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/n_vector_positive_spherical.svg?sanitize=true)
+
+[![lite-badge]][lite]
+[lite-badge]: https://jupyterlite.rtfd.io/en/latest/_static/badge.svg
+[lite]: https://moble.github.io/MatchedFiltering/
+
 
 Development Status
 --------------------
