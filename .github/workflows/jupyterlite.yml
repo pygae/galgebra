@@ -35,11 +35,13 @@ jobs:
           mkdir -p doc/jupyterlite/content/examples
           cp examples/**/*.ipynb doc/jupyterlite/content/examples
           cp README.md doc/jupyterlite/content
-          jupyter lite build --contents doc/jupyterlite/content --output-dir jupyterlite_dist
+          mkdir -p ghpages_dist/jupyterlite
+          cp doc/jupyterlite/redirect.html ghpages_dist/index.html
+          jupyter lite build --contents doc/jupyterlite/content --output-dir ghpages_dist/jupyterlite
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./jupyterlite_dist
+          path: ./ghpages_dist
 
   deploy:
     needs: build
