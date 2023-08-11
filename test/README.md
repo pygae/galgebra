@@ -16,7 +16,7 @@ We are primarily using [nbval](https://github.com/computationalmodelling/nbval) 
 
 The test notebooks are used as a recorder of outputs (plain text, color ANSI console output, LaTeX), the author of the test notebook will need to visually inspect the outputs in Jupyter or [nbviewer](https://nbviewer.jupyter.org/) to confirm that GAlgebra is working as expected.
 
-Then `nbval` will be run as a plugin of `pytest` in the CI environment for various versions of Python or even of dependencies to ensure the behavior is identical by checking the actual outputs with the recorded outputs. See `.circleci/config.yml` for up-to-date instructions to run them in CI.
+Then `nbval` will be run as a plugin of `pytest` in the CI environment for various versions of Python or even of dependencies to ensure the behavior is identical by checking the actual outputs with the recorded outputs. See `.github/workflows/ci.yml` for up-to-date instructions to run them in CI.
 
 ### How to maintain the examples
 
