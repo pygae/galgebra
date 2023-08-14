@@ -760,10 +760,11 @@ class Mlt(printer.GaPrintable):
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f(*tuple(Ga._mlt_a[0:self.nargs]))
             else:  # Tensor defined by component expression
-                self.f = None
-                self.nargs = 0
-                Mlt.increment_slots(self.nargs, Ga)
-                self.fvalue = f
+                raise NotImplementedError
+                # self.f = None
+                # self.nargs = len(args)  # args isn't defined, which is why we raise NotImplementedError
+                # Mlt.increment_slots(self.nargs, Ga)
+                # self.fvalue = f
 
     def __call__(self, *args):
         """
