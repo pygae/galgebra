@@ -64,7 +64,7 @@ jobs:
           path: test-reports
 
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
 
   # symengine does not seem to install correctly with Python 3.8 yet
   "python-3.7-symengine":
@@ -73,14 +73,14 @@ jobs:
       PIP_EXTRA_INSTALLATION: numpy symengine==0.5.0
       USE_SYMENGINE: 1
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
   # sympy 1.4 does not claim to support Python 3.8
   "python-3.7-sympy-1.4":
     <<: *defaults
     environment:
       PIP_EXTRA_INSTALLATION: sympy==1.4
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
 
   "python-3.8-sympy-master":
     <<: *defaults
@@ -88,29 +88,29 @@ jobs:
       # use the archive url to prevent full git clone
       PIP_EXTRA_INSTALLATION: https://github.com/sympy/sympy/archive/master.zip
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
 
   # make sure to keep setup.py in sync with these
   "python-3.9":
     <<: *defaults
     docker:
-      - image: circleci/python:3.9
+      - image: cimg/python:3.9
   "python-3.8":
     <<: *defaults
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
   "python-3.7":
     <<: *defaults
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
   "python-3.6":
     <<: *defaults
     docker:
-      - image: circleci/python:3.6
+      - image: cimg/python:3.6
 
   "publish":
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
     steps:
       - checkout
       - run:
