@@ -1252,7 +1252,7 @@ class Mv(printer.GaPrintable):
             return (S.One/self_sq.obj)*self
         self_rev = self.rev()
         self_self_rev = self * self_rev
-        if(self_self_rev.is_scalar()):  # self*self.rev() is a scalar
+        if self_self_rev.is_scalar():  # self*self.rev() is a scalar
             """
             if self_self_rev.scalar() == S.Zero:
                 raise ValueError('!!!!In multivector inverse A*A.rev() is zero!!!!')
