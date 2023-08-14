@@ -7,13 +7,13 @@ defaults: &defaults
     - run:
         name: Install
         command: |
-          sudo pip install -r test_requirements.txt
-          sudo pip install -e .
+          pip install -r test_requirements.txt
+          pip install -e .
           if [ -n "$PIP_EXTRA_INSTALLATION" ]; then
             # deliberately not quoted
-            sudo pip install $PIP_EXTRA_INSTALLATION
+            pip install $PIP_EXTRA_INSTALLATION
           fi
-          sudo pip check
+          pip check
     - run:
         name: Test
         command: |
@@ -40,7 +40,7 @@ defaults: &defaults
         name: Coverage
         when: on_success
         command: |
-          sudo pip install codecov
+          pip install codecov
           codecov
     - store_test_results:
         path: test-reports
@@ -54,7 +54,7 @@ jobs:
       - run:
           name: Install
           command: |
-            sudo pip install flake8 flake8_formatter_junit_xml
+            pip install flake8 flake8_formatter_junit_xml
       - run:
           name: Lint
           command: |
