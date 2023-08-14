@@ -1964,22 +1964,10 @@ class Ga(metric.Metric):
 
         .. math:: e^{j}*(e_{i_{1}}\wedge ...\wedge e_{i_{r}})
         """
-        if mode == '*':
-            base = self.blade_to_base_rep(blade)
-            if left:
-                return self.base_to_blade_rep(self.mul(er, base))
-            else:
-                return self.base_to_blade_rep(self.mul(base, er))
-        elif mode == '^':
-            if left:
-                return self.wedge(er, blade)
-            else:
-                return self.wedge(blade, er)
+        if left:
+            return self.Mul(er, blade, mode=mode)
         else:
-            if left:
-                return self.Mul(er, blade, mode=mode)
-            else:
-                return self.Mul(blade, er, mode=mode)
+            return self.Mul(blade, er, mode=mode)
 
     def blade_derivation(self, blade: Symbol, ib: Union[int, Symbol]) -> Expr:
         """
