@@ -21,7 +21,6 @@ sys.path.append(os.path.abspath('_sphinxext'))
 
 import sphinx_rtd_theme
 import sphinx
-import releases_hack
 
 # -- Project information -----------------------------------------------------
 
@@ -250,8 +249,8 @@ pygments_style = 'sphinx'
 # If your project is hosted on Github, set the releases_github_path setting instead, 
 # to e.g. account/project. Releases will then use an appropriate Github URL for both
 # releases and issues.
-releases_github_path = 'pygae/galgebra'
-releases_release_uri = releases_hack.release_uri(releases_github_path)
+releases_github_path = "pygae/galgebra"
+releases_release_uri = "https://github.com/pygae/galgebra/tree/v%s"  # Need to specify 'v'
 
 # You may optionally set releases_debug = True to see debug output while building your docs.
 releases_debug = True
