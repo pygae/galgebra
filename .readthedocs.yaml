@@ -5,5 +5,7 @@ build:
     python: "3.11"
 
 python:
-   install:
-   - requirements: doc/readthedocs-pip-requirements.txt
+  install:
+    - requirements: doc/readthedocs-pip-requirements.txt
+    - method: pip
+      path: .
