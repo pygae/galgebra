@@ -10,12 +10,12 @@ class release_uri:
         self._path = releases_github_path
 
     def __contains__(self, item):
-        return item in self._path
+        return "%s" in "https://github.com/%s/tree/%s"
 
     def __mod__(self, release):
         if release[0].isdigit():
             release = "v" + release
         return 'https://github.com/%s/tree/%s' % (self._path, release)
 
-    def format(self, release):
-        return self.__mod__(release)
+    def format(self, /, number):
+        return self.__mod__(number)
