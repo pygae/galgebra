@@ -1,6 +1,5 @@
 # requirements for CI
-wheel
-sympy
+flake8
 pytest-cov
 ipython == 5.8.0; python_version == "2.7"
 nbval

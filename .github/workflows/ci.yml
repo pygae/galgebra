@@ -3,7 +3,7 @@ name: Python CI
 on:
   push:
     branches:
-      - master
+      - '*'
     tags: ['*']
   pull_request:
 
@@ -39,7 +39,6 @@ jobs:
         python -m pip check
     - name: Lint
       run: |
-        python -m pip install flake8
         flake8 -v
     - name: Test
       run: |
@@ -77,6 +76,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
+      - name: Install wheel
+        run: |
+          python -m pip install wheel
       - name: Build and upload package
         if: success()
         env:
