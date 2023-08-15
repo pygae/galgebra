@@ -6,4 +6,4 @@ build:
 
 python:
    install:
-   - requirements: docs/readthedocs-pip-requirements.txt
+   - requirements: doc/readthedocs-pip-requirements.txt
