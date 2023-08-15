@@ -9,6 +9,9 @@ class release_uri:
     def __init__(self, releases_github_path):
         self._path = releases_github_path
 
+    def __contains__(self, item):
+        return item in self._path
+
     def __mod__(self, release):
         if release[0].isdigit():
             release = "v" + release
