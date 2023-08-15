@@ -16,3 +16,6 @@ class release_uri:
         if release[0].isdigit():
             release = "v" + release
         return 'https://github.com/%s/tree/%s' % (self._path, release)
+
+    def format(self, release):
+        return self.__mod__(release)
