@@ -9,10 +9,10 @@ import warnings
 from typing import List, Tuple, Any, Iterable
 
 from sympy import Symbol, S, Add, simplify, diff, Expr, Dummy
+from sympy.printing.pretty.pretty import PrettyPrinter as _PrettyPrinter
 
-from . import printer
 from . import metric
-from .printer import ZERO_STR
+from ._utils.printable import Printable as _Printable
 
 
 def _consolidate_terms(terms):
@@ -69,7 +69,7 @@ def _eval_derivative_n_times_terms(terms, x, n):
 
 ################ Scalar Partial Differential Operator Class ############
 
-class _BaseDop(printer.GaPrintable):
+class _BaseDop(_Printable):
     """ Base class for differential operators - used to avoid accidental promotion """
     pass
 
@@ -116,7 +116,7 @@ class Sdop(_BaseDop):
 
     def _sympystr(self, print_obj):
         if len(self.terms) == 0:
-            return ZERO_STR
+            return ' 0 '
 
         self = self._with_sorted_terms()
         s = ''
@@ -139,9 +139,19 @@ class Sdop(_BaseDop):
         s = s[:-3]
         return s
 
+    def _pretty(self, print_obj: _PrettyPrinter):
+        from sympy.printing.pretty.stringpict import prettyForm
+        # The default for the pretty-printer is to use `str(x)`. We patch
+        # `__repr__(x)` to use our GaPrinter customizations in
+        # `galgebra.printer`, so for consistency with old behavior, we use
+        # `repr` instead of `str` here too.
+        #
+        # TODO: implement a full pretty-printer.
+        return prettyForm(repr(self))
+
     def _latex(self, print_obj):
         if len(self.terms) == 0:
-            return ZERO_STR
+            return ' 0 '
 
         self = self._with_sorted_terms()
 
@@ -368,6 +378,16 @@ class Pdop(_BaseDop):
             if n > 1:
                 s += '^' + print_obj._print(n)
         return s
+
+    def _pretty(self, print_obj: _PrettyPrinter):
+        from sympy.printing.pretty.stringpict import prettyForm
+        # The default for the pretty-printer is to use `str(x)`. We patch
+        # `__repr__(x)` to use our GaPrinter customizations in
+        # `galgebra.printer`, so for consistency with old behavior, we use
+        # `repr` instead of `str` here too.
+        #
+        # TODO: implement a full pretty-printer.
+        return prettyForm(repr(self))
 
     def _latex(self, print_obj):
         if self.order == 0:

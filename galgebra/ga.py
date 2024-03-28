@@ -15,7 +15,6 @@ from sympy import (
     symbols, sqrt, Matrix,
 )
 
-from . import printer
 from . import metric
 from . import mv
 from . import dop
@@ -1035,6 +1034,7 @@ class Ga(metric.Metric):
             return BasisBladeNoWedgeSymbol(*(self.basis[i] for i in base_index))
 
     def _print_basis_and_blade_debug(self) -> None:
+        from . import printer
         printer.oprint('indexes', self.indexes, 'list(indexes)', self.indexes.flat,
                        'blades', self.blades, 'list(blades)', self.blades.flat,
                        'indexes_to_blades_dict', self.indexes_to_blades_dict,
@@ -1895,6 +1895,7 @@ class Ga(metric.Metric):
                 sgn = -sgn
 
         if self.debug:
+            from . import printer
             printer.oprint('E', self.e, 'E**2', self.e_sq, 'unnormalized reciprocal basis =\n', r_basis)
             print('reciprocal basis test =')
             for ei in self.basis:

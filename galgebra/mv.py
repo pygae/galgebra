@@ -17,10 +17,12 @@ from sympy import exp as sympy_exp
 from sympy import N as Nsympy
 from sympy.printing.latex import LatexPrinter as _LatexPrinter
 from sympy.printing.str import StrPrinter as _StrPrinter
+from sympy.printing.pretty.pretty import PrettyPrinter as _PrettyPrinter
 
-from . import printer
+from ._utils.printable import Printable as _Printable
+from ._utils.printable_objects import FmtResult as _FmtResult
+from ._utils.printable_objects import WithSettings as _WithSettings
 from . import metric
-from .printer import ZERO_STR
 from ._utils import KwargParser as _KwargParser
 from . import dop
 
@@ -46,7 +48,7 @@ _StrPrinter._default_settings.update({
 ########################### Multivector Class ##########################
 
 
-class Mv(printer.GaPrintable):
+class Mv(_Printable):
     """
     Wrapper class for multivector objects (``self.obj``) so that it is easy
     to overload operators (``*``, ``^``, ``|``, ``<``, ``>``)  for the various
@@ -584,16 +586,13 @@ class Mv(printer.GaPrintable):
         else:
             return self * (S.One/A)
 
-    def __str__(self):
-        return printer.GaPrinter()._print(self)
-
     def __getitem__(self, key: int) -> 'Mv':
         '''
         get a specified grade of a multivector
         '''
         return self.grade(key)
 
-    def _sympystr(self, print_obj: printer.GaPrinter) -> str:
+    def _sympystr(self, print_obj: _StrPrinter) -> str:
 
         # note: this just replaces `self` for the rest of this function
         obj = expand(self.obj)
@@ -659,10 +658,20 @@ class Mv(printer.GaPrintable):
         else:
             return print_obj._print(self.obj)
 
+    def _pretty(self, print_obj: _PrettyPrinter):
+        from sympy.printing.pretty.stringpict import prettyForm
+        # The default for the pretty-printer is to use `str(x)`. We patch
+        # `__repr__(x)` to use our GaPrinter customizations in
+        # `galgebra.printer`, so for consistency with old behavior, we use
+        # `repr` instead of `str` here too.
+        #
+        # TODO: implement a full pretty-printer.
+        return prettyForm(repr(self))
+
     def _latex(self, print_obj: _LatexPrinter) -> str:
 
         if self.obj == S.Zero:
-            return ZERO_STR
+            return ' 0 '
 
         first_line = True
 
@@ -685,7 +694,7 @@ class Mv(printer.GaPrintable):
         self = Mv(obj, ga=self.Ga)
 
         if self.obj == S.Zero:
-            return ZERO_STR
+            return ' 0 '
 
         if self.is_blade_rep or self.Ga.is_ortho:
             base_keys = self.Ga.blades.flat
@@ -720,13 +729,12 @@ class Mv(printer.GaPrintable):
         sorted_terms = sorted(terms, key=operator.itemgetter(0))  # sort via base indexes
 
         if len(sorted_terms) == 1 and sorted_terms[0][1][2] == 0:  # scalar
-            return print_obj._print(printer.coef_simplify(sorted_terms[0][1][0]))
+            return print_obj._print(sorted_terms[0][1][0])
 
         lines = []
         old_grade = -1
         s = ''
         for (index, (coef, base, grade)) in sorted_terms:
-            coef = printer.coef_simplify(coef)
             # coef = simplify(coef)
             l_coef = print_obj._print(coef)
             if l_coef == '1' and base != S.One:
@@ -1156,7 +1164,7 @@ class Mv(printer.GaPrintable):
         else:
             self.obj += value * base
 
-    def Fmt(self, fmt: int = 1, title: str = None) -> printer.GaPrintable:
+    def Fmt(self, fmt: int = 1, title: str = None) -> _Printable:
         """
         Set format for printing of multivectors
 
@@ -1176,15 +1184,15 @@ class Mv(printer.GaPrintable):
         for latex.
         """
         if fmt is not None:
-            obj = printer._WithSettings(self, dict(galgebra_mv_fmt=fmt))
+            obj = _WithSettings(self, dict(galgebra_mv_fmt=fmt))
         else:
             obj = self
-        return printer._FmtResult(obj, title)
+        return _FmtResult(obj, title)
 
     def _repr_latex_(self) -> str:
         # overloaded to include the inferred title
         if self.title is not None:
-            return printer._FmtResult(self, self.title)._repr_latex_()
+            return _FmtResult(self, self.title)._repr_latex_()
         return super()._repr_latex_()
 
     def norm2(self) -> Expr:
@@ -1669,7 +1677,7 @@ class Dop(dop._BaseDop):
 
     def _sympystr(self, print_obj: _StrPrinter) -> str:
         if len(self.terms) == 0:
-            return ZERO_STR
+            return ' 0 '
 
         mv_terms = self.Dop_mv_expand(modes=simplify)
         s = ''
@@ -1703,7 +1711,7 @@ class Dop(dop._BaseDop):
 
     def _latex(self, print_obj: _LatexPrinter) -> str:
         if len(self.terms) == 0:
-            return ZERO_STR
+            return ' 0 '
 
         self.consolidate_coefs()
 
@@ -1744,12 +1752,12 @@ class Dop(dop._BaseDop):
         s = s.replace('+ -', '-')
         return s[:-3]
 
-    def Fmt(self, fmt: int = 1, title: str = None) -> printer.GaPrintable:
+    def Fmt(self, fmt: int = 1, title: str = None) -> _Printable:
         if fmt is not None:
-            obj = printer._WithSettings(self, dict(galgebra_mv_fmt=fmt))
+            obj = _WithSettings(self, dict(galgebra_mv_fmt=fmt))
         else:
             obj = self
-        return printer._FmtResult(obj, title)
+        return _FmtResult(obj, title)
 
     def _eval_derivative_n_times(self, x, n):
         return Dop(dop._eval_derivative_n_times_terms(self.terms, x, n), cmpflg=self.cmpflg, ga=self.Ga)

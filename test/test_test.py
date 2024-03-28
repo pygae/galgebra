@@ -105,6 +105,7 @@ class TestTest:
 
         X = x, y, z = symbols('x y z')
         o3d = Ga('e_x e_y e_z', g=[1, 1, 1], coords=X)
+        f = o3d.mv('f', 'scalar', f=True)
         ex, ey, ez = o3d.mv()
         grad = o3d.grad
 
