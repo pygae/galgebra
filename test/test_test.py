@@ -59,7 +59,7 @@ class TestTest:
         assert str(X) == 'X__x*e_x + X__y*e_y'
         assert str(A) == 'A + A__xy*e_x^e_y'
 
-        assert str((X|A)) == '-A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y)*e_x + A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y)*e_y'
+        assert str((X|A)) == 'A__xy*(-(e_x.e_y)*X__x - (e_y.e_y)*X__y)*e_x + A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y)*e_y'
         assert str((X<A)) == '-A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y)*e_x + A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y)*e_y'
         assert str((A>X)) == 'A__xy*((e_x.e_y)*X__x + (e_y.e_y)*X__y)*e_x - A__xy*((e_x.e_x)*X__x + (e_x.e_y)*X__y)*e_y'
 
