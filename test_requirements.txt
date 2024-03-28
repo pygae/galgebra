@@ -1,6 +1,6 @@
 # requirements for CI
 wheel
-sympy == 1.11
+sympy == 1.12
 flake8
 pytest-cov
 ipython == 5.8.0; python_version == "2.7"
