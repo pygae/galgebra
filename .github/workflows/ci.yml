@@ -52,8 +52,8 @@ jobs:
           --cov=galgebra \
           --nbval examples/ipython/ \
           test \
-          --current-env \
-          --sanitize-with test/.nbval_sanitize.cfg \
+          --nbval-current-env \
+          --nbval-sanitize-with test/.nbval_sanitize.cfg \
           "${PYTEST_ARGS[@]}"
     - name: Upload coverage to Codecov
       if: "matrix.python-version == '3.11'"
