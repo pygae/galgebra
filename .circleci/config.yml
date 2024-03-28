@@ -108,15 +108,15 @@ jobs:
     docker:
       - image: cimg/python:3.6
 
-  "publish":
-    docker:
-      - image: cimg/python:3.7
-    steps:
-      - checkout
-      - run:
-          name: Upload to PyPi
-          command: |
-            ./circle-build-package
+  # "publish":
+  #   docker:
+  #     - image: cimg/python:3.7
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Upload to PyPi
+  #         command: |
+  #           ./circle-build-package
 
 workflows:
   version: 2

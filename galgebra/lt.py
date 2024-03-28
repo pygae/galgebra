@@ -754,16 +754,17 @@ class Mlt(printer.GaPrintable):
 
         else:
             if isinstance(f, types.FunctionType):  # Tensor defined by general multi-linear function
-                args, _varargs, _kwargs, _defaults = inspect.getargspec(f)
+                args = inspect.getfullargspec(f)[0]
                 self.nargs = len(args)
                 self.f = f
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f(*tuple(Ga._mlt_a[0:self.nargs]))
             else:  # Tensor defined by component expression
-                self.f = None
-                self.nargs = len(args)
-                Mlt.increment_slots(self.nargs, Ga)
-                self.fvalue = f
+                raise NotImplementedError
+                # self.f = None
+                # self.nargs = len(args)  # args isn't defined, which is why we raise NotImplementedError
+                # Mlt.increment_slots(self.nargs, Ga)
+                # self.fvalue = f
 
     def __call__(self, *args):
         """
