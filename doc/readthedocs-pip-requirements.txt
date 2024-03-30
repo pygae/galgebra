@@ -11,6 +11,7 @@ ipykernel
 nbsphinx
 numba
 sphinx-rtd-theme
+sphinx_mdinclude
 
 sphinx-markdown-tables
 notedown

@@ -1,5 +1,4 @@
 .. mdinclude:: ../README.md
-    :end-before: <!-- begin:
 
 .. these are all hidden, because they render more clearly in the sidebar.
 

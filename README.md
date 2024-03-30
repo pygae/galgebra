@@ -48,7 +48,18 @@ Features
 
 Overloaded Python operators for basic GA operations:
 
-![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/basic_op.svg?sanitize=true)
+```math
+\begin{split}\begin{aligned}
+  A+B &=  \texttt{A+B} \\
+  A-B &=  \texttt{A-B} \\
+  AB &=  \texttt{A*B} \\
+  A \wedge B &=  \mathtt{A \verb!^! B} \\
+  A \cdot B &=  \texttt{A|B} \\
+  A \rfloor B &=  \texttt{A<B} \\
+  A \lfloor B &=  \texttt{A>B} \\
+  A/B &=  \texttt{A/B} \\
+\end{aligned}\end{split}
+```
 
 ### Geometric Calculus
 
@@ -59,7 +70,35 @@ Overloaded Python operators for basic GA operations:
 
 The various derivatives of a multivector function is accomplished by multiplying the gradient operator vector with the function:
 
-![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/grad.svg?sanitize=true) ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/grad_cmp.svg?sanitize=true)
+```math
+\begin{aligned}
+  \nabla F &=  \texttt{grad*F} \\
+  F \bar{\nabla} &=  \texttt{F*rgrad} \\
+  \nabla {\wedge}F &=  \mathtt{grad \verb!^! F} \\
+  F {\wedge}\bar{\nabla} &=  \mathtt{F \verb!^! rgrad} \\
+  \nabla \cdot F &=  \texttt{grad|F} \\
+  F \cdot \bar{\nabla} &=  \texttt{F|rgrad} \\
+  \nabla \rfloor F &=  \texttt{grad<F} \\
+  F \rfloor \bar{\nabla} &=  \texttt{F<rgrad} \\
+  \nabla \lfloor F &=  \texttt{grad>F} \\
+  F \lfloor \bar{\nabla} &= \texttt{F>rgrad}
+\end{aligned}
+```
+
+```math
+\begin{aligned}
+  F \nabla &=  \texttt{F*grad} \\
+  \bar{\nabla} F &=  \texttt{rgrad*F} \\
+  F {\wedge}\nabla &=  \mathtt{F \verb!^! grad} \\
+  \bar{\nabla} {\wedge}F &=  \mathtt{rgrad \verb!^! F} \\
+  F \cdot \nabla &=  \texttt{F|grad} \\
+  \bar{\nabla}\cdot F &=  \texttt{rgrad|F} \\
+  F \rfloor \nabla &=  \texttt{F<grad} \\
+  \bar{\nabla} \rfloor F &=  \texttt{rgrad<F} \\
+  F \lfloor \nabla &=  \texttt{F>grad} \\
+  \bar{\nabla} \lfloor F &= \texttt{rgrad>F}
+\end{aligned}
+```
 
 Tip: an example for getting `grad` and `rgrad` of a 3-d Euclidean geometric algebra in rectangular coordinates:
 
@@ -106,7 +145,9 @@ M.grade(3).Fmt(3,r'\langle \mathbf{M} \rangle _3')
 
 You will see:
 
-![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/st4_M3.svg?sanitize=true)
+```math
+\begin{aligned}   \langle \mathbf{M} \rangle _3 =& M^{txy}  \boldsymbol{e}_{t}\wedge \boldsymbol{e}_{x}\wedge \boldsymbol{e}_{y} \\  &  + M^{txz}  \boldsymbol{e}_{t}\wedge \boldsymbol{e}_{x}\wedge \boldsymbol{e}_{z} \\  &  + M^{tyz}  \boldsymbol{e}_{t}\wedge \boldsymbol{e}_{y}\wedge \boldsymbol{e}_{z} \\  &  + M^{xyz}  \boldsymbol{e}_{x}\wedge \boldsymbol{e}_{y}\wedge \boldsymbol{e}_{z}  \end{aligned}
+```
 
 You may also check out more examples [here](https://github.com/pygae/galgebra/blob/master/examples/).
 
