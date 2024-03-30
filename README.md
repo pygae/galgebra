@@ -48,7 +48,18 @@ Features
 
 Overloaded Python operators for basic GA operations:
 
-![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/basic_op.svg?sanitize=true)
+$$
+\begin{split}\begin{aligned}
+  A+B &=  \texttt{A+B} \\
+  A-B &=  \texttt{A-B} \\
+  AB &=  \texttt{A*B} \\
+  A \wedge B &=  \texttt{A \\^{} B} \\
+  A \cdot B &=  \texttt{A|B} \\
+  A \rfloor B &=  \texttt{A<B} \\
+  A \lfloor B &=  \texttt{A>B} \\
+  A/B &=  \texttt{A/B} \\
+\end{aligned}\end{split}
+$$
 
 ### Geometric Calculus
 
@@ -59,7 +70,35 @@ Overloaded Python operators for basic GA operations:
 
 The various derivatives of a multivector function is accomplished by multiplying the gradient operator vector with the function:
 
-![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/grad.svg?sanitize=true) ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/grad_cmp.svg?sanitize=true)
+$$
+\begin{aligned}
+  \nabla F &=  \texttt{grad\*F} \\
+  F \bar{\nabla} &=  \texttt{F\*rgrad} \\
+  \nabla {\wedge}F &=  \texttt{grad \\^{} F} \\
+  F {\wedge}\bar{\nabla} &=  \texttt{F \\^{} rgrad} \\
+  \nabla \cdot F &=  \texttt{grad|F} \\
+  F \cdot \bar{\nabla} &=  \texttt{F|rgrad} \\
+  \nabla \rfloor F &=  \texttt{grad<F} \\
+  F \rfloor \bar{\nabla} &=  \texttt{F<rgrad} \\
+  \nabla \lfloor F &=  \texttt{grad>F} \\
+  F \lfloor \bar{\nabla} &= \texttt{F>rgrad}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+  F \nabla &=  \texttt{F\*grad} \\
+  \bar{\nabla} F &=  \texttt{rgrad\*F} \\
+  F {\wedge}\nabla &=  \texttt{F \\^{} grad} \\
+  \bar{\nabla} {\wedge}F &=  \texttt{rgrad \\^{} F} \\
+  F \cdot \nabla &=  \texttt{F|grad} \\
+  \bar{\nabla}\cdot F &=  \texttt{rgrad|F} \\
+  F \rfloor \nabla &=  \texttt{F<grad} \\
+  \bar{\nabla} \rfloor F &=  \texttt{rgrad<F} \\
+  F \lfloor \nabla &=  \texttt{F>grad} \\
+  \bar{\nabla} \lfloor F &= \texttt{rgrad>F}
+\end{aligned}
+$$
 
 Tip: an example for getting `grad` and `rgrad` of a 3-d Euclidean geometric algebra in rectangular coordinates:
 
