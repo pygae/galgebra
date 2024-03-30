@@ -54,9 +54,7 @@ extensions = [
     'releases',
     'sphinxcontrib.bibtex',
     'sphinx_rtd_theme',
-
-    # local extensions
-    'md_include',
+    'sphinx_mdinclude'
 ]
 
 # This is not actually used as we have a template overload to render this with
