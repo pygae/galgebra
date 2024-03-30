@@ -179,12 +179,23 @@ galgebra_latex_macros = R"""
     \newcommand{\xRightarrow}[1]{\overset{#1}{\Rightarrow}}
 """
 
-# enable autonumbering
-mathjax_config = dict(TeX=dict(
-    equationNumbers=dict(autoNumber="AMS"),
-    extensions=["[Contrib]/preamble/preamble.js", "color.js"],
-    preamble=[galgebra_latex_macros]
-))
+# https://www.sphinx-doc.org/en/master/usage/extensions/math.html#module-sphinx.ext.mathjax
+# mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+
+# # enable autonumbering
+# mathjax_config = dict(TeX=dict(
+#     equationNumbers=dict(autoNumber="AMS"),
+#     extensions=["[Contrib]/preamble/preamble.js", "color.js"],
+#     preamble=[galgebra_latex_macros]
+# ))
+# https://www.sphinx-doc.org/en/master/usage/extensions/math.html#module-sphinx.ext.mathjax
+# https://docs.mathjax.org/en/latest/input/tex/extensions/autoload.html#autoload-options
+# https://docs.mathjax.org/en/latest/input/tex/eqnumbers.html
+mathjax3_config = dict(
+    tex=dict(
+        tags='ams'
+    )
+)
 
 
 # -- other extension configuration --------------------------------------------
