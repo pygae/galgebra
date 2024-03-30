@@ -1,7 +1,6 @@
 # requirements for CI
 sympy == 1.7
 pytest-cov
-ipython == 7.16.3; python_version == "2.7"
 nbval
 
 # needed by pytest-xdist
