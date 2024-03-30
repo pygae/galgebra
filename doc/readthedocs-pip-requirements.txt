@@ -10,16 +10,17 @@ scipy
 ipykernel
 nbsphinx
 numba
-sphinx_rtd_theme>=0.5.0
+sphinx-rtd-theme
+
 sphinx-markdown-tables
 notedown
-semantic-version==2.6.0
-releases>=1.6.1
+semantic-version
+releases
 sphinxcontrib-bibtex
 nbsphinx-link
 
 # the first release to support f-strings
-pygments >= 2.5.0
+pygments
 
 # previous releases did not render our README badges correctly
-recommonmark>=0.6.0
+recommonmark

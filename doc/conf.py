@@ -53,6 +53,7 @@ extensions = [
     'sphinx_markdown_tables',
     'releases',
     'sphinxcontrib.bibtex',
+    'sphinx_rtd_theme',
 
     # local extensions
     'md_include',
@@ -178,12 +179,23 @@ galgebra_latex_macros = R"""
     \newcommand{\xRightarrow}[1]{\overset{#1}{\Rightarrow}}
 """
 
-# enable autonumbering
-mathjax_config = dict(TeX=dict(
-    equationNumbers=dict(autoNumber="AMS"),
-    extensions=["[Contrib]/preamble/preamble.js", "color.js"],
-    preamble=[galgebra_latex_macros]
-))
+# https://www.sphinx-doc.org/en/master/usage/extensions/math.html#module-sphinx.ext.mathjax
+# mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+
+# # enable autonumbering
+# mathjax_config = dict(TeX=dict(
+#     equationNumbers=dict(autoNumber="AMS"),
+#     extensions=["[Contrib]/preamble/preamble.js", "color.js"],
+#     preamble=[galgebra_latex_macros]
+# ))
+# https://www.sphinx-doc.org/en/master/usage/extensions/math.html#module-sphinx.ext.mathjax
+# https://docs.mathjax.org/en/latest/input/tex/extensions/autoload.html#autoload-options
+# https://docs.mathjax.org/en/latest/input/tex/eqnumbers.html
+# mathjax3_config = dict(
+#     tex=dict(
+#         tags='ams'
+#     )
+# )
 
 
 # -- other extension configuration --------------------------------------------
@@ -231,7 +243,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -268,7 +280,7 @@ releases_unstable_prehistory = True
 #
 html_theme = "sphinx_rtd_theme"
 
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -283,11 +295,12 @@ html_theme_options = dict(
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_context = {
-    'css_files': [
-        '_static/theme_overrides.css',  # override wide tables in RTD theme
-        ],
-     }
+# html_context = {
+#     'css_files': [
+#         '_static/css/theme.css',
+#         '_static/theme_overrides.css',  # override wide tables in RTD theme
+#         ],
+#      }
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
