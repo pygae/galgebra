@@ -191,11 +191,11 @@ galgebra_latex_macros = R"""
 # https://www.sphinx-doc.org/en/master/usage/extensions/math.html#module-sphinx.ext.mathjax
 # https://docs.mathjax.org/en/latest/input/tex/extensions/autoload.html#autoload-options
 # https://docs.mathjax.org/en/latest/input/tex/eqnumbers.html
-mathjax3_config = dict(
-    tex=dict(
-        tags='ams'
-    )
-)
+# mathjax3_config = dict(
+#     tex=dict(
+#         tags='ams'
+#     )
+# )
 
 
 # -- other extension configuration --------------------------------------------
@@ -295,12 +295,12 @@ html_theme_options = dict(
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_context = {
-    'css_files': [
-        '_static/css/theme.css',
-        '_static/theme_overrides.css',  # override wide tables in RTD theme
-        ],
-     }
+# html_context = {
+#     'css_files': [
+#         '_static/css/theme.css',
+#         '_static/theme_overrides.css',  # override wide tables in RTD theme
+#         ],
+#      }
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
