@@ -17,14 +17,13 @@ Development Status
 ![PyPI - Status](https://img.shields.io/pypi/status/galgebra.svg)
 ![GitHub contributors](https://img.shields.io/github/contributors/pygae/galgebra.svg)
 [![Codecov](https://img.shields.io/codecov/c/github/pygae/galgebra.svg)](https://codecov.io/gh/pygae/galgebra)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/pygae/galgebra.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/pygae/galgebra/context:python)
 [![Maintainability](https://api.codeclimate.com/v1/badges/26d1c1b351d32d2b1097/maintainability)](https://codeclimate.com/github/pygae/galgebra/maintainability)
 
 [brombo/galgebra](https://github.com/brombo/galgebra) was originally written by Alan Bromborsky, but was no longer actively maintained, and as of 2019-11-25 no longer exists.
 
 [pygae/galgebra](https://github.com/pygae/galgebra) is a community fork, maintained by [Pythonic Geometric Algebra Enthusiasts](https://github.com/pygae).
 
-The fork supports Python 3, increases test coverage, set up CI and linters, maintains releases to [PyPI](https://pypi.org/project/galgebra/#history), improves [docs](http://galgebra.readthedocs.io) and has many bug fixes, see [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html).
+The fork supports Python 3, increases test coverage, sets up CI and linters, maintains releases to [PyPI](https://pypi.org/project/galgebra/#history), improves [docs](http://galgebra.readthedocs.io) and has many bug fixes, see [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html).
 
 Features
 --------------------
@@ -164,8 +163,12 @@ Installing GAlgebra
 ### Prerequisites
 
 - Works on Linux, Windows, Mac OSX
-- [Python](https://www.python.org/) >= 3.5  (0.4.x was the last supported release series for Python 2.7)
-- [SymPy](https://www.sympy.org) >= 1.3
+- [Python](https://www.python.org/) >= 3.8
+  - 0.5.0 was the last supported release for Python 3.5-3.7
+  - 0.4.x was the last supported release series for Python 2.7
+- [SymPy](https://www.sympy.org) >= 1.3 
+  - Only SymPy 1.12 is tested via CI, see `.github/workflows/ci.yml` for more details
+  - 0.5.0 was the last supported release for SymPy 1.7
 
 ### Installing GAlgebra From PyPI (Recommended for users)
 
