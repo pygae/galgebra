@@ -9,6 +9,7 @@ from sympy.core.function import AppliedUndef, UndefinedFunction
 from sympy.printing.pretty.stringpict import prettyForm, stringPict
 from sympy.printing.pretty.pretty_symbology import U
 
+
 __all__ = [
     'BasisVectorSymbol',
     'BasisBladeSymbol',
@@ -146,12 +147,18 @@ class DotProductSymbol(AtomicExpr):
         return prettyForm(*pform.parens())
 
 
-class MatrixFunction(UndefinedFunction):
+class MatrixFunctionClass(UndefinedFunction):
     """ Like a MatrixSymbol, but for functions. """
-    def __new__(mcl, name, m, n, **kwargs):
+    def __new__(mcl, name, shape, **kwargs):
         cls = super().__new__(mcl, name, (AppliedUndef, MatrixExpr), {}, **kwargs)
-        cls.shape = sympify(n, strict=True), sympify(n, strict=True)
+        m, n = shape
+        cls.shape = sympify(m, strict=True), sympify(n, strict=True)
         return cls
+
+
+# workaround until pygae/galgebra#495 is truely fixed
+def MatrixFunction(name, m, n):
+    return MatrixFunctionClass(name, (m, n))
 
 
 # workaround until sympy/sympy#19354 is merged
