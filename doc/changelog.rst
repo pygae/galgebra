@@ -6,11 +6,15 @@ Changelog
 
 - :bug:`495` ``MatrixFunction`` is broken since SymPy 1.11, which is required by initializing :class:`~galgebra.ga.Ga` with ``gsym`` and ``coords``, this is now fixed with a workaround (:issue:`507`).
 
-- :bug:`494` Extra ``\cdot`` in LaTeX output for multiplication between a numeric power and a polynomial with a leading numeric coefficient since SymPy 1.10, this has to be fixed by SymPy, before that, be cautious when seeing unexpected ``\cdot`` in LaTeX output.
+- :bug:`494` There is an extra ``\cdot`` in LaTeX output for multiplication between a numeric power and a polynomial with a leading numeric coefficient since SymPy 1.10. This has to be fixed by SymPy, before that, be cautious when seeing unexpected ``\cdot`` in LaTeX output.
 
 - :feature:`493` SymPy 1.9-1.12 are tested and supported.
 
 - :feature:`492` (also :issue:`473`) Support Python 3.8-3.11, drop support for earlier Python versions.
+
+- :support:`503` The README now supports Github dark mode, and is included by ``sphinx_mdinclude`` in Sphinx with improved support for TOC and math formulas.
+
+- :support:`497` The documentation is now built with the latest Sphinx (7.2.6) and MathJax 3.
 
 - :support:`487` CI has been changed to Github Actions.
 
@@ -49,9 +53,9 @@ Changelog
   * The class methods ``Eprint.Base``, ``Eprint.Fct``, ``Eprint.Deriv``, and ``Eprint.Strip``.
   * The class attributes ``Eprint.base``, ``Eprint.fct``, ``Eprint.deriv``, and ``Eprint.normal``.
 
-  If you were relying on these details to implement your own ansi printing, it is recommended that you use a package like ``colorama`` instead.
+  If you were relying on these details to implement your own ANSI printing, it is recommended that you use a package like ``colorama`` instead.
 
-- :bug:`448` Calling :func:`galgebra.printer.Eprint` no longer causes ansi escape codes to appear in the names of the coefficients of ``ga.mv('A', 'vector')``.
+- :bug:`448` Calling :func:`galgebra.printer.Eprint` no longer causes ANSI escape codes to appear in the names of the coefficients of ``ga.mv('A', 'vector')``.
 
 - :feature:`436` The ``Ga`` constructor now allows algebras with only a single basis vector, via a trailing comma in the list of bases.
   This enables algebras like the complex (``Ga('i,', g=[-1])``) and dual (``Ga('delta,', g=[0])``) numbers to be used.
