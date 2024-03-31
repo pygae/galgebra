@@ -2,6 +2,41 @@
 Changelog
 =========
 
+- :release:`0.5.1 <2024.03.31>`
+
+- :bug:`495` ``MatrixFunction`` is broken since SymPy 1.11, which is required by initializing :class:`~galgebra.ga.Ga` with ``gsym`` and ``coords``, this is now fixed with a workaround (:issue:`507`).
+
+- :bug:`494` There is an extra ``\cdot`` in LaTeX output for multiplication between a numeric power and a polynomial with a leading numeric coefficient since SymPy 1.10. This has to be fixed by SymPy, before that, be cautious when seeing unexpected ``\cdot`` in LaTeX output.
+
+- :feature:`493` SymPy 1.9-1.12 are tested and supported.
+
+- :feature:`492` (also :issue:`473`) Support Python 3.8-3.11, drop support for earlier Python versions.
+
+- :support:`503` The README now supports Github dark mode, and is included by ``sphinx_mdinclude`` in Sphinx with improved support for TOC and math formulas.
+
+- :support:`497` The documentation is now built with the latest Sphinx (7.2.6) and MathJax 3.
+
+- :support:`487` CI has been changed to Github Actions.
+
+- :bug:`468` Hyperbolic functions now requires explicit ``collect`` and ``trigsimp`` to simplify unlike SymPy 1.6.1 and before.
+
+- :support:`476` Make tests more robust by directly testing the printer, rather than ``__str__``.
+
+- :bug:`467` Basis vectors are not normalized in :class:`~galgebra.metric.Metric` with ``norm=True`` when derivatives of basis vectors aren't available.
+
+- :support:`459` Various cleanups and fixes to :class:`~galgebra.lt.Lt`:
+
+  * Construction of ``Lt`` from a linear function is fixed
+  * The broken construction of ``Lt`` from a tuple is removed
+  * The code of ``Dictionary_to_Matrix`` and ``Matrix_to_dictionary`` is improved
+  * Properties of ``Lt`` are tidied, documented, and better tested (:issue:`460`)
+
+- :support:`458` The output of :class:`~galgebra.lt.Lt` objects now use :math:`\mapsto` instead of naming the transformation.
+
+- :support:`457` Line-wrapping of the plaintext printing are disabled by default, as it makes reviewing the output easier, to re-enable it, call ``sympy.init_printing`` with ``wrap_line=True``.
+
+- :support:`455` The static method ``format`` and the attribute ``Lt.mat_fmt`` of :class:`galgebra.lt.Lt` are removed as they were never used.
+
 - :support:`454` The ``l.coords`` and ``l.X`` attributes of :class:`galgebra.lt.Lt` objects are deprecated in favor of using ``l.Ga.coords`` and ``l.Ga.coord_vec``.
 
 - :feature:`454` :class:`galgebra.lt.Lt` objects can now be used with :class:`~galgebra.ga.Ga`\ s that are not constructed with a ``coords`` argument.
@@ -18,9 +53,9 @@ Changelog
   * The class methods ``Eprint.Base``, ``Eprint.Fct``, ``Eprint.Deriv``, and ``Eprint.Strip``.
   * The class attributes ``Eprint.base``, ``Eprint.fct``, ``Eprint.deriv``, and ``Eprint.normal``.
 
-  If you were relying on these details to implement your own ansi printing, it is recommended that you use a package like ``colorama`` instead.
+  If you were relying on these details to implement your own ANSI printing, it is recommended that you use a package like ``colorama`` instead.
 
-- :bug:`448` Calling :func:`galgebra.printer.Eprint` no longer causes ansi escape codes to appear in the names of the coefficients of ``ga.mv('A', 'vector')``.
+- :bug:`448` Calling :func:`galgebra.printer.Eprint` no longer causes ANSI escape codes to appear in the names of the coefficients of ``ga.mv('A', 'vector')``.
 
 - :feature:`436` The ``Ga`` constructor now allows algebras with only a single basis vector, via a trailing comma in the list of bases.
   This enables algebras like the complex (``Ga('i,', g=[-1])``) and dual (``Ga('delta,', g=[0])``) numbers to be used.
