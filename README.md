@@ -249,5 +249,6 @@ Note that in the [doc/books](https://github.com/pygae/galgebra/blob/master/doc/b
 - `BookGA.pdf` which is a collection of notes on Geometric Algebra and Calculus based of "Geometric Algebra for Physicists" by Doran and Lasenby and on some papers by Lasenby and Hestenes.
 - `galgebra.pdf` which is the original main doc of GAlgebra in PDF format, while the math part is still valid, the part describing the installation and usage of GAlgebra is outdated, please read with caution or visit https://galgebra.readthedocs.io/ instead.
 - `Macdonald` which contains bundled supplementary materials for [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) by Alan Macdonald, see [here](https://github.com/pygae/galgebra/blob/master/doc/books/Macdonald/) and [here](https://github.com/pygae/galgebra/blob/master/examples/Macdonald/) for more information.
+  - Particularly, `GAlgebraPrimer.pdf` is an archived version of [GAlgebra Primer](http://www.faculty.luther.edu/~macdonal/GAlgebraPrimer.pdf) by Alan Macdonald, last updated on November 29, 2022.
 
 <!-- end: bundled-resources -->
