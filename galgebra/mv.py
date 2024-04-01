@@ -246,7 +246,7 @@ class Mv(printer.GaPrintable):
             for grade in range(ga.n + 1)
         ))
 
-    ### GSG code starts ###
+    # ## GSG code starts ###
     @staticmethod
     def _make_even(ga: 'Ga', __name: str, **kwargs) -> Expr:
         """ Make a general even multivector """
@@ -256,7 +256,7 @@ class Mv(printer.GaPrintable):
             Mv._make_grade(ga, __name, grade, **kwargs)
             for grade in range(0, ga.n + 1, 2)
         ))
-    ### GSG code ends ###
+    # ## GSG code ends ###
 
     @staticmethod
     def _make_odd(ga: 'Ga', __name: str, **kwargs) -> Expr:
@@ -414,7 +414,7 @@ class Mv(printer.GaPrintable):
         if blade.is_blade():
             self.characterise_Mv()
             blade.characterise_Mv()
-            blade_inv = blade.rev() / blade.qform()  #### GSG replaced .norm2() by .qform()
+            blade_inv = blade.rev() / blade.qform()  # ### GSG replaced .norm2() by .qform()
             grade_dict = self.Ga.grade_decomposition(self)
             blade_grade = blade.i_grade
             reflect = Mv(0, 'scalar', ga=self.Ga)
@@ -431,7 +431,7 @@ class Mv(printer.GaPrintable):
         # See Mv class functions documentation
         if blade.is_blade():
             blade.characterise_Mv()
-            blade_inv = blade.rev() / blade.qform()  #### GSG replaced .norm2() by .qform()
+            blade_inv = blade.rev() / blade.qform()  # ### GSG replaced .norm2() by .qform()
             return (self < blade) * blade_inv  # < is left contraction
         else:
             raise ValueError(str(blade) + 'is not a blade in project_in_blade(self, blade)')
@@ -952,7 +952,7 @@ class Mv(printer.GaPrintable):
         return self.versor_flg
 
     r'''
-    ### GSG start code ### 
+    ### GSG start code ###
     def is_versor(self) -> bool:
         """
         Presumes `self` is an invertible multivector.
@@ -964,7 +964,7 @@ class Mv(printer.GaPrintable):
         return (self.g_invol() * x * self.inv()).is_vector()
     ### GSG end code ###
     '''
-    
+
     def is_zero(self) -> bool:
         return self.obj == 0
 
@@ -1054,15 +1054,15 @@ class Mv(printer.GaPrintable):
             return sign * I * self
         else:
             return sign * self * I
-    
-    ### GSG code starts ###
+
+    # ## GSG code starts ###
     def undual(self) -> 'Mv':
         """
         Inverse method to multivector method `.dual()`, so both
         `A.dual().undual()` and `A.undual().dual` return `A`.
         """
         return self.Ga.I()**2 * self.dual()
-    ### GSG code ends ###
+    # ## GSG code ends ###
 
     def even(self) -> 'Mv':
         """ return even parts of multivector """
@@ -1071,8 +1071,8 @@ class Mv(printer.GaPrintable):
     def odd(self) -> 'Mv':
         """ return odd parts of multivector """
         return Mv(self.Ga.even_odd(self.obj, False), ga=self.Ga)
-        
-    ### GSG code starts ###
+
+    # ## GSG code starts ###
     def g_invol(self) -> 'Mv':
         """
         - Returns grade involute of multivector `self`; negates
@@ -1080,15 +1080,15 @@ class Mv(printer.GaPrintable):
         - Grade involution is its own inverse operation.
         """
         return self.even() - self.odd()
-    ### GSG code ends ###
+    # ## GSG code ends ###
 
     def rev(self) -> 'Mv':
         self = self.blade_rep()
         return Mv(self.Ga.reverse(self.obj), ga=self.Ga)
 
     __invert__ = rev  # allow `~x` to call x.rev()
-            
-    ### GSG code starts ###
+
+    # ## GSG code starts ###
     def ccon(self) -> 'Mv':
         """
         - Returns Clifford conjugate of multivector `self`, i.e.
@@ -1096,11 +1096,11 @@ class Mv(printer.GaPrintable):
         - Clifford conjugation is its own inverse operation.
         """
         return self.g_invol().rev()
-    ### GSG code ends ###        
+    # ## GSG code ends ###
 
-    ### GSG code starts ###
+    # ## GSG code starts ###
     def sp(self, B, switch='') -> Expr:    # scalar product
-        """ 
+        """
         - Returns scalar product of multivectors self and B.
         - Object returned is a real expression, not a 0-vector.
         - switch can be either '' (the empty string) or 'rev'.  The
@@ -1108,17 +1108,14 @@ class Mv(printer.GaPrintable):
           product with B is taken.
         """
         if not isinstance(B, Mv):
-            raise ValueError \
-                ("Right factor of sp must be a multivector")
-        if switch not in ['','rev']:
-            raise ValueError \
-                    ("switch must be '' or 'rev'.")
-        if switch == '': 
+            raise ValueError("Right factor of sp must be a multivector")
+        if switch not in ['', 'rev']:
+            raise ValueError("switch must be '' or 'rev'.")
+        if switch == '':
             return (self * B).scalar()
-        if switch == 'rev': 
+        if switch == 'rev':
             return (self.rev() * B).scalar()
-    ### GSG code ends ###
-
+    # ## GSG code ends ###
 
     def diff(self, coord) -> 'Mv':
         if self.Ga.coords is None:
@@ -1255,103 +1252,97 @@ class Mv(printer.GaPrintable):
             return printer._FmtResult(self, self.title)._repr_latex_()
         return super()._repr_latex_()
 
-
-    ### GSG code starts ###
+    # ## GSG code starts ###
     def qform(self) -> Expr:
         """
         - Returns the quadratic form of multivector self.
-        - Return value is a real SymPy expression, NOT a GAlgebra 0-vector.  
-        - Expression necessarily represents a nonnegative number 
+        - Return value is a real SymPy expression, NOT a GAlgebra 0-vector.
+        - Expression necessarily represents a nonnegative number
           only when self's geometric algebra has a Euclidean metric.
         """
-        return simplify( (self.rev()*self).scalar() )
-    ### GSG code ends ###
+        return simplify((self.rev()*self).scalar())
+    # ## GSG code ends ###
 
-
-    ### GSG code starts ###    
-    def norm2(self, hint:str='0') -> Expr:
+    # ## GSG code starts ###
+    def norm2(self, hint: str = '0') -> Expr:
         """
         - Returns the normsquared of multivector self, defined as the
           absolute value of the quadratic form at self.
         - Return value is a real SymPy expression, NOT a GAlgebra 0-vector.
-          Whether numeric or symbolic, A.norm2() always represents a 
+          Whether numeric or symbolic, A.norm2() always represents a
           nonnegative number.
         - String values '+', '-', or '0' of hint respectively determine
-          whether the quadratic form, the absolute value of which is the 
-          norm squared, should be regarded as nonnegative, nonpositive, 
+          whether the quadratic form, the absolute value of which is the
+          norm squared, should be regarded as nonnegative, nonpositive,
           or of unknown sign, except when that quantity's sign can be
           determined by other considerations, such as the metric being
           Euclidean.
         """
-        quadform = self.qform()            # the quadratic form at `self`
-        if quadform.is_number:             # Case1: quadform is numeric
+        quadform = self.qform()             # the quadratic form at `self`
+        if quadform.is_number:              # Case1: quadform is numeric
             return Abs(quadform)
-        if self.Ga.g.is_positive_definite: # Case2: metric is positive definite
+        if self.Ga.g.is_positive_definite:  # Case2: metric is positive definite
             return quadform
-        if (quadform >= 0) == True:        # Case3: quadform is nonnegative 
+        if quadform >= 0:                   # Case3: quadform is nonnegative
             return +quadform
-        if (quadform <= 0) == True:        # Case4: quadform is nonpositive 
+        if quadform <= 0:                   # Case4: quadform is nonpositive
             return -quadform
-        if hint == '0':                    # Case5: quadform's sign is
-            return Abs(quadform)           #   unknown, so use `hint`.
+        if hint == '0':                     # Case5: quadform's sign is
+            return Abs(quadform)            # unknown, so use `hint`.
         elif hint == '+':
             return +quadform
         elif hint == '-':
             return -quadform
         else:
             raise ValueError("hint must be '0', '+', or '-'.")
-    ### GSG code ends ###                
-    
+    # ## GSG code ends ###
 
-    ### GSG code starts ###
+    # ## GSG code starts ###
     def norm(self, hint='0') -> Expr:
         """
         - Returns the norm of multivector self, defined as the square
           root of self's norm squared.
-        - Whether numeric or symbolic, returned value is a real SymPy 
-          expression that necessarily represents a nonnegative number. 
+        - Whether numeric or symbolic, returned value is a real SymPy
+          expression that necessarily represents a nonnegative number.
           Returned value is NOT a GAlgebra 0-vector.
         - String values '+', '-', or '0' of hint respectively determine
           whether the quadratic form from which the norm ultimately derives
-          should be regarded as nonnegative, nonpositive, or of unknown 
-          sign, except when the quadratic form's sign can be determined 
+          should be regarded as nonnegative, nonpositive, or of unknown
+          sign, except when the quadratic form's sign can be determined
           by other considerations, such as the metric being Euclidean.
         """
-        return simplify( sqrt(self.norm2(hint)) )
-    ### GSG code ends ###
+        return simplify(sqrt(self.norm2(hint)))
+    # ## GSG code ends ###
 
     __abs__ = norm  # allow `abs(x)` to call z.norm()
 
-
-    ### GSG code starts ###    
+    # ## GSG code starts ###
     def mag2(self) -> Expr:
         """
         - Returns the magnitude squared of multivector self, defined as
-          the sum of the absolute values of the norm squareds of self's 
+          the sum of the absolute values of the norm squareds of self's
           grade parts.
         - Returned value is a real SymPy expression, NOT a GAlgebra 0-vector.
           Expression necesssarily represents a nonnegative number.
-        - The magnitude squared differs from the norm squared of `self` 
+        - The magnitude squared differs from the norm squared of `self`
           when the metric is non-Euclidean.
         """
         total = 0
         for k in range(self.Ga.n + 1):
-            total += Abs(self.grade(k).norm2())        
+            total += Abs(self.grade(k).norm2())
         return total
-    ### GSG code ends ###
-    
+    # ## GSG code ends ###
 
-    ### GSG code starts ###
+    # ## GSG code starts ###
     def mag(self) -> Expr:
         """
-        - Returns the magnitude of multivector self, defined as the square root 
-          of the magnitude squared. 
+        - Returns the magnitude of multivector self, defined as the square root
+          of the magnitude squared.
         - The magnitude necessarily agrees with the norm only when the metric is
           Euclidean.  Otherwise the magnitude is greater than or equal to the norm.
         """
-        return simplify( sqrt(self.mag2()) )
-    ### GSG code ends ###
-
+        return simplify(sqrt(self.mag2()))
+    # ## GSG code ends ###
 
     def inv(self) -> 'Mv':
         if self.is_scalar():  # self is a scalar
@@ -1365,7 +1356,7 @@ class Mv(printer.GaPrintable):
             return (S.One/self_sq.obj)*self
         self_rev = self.rev()
         self_self_rev = self * self_rev
-        if(self_self_rev.is_scalar()):  # self*self.rev() is a scalar
+        if self_self_rev.is_scalar():  # self*self.rev() is a scalar
             """
             if self_self_rev.scalar() == S.Zero:
                 raise ValueError('!!!!In multivector inverse A*A.rev() is zero!!!!')
@@ -1972,18 +1963,18 @@ def dual(A: Mv) -> Mv:
         raise ValueError('A not a multivector in dual(A)')
 
 
-### GSG code starts ###
+# ## GSG code starts ###
 def undual(A: Mv) -> Mv:
     """
     Equivalent to :meth: `Mv.undual`.
-    Inverse function to multivector function `dual`, so both 
+    Inverse function to multivector function `dual`, so both
     `undual(dual(A))` and `dual(undual(A))` return `A`.
     """
     if isinstance(A, Mv):
         return A.undual()
     else:
         raise ValueError('A not a multivector in undual(A).')
-### GSG code ends ###
+# ## GSG code ends ###
 
 
 def even(A: Mv) -> Mv:
@@ -2000,7 +1991,7 @@ def odd(A: Mv) -> Mv:
     return A.odd()
 
 
-### GSG code starts ###
+# ## GSG code starts ###
 def g_invol(A: Mv) -> Mv:
     """
     Equivalent to :meth: `Mv.g_invol`.
@@ -2011,13 +2002,13 @@ def g_invol(A: Mv) -> Mv:
     if not isinstance(A, Mv):
         return ValueError('A not a multivector in g_invol(A)')
     return A.g_invol()
-### GSG code ends ###
+# ## GSG code ends ###
 
 
 def exp(A: Union[Mv, Expr], hint: str = '-') -> Union[Mv, Expr]:
     """
     If ``A`` is a multivector then ``A.exp(hint)`` is returned.
-    If ``A`` is a *sympy* expression the *sympy* expression :math:`e^{A}` 
+    If ``A`` is a *sympy* expression the *sympy* expression :math:`e^{A}`
     is returned (see :func:`sympy.exp`).
     """
     if isinstance(A, Mv):
@@ -2041,92 +2032,92 @@ def inv(A: Mv) -> Mv:
     return A.inv()
 
 
-### GSG code starts ###
-def qform(A:Mv) -> Expr:
-    """ 
-    - Equivalent to :meth:`Mv.qform`. 
+# ## GSG code starts ###
+def qform(A: Mv) -> Expr:
+    """
+    - Equivalent to :meth:`Mv.qform`.
     - qform(A) returns the quadratic form at multivector A.
     - Returned value is a real SymPy expression, NOT a GAlgebra 0-vector.
-    - Expression necessarily represents a nonnegative number only 
+    - Expression necessarily represents a nonnegative number only
       when A's geometric algebra has a Euclidean metric.
     """
     if not isinstance(A, Mv):
         raise TypeError('A not a multivector in qform(A)')
     A.qform()
-### GSG code ends ###
+# ## GSG code ends ###
 
 
-### GSG code starts ###
-def norm2(A:Mv, hint:str='0') -> Expr:
-    """ 
-    - Equivalent to :meth:`Mv.norm2` 
+# ## GSG code starts ###
+def norm2(A: Mv, hint: str = '0') -> Expr:
+    """
+    - Equivalent to :meth:`Mv.norm2`
     - Returns the normsquared of multivector self, defined as the
       absolute value of the quadratic form at self.
     - norm2(A() returns a real SymPy expression, NOT a GAlgebra 0-vector.
-      Whether numeric or symbolic, norm2(A) always represents a 
+      Whether numeric or symbolic, norm2(A) always represents a
       nonnegative number.
     - String values '+', '-', or '0' of hint respectively determine
-      whether the quadratic form, the absolute value of which is the 
-      norm squared, should be regarded as nonnegative, nonpositive, 
-      or of unknown sign, except when that quantity's sign can be 
-      determined by other considerations, such as the metric being 
+      whether the quadratic form, the absolute value of which is the
+      norm squared, should be regarded as nonnegative, nonpositive,
+      or of unknown sign, except when that quantity's sign can be
+      determined by other considerations, such as the metric being
       Euclidean.
       """
     if not isinstance(A, Mv):
         raise TypeError('A not a multivector in norm2(A)')
     return A.norm2(hint)
-### GSG code ends ###
+# ## GSG code ends ###
 
 
-### GSG code starts ###
-def norm(A:Mv, hint:str='0') -> Expr:
+# ## GSG code starts ###
+def norm(A: Mv, hint: str = '0') -> Expr:
     """
     - Equivalent to :meth:`Mv.norm`
-    - Whether numeric nor symbolic, returned value is a real SymPy 
+    - Whether numeric nor symbolic, returned value is a real SymPy
       expression that necessarily represents a nonnegative number.
       Returned value is NOT a GAlgebra 0-vector.
-    - String values '+', '-', or '0' of hint respectively 
-      determine whether a symbolic self.norm2() expression 
-      should be regarded as nonnegative, nonpositive, or of 
+    - String values '+', '-', or '0' of hint respectively
+      determine whether a symbolic self.norm2() expression
+      should be regarded as nonnegative, nonpositive, or of
       unknown sign.
     """
     if not isinstance(A, Mv):
         raise TypeError('A not a multivector in norm(A)')
     return A.norm(hint=hint)
-### GSG code ends ###
+# ## GSG code ends ###
 
 
-### GSG code starts ###
-def mag2(A:Mv) -> Expr:
+# ## GSG code starts ###
+def mag2(A: Mv) -> Expr:
     """
     - Equivalent to :meth:`Mv.mag2`
     - Returns the magnitude squared of multivector self, defined as
-      the sum of the absolute values of the norm squareds of self's 
+      the sum of the absolute values of the norm squareds of self's
       grade parts.
     - Returned value is a real SymPy expression, NOT a GAlgebra 0-vector.
       Expression necesssarily represents a nonnegative number.
-    - The magnitude squared differs from the normsquared of `self` 
+    - The magnitude squared differs from the normsquared of `self`
       when the metric is non-Euclidean.
     """
     if not isinstance(A, Mv):
         raise TypeError('A not a multivector in mag2(A)')
     return A.mag2()
-### GSG code ends ###
+# ## GSG code ends ###
 
 
-### GSG code starts ###
-def mag(A:Mv) -> Expr:
+# ## GSG code starts ###
+def mag(A: Mv) -> Expr:
     """
     - Equivalent to :meth:`Mv.mag`
-    - Returns the magnitude of multivector self, defined as the square root 
-      of the magnitude squared. 
+    - Returns the magnitude of multivector self, defined as the square root
+      of the magnitude squared.
     - The magnitude necessarily agrees with the norm only when the metric is
       Euclidean.  Otherwise the magnitude is greater than or equal to the norm.
     """
     if not isinstance(A, Mv):
         raise TypeError('A not a multivector in mag(A)')
     return A.mag()
-### GSG code ends ###
+# ## GSG code ends ###
 
 
 def proj(B: Mv, A: Mv) -> Mv:
@@ -2150,9 +2141,9 @@ def rot(itheta: Mv, A: Mv, hint: str = '-') -> Mv:
 
 def refl(B: Mv, A: Mv) -> Mv:
     r"""
-    Reflect multivector :math:`A` in blade :math:`B`.  
-    Returns 
-    
+    Reflect multivector :math:`A` in blade :math:`B`.
+    Returns
+
     :math:`\sum_{r}(-1)^{s(r+1)}B{\left < {A} \right >}_{r}B^{-1}`.
 
     if :math:`B` has grade :math:`s`.
@@ -2170,9 +2161,9 @@ def rev(A: Mv) -> Mv:
         return A.rev()
     else:
         raise ValueError('A not a multivector in rev(A)')
-        
 
-### GSG code starts ###
+
+# ## GSG code starts ###
 def ccon(A: Mv) -> Mv:
     """
     - Equivalent to :meth: `Mv.ccon`.
@@ -2183,7 +2174,7 @@ def ccon(A: Mv) -> Mv:
     if not isinstance(A, Mv):
         raise ValueError('A not a multivector in ccon(A)')
     return A.ccon()
-### GSG code ends ###
+# ## GSG code ends ###
 
 
 def scalar(A: Mv) -> Expr:
@@ -2193,7 +2184,7 @@ def scalar(A: Mv) -> Expr:
     return A.scalar()
 
 
-### GSG code starts ###
+# ## GSG code starts ###
 def sp(A: Mv, B: Mv, switch='') -> Expr:
     """
     - Equivalent to :meth: `Mv.sp`.
@@ -2206,4 +2197,4 @@ def sp(A: Mv, B: Mv, switch='') -> Expr:
     if not isinstance(A, Mv):
         raise ValueError("Left factor of sp must be a multivector")
     return A.sp(B, switch)
-### GSG code ends ###
+# ## GSG code ends ###
