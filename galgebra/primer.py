@@ -3,16 +3,9 @@
 
 # INSTRUCTIONS:
 #
-# Place this GAlgebrainit.py file in the "galgebra" folder, which should
-# already contain the other GAlgebra modules
-#
-#     atoms.py          dop.py            ga.py
-#     lt.py             metric.py         mv.py
-#     printer.py        gprinter.py       utils.py .
-#
 # To invoke this program within a Jupyter notebok, write the command
 #
-#     from galgebra.GAlgebraInit import *
+#     from galgebra.primer import *
 #
 # in the notebook's first In[ ] cell and execute that cell.
 
