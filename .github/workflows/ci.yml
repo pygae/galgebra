@@ -51,6 +51,7 @@ jobs:
         pytest \
           --cov=galgebra \
           --nbval examples/ipython/ \
+          --nbval examples/primer/ \
           test \
           --nbval-current-env \
           --nbval-sanitize-with test/.nbval_sanitize.cfg \

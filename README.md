@@ -201,7 +201,7 @@ Further, to run the complete test suite including the ones using [nbval](https:/
 
 ```bash
 pip install nbval
-pytest --nbval examples/ipython/ test --nbval-current-env --nbval-sanitize-with test/.nbval_sanitize.cfg
+pytest --nbval examples/ipython/ --nbval examples/primer/ test --nbval-current-env --nbval-sanitize-with test/.nbval_sanitize.cfg
 ```
 
 This could take more than 10 minutes, please be patient.
