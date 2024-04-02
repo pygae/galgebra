@@ -1,4 +1,4 @@
-from .printer import GaLatexPrinter, isinteractive, latex
+from .printer import GaLatexPrinter, isinteractive, Format_cnt, latex
 import subprocess
 import sys
 import shutil
