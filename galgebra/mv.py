@@ -270,6 +270,7 @@ class Mv(printer.GaPrintable):
 
     # aliases
     _make_grade2 = _make_bivector
+    _make_spinor = _make_even  # alias for compatibility with old code
     ### GSSG: removed alias `_make_even = _make_spinor_`
 
     def __init__(self, *args, ga, recp=None, coords=None, **kwargs):
@@ -330,7 +331,7 @@ class Mv(printer.GaPrintable):
              * ``"bivector"`` / ``"grade2"``
              * ``"pseudo"``
              * ``"mv"``
-             * ``"even"``
+             * ``"even"`` / ``"spinor"``
              * ``"odd"``
 
         f : bool, tuple
