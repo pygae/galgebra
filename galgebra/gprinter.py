@@ -53,7 +53,7 @@ class LaTeX:
 \\newcommand{\\lbrc}{\\left \\{}
 \\newcommand{\\rbrc}{\\right \\}}
 \\newcommand{\\W}{\\wedge}
-\\newcommand{\\prm}[1]{{#1}^{\prime}}
+\\newcommand{\\prm}[1]{{#1}^{\\prime}}
 \\newcommand{\\ddt}[1]{\\bfrac{d{#1}}{dt}}
 \\newcommand{\\R}{\\dagger}
 \\newcommand{\\deriv}[3]{\\bfrac{d^{#3}#1}{d{#2}^{#3}}}
