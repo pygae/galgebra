@@ -11,7 +11,7 @@ from functools import reduce
 from typing import Mapping
 
 from sympy import (
-    expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add, Expr
+    expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add, Expr, simplify 
 )
 from sympy.printing.latex import LatexPrinter as _LatexPrinter
 from sympy.printing.str import StrPrinter as _StrPrinter
@@ -32,62 +32,94 @@ _StrPrinter._default_settings.update({
 })
 
 
-def Symbolic_Matrix(root, coords=None, mode='g', f=False, sub=True):
-    if sub:
-        pos = '_'
-    else:
-        pos = '__'
-    if isinstance(coords, (list, tuple)):
+### GSG code starts ###
+def Symbolic_Matrix(kernel, coords=None, f=False, mode='g'):
+    """
+    Returns a square real matrix the entries of which are symbolic
+    constants or symbolic functions of the coordinates.
+    - `kernel` is a one-letter string.  It specifies the kernel letter of 
+      indexed symbols or functions used to specify the matrix's entries
+    - `coords` is a list or tuple.  Its entries are used to label the 
+      components of a vector.
+    - `f`, a boolean, specifies that matrix entries are symbolic functions
+      of the coordinates or are symbolic constants, according to whether 
+      `f` is True or False.
+    - `mode` is a one-letter string.  When`mode` is 'g', 's', or 'a' the
+      matrix will be general, symmetric, or antisymmetric.
+    """
+    
+    def general_matrix(kernel, coords=None, f=False):
+        """Returns a general square matrix.  The row index of each entry 
+        appears as a superscript, while the column index appears as a 
+        subscript."""
         n = len(coords)
-        n_range = range(n)
-        mat = zeros(n)
-        if mode == 'g':  # General symbolic matrix
-            for row in n_range:
-                row_index = str(coords[row])
-                for col in n_range:
-                    col_index = str(coords[col])
-                    element = root + pos + row_index + col_index
-                    if not f:
-                        mat[row, col] = Symbol(element, real=True)
-                    else:
-                        mat[row, col] = Function(element)(*coords)
+        # Create matrix entries and store in appropriate locations in `G`:
+        G = zeros(n,n)
+        if f:        # entries are symbolic functions
+            for i in range(n):
+                for j in range(n):
+                    entry = '{' + kernel + '__' + str(coords[i]) + '}_' + str(coords[j])
+                    G[i,j] = Function(entry)(*coords)
+        else:        # entries are symbolic constants
+            for i in range(n):
+                for j in range(n):
+                    entry = '{' + kernel + '__' + str(coords[i]) + '}_' + str(coords[j])
+                    G[i,j] = Symbol(entry, real=True)
+        return G
 
-        elif mode == 's':  # Symmetric symbolic matrix
-            for row in n_range:
-                row_index = str(coords[row])
-                for col in n_range:
-                    col_index = str(coords[col])
-                    if row <= col:
-                        element = root + pos + row_index + col_index
-                    else:
-                        element = root + pos + col_index + row_index
-                    if not f:
-                        mat[row, col] = Symbol(element, real=True)
-                    else:
-                        mat[row, col] = Function(element)(*coords)
+    def symmetric_matrix(kernel, coords=None, f=False):
+        """Returns a symmetric matrix.  Entries have a single index, which
+        appears as a subscript."""
+        n = len(coords)
+        # Create and temporarily store matrix entries in `parameters`
+        parameters = []
+        if f:        # entries are symbolic functions
+            for i in range((n*(n+1)//2), 0, -1):     
+                parameters.append(Function(kernel + '_' + str(i))(*coords))
+        else:        # entries are symbolic constants
+            for i in range((n*(n+1)//2), 0, -1):
+                parameters.append(Symbol(kernel + '_' + str(i), real=True))
+        # Transfer entries to symmetric matrix `S`.
+        S = zeros(n,n)
+        for i in range(n):
+            for j in range(i,n):
+                S[i,j] = parameters.pop()
+                S[j,i] = S[i,j]
+        return S
+    
+    def antisymmetric_matrix(kernel, coords=None, f=False):
+        """Returns an antisymmetric matrix.  Entries have a a single index, 
+        which appears as a subscript."""
+        n = len(coords)
+        # Create and temporarily store matrix entries in `parameters`
+        parameters = []
+        if f:        # entries are symbolic functions
+            for i in range((n*(n-1)//2), 0, -1):     
+                parameters.append(Function(kernel + '_' + str(i))(*coords))
+        else:        # entries are symbolic constants
+            for i in range((n*(n-1)//2), 0, -1):  # each parameter is a symbol
+                parameters.append(Symbol(kernel + '_' + str(i), real=True))
+        # Transfer entries to antisymmetric matrix `A`.
+        A = zeros(n,n)
+        for i in range(n):
+            for j in range(i+1,n):
+                A[i,j] = parameters.pop()
+                A[j,i] = - A[i,j]
+        return A
 
-        elif mode == 'a':  # Asymmetric symbolic matrix
-            for row in n_range:
-                row_index = str(coords[row])
-                for col in n_range:
-                    col_index = str(coords[col])
-                    if row <= col:
-                        sign = S.One
-                        element = root + pos + row_index + col_index
-                    else:
-                        sign = -S.One
-                        element = root + pos + col_index + row_index
-                    if row == col:
-                        sign = S.Zero
-                    if not f:
-                        mat[row, col] = sign * Symbol(element, real=True)
-                    else:
-                        mat[row, col] = sign * Function(element)(*coords)
-        else:
-            raise ValueError('In Symbolic_Matrix mode = ' + str(mode))
-    else:
-        raise ValueError('In Symbolic_Matrix coords = ' + str(coords))
-    return mat
+    # Check legitimacy of parameter values:
+    if not isinstance(coords, (list, tuple)):
+        raise ValueError('coords = ' + str(coords) + ' in Symbolic_Matrix')
+    if mode not in ['g', 's', 'a']:
+        raise ValueError('mode = ' + str(mode) + ' in Symbolic_Matrix')
+    if mode == 'g':
+        return general_matrix(kernel, coords, f)
+    if mode == 's':
+        return symmetric_matrix(kernel, coords, f)
+    if mode == 'a':
+        return antisymmetric_matrix(kernel, coords, f)
+### GSG code ends ###
+
 
 
 def Matrix_to_dictionary(mat_rep, basis):
@@ -104,29 +136,33 @@ def Matrix_to_dictionary(mat_rep, basis):
     }
 
 
+### GSG code starts ###
 def Dictionary_to_Matrix(dict_rep, ga):
-    """ Convert dictionary representation of linear transformation to matrix """
-    lst_mat = []  # list representation of sympy matrix
-    for e_row in ga.basis:
-        lst_mat_row = len(ga.basis) * [S.Zero]
-
-        element = dict_rep.get(e_row, S.Zero)
-        if isinstance(element, mv.Mv):
-            element = element.obj
-        for coef, base in metric.linear_expand_terms(element):
-            index = ga.basis.index(base)
-            lst_mat_row[index] = coef
-
-        lst_mat.append(lst_mat_row)
-    # expand the transpose
-    return Transpose(Matrix(lst_mat)).doit()
+    """Returns the matrix representation of that linear transformation on 
+    geometric algebra ga which has dictionary representation dict_rep."""
+    # columns[j] is a list of the entries in the matrix's jth column.
+    # columns[j][i] is the (i,j)th entry in the matrix.
+    # Matrix[columns] instantiates the transpose of the desired matrix.
+    columns = []  
+    for b in ga.basis:             # b is a basis symbol for ga.
+        column = ga.n * [S.Zero]   # Initialize column for dict_rep value at b.
+        dict_value = dict_rep[b]   # dict_rep's value at b
+        if isinstance(dict_value, mv.Mv):
+            dict_value = dict_value.obj
+        if dict_value is not S.Zero:
+            for coef, base in metric.linear_expand_terms(dict_value):
+                row_index = ga.basis.index(base)
+                column[row_index] = coef
+        columns.append(column)
+    return Transpose(Matrix(columns)).doit()
+### GSG code ends ###
 
 
 class Lt(printer.GaPrintable):
     r"""
     A Linear Transformation
 
-    Except for the spinor representation the linear transformation
+    Except for the versor representation, the linear transformation
     is stored as a dictionary with basis vector keys and vector
     values ``self.lt_dict`` so that a is a vector :math:`a = a^{i}e_{i}` then
 
@@ -134,11 +170,13 @@ class Lt(printer.GaPrintable):
         \mathtt{self(}a\mathtt{)}
             = a^{i} * \mathtt{self.lt\_dict[}e_{i}\mathtt{]}.
 
-    For the spinor representation the linear transformation is
-    stored as the even multivector ``self.R`` so that if a is a
+    For the versor representation, the linear transformation is
+    stored as a versor ``self.V`` so that if a is a
     vector::
 
-        self(a) = self.R * a * self.R.rev().
+        self(a) = self.V.g_invol() * a * self.V.inv()
+        
+    where ``self.V.g_invol()`` is the grade involute of ``self.V``.
 
     Attributes
     ----------
@@ -201,7 +239,7 @@ class Lt(printer.GaPrintable):
         if self.Ga.coords is None:
             return False
         return set(self.Ga.coords) <= self.matrix().free_symbols
-
+    
     def __init__(self, *args, ga, f=False, mode='g'):
         """
         __init__(self, *args, ga, **kwargs)
@@ -219,11 +257,19 @@ class Lt(printer.GaPrintable):
             :noindex:
 
             Construct from the operation of matrix pre-multiplication.
-
-        .. class:: Lt(spinor: mv.Mv, /, *, ga)
+            
+        ### GSG code starts ###
+        .. class:: Lt(lt_list: list, /, *, ga)
+            :noindex:
+                
+            Construct from a list of lists, the j_th list of which contains 
+            the coefficients of j_th image vector's basis expansion.
+        ### GSG code ends ###
+        
+        .. class:: Lt(versor: mv.Mv, /, *, ga)
             :noindex:
 
-            Construct from a spinor / rotor, which need not square to one.
+            Construct from a not-necessarily-normalized versor.
 
         .. class:: Lt(func: Callable[[mv.Mv], mv.Mv], /, *, ga)
             :noindex:
@@ -239,7 +285,7 @@ class Lt(printer.GaPrintable):
         Parameters
         ----------
         ga : Ga
-            Geometric algebra which is the domain and codomain of this transform
+            Geometric algebra which is both domain and codomain of this transformation
         f : bool
             True if Lt if function of coordinates. Only supported in the string
             constructor
@@ -247,22 +293,28 @@ class Lt(printer.GaPrintable):
             g:general, s:symmetric, a:antisymmetric transformation.
             Only supported in the string constructor.
         """
-        mat_rep = args[0]
-        self.Ga = ga
-        self.spinor = False
-        self.rho_sq = None
 
-        self.lt_dict = {}
-        self.mat = None
-
-        if isinstance(mat_rep, dict):  # Dictionary input
+        mat_rep = args[0]       
+        self.Ga = ga            
+        self.lt_dict = {}       
+        self.mat = None         
+        self.versor = False
+        # self.V, self.Vrev, and self.Vqform are never actually used in the current
+        # implementation of orthogonal outermorphisms created by a versor input.
+        self.V = None   
+        self.Vrev = None
+        self.Vqform = None
+        
+        if isinstance(mat_rep, dict):         # Dictionary input
             for key in mat_rep:
                 self.lt_dict[key] = mat_rep[key]
 
-        elif isinstance(mat_rep, list):  # List of lists input
+        elif isinstance(mat_rep, list):       # List input
             if not isinstance(mat_rep[0], list):
+                # At this point mat_rep[i] is the desired image vector for the
+                # i_th basis image vectors.
                 for lt_i, base in zip(mat_rep, self.Ga.basis):
-                    self.lt_dict[base] = lt_i
+                    self.lt_dict[base] = sym(lt_i)
             else:
                 # mat_rep = map(list, zip(*mat_rep))  # Transpose list of lists
                 for row, base1 in zip(mat_rep, self.Ga.basis):
@@ -271,29 +323,38 @@ class Lt(printer.GaPrintable):
                         tmp += col * base2
                     self.lt_dict[base1] = tmp
 
-        elif isinstance(mat_rep, Matrix):  # Matrix input
-            self.mat = mat_rep
-            mat_rep = self.mat * self.Ga.g_inv
+        ### GSG code starts ###
+        elif isinstance(mat_rep, Matrix):    # Matrix input
             self.lt_dict = Matrix_to_dictionary(mat_rep, self.Ga.basis)
+        ### GSG code ends ###
 
-        elif isinstance(mat_rep, mv.Mv):  # Spinor input
-            self.spinor = True
-            self.R = mat_rep
-            self.Rrev = mat_rep.rev()
-            self.rho_sq = self.R * self.Rrev
-            if self.rho_sq.is_scalar():
-                self.rho_sq = self.rho_sq.scalar()
-                if self.rho_sq == S.One:
-                    self.rho_sq = None
-            else:
-                raise ValueError('In Spinor input for Lt, S*S.rev() not a scalar!\n')
+        ### GSG code starts. ###
+        # This code segment uses versor `mat_rep` and a sandwich product only to
+        # create a linear vector-valued function of vector. That function is then
+        # used to create a dictionary-based outermorphism. Evaluation of the 
+        # outermorphism on a multivector is by dictionary lookup, not by a
+        # sandwich product of the multivector with the versor.
+        elif isinstance(mat_rep, mv.Mv):     # Versor input
+            if not mat_rep.is_versor:
+                raise ValueError(mat_rep, 'is not a versor in Versor input for Lt!\n')
+            V = mat_rep
+            Vg_invol = V.g_invol()
+            Vinv = V.inv()
+            outermorphism = ga.lt(lambda x: Vg_invol * x * Vinv)
+            self.lt_dict = simplify(outermorphism.lt_dict)            
+        ### GSG code ends ###
 
-        elif isinstance(mat_rep, str):  # String input
-            Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords, mode=mode, f=f)
-            self.__init__(Amat, ga=self.Ga)
+        ### GSG code starts ###
+        elif isinstance(mat_rep, str):    # (One-letter) string input
+            Amat = Symbolic_Matrix(mat_rep, coords=self.Ga.coords, f=f, mode=mode)
+            if mode=='g':
+                self.__init__(Amat, ga=self.Ga)
+            elif mode in ['s','a']:
+                self.__init__(self.Ga.g_inv * Amat, ga=self.Ga)
+        ### GSG code ends ###
 
-        elif callable(mat_rep):  # Linear multivector function input
-            # F is a multivector function to be tested for linearity
+        elif callable(mat_rep):    # Linear multivector function input
+            # Function is tested for linearity before use.
             F = mat_rep
             a = mv.Mv('a', 'vector', ga=self.Ga)
             b = mv.Mv('b', 'vector', ga=self.Ga)
@@ -311,10 +372,9 @@ class Lt(printer.GaPrintable):
     @_cached_property
     def mv_dict(self) -> Mapping[Expr, Expr]:
         # dict for linear transformation of multivector
-        if self.spinor:
+        if self.versor:
             # no lt_dict
             return None
-
         return {
             blade: reduce(
                 self.Ga.wedge,
@@ -324,47 +384,58 @@ class Lt(printer.GaPrintable):
             for index, blade in self.Ga.indexes_to_blades_dict.items()
         }
 
-    def __call__(self, v, obj=False):
+    def __call__(self, M, obj=False):
         r"""
-        Returns the image of the multivector :math:`A` under the linear transformation :math:`L`.
-
-        :math:`{{L}\lp {A} \rp }` is defined by the linearity of :math:`L`, the
-        vector values :math:`{{L}\lp {{{\eb}}_{i}} \rp }`, and the definition
-        :math:`{{L}\lp {{{\eb}}_{i_{1}}{\wedge}\dots{\wedge}{{\eb}}_{i_{r}}} \rp } = {{L}\lp {{{\eb}}_{i_{1}}} \rp }{\wedge}\dots{\wedge}{{L}\lp {{{\eb}}_{i_{r}}} \rp }`.
+        Returns the image of multivector :math:`M` under the linear transformation
+        :math:`L`. :math:`{{L}\lp{M}\rp}` is defined by 
+        the linearity of :math:`L`, 
+        the vector values :math:`{{L}\lp{{{\eb}}_{j}}\rp }`, and the definition
+        :math:`{{L}\lp{{{\eb}}_{j_{1}}{\wedge}\dots{\wedge}{{\eb}}_{j_{r}}}\rp}={{L}\lp{{{\eb}}_{j_{1}}}\rp}{\wedge}\dots{\wedge}{{L}\lp{{{\eb}}_{j_{r}}}\rp}`.
         """
 
-        if isinstance(v, mv.Mv) and self.Ga != v.Ga:
+        if isinstance(M, mv.Mv) and self.Ga != M.Ga:
             raise ValueError('In Lt call Lt and argument refer to different vector spaces')
 
-        if self.spinor:
-            if not isinstance(v, mv.Mv):
-                v = mv.Mv(v, ga=self.Ga)
-            if self.rho_sq is None:
-                R_v_Rrev = self.R * v * self.Rrev
+        ### GSG code starts ###
+        # Given the current way an outermorphism is created from a versor input,
+        # self.versor will always be false; hence the following code fragment will
+        # never execute.
+        if self.versor:
+            # Sandwich M or M's grade involute depending on whether versor self.V
+            # is even or odd.
+            if self.V == self.V.odd():
+                V_M_Vrev = self.V * M.g_invol() * self.Vrev
+            elif self.V == self.V.even():
+                V_M_Vrev = self.V * M * self.Vrev
             else:
-                R_v_Rrev = self.rho_sq * self.R * v * self.Rrev
+                raise ValueError('self.V is not a versor in  __call__')
+            # Divide by normalization factor self.Vqform to convert sandwiching
+            # between self.V and its reverse to sandwiching between self.V and 
+            # its inverse.            
+            V_M_Vinv = 1/(self.Vqform) * V_M_Vrev
             if obj:
-                return R_v_Rrev.obj
+                return V_M_Vinv.obj
             else:
-                return R_v_Rrev
+                return V_M_Vinv
+        ### GSG code ends ###
 
-        if isinstance(v, mv.Mv):
-            if v.is_vector():
-                lt_v = v.obj.xreplace(self.lt_dict)
+        if isinstance(M, mv.Mv):
+            if M.is_vector():
+                lt_M = M.obj.xreplace(self.lt_dict)
                 if obj:
-                    return lt_v
+                    return lt_M
                 else:
-                    return mv.Mv(lt_v, ga=self.Ga)
+                    return mv.Mv(lt_M, ga=self.Ga)
             else:
-                mv_obj = v.obj
+                mv_obj = M.obj
         else:
-            mv_obj = mv.Mv(v, ga=self.Ga).obj
+            mv_obj = mv.Mv(M, ga=self.Ga).obj
 
-        lt_v = mv_obj.xreplace(self.mv_dict)
+        lt_M = mv_obj.xreplace(self.mv_dict)
         if obj:
-            return lt_v
+            return lt_M
         else:
-            return mv.Mv(lt_v, ga=self.Ga)
+            return mv.Mv(lt_M, ga=self.Ga)
 
     def __add__(self, LT):
 
@@ -420,15 +491,18 @@ class Lt(printer.GaPrintable):
         else:
             raise TypeError('Cannot have LT as left argument in Lt __rmul__\n')
 
-    def det(self) -> Expr:  # det(L) defined by L(I) = det(L)I
-        r"""
-        Returns the determinant (a scalar) of the linear transformation,
-        :math:`L`, defined by :math:`{{\det}\lp {L} \rp }I = {{L}\lp {I} \rp }`.
-        """
 
-        lt_I = self(self.Ga.i, obj=True)
-        det_lt_I = lt_I.subs(self.Ga.i.obj, S.One)
-        return det_lt_I
+    ### GSG code starts ###
+    def det(self) -> Expr:    # det(L) defined by L(E) = det(L)E
+        r"""
+        - Returns the determinant of the linear transformation :math:`L`,
+          defined by :math:`\det(L) = L(E) E^{-1}`, where :math:`E` is the 
+          basis blade for the pseudoscalar grade space.
+        - Expression returned is a real SymPy scalar, not a GAlgebra 0-vector.
+        """
+        return (self(self.Ga.e) * self.Ga.e.inv()).scalar()
+    ### GSG code ends ###
+        
 
     def tr(self) -> Expr:  # tr(L) defined by tr(L) = grad|L(x)
         r"""
@@ -436,23 +510,21 @@ class Lt(printer.GaPrintable):
         :math:`L`, defined by :math:`{{\operatorname{tr}}\lp {L} \rp }=\nabla_{a}\cdot{{L}\lp {a} \rp }`
         where :math:`a` is a vector in the tangent space.
         """
-
         connect_flg = self.Ga.connect_flg
         self.Ga.connect_flg = False
-
         F_x = mv.Mv(self(self.Ga.coord_vec, obj=True), ga=self.Ga)
         tr_F = (self.Ga.grad | F_x).scalar()
         self.Ga.connect_flg = connect_flg
         return tr_F
 
+    '''
     def adj(self) -> 'Lt':
         r"""
-        Returns the adjoint (a linear transformation) of the linear
-        transformation, :math:`L`, defined by :math:`a\cdot{{L}\lp {b} \rp } = b\cdot{{\bar{L}}\lp {a} \rp }`
-        where :math:`a` and :math:`b` are any two vectors in the tangent space
-        and :math:`\bar{L}` is the adjoint of :math:`L`.
+        Returns the adjoint :math:`{\bar{L}}`(a linear transformation) of linear 
+        transformation :math:`L`, defined by 
+        :math:`a\cdot{{L}\lp {b} \rp } = b\cdot{{\bar{L}}\lp {a} \rp }`
+        where :math:`a` and :math:`b` are any two vectors in the tangent space.
         """
-
         self_adj = []
         for e_j in self.Ga.basis:
             s = S.Zero
@@ -463,19 +535,44 @@ class Lt(printer.GaPrintable):
             else:
                 self_adj.append(expand(s) / self.Ga.e_sq)
         return Lt(self_adj, ga=self.Ga)
+    '''
+    
+    ### GSG code starts ###
+    def adj(self) -> 'Lt':
+        r"""
+        Returns the adjoint transformation :math:`{\bar{L}}` of linear 
+        transformation :math:`L`, defined by 
+        :math:`a\cdot{{L}\lp {b} \rp } = b\cdot{{\bar{L}}\lp {a} \rp }`,
+        where :math:`a` and :math:`b` are any two vectors in the tangent space.
+        """
+        matrix_of_adjoint = self.Ga.g_inv * self.matrix().T * self.Ga.g 
+        return self.Ga.lt(matrix_of_adjoint)
+    ### GSG code ends ###
 
+    ### GSG code starts ###
+    def is_singular(self):
+        """Returns `True` if and only if  linear transformation `self` is singular."""
+        E = self.Ga.E()
+        return simplify((self(E) < E.inv()).scalar()) == S.Zero
+    ### GSG code ends
+    
+    ### GSG code starts ###
     def inv(self):
-        if self.spinor:
-            Lt_inv = Lt(self.Rrev, ga=self.Ga)
-            Lt_inv.rho_sq = S.One/(self.rho_sq**2)
+        """Returns compositional inverse of linear transformation`self`.  
+        Assumes transformation is nonsingular.  If `self` is a versor based
+        transformation, its inverse will also be versor based."""
+        if self.versor:
+            return self.Ga.lt(self.V.rev())
+        if not self.is_singular():
+            return self.Ga.lt(Matrix( self.matrix().inv() ))
         else:
-            raise ValueError('Lt inverse currently implemented only for spinor!\n')
-        return Lt_inv
+            raise ValueError('transformation in inv() is non-invertible')    
+    ### GSG code ends ###
 
     def _sympystr(self, print_obj):
 
-        if self.spinor:
-            return 'R = ' + print_obj._print(self.R)
+        if self.versor:    ### GSG: changed `self.spinor` to `self.versor` ###
+            return 'R = ' + print_obj._print(self.V)
         else:
             pre = 'Lt('
             s = ''
@@ -486,59 +583,50 @@ class Lt(printer.GaPrintable):
                     s += pre + print_obj._print(base) + ') = 0\n'
             return s[:-1]
 
-    def _latex(self, print_obj):
+    ### GSG code starts ###   
+    def _latex(self, print_obj):    
         parts = []
-        for base in self.Ga.basis:
-            if self.spinor:
-                val = self.R * mv.Mv(base, ga=self.Ga) * self.Rrev
+        for base in self.Ga.basis:           # base is a basis symbol
+            if self.versor:
+                b = mv.Mv(base, ga=self.Ga)  # b is the corresponding basis vector
+                if self.V == self.V.odd():
+                    unnormalized_image = self.V * (b.g_invol()) * self.Vrev
+                elif self.V == self.V.even():
+                    unnormalized_image = self.V * b * self.Vrev
+                else:
+                    raise ValueError('self.V is not a versor in  _latex')
+                image = 1/(self.Vqform) * unnormalized_image
             else:
-                val = mv.Mv(self.lt_dict.get(base, S.Zero), ga=self.Ga)
-            parts.append(print_obj._print(base) + ' &\\mapsto ' + print_obj._print(val))
+                image = mv.Mv(self.lt_dict.get(base, S.Zero), ga=self.Ga)
+            parts.append(print_obj._print(base) + ' &\\mapsto ' + print_obj._print(image))
         return '\\left\\{ \\begin{aligned} ' + ' \\\\ '.join(parts) + ' \\end{aligned} \\right\\}'
+    ### GSG code ends ###
 
     def Fmt(self, fmt=1, title=None) -> printer.GaPrintable:
         return printer._FmtResult(self, title)
 
+	### GSG code starts ###
     def matrix(self) -> Matrix:
         r"""
-        Returns the matrix representation of the linear transformation,
-        :math:`L`, defined by :math:`{{L}\lp {{{\eb}}_{i}} \rp } = L_{ij}{{\eb}}_{j}`
-        where :math:`L_{ij}` is the matrix representation.
+        Returns the matrix :math:`[{L__i}_j]` defined for linear transformation
+        :math:`L` by :math:`L({\eb}_j)=\sum_i {L__i}_j \eb}_i`.
         """
         if self.mat is not None:
             return self.mat
+        elif self.versor:
+            self.lt_dict = {}
+            for base in self.Ga.basis:
+                self.lt_dict[base] = self(base).simplify()
+            self.versor = False    # temporary change of self.versor
+            mat = self.matrix()
+            self.versor = True     # reverse change to self.versor
+            return mat
         else:
-            if self.spinor:
-                self.lt_dict = {}
-                for base in self.Ga.basis:
-                    self.lt_dict[base] = self(base).simplify()
-                self.spinor = False
-                mat = self.matrix()
-                self.spinor = True
-                return mat
-            else:
-                """
-                mat_rep = []
-                for base in self.Ga.basis:
-                    if base in self.lt_dict:
-                        row = []
-                        image = (self.lt_dict[base])
-                        if isinstance(image, mv.Mv):
-                            image = image.obj
-                        coefs, bases = metric.linear_expand(image)
-                        for base in self.Ga.basis:
-                            try:
-                                i = bases.index(base)
-                                row.append(coefs[i])
-                            except:
-                                row.append(0)
-                        mat_rep.append(row)
-                    else:
-                        mat_rep.append(self.Ga.n * [0])
-                return Matrix(mat_rep).transpose()
-                """
-                self.mat = Dictionary_to_Matrix(self.lt_dict, self.Ga) * self.Ga.g
-                return self.mat
+            self.mat = Dictionary_to_Matrix(self.lt_dict, self.Ga)
+            return self.mat.doit()
+	### GSG code ends ###
+    
+    
 
 
 class Mlt(printer.GaPrintable):
@@ -754,17 +842,16 @@ class Mlt(printer.GaPrintable):
 
         else:
             if isinstance(f, types.FunctionType):  # Tensor defined by general multi-linear function
-                args = inspect.getfullargspec(f)[0]
+                args, _varargs, _kwargs, _defaults = inspect.getargspec(f)
                 self.nargs = len(args)
                 self.f = f
                 Mlt.increment_slots(self.nargs, Ga)
                 self.fvalue = f(*tuple(Ga._mlt_a[0:self.nargs]))
             else:  # Tensor defined by component expression
-                raise NotImplementedError
-                # self.f = None
-                # self.nargs = len(args)  # args isn't defined, which is why we raise NotImplementedError
-                # Mlt.increment_slots(self.nargs, Ga)
-                # self.fvalue = f
+                self.f = None
+                self.nargs = len(args)
+                Mlt.increment_slots(self.nargs, Ga)
+                self.fvalue = f
 
     def __call__(self, *args):
         """
@@ -913,3 +1000,26 @@ class Mlt(printer.GaPrintable):
                 print('')
             output += str(i)+':'+str(i_index)+':'+str(self(*e)) + '\n'
         return output
+
+### GSG code starts ###
+def det(L:Lt) -> Expr:    # det(L) defined by L(E) = det(L)E
+    r"""
+    - Returns the determinant of the linear transformation :math:`L`,
+      defined by :math:`\det(L) = L(E) E^{-1}`, where :math:`E` is the 
+      basis blade for the pseudoscalar grade space.
+    - Expression returned is a real SymPy scalar, not a GAlgebra 0-vector.
+    """
+    return L.det()
+### GSG code ends ###
+
+### GSG code starts ###
+def sym(v):
+    """
+    Returns that linear combination of basis vector symbols which corresponds
+    to vector v, itself a linear combination of basis vectors.
+    """
+    # Obtain the coefficients in basis vector expansion of `v`.
+    # Then construct and return corresponding basis vector symbol expansion.
+    coefs = v.blade_coefs(v.Ga.mv())  
+    return sum(coefs[j]*v.Ga.basis[j] for j in range(v.Ga.n))
+### GSG code ends ###
