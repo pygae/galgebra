@@ -1280,16 +1280,22 @@ class Mv(printer.GaPrintable):
           Euclidean.
         """
         quadform = self.qform()             # the quadratic form at `self`
-        if quadform.is_number:              # Case1: quadform is numeric
+        # Case1: quadform is numeric
+        if quadform.is_number:
             return Abs(quadform)
-        if self.Ga.g.is_positive_definite:  # Case2: metric is positive definite
+        # Case2: metric is positive definite
+        if self.Ga.g.is_positive_definite:
             return quadform
-        if quadform >= 0:                   # Case3: quadform is nonnegative
+        # Case3: quadform is nonnegative
+        if (quadform >= 0) == True:         # noqa: E712
             return +quadform
-        if quadform <= 0:                   # Case4: quadform is nonpositive
+        # Case4: quadform is nonpositive
+        if (quadform <= 0) == True:         # noqa: E712
             return -quadform
-        if hint == '0':                     # Case5: quadform's sign is
-            return Abs(quadform)            # unknown, so use `hint`.
+
+        # Case5: quadform's sign is unknown, so use `hint`.
+        if hint == '0':
+            return Abs(quadform)
         elif hint == '+':
             return +quadform
         elif hint == '-':
