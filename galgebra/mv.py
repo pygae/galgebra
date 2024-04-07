@@ -2050,7 +2050,7 @@ def qform(A: Mv) -> Expr:
     """
     if not isinstance(A, Mv):
         raise TypeError('A not a multivector in qform(A)')
-    A.qform()
+    return A.qform()
 # ## GSG code ends ###
 
 
