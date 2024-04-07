@@ -20,6 +20,7 @@ Submodules
     dop
     atoms
     printer
+    gprinter
     utils
 
 .. note::
