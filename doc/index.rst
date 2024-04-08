@@ -23,6 +23,7 @@
     :hidden:
 
     tutorials/algebra
+    tutorials/gprint
 
 .. toctree::
     :caption: API
