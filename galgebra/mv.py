@@ -2007,7 +2007,7 @@ def g_invol(A: Mv) -> Mv:
     - Grade involution is its own inverse operation.
     """
     if not isinstance(A, Mv):
-        return ValueError('A not a multivector in g_invol(A)')
+        raise ValueError('A not a multivector in g_invol(A)')
     return A.g_invol()
 # ## GSG code ends ###
 
@@ -2187,7 +2187,7 @@ def ccon(A: Mv) -> Mv:
 def scalar(A: Mv) -> Expr:
     """ Equivalent to :meth:`Mv.scalar` """
     if not isinstance(A, Mv):
-        raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
+        raise ValueError('A = ' + str(A) + ' not a multivector in scalar(A).')
     return A.scalar()
 
 
