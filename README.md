@@ -54,8 +54,8 @@ Overloaded Python operators for basic GA operations:
   AB &=  \texttt{A*B} \\
   A \wedge B &=  \mathtt{A \verb!^! B} \\
   A \cdot B &=  \texttt{A|B} \\
-  A \rfloor B &=  \texttt{A<B} \\
-  A \lfloor B &=  \texttt{A>B} \\
+  A \rfloor B &=  \mathtt{A \lt B} \\
+  A \lfloor B &=  \mathtt{A \gt B} \\
   A/B &=  \texttt{A/B} \\
 \end{aligned}\end{split}
 ```
@@ -77,10 +77,10 @@ The various derivatives of a multivector function is accomplished by multiplying
   F {\wedge}\bar{\nabla} &=  \mathtt{F \verb!^! rgrad} \\
   \nabla \cdot F &=  \texttt{grad|F} \\
   F \cdot \bar{\nabla} &=  \texttt{F|rgrad} \\
-  \nabla \rfloor F &=  \texttt{grad<F} \\
-  F \rfloor \bar{\nabla} &=  \texttt{F<rgrad} \\
-  \nabla \lfloor F &=  \texttt{grad>F} \\
-  F \lfloor \bar{\nabla} &= \texttt{F>rgrad}
+  \nabla \rfloor F &=  \mathtt{grad \lt F} \\
+  F \rfloor \bar{\nabla} &=  \mathtt{F \lt rgrad} \\
+  \nabla \lfloor F &=  \mathtt{grad \gt F} \\
+  F \lfloor \bar{\nabla} &= \mathtt{F \gt rgrad}
 \end{aligned}
 ```
 
@@ -92,10 +92,10 @@ The various derivatives of a multivector function is accomplished by multiplying
   \bar{\nabla} {\wedge}F &=  \mathtt{rgrad \verb!^! F} \\
   F \cdot \nabla &=  \texttt{F|grad} \\
   \bar{\nabla}\cdot F &=  \texttt{rgrad|F} \\
-  F \rfloor \nabla &=  \texttt{F<grad} \\
-  \bar{\nabla} \rfloor F &=  \texttt{rgrad<F} \\
-  F \lfloor \nabla &=  \texttt{F>grad} \\
-  \bar{\nabla} \lfloor F &= \texttt{rgrad>F}
+  F \rfloor \nabla &=  \mathtt{F \lt grad} \\
+  \bar{\nabla} \rfloor F &=  \mathtt{rgrad \lt F} \\
+  F \lfloor \nabla &=  \mathtt{F \gt grad} \\
+  \bar{\nabla} \lfloor F &= \mathtt{rgrad \gt F}
 \end{aligned}
 ```
 
