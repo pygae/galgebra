@@ -45,7 +45,8 @@ jobs:
       uses: awalsh128/cache-apt-pkgs-action@latest
       if: "matrix.python-version == '3.11'"
       with:
-        packages: diff-pdf
+        # https://github.com/vslavik/diff-pdf/pull/85
+        packages: diff-pdf-wx
         version: 1.0
     - uses: actions/cache@v3
       name: Tectonic Cache
@@ -80,6 +81,11 @@ jobs:
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+    - uses: actions/upload-artifact@v3
+      if: "matrix.python-version == '3.11' && failure()"
+      with:
+        name: PDF-diffs
+        path: test/diff
 
   release:
     name: Create release and send to PyPI
