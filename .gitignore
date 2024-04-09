@@ -139,3 +139,6 @@ examples/**/*.tex
 
 # Mac
 .DS_Store
+
+test/generated
+test/diff

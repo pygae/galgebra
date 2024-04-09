@@ -26,7 +26,7 @@ class LaTeX:
 
     latex_preamble = """
 \\pagestyle{empty}
-\\usepackage[latin1]{inputenc}
+\\usepackage[utf8]{inputenc}
 \\usepackage{amsmath}
 \\usepackage{amsfonts}
 \\usepackage{amssymb}
@@ -196,7 +196,7 @@ def gprint(*xargs):
     return
 
 
-def gxpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug=False, pt='10pt', pdfprog='pdflatex'):
+def gxpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug=False, pt='10pt', pdfprog='pdflatex', evince=True, rm=True, null=True):
 
     """
     Post processes LaTeX output (see comments below), adds preamble and
@@ -208,10 +208,11 @@ def gxpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debu
     crop        True        Use "pdfcrop" to crop output file (pdfcrop must be installed, linux only)
     png         True        Use "convert" to produce png output (imagemagick must be installed, linux only)
 
-    We assume that if xpdf() is called then Format() has been called at the beginning of the program.
+    We assume that if gxpdf() is called then gFormat() has been called at the beginning of the program.
     """
 
     latex_str = paper_format(paper, pt)+LaTeX.latex_preamble+LaTeX.latex_str+r'\end{document}'
+    
 
     if filename is None:
         pyfilename = sys.argv[0]
@@ -221,13 +222,13 @@ def gxpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debu
     else:
         tex_filename = filename
         pdf_filename = tex_filename.replace('.tex', '.pdf')
+        rootfilename = tex_filename.replace('.tex', '')
 
     if debug:
         print('latex file =', filename)
 
-    latex_file = open(tex_filename, 'w')
-    latex_file.write(latex_str)
-    latex_file.close()
+    with open(tex_filename, 'w') as latex_file:
+        latex_file.write(latex_str)
 
     if pdfprog is not None:
         sys_cmd = SYS_CMD[sys.platform]
@@ -237,17 +238,22 @@ def gxpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debu
             print('pdflatex path =', pdflatex)
             # os.system(pdfprog + ' ' + filename[:-4])
         else:  # Works for Linux don't know about Windows
-            subprocess.call([pdfprog, tex_filename, sys_cmd['null']])
+            if null:
+                subprocess.call([pdfprog, tex_filename, sys_cmd['null']])
+            else:
+                subprocess.call([pdfprog, tex_filename])
             # os.system(pdfprog + ' ' + filename[:-4] + sys_cmd['null'])
 
-        subprocess.call([sys_cmd['evince'], pdf_filename])
+        if evince:
+            subprocess.call([sys_cmd['evince'], pdf_filename])
 
         # eval(input('!!!!Return to continue!!!!\n'))
 
-        if debug:
-            subprocess.call([sys_cmd['rm'], rootfilename+'.aux ', rootfilename+'.log'])
-        else:
-            subprocess.call([sys_cmd['rm'], rootfilename+'.aux ', rootfilename+'.log ', rootfilename+'.tex'])
+        if rm:
+            if debug:
+                subprocess.call([sys_cmd['rm'], rootfilename+'.aux ', rootfilename+'.log'])
+            else:
+                subprocess.call([sys_cmd['rm'], rootfilename+'.aux ', rootfilename+'.log ', rootfilename+'.tex'])
         if crop:
             subprocess.call(['pdfcrop', pdf_filename])
             subprocess.call(['rm', pdf_filename])
