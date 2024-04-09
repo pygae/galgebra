@@ -27,7 +27,7 @@ DIR_DIFF = DIR_TEST / 'diff'
 
 
 class TestGprinter(unittest.TestCase):
-    # @pytest.mark.skipif("TEST_GXPDF" not in os.environ, reason="Only run if TEST_GXPDF is set")
+    @pytest.mark.skipif("TEST_GXPDF" not in os.environ, reason="Only run if TEST_GXPDF is set")
     def test_gxpdf(self):
         gFormat()
         # Set up standard G^3 geometric algebra

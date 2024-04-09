@@ -212,7 +212,6 @@ def gxpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debu
     """
 
     latex_str = paper_format(paper, pt)+LaTeX.latex_preamble+LaTeX.latex_str+r'\end{document}'
-    
 
     if filename is None:
         pyfilename = sys.argv[0]
