@@ -2,6 +2,7 @@ from .printer import GaLatexPrinter, isinteractive, Format_cnt, latex
 import subprocess
 import sys
 import shutil
+import inspect
 
 from sympy import init_printing
 
@@ -196,7 +197,7 @@ def gprint(*xargs):
     return
 
 
-def gxpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug=False, pt='10pt', pdfprog='pdflatex', evince=True, rm=True, null=True):
+def gxpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debug=False, pt='10pt', pdfprog='pdflatex', evince=True, rm=True, null=True, documentclass='book'):
 
     """
     Post processes LaTeX output (see comments below), adds preamble and
@@ -211,7 +212,9 @@ def gxpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debu
     We assume that if gxpdf() is called then gFormat() has been called at the beginning of the program.
     """
 
-    latex_str = paper_format(paper, pt)+LaTeX.latex_preamble+LaTeX.latex_str+r'\end{document}'
+    latex_str = paper_format(paper, pt, documentclass)+LaTeX.latex_preamble+LaTeX.latex_str+r'\end{document}'
+    # Clean up the latex string after printing
+    LaTeX.latex_str = ''
 
     if filename is None:
         pyfilename = sys.argv[0]
@@ -262,17 +265,17 @@ def gxpdf(filename=None, paper=(14, 11), crop=False, png=False, prog=False, debu
     return
 
 
-def paper_format(paper, pt):  # Set size of paper and font size
+def paper_format(paper, pt, documentclass='book'):  # Set size of paper and font size
 
     if paper == 'letter':
         paper_size = """
-\\documentclass[@10pt@,fleqn]{book}
-"""
+\\documentclass[@10pt@,fleqn]{%s}
+""" % documentclass
     else:
         paper_size = """
-\\documentclass[@10pt@,fleqn]{book}
+\\documentclass[@10pt@,fleqn]{%s}
 \\usepackage[vcentering]{geometry}
-"""
+""" % documentclass
         if paper == 'landscape':
             paper = [11, 8.5]
         paper_size += '\\geometry{papersize={' + str(paper[0]) + \
@@ -282,3 +285,17 @@ def paper_format(paper, pt):  # Set size of paper and font size
     paper_size = paper_size.replace('@10pt@', pt)
 
     return paper_size
+
+def gPrint_Function():
+    """ Print out the source of the current function """
+
+    tmp_str = inspect.getsource(inspect.currentframe().f_back)
+    if LaTeX.latex_flg:
+        #print '#Code for '+fct_name
+        LaTeX.latex_str += r'\begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]%s\end{lstlisting}\text{Code Output:}' % tmp_str
+    else:
+        print('\n' + 80 * '*')
+        #print '\nCode for '+fct_name
+        print(tmp_str)
+        print('Code output:\n')
+    return
