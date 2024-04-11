@@ -41,13 +41,10 @@ jobs:
     - name: Lint
       run: |
         flake8 -v
-    - name: Install apt deps with cache
-      uses: awalsh128/cache-apt-pkgs-action@latest
+    - uses: hidakatsuya/action-setup-diff-pdf@v1.3.0
       if: "matrix.python-version == '3.11'"
       with:
-        # https://github.com/vslavik/diff-pdf/pull/85
-        packages: diff-pdf-wx
-        version: 1.0
+        diff-pdf-version: '0.5'
     - uses: actions/cache@v3
       name: Tectonic Cache
       if: "matrix.python-version == '3.11'"
