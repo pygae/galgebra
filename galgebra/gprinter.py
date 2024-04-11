@@ -286,16 +286,15 @@ def paper_format(paper, pt, documentclass='book'):  # Set size of paper and font
 
     return paper_size
 
+
 def gPrint_Function():
     """ Print out the source of the current function """
 
     tmp_str = inspect.getsource(inspect.currentframe().f_back)
     if LaTeX.latex_flg:
-        #print '#Code for '+fct_name
         LaTeX.latex_str += r'\begin{lstlisting}[language=Python,showspaces=false,showstringspaces=false,backgroundcolor=\color{gray},frame=single]%s\end{lstlisting}\text{Code Output:}' % tmp_str
     else:
         print('\n' + 80 * '*')
-        #print '\nCode for '+fct_name
         print(tmp_str)
         print('Code output:\n')
     return
