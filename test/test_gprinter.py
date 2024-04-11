@@ -39,7 +39,7 @@ class TestGprinter(unittest.TestCase):
         B = g3.mv('B', 'bivector')
         Fmt(1)  # Set Fmt globally
         gprint(r'\mathbf{B} =', B)         # B will be bold.
-        gprint(r'\mathbf{B} =', B.Fmt(3))  # Fmt(3) here only.
+        gprint(r'\mathbf{B} =', B.Fmt(1))  # Fmt(3) here only.
         gprint(r'\mathbf{B} =', B)         # Global Fmt remembered.
 
         gprint(r'\mathbf{B}^2 =', B*B)
