@@ -31,16 +31,18 @@ Changelog
     * Norm squared: :meth:`A.norm2() <galgebra.mv.Mv.norm2>` and :func:`norm2(A) <galgebra.mv.norm2>` now returns the absolute value of the quadratic form of ``A``.
     * Norm: :meth:`A.norm() <galgebra.mv.Mv.norm>` and :func:`norm(A) <galgebra.mv.norm>`
 
-  * :class:`~galgebra.lt.Lt` adopts the contravariant-covariant indexing notation long used in tensor analysis and differential geometry, which is consistent with the indexing notation GAlgebra already uses for the display of a multivector's basis blade expansion
-  * :meth:`~galgebra.lt.Lt.Symbolic_Matrix` allows the creation, for a symbolic transformation :math:`\lt{T}`, of matrices with entries of any of the four forms :math:`{T^i}_j`, :math:`T^{ij}`, :math:`T_{ij}`, or :math:`{T_i}^j`, although GAlgebra will use only the first two.
-  * :meth:`~galgebra.lt.Lt.Dictionary_to_Matrix` fixes a bug that incorrectly raises an exception if `T` maps one or more of the basis vectors to the zero multivector, and improves the readability.
-  * :class:`~galgebra.lt.Lt` fixes a bug that erroneously post multiplies the transformation's standard matrix by ``self.Ga.g_inv`` (the reciprocal metric tensor), resulting in a contravariant-contravariant matrix  :math:`[T^{ij}] = [{T^i}_k g^{kj}]` instead of the standard matrix :math:`[{T^i}_j]`. In the same spirit, :meth:`~galgebra.lt.Lt.matrix` now returns the standard matrix $[{T^i}_j]$ instead of the product matrix :math:`[{T^i}_j][g_{ij}]`.
-  * :class:`~galgebra.lt.Lt` now distinguishes symmetric and antisymmetric transformations from general transformations, ``Amat`` will be the standard matrix :math:`[{T^i}_j]` of the transformation when ``mode=='g'``, , but will be :math:`[T_{ij}]` when ``mode in ['s','a']``.  Since :math:`[g^{ij}][T_{ij}] = [{T^i}_j]`, in either case ``Lt.__init__`` will receive the standard matrix as its first parameter.
-  * :class:`~galgebra.lt.Lt` now correctly handles Versor input, and initializes the internal ``lt_dict`` for the versor-based linear transformation.
-  * :class:`~galgebra.lt.Lt` adds support for both even and odd versors, after generalization of spinors to versors in ``Mv``.
-  * For versor based transformations, the inverse transformation :meth:`~galgebra.lt.Lt.inv` is now based on simply :math:`\til{\mbf{V}}` instead of :math:`\mbf{V}^{-1} = {\frac 1 {\mbf{V} \til{\mbf{V}}}} {\til{\mbf{V}}}`, as a versor-based transformation is independent of taking nonzero scalar multiples of the versor.
-  * :class:`~galgebra.lt.Lt` adds support for LaTeX printing of versor-based transformations.
-  * The determinant method :meth:`~galgebra.lt.Lt.det` for a linear transformation is fixed, it now uses directly the geometric algebra definition of :math:`\lt{L}`'s determinant: :math:`\det(\lt{L}) = \lt{L}(\mbf{E}) \mbf{E}^{-1}`, where :math:`\mbf{E}` denotes the basis blade :math:`\mbf{E} = \es{1} \wedge \cdots \wedge \es{n}` for the grade space of pseudoscalars.
+  * :class:`~galgebra.lt.Lt` is significantly improved and fixed, see also :doc:`tutorials/lt`:
+
+    * :class:`~galgebra.lt.Lt` adopts the contravariant-covariant indexing notation long used in tensor analysis and differential geometry, which is consistent with the indexing notation GAlgebra already uses for the display of a multivector's basis blade expansion
+    * :meth:`~galgebra.lt.Lt.Symbolic_Matrix` allows the creation, for a symbolic transformation :math:`\lt{T}`, of matrices with entries of any of the four forms :math:`{T^i}_j`, :math:`T^{ij}`, :math:`T_{ij}`, or :math:`{T_i}^j`, although GAlgebra will use only the first two.
+    * :meth:`~galgebra.lt.Lt.Dictionary_to_Matrix` fixes a bug that incorrectly raises an exception if `T` maps one or more of the basis vectors to the zero multivector, and improves the readability.
+    * :class:`~galgebra.lt.Lt` fixes a bug that erroneously post multiplies the transformation's standard matrix by ``self.Ga.g_inv`` (the reciprocal metric tensor), resulting in a contravariant-contravariant matrix  :math:`[T^{ij}] = [{T^i}_k g^{kj}]` instead of the standard matrix :math:`[{T^i}_j]`. In the same spirit, :meth:`~galgebra.lt.Lt.matrix` now returns the standard matrix $[{T^i}_j]$ instead of the product matrix :math:`[{T^i}_j][g_{ij}]`.
+    * :class:`~galgebra.lt.Lt` now distinguishes symmetric and antisymmetric transformations from general transformations, ``Amat`` will be the standard matrix :math:`[{T^i}_j]` of the transformation when ``mode=='g'``, , but will be :math:`[T_{ij}]` when ``mode in ['s','a']``.  Since :math:`[g^{ij}][T_{ij}] = [{T^i}_j]`, in either case ``Lt.__init__`` will receive the standard matrix as its first parameter.
+    * :class:`~galgebra.lt.Lt` now correctly handles Versor input, and initializes the internal ``lt_dict`` for the versor-based linear transformation.
+    * :class:`~galgebra.lt.Lt` adds support for both even and odd versors, after generalization of spinors to versors in ``Mv``.
+    * For versor based transformations, the inverse transformation :meth:`~galgebra.lt.Lt.inv` is now based on simply :math:`\til{\mbf{V}}` instead of :math:`\mbf{V}^{-1} = {\frac 1 {\mbf{V} \til{\mbf{V}}}} {\til{\mbf{V}}}`, as a versor-based transformation is independent of taking nonzero scalar multiples of the versor.
+    * :class:`~galgebra.lt.Lt` adds support for LaTeX printing of versor-based transformations.
+    * The determinant method :meth:`~galgebra.lt.Lt.det` for a linear transformation is fixed, it now uses directly the geometric algebra definition of :math:`\lt{L}`'s determinant: :math:`\det(\lt{L}) = \lt{L}(\mbf{E}) \mbf{E}^{-1}`, where :math:`\mbf{E}` denotes the basis blade :math:`\mbf{E} = \es{1} \wedge \cdots \wedge \es{n}` for the grade space of pseudoscalars.
 
   Minor fixes includes:
 
