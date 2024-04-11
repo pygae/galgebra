@@ -1,0 +1,10 @@
+codecov:
+  status:
+    project:
+      default:
+        # Keep the project coverage target to auto
+        target: auto
+    patch:
+      default:
+        # Set the patch coverage target to 75%
+        target: 0.75
