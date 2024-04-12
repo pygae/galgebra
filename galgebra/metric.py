@@ -114,13 +114,17 @@ def collect(A, nc_list):
     return C
 
 
-def square_root_of_expr(expr):
+def square_root_of_expr(expr, hint='0'):
     """
-    If expression is product of even powers then every power is divided
-    by two and the product is returned.  If some terms in product are
-    not even powers the sqrt of the absolute value of the expression is
-    returned.  If the expression is a number the sqrt of the absolute
-    value of the number is returned.
+    If expression is product of even powers then every power is divided by two
+    and the absolute value of product is returned.
+    If some terms in product are not even powers the sqrt of the absolute value of
+    the expression is returned.
+    If the expression is a number the sqrt of the absolute value of the number is returned.
+
+    String values '+', '-', or '0' of hint respectively determine
+    whether expr should be regarded as nonnegative, nonpositive,
+    or of unknown sign.
     """
     if expr.is_number:
         if expr > 0:
@@ -137,11 +141,17 @@ def square_root_of_expr(expr):
                 coef = sqrt(abs(coef))  # Product coefficient not a number
         for p in pow_lst:
             f, n = p
+            # Product not all even powers
             if n % 2 != 0:
-                return sqrt(abs(expr))  # Product not all even powers
+                if hint == '+':
+                    return sqrt(expr)
+                elif hint == '-':
+                    return sqrt(-expr)
+                else:
+                    return sqrt(abs(expr))
             else:
                 coef *= f ** (n / S(2))  # Positive sqrt of the square of an expression
-        return coef
+        return abs(coef)
 
 
 def symbols_list(s, indices=None, sub=True, commutative=False):

@@ -1318,7 +1318,7 @@ class Mv(printer.GaPrintable):
           sign, except when the quadratic form's sign can be determined
           by other considerations, such as the metric being Euclidean.
         """
-        return simplify(sqrt(self.norm2(hint)))
+        return simplify(metric.square_root_of_expr(self.norm2(hint), hint='+'))
     # ## GSG code ends ###
 
     __abs__ = norm  # allow `abs(x)` to call z.norm()
