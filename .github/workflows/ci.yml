@@ -70,6 +70,7 @@ jobs:
           PYTEST_ARGS+=(-k "$PYTEST_K_FILTER");
         fi;
         pytest \
+          -vv \
           --cov=galgebra \
           --nbval examples/ipython/ \
           --nbval examples/primer/ \
