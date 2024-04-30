@@ -251,3 +251,8 @@ Note that in the [doc/books](https://github.com/pygae/galgebra/blob/master/doc/b
 - `Macdonald` which contains bundled supplementary materials for [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) by Alan Macdonald, see [here](https://github.com/pygae/galgebra/blob/master/doc/books/Macdonald/) and [here](https://github.com/pygae/galgebra/blob/master/examples/Macdonald/) for more information.
 
 <!-- end: bundled-resources -->
+
+Citing This Library
+-------------------
+
+For citation information, see [our `CITATION.md` file](https://github.com/pygae/galgebra/blob/master/CITATION.md).
