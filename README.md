@@ -263,6 +263,15 @@ Star History
  </picture>
 </a>
 
+Contributors
+-------------------
+
+<a href="https://github.com/pygae/galgebra/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=pygae/galgebra" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
+
 Citing This Library
 -------------------
 
