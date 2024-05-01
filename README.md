@@ -252,6 +252,26 @@ Note that in the [doc/books](https://github.com/pygae/galgebra/blob/master/doc/b
 
 <!-- end: bundled-resources -->
 
+Star History
+-------------------
+
+<a href="https://star-history.com/#pygae/galgebra&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=pygae/galgebra&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=pygae/galgebra&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=pygae/galgebra&type=Date" />
+ </picture>
+</a>
+
+Contributors
+-------------------
+
+<a href="https://github.com/pygae/galgebra/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=pygae/galgebra" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).
+
 Citing This Library
 -------------------
 
