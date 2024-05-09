@@ -66,6 +66,10 @@ Changelog
     * A geometric algebra for the unit sphere in :math:`\mathbb{R}^3` as a submanifold of :math:`\mathbb{R}^3` with spherical coordintes: :doc:`sp2sp3 <tutorials/sp2sp3>`
     * Spherical Coordinates in :math:`\mathbb{R}^3`: :doc:`sp3 <tutorials/sp3>`
 
+- :release:`0.5.2 <2024.05.01>`
+
+- :support:`517` Add citation info, star history, contributors to README, and fix zenodo citation issue for ``0.5.1``.
+
 - :release:`0.5.1 <2024.03.31>`
 
 - :bug:`495` ``MatrixFunction`` is broken since SymPy 1.11, which is required by initializing :class:`~galgebra.ga.Ga` with ``gsym`` and ``coords``, this is now fixed with a workaround (:issue:`507`).
