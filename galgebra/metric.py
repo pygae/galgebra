@@ -156,10 +156,7 @@ def square_root_of_expr(expr, hint='0'):
     or of unknown sign.
     """
     if expr.is_number:
-        if expr > 0:
-            return sqrt(expr)
-        else:
-            return sqrt(-expr)
+        return sqrt(abs_with_hint(expr, hint))
     else:
         expr = trigsimp(expr)
         coef, pow_lst = sqf_list(expr)
@@ -172,12 +169,7 @@ def square_root_of_expr(expr, hint='0'):
             f, n = p
             # Product not all even powers
             if n % 2 != 0:
-                if hint == '+':
-                    return sqrt(expr)
-                elif hint == '-':
-                    return sqrt(-expr)
-                else:
-                    return sqrt(abs(expr))
+                return sqrt(abs_with_hint(expr, hint))
             else:
                 coef *= f ** (n / S(2))  # Positive sqrt of the square of an expression
         return abs_with_hint(coef)
