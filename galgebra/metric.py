@@ -114,7 +114,7 @@ def collect(A, nc_list):
     return C
 
 
-def abs_with_hint(expr, hint: str) -> Expr:
+def abs_with_hint(expr, hint: str = '0') -> Expr:
     """
     Heuristics for simplifying the absolute value of an expression with hints.
     """
