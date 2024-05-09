@@ -172,7 +172,7 @@ def square_root_of_expr(expr, hint='0'):
                 return sqrt(abs_with_hint(expr, hint))
             else:
                 coef *= f ** (n / S(2))  # Positive sqrt of the square of an expression
-        return abs_with_hint(coef)
+        return coef
 
 
 def symbols_list(s, indices=None, sub=True, commutative=False):
