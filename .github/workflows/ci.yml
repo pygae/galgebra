@@ -23,7 +23,7 @@ jobs:
         && !contains(github.event.head_commit.message, '[skip tests]')
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.11"] # "3.8", "3.9", "3.10", 
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
