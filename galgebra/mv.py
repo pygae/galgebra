@@ -273,7 +273,7 @@ class Mv(printer.GaPrintable):
     _make_spinor = _make_even  # alias for compatibility with old code
     ### GSSG: removed alias `_make_even = _make_spinor_`
 
-    def __init__(self, *args, ga, recp=None, coords=None, **kwargs):
+    def __init__(self, *args, ga: 'Ga', recp=None, coords=None, **kwargs):
         """
         __init__(self, *args, ga, recp=None, **kwargs)
 
