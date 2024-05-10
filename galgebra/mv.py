@@ -368,6 +368,7 @@ class Mv(printer.GaPrintable):
                 self.obj = x.obj
                 self.is_blade_rep = x.is_blade_rep
                 self.i_grade = x.i_grade
+                self.characterise_Mv()
             else:
                 if isinstance(x, Expr):  # copy constructor for obj expression
                     self.obj = x
