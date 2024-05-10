@@ -25,8 +25,10 @@ Development Status
 
 The fork supports Python 3, increases test coverage, sets up CI and linters, maintains releases to [PyPI](https://pypi.org/project/galgebra/#history), improves [docs](http://galgebra.readthedocs.io) and has many bug fixes, see [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html).
 
-> [!INFO]  
-> Readers of [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html), please check out **Migrating guide for readers of LAGA&VAGC** below.
+> [!NOTE]
+> Readers of Prof. Alan Macdonald's [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html), please check out [**Migrating guide for readers of LAGA&VAGC**](#migrating-guide-for-readers-of-lagavagc) below.
+> 
+> If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out section [Migration Guide](#migration-guide) below.
 
 Features
 --------------------
@@ -154,8 +156,6 @@ You will see:
 You may also check out more examples [here](https://github.com/pygae/galgebra/blob/master/examples/).
 
 For detailed documentation, please visit https://galgebra.readthedocs.io/ .
-
-**NOTE:** If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out section [Migration Guide](#migration-guide) below.
 
 <!-- end: getting-started -->
 <!-- begin: installation -->
