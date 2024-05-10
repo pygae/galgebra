@@ -2049,7 +2049,10 @@ class Ga(metric.Metric):
         # Simple partial differentiation, once with respect to a single
         # variable, but including case of non-constant basis vectors
 
-        dA = self.mv(expand(diff(A.obj, coord)))
+        if isinstance(A, mv.Mv):
+            A = A.obj
+
+        dA = self.mv(expand(diff(A, coord)))
 
         if self.connect_flg and self.dslot == -1 and not A.is_scalar():  # Basis blades are function of coordinates
             B = self.remove_scalar_part(A)
