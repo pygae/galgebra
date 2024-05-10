@@ -25,6 +25,9 @@ Development Status
 
 The fork supports Python 3, increases test coverage, sets up CI and linters, maintains releases to [PyPI](https://pypi.org/project/galgebra/#history), improves [docs](http://galgebra.readthedocs.io) and has many bug fixes, see [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html).
 
+> [!INFO]  
+> Readers of [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html), please check out **Migrating guide for readers of LAGA&VAGC** below.
+
 Features
 --------------------
 
@@ -213,6 +216,15 @@ Migration Guide
 ----------------
 
 > Note: The APIs have changed since the era of `sympy.galgebra` and `brombo/galgebra`, some properties and methods are deprecated, the supported versions of Python and SymPy have also changed, please check [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html) and further update your scripts accordingly besides the following. If you encounter any problems, feel free to [open an issue](https://github.com/pygae/galgebra/issues/new)!
+
+### Migrating guide for readers of LAGA&VAGC
+
+Readers of [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) might be guided by [GAlgebra Primer](http://www.faculty.luther.edu/~macdonal/GAlgebraPrimer.pdf) (version November 29, 2022, accessed May, 2024) to download [GAfiles.zip](http://www.faculty.luther.edu/~macdonal/GAfiles.zip) and copy `gprinter.py`, `lt.py`, `mv.py`, and `GAlgebraInit.py`¸ into where GAlgebra is installed. These steps are NO LONGER NEEDED since GAlgebra 0.6.0 as they are merge into GAlgebra with tests, copying these files will cause conflicts and regressions of fixed bugs.
+
+For minor differences to those files, please check out [the change log for GAlgebra 0.6.0](https://galgebra.readthedocs.io/en/latest/changelog.html#0.6.0). Also please note that:
+
+- `GAlgebraInit.py` is renamed to `primer.py` and can be imported like `from galgebra.primer import *` but it's usage is discouraged, although it saves some boilerplate code, this is not part of GAlgebra's maintained API, GAlgebra might remove it in future.
+- Some notebooks from the zip is included in GAlgebra in `examples/primer`.
 
 ### Migrating from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/)
 
