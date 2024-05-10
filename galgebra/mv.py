@@ -815,7 +815,7 @@ class Mv(printer.GaPrintable):
     def __pow__(self, n):  # Integer power operator
         if not isinstance(n, int):
             raise ValueError('!!!!Multivector power can only be to integer power!!!!')
-        
+
         if n < 0:
             return (self**(-n)).inv()
 
