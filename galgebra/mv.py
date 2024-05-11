@@ -819,7 +819,7 @@ class Mv(printer.GaPrintable):
         if n < 0:
             return (self**(-n)).inv()
 
-        result = S.One
+        result = Mv(S.One, 'scalar', ga=self.Ga)
         for x in range(n):
             result *= self
         return result
