@@ -8,6 +8,14 @@ Changelog
   \newcommand {\es}[1] {\mathbf{e}_{#1}}
   \newcommand {\til}[1] {\widetilde{#1}}
 
+- :bug:`518` :class:`~galgebra.mv.Mv` now correctly returns ``Mv`` instance when raise to power of zero. But in general, if one needs to call ``Mv`` methods on a result returned by some GA operations, it would be more prudent to initialize it as an ``Mv`` instance first, as sometimes the result becomes a ``sympy`` object.
+
+- :bug:`516` :attr:`~galgebra.mv.Mv.grades` no longer incorrectly returns ``None`` under some circumstances, as now all initialization branch will correctly call :meth:`~galgebra.mv.Mv.characterise_Mv`.
+
+- :bug:`513` :class:`~galgebra.mv.Mv` now correctly handles differentiating by a coordinate symbol.
+
+- :bug:`511` :class:`~galgebra.mv.Mv` now correctly handles negative integer power.
+
 - :feature:`510` Added :class:`~galgebra.gprinter.gprint` by Alan Bromborsky developed back in 2020, which improved printing of text and LaTeX for multiple GA objects in Jupytper notebooks, and is the recommended way to print GA formulas, see :doc:`tutorials/gprint` for a demonstration. Testability and test coverage are improved.
 
 - :support:`510` Testing infrastructure for generating and diffing PDFs is added, see ``test/test_gprinter.py`` and ``.github/workflows/ci.yml`` for details.
