@@ -25,6 +25,11 @@ Development Status
 
 The fork supports Python 3, increases test coverage, sets up CI and linters, maintains releases to [PyPI](https://pypi.org/project/galgebra/#history), improves [docs](http://galgebra.readthedocs.io) and has many bug fixes, see [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html).
 
+> [!NOTE]
+> Readers of Prof. Alan Macdonald's [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html), please check out [**Migrating guide for readers of LAGA&VAGC**](#migrating-guide-for-readers-of-lagavagc) below.
+> 
+> If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out section [Migration Guide](#migration-guide) below.
+
 Features
 --------------------
 
@@ -54,8 +59,8 @@ Overloaded Python operators for basic GA operations:
   AB &=  \texttt{A*B} \\
   A \wedge B &=  \mathtt{A \verb!^! B} \\
   A \cdot B &=  \texttt{A|B} \\
-  A \rfloor B &=  \texttt{A<B} \\
-  A \lfloor B &=  \texttt{A>B} \\
+  A \rfloor B &=  \mathtt{A \lt B} \\
+  A \lfloor B &=  \mathtt{A \gt B} \\
   A/B &=  \texttt{A/B} \\
 \end{aligned}\end{split}
 ```
@@ -77,10 +82,10 @@ The various derivatives of a multivector function is accomplished by multiplying
   F {\wedge}\bar{\nabla} &=  \mathtt{F \verb!^! rgrad} \\
   \nabla \cdot F &=  \texttt{grad|F} \\
   F \cdot \bar{\nabla} &=  \texttt{F|rgrad} \\
-  \nabla \rfloor F &=  \texttt{grad<F} \\
-  F \rfloor \bar{\nabla} &=  \texttt{F<rgrad} \\
-  \nabla \lfloor F &=  \texttt{grad>F} \\
-  F \lfloor \bar{\nabla} &= \texttt{F>rgrad}
+  \nabla \rfloor F &=  \mathtt{grad \lt F} \\
+  F \rfloor \bar{\nabla} &=  \mathtt{F \lt rgrad} \\
+  \nabla \lfloor F &=  \mathtt{grad \gt F} \\
+  F \lfloor \bar{\nabla} &= \mathtt{F \gt rgrad}
 \end{aligned}
 ```
 
@@ -92,10 +97,10 @@ The various derivatives of a multivector function is accomplished by multiplying
   \bar{\nabla} {\wedge}F &=  \mathtt{rgrad \verb!^! F} \\
   F \cdot \nabla &=  \texttt{F|grad} \\
   \bar{\nabla}\cdot F &=  \texttt{rgrad|F} \\
-  F \rfloor \nabla &=  \texttt{F<grad} \\
-  \bar{\nabla} \rfloor F &=  \texttt{rgrad<F} \\
-  F \lfloor \nabla &=  \texttt{F>grad} \\
-  \bar{\nabla} \lfloor F &= \texttt{rgrad>F}
+  F \rfloor \nabla &=  \mathtt{F \lt grad} \\
+  \bar{\nabla} \rfloor F &=  \mathtt{rgrad \lt F} \\
+  F \lfloor \nabla &=  \mathtt{F \gt grad} \\
+  \bar{\nabla} \lfloor F &= \mathtt{rgrad \gt F}
 \end{aligned}
 ```
 
@@ -152,8 +157,6 @@ You may also check out more examples [here](https://github.com/pygae/galgebra/bl
 
 For detailed documentation, please visit https://galgebra.readthedocs.io/ .
 
-**NOTE:** If you are coming from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/) or [brombo/galgebra](https://github.com/brombo/galgebra), please check out section [Migration Guide](#migration-guide) below.
-
 <!-- end: getting-started -->
 <!-- begin: installation -->
 
@@ -201,7 +204,7 @@ Further, to run the complete test suite including the ones using [nbval](https:/
 
 ```bash
 pip install nbval
-pytest --nbval examples/ipython/ test --nbval-current-env --nbval-sanitize-with test/.nbval_sanitize.cfg
+pytest --nbval examples/ipython/ --nbval examples/primer/ test --nbval-current-env --nbval-sanitize-with test/.nbval_sanitize.cfg
 ```
 
 This could take more than 10 minutes, please be patient.
@@ -213,6 +216,15 @@ Migration Guide
 ----------------
 
 > Note: The APIs have changed since the era of `sympy.galgebra` and `brombo/galgebra`, some properties and methods are deprecated, the supported versions of Python and SymPy have also changed, please check [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html) and further update your scripts accordingly besides the following. If you encounter any problems, feel free to [open an issue](https://github.com/pygae/galgebra/issues/new)!
+
+### Migrating guide for readers of LAGA&VAGC
+
+Readers of [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) might be guided by [GAlgebra Primer](http://www.faculty.luther.edu/~macdonal/GAlgebraPrimer.pdf) (version November 29, 2022, accessed May, 2024) to download [GAfiles.zip](http://www.faculty.luther.edu/~macdonal/GAfiles.zip) and copy `gprinter.py`, `lt.py`, `mv.py`, and `GAlgebraInit.py`¸ into where GAlgebra is installed. These steps are NO LONGER NEEDED since GAlgebra 0.6.0 as they are merge into GAlgebra with tests, copying these files will cause conflicts and regressions of fixed bugs.
+
+For minor differences to those files, please check out [the change log for GAlgebra 0.6.0](https://galgebra.readthedocs.io/en/latest/changelog.html#0.6.0). Also please note that:
+
+- `GAlgebraInit.py` is renamed to `primer.py` and can be imported like `from galgebra.primer import *` but it's usage is discouraged, although it saves some boilerplate code, this is not part of GAlgebra's maintained API, GAlgebra might remove it in future.
+- Some notebooks from the zip is included in GAlgebra in `examples/primer`.
 
 ### Migrating from [sympy.galgebra](https://docs.sympy.org/0.7.6.1/modules/galgebra/)
 
@@ -249,6 +261,7 @@ Note that in the [doc/books](https://github.com/pygae/galgebra/blob/master/doc/b
 - `BookGA.pdf` which is a collection of notes on Geometric Algebra and Calculus based of "Geometric Algebra for Physicists" by Doran and Lasenby and on some papers by Lasenby and Hestenes.
 - `galgebra.pdf` which is the original main doc of GAlgebra in PDF format, while the math part is still valid, the part describing the installation and usage of GAlgebra is outdated, please read with caution or visit https://galgebra.readthedocs.io/ instead.
 - `Macdonald` which contains bundled supplementary materials for [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) by Alan Macdonald, see [here](https://github.com/pygae/galgebra/blob/master/doc/books/Macdonald/) and [here](https://github.com/pygae/galgebra/blob/master/examples/Macdonald/) for more information.
+  - Particularly, `GAlgebraPrimer.pdf` is an archived version of [GAlgebra Primer](http://www.faculty.luther.edu/~macdonal/GAlgebraPrimer.pdf) by Alan Macdonald, last updated on November 29, 2022.
 
 <!-- end: bundled-resources -->
 

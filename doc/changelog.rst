@@ -2,6 +2,78 @@
 Changelog
 =========
 
+.. math::
+  \newcommand {\lt}[1] {\mathsf{#1}}
+  \newcommand {\mbf}[1] {\mathbf{#1}}
+  \newcommand {\es}[1] {\mathbf{e}_{#1}}
+  \newcommand {\til}[1] {\widetilde{#1}}
+
+- :bug:`518` :class:`~galgebra.mv.Mv` now correctly returns ``Mv`` instance when raise to power of zero. But in general, if one needs to call ``Mv`` methods on a result returned by some GA operations, it would be more prudent to initialize it as an ``Mv`` instance first, as sometimes the result becomes a ``sympy`` object.
+
+- :bug:`516` :attr:`~galgebra.mv.Mv.grades` no longer incorrectly returns ``None`` under some circumstances, as now all initialization branch will correctly call :meth:`~galgebra.mv.Mv.characterise_Mv`.
+
+- :bug:`513` :class:`~galgebra.mv.Mv` now correctly handles differentiating by a coordinate symbol.
+
+- :bug:`511` :class:`~galgebra.mv.Mv` now correctly handles negative integer power.
+
+- :feature:`510` Added :class:`~galgebra.gprinter.gprint` by Alan Bromborsky developed back in 2020, which improved printing of text and LaTeX for multiple GA objects in Jupytper notebooks, and is the recommended way to print GA formulas, see :doc:`tutorials/gprint` for a demonstration. Testability and test coverage are improved.
+
+- :support:`510` Testing infrastructure for generating and diffing PDFs is added, see ``test/test_gprinter.py`` and ``.github/workflows/ci.yml`` for details.
+
+- :feature:`510` Improved functionality for :class:`~galgebra.mv.Mv`, :class:`~galgebra.lt.Lt` by Greg Grunberg, with improved test coverage and minor fixes.
+
+  Changes by Greg Grunberg include (see the attached notebooks in :issue:`478` for details):
+
+  * The following methods of ``Mv`` are added, along with their corresponding functions (applied to multivectors ``A`` and ``B``):
+
+    * Undualization: :meth:`A.undual() <galgebra.mv.Mv.undual>` and :func:`undual(A) <galgebra.mv.undual>`
+    * Grade involution: :meth:`A.g_invol() <galgebra.mv.Mv.g_invol>` and :func:`g_invol(A) <galgebra.mv.g_invol>`
+    * Clifford conjugation: :meth:`A.ccon() <galgebra.mv.Mv.ccon>` and :func:`ccon(A) <galgebra.mv.ccon>`
+    * Scalar product: :meth:`A.sp(B) <galgebra.mv.Mv.sp>` and :func:`sp(A,B) <galgebra.mv.sp>`
+    * Quadratic form: :meth:`A.qform() <galgebra.mv.Mv.qform>` and :func:`qform(A) <galgebra.mv.qform>`
+    * Magnitude squared: :meth:`A.mag2() <galgebra.mv.Mv.mag2>` and :func:`mag2(A) <galgebra.mv.mag2>`
+    * Magnitude: :meth:`A.mag() <galgebra.mv.Mv.mag>` and :func:`mag(A) <galgebra.mv.mag>`
+
+  * The following methods of ``Mv`` are improved, along with their corresponding functions:
+
+    * Norm squared: :meth:`A.norm2() <galgebra.mv.Mv.norm2>` and :func:`norm2(A) <galgebra.mv.norm2>` now returns the absolute value of the quadratic form of ``A``.
+    * Norm: :meth:`A.norm() <galgebra.mv.Mv.norm>` and :func:`norm(A) <galgebra.mv.norm>`
+
+  * :class:`~galgebra.lt.Lt` is significantly improved and fixed, see also :doc:`tutorials/lt`:
+
+    * :class:`~galgebra.lt.Lt` adopts the contravariant-covariant indexing notation long used in tensor analysis and differential geometry, which is consistent with the indexing notation GAlgebra already uses for the display of a multivector's basis blade expansion
+    * :meth:`~galgebra.lt.Lt.Symbolic_Matrix` allows the creation, for a symbolic transformation :math:`\lt{T}`, of matrices with entries of any of the four forms :math:`{T^i}_j`, :math:`T^{ij}`, :math:`T_{ij}`, or :math:`{T_i}^j`, although GAlgebra will use only the first two.
+    * :meth:`~galgebra.lt.Lt.Dictionary_to_Matrix` fixes a bug that incorrectly raises an exception if `T` maps one or more of the basis vectors to the zero multivector, and improves the readability.
+    * :class:`~galgebra.lt.Lt` fixes a bug that erroneously post multiplies the transformation's standard matrix by ``self.Ga.g_inv`` (the reciprocal metric tensor), resulting in a contravariant-contravariant matrix  :math:`[T^{ij}] = [{T^i}_k g^{kj}]` instead of the standard matrix :math:`[{T^i}_j]`. In the same spirit, :meth:`~galgebra.lt.Lt.matrix` now returns the standard matrix $[{T^i}_j]$ instead of the product matrix :math:`[{T^i}_j][g_{ij}]`.
+    * :class:`~galgebra.lt.Lt` now distinguishes symmetric and antisymmetric transformations from general transformations, ``Amat`` will be the standard matrix :math:`[{T^i}_j]` of the transformation when ``mode=='g'``, , but will be :math:`[T_{ij}]` when ``mode in ['s','a']``.  Since :math:`[g^{ij}][T_{ij}] = [{T^i}_j]`, in either case ``Lt.__init__`` will receive the standard matrix as its first parameter.
+    * :class:`~galgebra.lt.Lt` now correctly handles Versor input, and initializes the internal ``lt_dict`` for the versor-based linear transformation.
+    * :class:`~galgebra.lt.Lt` adds support for both even and odd versors, after generalization of spinors to versors in ``Mv``.
+    * For versor based transformations, the inverse transformation :meth:`~galgebra.lt.Lt.inv` is now based on simply :math:`\til{\mbf{V}}` instead of :math:`\mbf{V}^{-1} = {\frac 1 {\mbf{V} \til{\mbf{V}}}} {\til{\mbf{V}}}`, as a versor-based transformation is independent of taking nonzero scalar multiples of the versor.
+    * :class:`~galgebra.lt.Lt` adds support for LaTeX printing of versor-based transformations.
+    * The determinant method :meth:`~galgebra.lt.Lt.det` for a linear transformation is fixed, it now uses directly the geometric algebra definition of :math:`\lt{L}`'s determinant: :math:`\det(\lt{L}) = \lt{L}(\mbf{E}) \mbf{E}^{-1}`, where :math:`\mbf{E}` denotes the basis blade :math:`\mbf{E} = \es{1} \wedge \cdots \wedge \es{n}` for the grade space of pseudoscalars.
+
+  Minor fixes includes:
+
+  * ``norm`` is fixed by using ``metric.square_root_of_expr`` instead of ``sqrt``
+  * making a "spinor" mv is kept for backward compatibility with existing tests, which is still aliased to making an "even" mv, see discussions ``10. An unimplemented suggestion`` in ``Changes to module lt.py`` attached in :issue:`478`
+  * fixed linting errors reported by ``flake8``
+  * fixed some typos of ``return``, ``raise`` etc.
+
+- :feature:`510` Added example notebooks for typical GAs by Greg Grunberg, and they are now part of the tests:
+
+  * Standard 2D Model :math:`\mathcal{G}_2`: :doc:`g2 <tutorials/g2>`
+  * Standard 3D Model :math:`\mathcal{G}_3`: :doc:`g3 <tutorials/g3>`
+  * Standard 4D Model :math:`\mathcal{G}_4`: :doc:`g4 <tutorials/g4>`
+  * 3D Homogeneous Coordinates :math:`\mathcal{G}_4`: :doc:`h3 <tutorials/h3>`
+  * 3D Conformal Model, Amsterdam convention :math:`\mathcal{G}_{4,1}`: :doc:`cm3 <tutorials/cm3>`
+  * Spacetime algebra: :doc:`spacetime <tutorials/spacetime>`
+  * Sphere-related algebras:
+
+    * Geometric algebra for unit sphere in :math:`\mathbb{R}^3` using spherical coordinates: :doc:`sp2 <tutorials/sp2>`
+    * Unit sphere :math:`\mathbb{R}^3` as a submanifold of :math:`\mathcal{G}_3` in cartesian coordinates: :doc:`sp2g3 <tutorials/sp2g3>`
+    * A geometric algebra for the unit sphere in :math:`\mathbb{R}^3` as a submanifold of :math:`\mathbb{R}^3` with spherical coordintes: :doc:`sp2sp3 <tutorials/sp2sp3>`
+    * Spherical Coordinates in :math:`\mathbb{R}^3`: :doc:`sp3 <tutorials/sp3>`
+
 - :release:`0.5.2 <2024.05.01>`
 
 - :support:`517` Add citation info, star history, contributors to README, and fix zenodo citation issue for ``0.5.1``.

@@ -9,7 +9,7 @@ from typing import List, Optional
 from sympy import (
     diff, trigsimp, Matrix, Rational,
     sqf_list, sqrt, eye, S, expand, Mul,
-    Add, simplify, Expr, Function, MatrixSymbol
+    Add, simplify, Expr, Abs, Function, MatrixSymbol
 )
 
 from . import printer
@@ -114,19 +114,49 @@ def collect(A, nc_list):
     return C
 
 
-def square_root_of_expr(expr):
+def abs_with_hint(expr, hint: str = '0') -> Expr:
     """
-    If expression is product of even powers then every power is divided
-    by two and the product is returned.  If some terms in product are
-    not even powers the sqrt of the absolute value of the expression is
-    returned.  If the expression is a number the sqrt of the absolute
-    value of the number is returned.
+    Heuristics for simplifying the absolute value of an expression with hints.
+    """
+
+    # Case1: expr is numeric
+    if expr.is_number:
+        return Abs(expr)
+    # # Case2: metric is positive definite
+    # if self.Ga.g.is_positive_definite:
+    #     return expr
+    # Case3: expr is nonnegative
+    if (expr >= 0) == True:         # noqa: E712
+        return +expr
+    # Case4: expr is nonpositive
+    if (expr <= 0) == True:         # noqa: E712
+        return -expr
+
+    # Case5: expr's sign is unknown, so use `hint`.
+    if hint == '0':
+        return Abs(expr)
+    elif hint == '+':
+        return +expr
+    elif hint == '-':
+        return -expr
+    else:
+        raise ValueError("hint must be '0', '+', or '-'.")
+
+
+def square_root_of_expr(expr, hint='0'):
+    """
+    If expression is product of even powers then every power is divided by two
+    and the absolute value of product is returned.
+    If some terms in product are not even powers the sqrt of the absolute value of
+    the expression is returned.
+    If the expression is a number the sqrt of the absolute value of the number is returned.
+
+    String values '+', '-', or '0' of hint respectively determine
+    whether expr should be regarded as nonnegative, nonpositive,
+    or of unknown sign.
     """
     if expr.is_number:
-        if expr > 0:
-            return sqrt(expr)
-        else:
-            return sqrt(-expr)
+        return sqrt(abs_with_hint(expr, hint))
     else:
         expr = trigsimp(expr)
         coef, pow_lst = sqf_list(expr)
@@ -137,8 +167,9 @@ def square_root_of_expr(expr):
                 coef = sqrt(abs(coef))  # Product coefficient not a number
         for p in pow_lst:
             f, n = p
+            # Product not all even powers
             if n % 2 != 0:
-                return sqrt(abs(expr))  # Product not all even powers
+                return sqrt(abs_with_hint(expr, hint))
             else:
                 coef *= f ** (n / S(2))  # Positive sqrt of the square of an expression
         return coef

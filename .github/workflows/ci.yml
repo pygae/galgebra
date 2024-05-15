@@ -41,6 +41,27 @@ jobs:
     - name: Lint
       run: |
         flake8 -v
+    - uses: hidakatsuya/action-setup-diff-pdf@v1.3.0
+      if: "matrix.python-version == '3.11'"
+      with:
+        diff-pdf-version: '0.5'
+    - uses: actions/cache@v3
+      name: Tectonic Cache
+      if: "matrix.python-version == '3.11'"
+      with:
+        path: ~/.cache/Tectonic
+        key: ${{ runner.os }}-tectonic-${{ hashFiles('**/*.tex') }}
+        restore-keys: |
+          ${{ runner.os }}-tectonic-
+    - uses: wtfjoke/setup-tectonic@v2
+      if: "matrix.python-version == '3.11'"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        biber-version: "latest"
+    - name: Set environment variables
+      if: "matrix.python-version == '3.11'"
+      run: |
+        echo "TEST_GXPDF=1" >> "$GITHUB_ENV"
     - name: Test
       run: |
         PYTEST_ARGS=();
@@ -49,8 +70,10 @@ jobs:
           PYTEST_ARGS+=(-k "$PYTEST_K_FILTER");
         fi;
         pytest \
+          -vv --durations=50 \
           --cov=galgebra \
           --nbval examples/ipython/ \
+          --nbval examples/primer/ \
           test \
           --nbval-current-env \
           --nbval-sanitize-with test/.nbval_sanitize.cfg \
@@ -60,6 +83,11 @@ jobs:
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+    - uses: actions/upload-artifact@v3
+      if: "matrix.python-version == '3.11' && failure()"
+      with:
+        name: PDF-diffs
+        path: test/diff
 
   release:
     name: Create release and send to PyPI

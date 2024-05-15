@@ -2,7 +2,10 @@ import distutils.version
 
 import pytest
 import sympy
+from sympy import symbols
 from galgebra.ga import Ga
+from galgebra.mv import proj, undual, g_invol, exp, norm, norm2, mag, mag2, ccon, rev, scalar, qform, sp
+
 
 class TestMv:
 
@@ -52,14 +55,13 @@ class TestMv:
         with pytest.raises(ValueError):
             (e_1 ^ e_2).get_coefs(3)
 
-
     def test_blade_coefs(self):
         """
         Various tests on several multivectors.
         """
         _g3d, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
-        m0 =  2 * e_1 + e_2 - e_3 + 3 * (e_1 ^ e_3) + (e_1 ^ e_3) + (e_2 ^ (3 * e_3))
+        m0 = 2 * e_1 + e_2 - e_3 + 3 * (e_1 ^ e_3) + (e_1 ^ e_3) + (e_2 ^ (3 * e_3))
         assert m0.blade_coefs([e_1]) == [2]
         assert m0.blade_coefs([e_2]) == [1]
         assert m0.blade_coefs([e_1, e_2]) == [2, 1]
@@ -93,7 +95,7 @@ class TestMv:
         # this ga has a non-diagonal metric
         _g3d, e_1, e_2, e_3 = Ga.build('e*1|2|3')
 
-        m0 =  2 * e_1 + e_2 - e_3 + 3 * (e_1 ^ e_3) + (e_1 ^ e_3) + (e_2 ^ (3 * e_3))
+        m0 = 2 * e_1 + e_2 - e_3 + 3 * (e_1 ^ e_3) + (e_1 ^ e_3) + (e_2 ^ (3 * e_3))
         m1 = (-4*(e_1 | e_3)-3*(e_2 | e_3))+2*e_1+e_2-e_3+4*e_1*e_3+3*e_2*e_3
         # m1 was chosen to make this true
         assert m0 == m1
@@ -148,6 +150,8 @@ class TestMv:
             ga.mv('A', 'grade', not_an_argument=True)  # invalid kwarg
         with pytest.raises(TypeError):
             ga.mv([1, 2, 3], 'vector', f=True)  # can't pass f with coefficients
+        with pytest.raises(TypeError):
+            ga.mv(e_1, 'even')  # Must be a string
 
     def test_abs(self):
         ga, e_1, e_2, e_3 = Ga.build('e*1|2|3', g=[1, 1, 1])
@@ -214,3 +218,109 @@ class TestMv:
         assert (e12 > one) == e12
         assert (e12 < one) == 0
         assert (one > e12) == 0
+
+    def test_proj(self):
+        g3coords = symbols('x y z', real=True)
+        V = Ga('e', g=[1, 1, 1], coords=g3coords)
+
+        u = V.mv("u", "vector")
+        v = V.mv("v", "vector")
+        w = V.mv("w", "vector")
+        B = V.mv("B", "mv")
+
+        assert proj(u, v) == v.project_in_blade(u)
+        assert proj(w, v) + proj(w, u) == proj(w, u + v)
+        assert proj(u, v) == (v | u) / u
+
+        Vr = u ^ v
+        assert proj(Vr, B) == ((B < Vr) * Vr.inv())
+        assert proj(Vr, B) == ((B < Vr) < Vr.inv())
+
+    def test_norm2(self):
+        g3coords = symbols('x y z', real=True)
+        g3 = Ga('e', g=[1, 1, 1], coords=g3coords)
+        A = g3.mv('A', 'mv')
+
+        assert A.norm2() == A.rev().sp(A)
+        assert A.norm2('+') == A.rev().sp(A)
+        assert A.norm2('-') == A.rev().sp(A)
+
+        assert norm2(A) == norm(A) * norm(A)
+        assert norm2(A, '+') == norm(A) * norm(A)
+        assert norm2(A, '-') == norm(A) * norm(A)
+
+    def test_mag2(self):
+        g3coords = symbols('x y z', real=True)
+        g3 = Ga('e', g=[1, 1, 1], coords=g3coords)
+        A = g3.mv('A', 'mv')
+
+        assert mag2(A) == mag(A) * mag(A)
+
+    def test_undual(self):
+        # A not a multivector in undual(A).
+        with pytest.raises(ValueError):
+            undual(1)
+
+    def test_g_invol(self):
+        g3coords = symbols('x y z', real=True)
+        g3 = Ga('e', g=[1, 1, 1], coords=g3coords)
+        A = g3.mv('A', 'mv')
+
+        assert g_invol(A.even()) == A.even()
+        assert g_invol(A.odd()) == -A.odd()
+
+        with pytest.raises(ValueError):
+            g_invol(1)
+
+    def test_exp(self):
+        g3coords = (x, y, z) = symbols('x y z', real=True)
+        g3 = Ga('e', g=[1, 1, 1], coords=g3coords)
+
+        u = g3.mv("u", "vector")
+        v = g3.mv("v", "vector")
+
+        assert exp(u ^ v) == exp(-v ^ u)
+        assert exp(x + y + z) == exp(z + y + x)
+
+    def test_ccon(self):
+        g3coords = symbols('x y z', real=True)
+        g3 = Ga('e', g=[1, 1, 1], coords=g3coords)
+
+        A = g3.mv('A', 'mv')
+
+        assert ccon(ccon(A)) == A
+        assert ccon(A) == g_invol(rev(A))
+        assert ccon(A) == rev(g_invol(A))
+
+        # not a multivector in ccon(A)
+        with pytest.raises(ValueError):
+            ccon(1)
+
+    def test_scalar(self):
+        g3coords = symbols('x y z', real=True)
+        g3 = Ga('e', g=[1, 1, 1], coords=g3coords)
+
+        A = g3.mv('A', 'mv')
+        u = g3.mv("u", "vector")
+
+        assert scalar(A) == A.scalar()
+        assert scalar(u) == 0
+        assert scalar(u * u) == qform(u)
+
+        # not a multivector in scalar(A)
+        with pytest.raises(ValueError):
+            scalar(1)
+
+    def test_sp(self):
+        g3coords = symbols('x y z', real=True)
+        g3 = Ga('e', g=[1, 1, 1], coords=g3coords)
+
+        A = g3.mv('A', 'mv')
+        B = g3.mv('B', 'mv')
+
+        assert sp(A, B) == A.sp(B)
+        assert sp(A, B) == (A*B).scalar()
+
+        # not a multivector in sp(A, B)
+        with pytest.raises(ValueError):
+            sp(1, 1)
