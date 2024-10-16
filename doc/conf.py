@@ -26,7 +26,7 @@ import releases_hack
 # -- Project information -----------------------------------------------------
 
 project = 'galgebra'
-copyright = '2014-2019, Alan Bromborsky and GAlgebra team'
+copyright = '2014-2024, Alan Bromborsky and GAlgebra team'
 author = 'Alan Bromborsky'
 
 # -- General configuration ---------------------------------------------------
