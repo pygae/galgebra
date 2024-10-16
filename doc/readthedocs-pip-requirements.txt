@@ -10,7 +10,7 @@ scipy
 ipykernel
 nbsphinx
 numba
-sphinx-rtd-theme
+sphinx-rtd-theme==2.0.0
 sphinx_mdinclude
 
 sphinx-markdown-tables
