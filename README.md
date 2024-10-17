@@ -25,6 +25,8 @@ Development Status
 
 The fork supports Python 3, increases test coverage, sets up CI and linters, maintains releases to [PyPI](https://pypi.org/project/galgebra/#history), improves [docs](http://galgebra.readthedocs.io) and has many bug fixes, see [Changelog](https://galgebra.readthedocs.io/en/latest/changelog.html).
 
+For information on how GAlgebra is used in other projects, see [Used by](https://github.com/pygae/galgebra/blob/master/doc/used_by.md).
+
 > [!IMPORTANT] 
 > Readers of Prof. Alan Macdonald's [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html), please check out [**Migrating guide for readers of LAGA&VAGC**](#migrating-guide-for-readers-of-lagavagc) below.
 > 
