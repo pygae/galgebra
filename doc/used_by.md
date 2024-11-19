@@ -29,7 +29,7 @@ This data is manually mined from [forks](https://github.com/pygae/galgebra/forks
 - [micahscopes/alglbraic](https://github.com/micahscopes/alglbraic): A python library and CLI utility for generating libraries of algebraic GLSL functions, including Clifford algebras
 - [russellgoyder/sundial](https://github.com/russellgoyder/sundial): The sundial problem from a new angle
   - released as package `analemma` on PyPI
-  - contains a cheat sheet for GAlgebra
+  - contains [a cheat sheet for GAlgebra](https://github.com/russellgoyder/geometric-algebra-cheat-sheet)
   - see also https://github.com/pygae/galgebra/issues/506
 - [jdekozak/dirac5d](https://github.com/jdekozak/dirac5d): Five dimensional Dirac equation over the reals
   - see also https://github.com/jdekozak/dirac5d/issues/4
