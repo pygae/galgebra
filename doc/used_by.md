@@ -2,12 +2,25 @@
 
 Here is a list of projects that use GAlgebra, divided into two parts:
 
-1. functional: used as a dependency in their major functionality
-2. explorational: used as an optional dependency in their examples, exercises, or tutorials
+1. research: used to facilitate or verify research
+2. functional: used as a dependency in their major functionality
+3. explorational: used as an optional dependency in their examples, exercises, or tutorials
 
 They are roughly ordered by relevance, stars and last updated time.
 
 This data is manually mined from [forks](https://github.com/pygae/galgebra/forks) and [dependents](https://github.com/pygae/galgebra/network/dependents), as ["Used by" button is not shown](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/exploring-the-dependencies-of-a-repository#changing-the-used-by-package). All usages are manually reviewed to rule out false positives (e.g. the dependency maybe added, but is not actually used), some usages are manually added to our knowledge.
+
+## Research
+
+(in recent years, non-exhaustive)
+
+- [Geometric Product of Two Oriented Points in Conformal Geometric Algebra (2024)](https://link.springer.com/article/10.1007/s00006-024-01363-6)
+  - two anonymous expert reviewers, who either used the python symbolic geometric algebra implementation GAlgebra or the Clifford python library to independently verify the results of this paper
+- [Machine Learning Clifford invariants of ADE Coxeter elements (2024)](https://arxiv.org/abs/2310.00041)
+  - uses GAlgebra for ADE invariant generation [code](https://github.com/DimaDroid/ML_Clifford_Invariants/blob/main/InvariantData/ADE8_InvariantGeneration.py)
+- [Clifford spinors and root system induction: H4 and the Grand Antiprism (2021)](https://arxiv.org/abs/2103.07817)
+  - perform practical computations in group theory via versors in Clifford algebra framework
+  - LaTeX output of GAlgebra is used in paper [code](https://github.com/ppd22/galgebra-in-action)
 
 ## Functional
 
