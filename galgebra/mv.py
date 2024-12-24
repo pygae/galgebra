@@ -1359,6 +1359,24 @@ class Mv(printer.GaPrintable):
             return (S.One/self_self_rev.obj) * self_rev
         raise TypeError('In inv() for self =' + str(self) + 'self, or self*self or self*self.rev() is not a scalar')
 
+    def shirokov_inverse(self) -> 'Mv':
+        """
+        Iterative algorithm for the inverse following
+        Theorem 4 (page 17) in https://arxiv.org/abs/2005.04015
+        """
+        n = self.Ga.n
+        exponent = (n + 1) // 2
+        N = 2**exponent
+        Uk = self
+        for k in range(1, N):
+            Ck = (N / k) * Uk.scalar()
+            adjU = Ck - Uk
+            Uk = -self * adjU
+        if Uk.scalar() == 0:
+            raise ValueError('Multivector has no inverse')
+        detU = -Uk.scalar()
+        return adjU / detU
+
     def func(self, fct) -> 'Mv':  # Apply function, fct, to each coefficient of multivector
         s = S.Zero
         for coef, base in metric.linear_expand_terms(self.obj):
