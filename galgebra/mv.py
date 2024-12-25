@@ -2091,6 +2091,17 @@ def inv(A: Mv) -> Mv:
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.inv()
 
+def shirokov_inverse(A: Mv) -> Mv:
+    """ Equivalent to :meth:`Mv.shirokov_inverse` """
+    if not isinstance(A, Mv):
+        raise ValueError('A = ' + str(A) + ' not a multivector in shirokov_inverse(A).')
+    return A.shirokov_inverse()
+
+def hitzer_inverse(A: Mv) -> Mv:
+    """ Equivalent to :meth:`Mv.hitzer_inverse` """
+    if not isinstance(A, Mv):
+        raise ValueError('A = ' + str(A) + ' not a multivector in hitzer_inverse(A).')
+    return A.hitzer_inverse()
 
 # ## GSG code starts ###
 def qform(A: Mv) -> Expr:
