@@ -1359,6 +1359,71 @@ class Mv(printer.GaPrintable):
             return (S.One/self_self_rev.obj) * self_rev
         raise TypeError('In inv() for self =' + str(self) + 'self, or self*self or self*self.rev() is not a scalar')
 
+    def shirokov_inverse(self) -> 'Mv':
+        """
+        Iterative algorithm for the inverse following
+        Theorem 4 (page 17) in https://arxiv.org/abs/2005.04015
+        """
+        n = self.Ga.n
+        exponent = (n + 1) // 2
+        N = 2**exponent
+        Uk = self
+        for k in range(1, N):
+            Ck = (N / k) * Uk.scalar()
+            adjU = Ck - Uk
+            Uk = -self * adjU
+        if Uk.scalar() == 0:
+            raise ValueError('Multivector has no inverse')
+        detU = -Uk.scalar()
+        return adjU / detU
+
+    def hitzer_inverse(self) -> 'Mv':
+        """
+        Efficient algorithm for the inverse in n<6 following
+        Eckhard Hitzer, Stephen Sangwine (2017)
+        'Multivector and multivector matrix inverses in real Clifford algebras'
+        """
+        n = self.Ga.n
+        if n == 0:
+            numerator = 1 + 0 * self
+        elif n == 1:
+            # Equation 4.3
+            numerator = self.g_invol()
+        elif n == 2:
+            # Equation 5.5
+            numerator = self.ccon()
+        elif n == 3:
+            # Equation 6.5 without the rearrangement from 6.4
+            mv_conj = self.ccon()
+            mv_mul_mv_conj = self * mv_conj
+            numerator = mv_conj * ~mv_mul_mv_conj
+        elif n == 4:
+            # Equation 7.7
+            mv_conj = self.ccon()
+            mv_mul_mv_conj = self * mv_conj
+            m34 = (
+                mv_mul_mv_conj
+                - 2 * mv_mul_mv_conj.get_grade(3)
+                - 2 * mv_mul_mv_conj.get_grade(4)
+            )
+            numerator = mv_conj * m34
+        elif n == 5:
+            # Equation 8.22 without the rearrangement from 8.21
+            mv_conj = self.ccon()
+            mv_mul_mv_conj = self * mv_conj
+            combo_op = mv_conj * ~mv_mul_mv_conj
+            mv_combo_op = self * combo_op
+            m14 = mv_combo_op - 2 * mv_combo_op.get_grade(1) - 2 * mv_combo_op.get_grade(4)
+            numerator = combo_op * m14
+        else:
+            raise NotImplementedError(
+                'Closed form inverses for algebras with more than 5 dimensions are not implemented'
+            )
+        denominator = (self * numerator).scalar()
+        if denominator == 0:
+            raise ValueError('Multivector has no inverse')
+        return numerator / denominator
+
     def func(self, fct) -> 'Mv':  # Apply function, fct, to each coefficient of multivector
         s = S.Zero
         for coef, base in metric.linear_expand_terms(self.obj):
@@ -2026,6 +2091,17 @@ def inv(A: Mv) -> Mv:
         raise ValueError('A = ' + str(A) + ' not a multivector in inv(A).')
     return A.inv()
 
+def shirokov_inverse(A: Mv) -> Mv:
+    """ Equivalent to :meth:`Mv.shirokov_inverse` """
+    if not isinstance(A, Mv):
+        raise ValueError('A = ' + str(A) + ' not a multivector in shirokov_inverse(A).')
+    return A.shirokov_inverse()
+
+def hitzer_inverse(A: Mv) -> Mv:
+    """ Equivalent to :meth:`Mv.hitzer_inverse` """
+    if not isinstance(A, Mv):
+        raise ValueError('A = ' + str(A) + ' not a multivector in hitzer_inverse(A).')
+    return A.hitzer_inverse()
 
 # ## GSG code starts ###
 def qform(A: Mv) -> Expr:

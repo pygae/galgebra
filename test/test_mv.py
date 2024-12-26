@@ -4,7 +4,7 @@ import pytest
 import sympy
 from sympy import symbols
 from galgebra.ga import Ga
-from galgebra.mv import proj, undual, g_invol, exp, norm, norm2, mag, mag2, ccon, rev, scalar, qform, sp
+from galgebra.mv import proj, undual, g_invol, exp, norm, norm2, mag, mag2, ccon, rev, scalar, qform, sp, inv, shirokov_inverse, hitzer_inverse
 
 
 class TestMv:
@@ -324,3 +324,20 @@ class TestMv:
         # not a multivector in sp(A, B)
         with pytest.raises(ValueError):
             sp(1, 1)
+
+    @pytest.mark.parametrize('inv_func', [inv, shirokov_inverse, hitzer_inverse])
+    @pytest.mark.parametrize('n', range(2, 5)) # tests are slow for larger n
+    def test_inv(self, inv_func, n):
+        gncoords = symbols(" ".join(f"x{i}" for i in range(n)), real=True)
+        gn = Ga('e', g=[1] * n, coords=gncoords)
+
+        # invert versors
+        A = gn.mv('A', 'vector')
+        Ainv = inv_func(A)
+        assert A * Ainv == 1 + 0 * A
+
+        # invert generic multivectors
+        if inv_func in [shirokov_inverse, hitzer_inverse] and n<4:
+            B = gn.mv('A', 'mv')
+            Binv = inv_func(B)
+            assert B * Binv == 1 + 0 * B
