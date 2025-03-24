@@ -143,3 +143,4 @@ examples/**/*.tex
 test/generated
 test/diff
 examples/GSG/
+.aider*
