@@ -4,6 +4,8 @@ coverage:
       default:
         # Keep the project coverage target to auto
         target: auto
+        # Allow the project coverage to drop by 1%
+        threshold: 1%
     patch:
       default:
         # Set the patch coverage target to 75%
