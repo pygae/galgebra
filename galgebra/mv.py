@@ -935,25 +935,37 @@ class Mv(printer.GaPrintable):
 
     def is_versor(self) -> bool:
         """
-        Test for versor (geometric product of vectors)
+        Test if `self` is a versor.
 
-        This follows Leo Dorst's test for a versor.
-        Leo Dorst, 'Geometric Algebra for Computer Science,' p.533
-        Sets self.versor_flg and returns value
+        A versor is defined as a geometric product of finitely-many nonnull vectors.
+
+        According to Greg Grunberg's analysis, the following are necessary and sufficient
+        conditions for a multivector V to be a versor:
+
+        1. V*V.rev() must be a nonzero scalar
+        2. V.g_invol()*x*V.rev() must be a vector whenever x is a vector
+
+        Sets self.versor_flg and returns value.
+
+        See https://github.com/pygae/galgebra/issues/533 for more discussions.
         """
-
         if self.versor_flg is not None:
             return self.versor_flg
+
         self.characterise_Mv()
-        self.versor_flg = False
         self_rev = self.rev()
-        # see if self*self.rev() is a scalar
-        test = self*self_rev
-        if not test.is_scalar():
+
+        # Test condition 1: V*V.rev() must be a nonzero scalar
+        VVrev = self * self_rev
+        if not (VVrev.is_scalar() and not VVrev.is_zero()):
+            self.versor_flg = False
             return self.versor_flg
-        # see if self*x*self.rev() returns a vector for x an arbitrary vector
-        test = self * self.Ga._XOX * self.rev()
-        self.versor_flg = test.is_vector()
+
+        # Test condition 2: V.g_invol()*x*V.rev() must be a vector
+        # where x is a generic vector
+        # and self.Ga._XOX is a generic vector in self's geometric algebra
+        VinvolXVrev = self.g_invol() * self.Ga._XOX * self_rev
+        self.versor_flg = VinvolXVrev.is_vector()
         return self.versor_flg
 
     r'''
