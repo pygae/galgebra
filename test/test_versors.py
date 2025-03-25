@@ -47,3 +47,22 @@ class TestVersors(unittest.TestCase):
         e1, e2, e3 = self.g3d.mv()
         null_mv = e1 + e1 * self.g3d.I()  # v + vI (squares to 0)
         self.assertFalse(null_mv.is_versor())
+
+    def test_scalar_versor(self):
+        """Test that nonzero scalars are versors"""
+        self.assertTrue(self.g3d.mv(2).is_versor())
+        self.assertFalse(self.g3d.mv(0).is_versor())
+
+    def test_bivector_exponential(self):
+        """Test that exponentials of bivectors are versors"""
+        e1, e2, e3 = self.g3d.mv()
+        B = e1 * e2  # bivector
+        rotor = (B/2).exp()  # exp(B/2) is a rotor
+        self.assertTrue(rotor.is_versor())
+
+    def test_product_of_vectors(self):
+        """Test that products of vectors are versors"""
+        e1, e2, e3 = self.g3d.mv()
+        v1 = e1 + 2*e2  # vector
+        v2 = 3*e1 - e3  # vector
+        self.assertTrue((v1 * v2).is_versor())
