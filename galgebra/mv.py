@@ -939,7 +939,7 @@ class Mv(printer.GaPrintable):
 
         A versor is defined as a geometric product of finitely-many nonnull vectors.
 
-        According to Greg Grunberg's analysis, the following are necessary and sufficient 
+        According to Greg Grunberg's analysis, the following are necessary and sufficient
         conditions for a multivector V to be a versor:
 
         1. V*V.rev() must be a nonzero scalar
@@ -954,14 +954,14 @@ class Mv(printer.GaPrintable):
 
         self.characterise_Mv()
         self_rev = self.rev()
-        
+
         # Test condition 1: V*V.rev() must be a nonzero scalar
         VVrev = self * self_rev
         if not (VVrev.is_scalar() and not VVrev.is_zero()):
             self.versor_flg = False
             return self.versor_flg
 
-        # Test condition 2: V.g_invol()*x*V.rev() must be a vector 
+        # Test condition 2: V.g_invol()*x*V.rev() must be a vector
         # where x is a generic vector
         # and self.Ga._XOX is a generic vector in self's geometric algebra
         VinvolXVrev = self.g_invol() * self.Ga._XOX * self_rev
