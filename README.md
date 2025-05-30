@@ -3,6 +3,7 @@ GAlgebra
 
 Symbolic Geometric Algebra/Calculus package for SymPy.
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/pygae/galgebra)
 [![PyPI](https://img.shields.io/pypi/v/galgebra.svg)](https://pypi.org/project/galgebra/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/galgebra.svg)](https://pypi.org/project/galgebra/)
 [![Python CI](https://github.com/pygae/galgebra/actions/workflows/ci.yml/badge.svg)](https://github.com/pygae/galgebra/actions/workflows/ci.yml)
