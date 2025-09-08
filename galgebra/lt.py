@@ -362,7 +362,7 @@ class Lt(printer.GaPrintable):
             self.lt_dict = {}
             for base in self.Ga.basis:
                 out = F(mv.Mv(base, ga=self.Ga))
-                if not out.is_vector():
+                if not out.is_vector() and not out.is_zero():
                     raise ValueError('{} must return vectors'.format(F))
                 self.lt_dict[base] = out.obj
         else:
