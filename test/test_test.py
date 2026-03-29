@@ -530,7 +530,7 @@ class TestTest:
         ga, e1, e2 = Ga.build('e*1|2', g=[1, 1])
 
         default = Ga.dual_mode_value
-        assert default == 'I+'
+        assert default == 'Iinv+'
         with pytest.raises(ValueError):
             Ga.dual_mode('illegal')
 
@@ -538,12 +538,24 @@ class TestTest:
 
         # note: this is a global setting, so we have to make sure we put it back
         try:
-            Ga.dual_mode('I-')
+            Ga.dual_mode('Iinv-')
             d_negated = e1.dual()
         finally:
             Ga.dual_mode(default)
 
         assert d_negated == -d_default
+
+    def test_dual_correctness(self):
+        """Test that v * v.dual() == I in 3D Euclidean space (issue 514)."""
+        from sympy import symbols as S_symbols
+        ga = Ga('e', g=[1, 1, 1], coords=S_symbols('x y z', real=True), wedge=False)
+        ex, ey, ez = ga.mv()
+        I = ga.I()
+
+        # For any blade B, B * B.dual() should equal the pseudoscalar I
+        bivector = ex * I  # = e_yz
+        assert bivector * bivector.dual() == I
+        assert bivector.dual() * bivector == I
 
     def test_basis_dict(self):
         ga = Ga('e*1|2', g=[1, 1])
