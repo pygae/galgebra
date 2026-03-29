@@ -2170,35 +2170,27 @@ class Ga(metric.Metric):
         """
         dim = len(basis)
 
-        indexes = tuple(range(dim))
-        index = [()]
-
-        for i in indexes[-2:]:
-            index.append(tuple(combinations(indexes, i + 1)))
-
-        MFbasis = []
-
-        for igrade in index[-2:]:
-            grade = []
-            for iblade in igrade:
-                blade = self.mv(S.One, 'scalar')
-                for ibasis in iblade:
-                    blade ^= basis[ibasis]
-                blade = blade.trigsimp()
-                grade.append(blade)
-            MFbasis.append(grade)
-        E = MFbasis[-1][0]
+        # Compute E = basis[0] ^ basis[1] ^ ... ^ basis[n-1]
+        E = self.mv(S.One, 'scalar')
+        for b in basis:
+            E = (E ^ b).trigsimp()
         E_sq = trigsimp((E * E).scalar())
 
-        duals = copy.copy(MFbasis[-2])
-
-        duals.reverse()
-        sgn = S.One
+        # Compute (n-1)-blades by omitting one basis vector at a time,
+        # then form reciprocal vectors as sgn * (n-1)-blade * E.
+        # The i-th reciprocal vector is (-1)^(n-1-i) * (basis[0]^...^skip i^...^basis[n-1]) * E.
         rbasis = []
-        for dual in duals:
+        for i in range(dim):
+            # wedge all basis vectors except the i-th
+            dual = self.mv(S.One, 'scalar')
+            for j in range(dim):
+                if j != i:
+                    dual = (dual ^ basis[j]).trigsimp()
+            # sign from moving the omitted vector to the front:
+            # removing index i from (0,...,n-1) requires (n-1-i) transpositions
+            sgn = S.NegativeOne ** (dim - 1 - i)
             recpv = (sgn * dual * E).trigsimp()
             rbasis.append(recpv)
-            sgn = -sgn
 
         if mode == 'norm':
             for i in range(dim):
