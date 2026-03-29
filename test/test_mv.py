@@ -249,6 +249,25 @@ class TestMv:
         assert norm2(A, '+') == norm(A) * norm(A)
         assert norm2(A, '-') == norm(A) * norm(A)
 
+    def test_norm_nonneg(self):
+        """Test that norm always returns a nonneg expression (issue 522)."""
+        from sympy import Abs
+        g3 = Ga('e', g=[1, 1, 1], coords=symbols('x y z', real=True))
+
+        # scalar norm should include Abs and be nonneg
+        s = g3.mv('s', 'scalar')
+        s_norm = s.norm()
+        assert isinstance(s_norm, Abs)
+        assert s_norm.is_nonnegative
+
+        # vector norm is already nonneg (sum of squares under sqrt)
+        v = g3.mv('v', 'vector')
+        assert v.norm().is_nonnegative
+
+        # even-grade (bivector) norm is nonneg
+        B = g3.mv('B', 'bivector')
+        assert B.norm().is_nonnegative
+
     def test_mag2(self):
         g3coords = symbols('x y z', real=True)
         g3 = Ga('e', g=[1, 1, 1], coords=g3coords)
