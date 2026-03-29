@@ -687,3 +687,33 @@ class TestTest:
             assert ga_ortho.dot_product_basis_blades((e_1.obj, e_12.obj), mode='<') == (e_1 < e_12).obj
         with pytest.warns(DeprecationWarning):
             assert ga_ortho.dot_product_basis_blades((e_1.obj, e_12.obj), mode='>') == (e_1 > e_12).obj
+
+    def test_Cl(self):
+        """Test the Cl(p, q, r) kingdon-like interface (issue 524)."""
+        from galgebra.ga import Cl
+
+        # 3D Euclidean: Cl(3)
+        ga3, e1, e2, e3 = Cl(3)
+        assert e1 * e1 == ga3.mv(1)
+        assert e2 * e2 == ga3.mv(1)
+        assert e3 * e3 == ga3.mv(1)
+
+        # 2D Minkowski: Cl(1, 1)
+        ga11, e1, e2 = Cl(1, 1)
+        assert e1 * e1 == ga11.mv(1)
+        assert e2 * e2 == ga11.mv(-1)
+
+        # Degenerate: Cl(2, 0, 1)
+        ga201, e1, e2, e3 = Cl(2, 0, 1)
+        assert e1 * e1 == ga201.mv(1)
+        assert e2 * e2 == ga201.mv(1)
+        assert e3 * e3 == ga201.mv(0)
+
+        # Import from top-level package
+        from galgebra import Cl as Cl2
+        ga_top, e1_top, e2_top = Cl2(2)
+        assert e1_top * e1_top == ga_top.mv(1)
+
+        # Error on zero dimension
+        with pytest.raises(ValueError):
+            Cl(0)
