@@ -341,3 +341,22 @@ class TestMv:
             B = gn.mv('A', 'mv')
             Binv = inv_func(B)
             assert B * Binv == 1 + 0 * B
+
+    def test_rtruediv(self):
+        """Test that scalar/Mv works (issue 512)."""
+        ga, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+        I = ga.I()
+
+        # 1/I should be the inverse of I
+        result = 1 / I
+        assert result * I == ga.mv(1)
+
+        # scalar / vector
+        v = e_1 + e_2
+        result = 2 / v
+        assert result * v == ga.mv(2)
+
+        # sympy scalar / Mv
+        from sympy import S
+        result = S(3) / I
+        assert result * I == ga.mv(3)
