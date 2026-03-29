@@ -1038,6 +1038,23 @@ class Mv(printer.GaPrintable):
                 coef_lst.append(S.Zero)
         return coef_lst
 
+    def components(self) -> 'Dict[Mv, Expr]':
+        """
+        Return a dictionary mapping each basis blade (as an :class:`Mv`) to
+        its scalar coefficient.  Only non-zero components are included.
+
+        Example: if ``v = 1*e_1 + 2*e_2 + 3*e_3`` then
+        ``v.components()`` returns ``{e_1: 1, e_2: 2, e_3: 3}``.
+
+        This is useful for extracting individual coordinates for further
+        processing.
+        """
+        result = {}
+        for coef, base in metric.linear_expand_terms(self.obj):
+            if coef != S.Zero:
+                result[Mv(base, ga=self.Ga)] = coef
+        return result
+
     def proj(self, bases_lst: List['Mv']) -> 'Mv':
         """
         Project multivector onto a given list of bases.  That is find the

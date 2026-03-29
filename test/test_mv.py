@@ -55,6 +55,26 @@ class TestMv:
         with pytest.raises(ValueError):
             (e_1 ^ e_2).get_coefs(3)
 
+    def test_components(self):
+        """Test the components() method (issue 483)."""
+        _g3d, e_1, e_2, e_3 = Ga.build('e*1|2|3')
+
+        v = e_1 + 2 * e_2 + 3 * e_3
+        comps = v.components()
+        assert comps[e_1] == 1
+        assert comps[e_2] == 2
+        assert comps[e_3] == 3
+        assert len(comps) == 3
+
+        # mixed-grade multivector
+        m = 5 + e_1 + 2 * (e_1 ^ e_2)
+        comps = m.components()
+        assert len(comps) == 3
+
+        # zero multivector has no components
+        z = 0 * e_1
+        assert z.components() == {}
+
     def test_blade_coefs(self):
         """
         Various tests on several multivectors.
