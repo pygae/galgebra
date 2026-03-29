@@ -231,6 +231,15 @@ class Sdop(_BaseDop):
         else:
             return NotImplemented
 
+    def __ne__(self, other):
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return result
+        return not result
+
+    def __hash__(self):
+        return hash(self.terms)
+
     def __add__(self, sdop):
         return Sdop.Add(self, sdop)
 
@@ -311,6 +320,12 @@ class Pdop(_BaseDop):
             if len(self.pdiffs) == 0 and A == S.One:
                 return True
             return False
+
+    def __ne__(self, A):
+        return not self.__eq__(A)
+
+    def __hash__(self):
+        return hash(tuple(sorted(self.pdiffs.items())))
 
     def __init__(self, __arg):
         """

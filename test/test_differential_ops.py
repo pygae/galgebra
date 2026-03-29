@@ -311,6 +311,32 @@ class TestPdop(object):
             with pytest.raises(TypeError):
                 op(p, ex)
 
+    def test_hash_and_eq(self):
+        """Test Pdop/Sdop are hashable and support ne (issue 234)."""
+        x, y = symbols('x y', real=True)
+        p1 = Pdop(x)
+        p2 = Pdop(y)
+        p1b = Pdop(x)
+        p0 = Pdop({})
+
+        # Pdop is hashable
+        assert hash(p1) == hash(p1b)
+        assert {p1, p2, p1b} == {p1, p2}
+
+        # ne works
+        assert p1 != p2
+        assert not (p1 != p1b)
+
+        # identity pdop
+        assert p0 == S.One
+        assert p0 != p1
+
+        # Sdop is hashable
+        s1 = Sdop([(x, p1)])
+        s2 = Sdop([(y, p2)])
+        assert hash(s1) is not None
+        assert {s1, s2} == {s1, s2}
+
     def test_constructor_errors(self):
         # not a symbol or dict
         with pytest.raises(TypeError, match='dictionary or symbol is required'):
