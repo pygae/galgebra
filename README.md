@@ -40,33 +40,72 @@ Features
 
 - Arbitrary Vector Basis and Metric
 - Scalar, Vector, Bivector, Multivector, Pseudoscalar, Spinor, Blade
-- Basic Geometic Algebra Operations
-  - Sum Difference
+- Basic Geometric Algebra Operations
+  - Sum, Difference
   - Geometric Product
   - Outer and Inner Products
   - Left and Right Contractions
-  - Reverse, Dual, Exponential
+  - Reverse, Dual, Undual, Grade Involution, Clifford Conjugation
   - Commutator
   - Projection, Reflection, Rotation
   - Reciprocal Frames
+- Multivector Functions
+  - Exponential, Inverse, Norm, Magnitude
+  - Scalar Product, Quadratic Form
+  - Grade Selection, Even/Odd Parts
+  - Blade Coefficients, Components
 - Inspecting Base/Blade Representation
 - Symbolic Manipulations
   - `expand`, `factor`, `simplify`, `subs`, `trigsimp` etc.
 
-Overloaded Python operators for basic GA operations:
+<details>
+<summary>Overloaded Python operators for GA operations</summary>
 
-```math
-\begin{split}\begin{aligned}
-  A+B &=  \texttt{A+B} \\
-  A-B &=  \texttt{A-B} \\
-  AB &=  \texttt{A*B} \\
-  A \wedge B &=  \mathtt{A \verb!^! B} \\
-  A \cdot B &=  \texttt{A|B} \\
-  A \rfloor B &=  \mathtt{A \lt B} \\
-  A \lfloor B &=  \mathtt{A \gt B} \\
-  A/B &=  \texttt{A/B} \\
-\end{aligned}\end{split}
-```
+| Operation | Python | Description |
+|-----------|--------|-------------|
+| `A + B` | `A + B` | Sum |
+| `A - B` | `A - B` | Difference |
+| `AB` | `A * B` | Geometric product |
+| `A ^ B` | `A ^ B` | Outer (wedge) product |
+| `A . B` | `A \| B` | Inner (dot) product |
+| `A ⌋ B` | `A < B` | Left contraction |
+| `A ⌊ B` | `A > B` | Right contraction |
+| `A / B` | `A / B` | Division (A times B inverse) |
+| `s / A` | `s / A` | Scalar divided by multivector |
+| `~A` | `~A` | Reverse |
+| `abs(A)` | `abs(A)` | Norm |
+| `A[k]` | `A[k]` | Grade-k part |
+
+</details>
+
+<details>
+<summary>Multivector methods and functions</summary>
+
+| Method | Function | Description |
+|--------|----------|-------------|
+| `A.rev()` | `rev(A)` | Reverse |
+| `A.dual()` | `dual(A)` | Dual |
+| `A.undual()` | `undual(A)` | Undual |
+| `A.g_invol()` | `g_invol(A)` | Grade involution |
+| `A.ccon()` | `ccon(A)` | Clifford conjugation |
+| `A.exp()` | `exp(A)` | Exponential |
+| `A.inv()` | `inv(A)` | Inverse |
+| `A.norm()` | `norm(A)` | Norm |
+| `A.norm2()` | `norm2(A)` | Norm squared |
+| `A.mag()` | `mag(A)` | Magnitude |
+| `A.mag2()` | `mag2(A)` | Magnitude squared |
+| `A.sp(B)` | `sp(A, B)` | Scalar product |
+| `A.qform()` | `qform(A)` | Quadratic form |
+| `A.even()` | `even(A)` | Even-grade part |
+| `A.odd()` | `odd(A)` | Odd-grade part |
+| `A.scalar()` | `scalar(A)` | Scalar (grade-0) part |
+| `A.grade(k)` | -- | Grade-k part |
+| `A.proj(blades)` | `proj(A, B)` | Projection |
+| `A.blade_coefs()` | -- | Blade coefficients |
+| `A.components()` | -- | Component dictionary |
+| `A.get_coefs(k)` | -- | Grade-k coefficients |
+
+</details>
 
 ### Geometric Calculus
 
