@@ -546,14 +546,14 @@ class TestTest:
         assert d_negated == -d_default
 
     def test_dual_correctness(self):
-        """Test that v * v.dual() == I in 3D Euclidean space (issue 514)."""
+        """Test Iinv+ dual mode on a unit bivector in 3D Euclidean space (issue 514)."""
         from sympy import symbols as S_symbols
         ga = Ga('e', g=[1, 1, 1], coords=S_symbols('x y z', real=True), wedge=False)
         ex, ey, ez = ga.mv()
         I = ga.I()
 
-        # For any blade B, B * B.dual() should equal the pseudoscalar I
-        bivector = ex * I  # = e_yz
+        # For a unit bivector B with B*B = -1, B * dual(B) == I under Iinv+ mode
+        bivector = ex * I  # = e_yz, a unit bivector
         assert bivector * bivector.dual() == I
         assert bivector.dual() * bivector == I
 
