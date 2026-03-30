@@ -131,3 +131,15 @@ def test_texify():
 
     # @@ was previously an internal marker
     assert _texify('@@ is safe') == r'@@ is safe'
+
+
+def test_no_extra_cdot():
+    """Regression test: no spurious \\cdot in latex output (issue 494)."""
+    from sympy import symbols
+    ga = Ga('e', g=[1, 1, 1], coords=symbols('x y z', real=True))
+    f = ga.mv('f', 'scalar', f=True)
+    grad = ga.grad
+    p = GaLatexPrinter()
+    latex_str = p.doprint(grad * f)
+    # There should be no \cdot in the gradient of a scalar field
+    assert r'\cdot' not in latex_str
