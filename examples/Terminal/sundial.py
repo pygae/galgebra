@@ -7,10 +7,8 @@ Inspired by Russell Goyder's sundial analysis using GA:
   - Cheat sheet: https://russellgoyder.github.io/geometric-algebra-cheat-sheet/
 
 This script validates galgebra against the core GA operations used in the
-sundial problem: rotations via rotors, reflections, and projections in
-3D Euclidean geometric algebra.
-
-Mirrors issue 506 from upstream.
+sundial problem: rotations via rotors, reflections, projections, and
+rejections in 3D Euclidean geometric algebra.
 """
 from sympy import symbols, cos, sin, pi, simplify, trigsimp, S
 from galgebra.ga import Ga
@@ -59,6 +57,12 @@ v_full = e1 + 2 * e2 + 3 * e3
 proj = (v_full < B) * B.inv()
 print("\nProject (e1 + 2*e2 + 3*e3) onto e12 plane:", proj)
 assert proj == e1 + 2 * e2
+
+# === Rejection: component perpendicular to a blade ===
+# rej_B(v) = v - proj_B(v)
+rej = v_full - proj
+print("Reject (e1 + 2*e2 + 3*e3) from e12 plane:", rej)
+assert rej == 3 * e3
 
 # === Dual: convert between blades and their complements ===
 # In 3D, dual of e1 is e2^e3 (up to sign depending on convention)
