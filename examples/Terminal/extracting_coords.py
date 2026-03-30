@@ -73,7 +73,7 @@ def main():
     # Evaluate at a specific angle
     vals = [c.subs(theta, pi / 4) for c in coefs]
     print('at theta=pi/4:', vals)
-    print('numeric:', [float(v) for v in vals])
+    print('numeric:', [float(val) for val in vals])
 
 
 if __name__ == '__main__':
