@@ -20,6 +20,19 @@ def Cl(p: int, q: int = 0, r: int = 0, root: str = 'e', **kwargs):
     - **Basis naming**: uses 0-indexed names (``e_0, e_1, ...``) to match
       kingdon's default for PGA algebras.
 
+    .. warning::
+
+        The dual mode change is session-wide.  If you mix kingdon and
+        galgebra conventions in the same session, save and restore
+        ``Ga.dual_mode_value`` around the kingdon block::
+
+            saved = Ga.dual_mode_value
+            try:
+                ga, *basis = Cl(3, 0, 1)
+                # ... kingdon-convention code ...
+            finally:
+                Ga.dual_mode(saved)
+
     Parameters
     ----------
     p : int
