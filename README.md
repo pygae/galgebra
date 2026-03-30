@@ -102,7 +102,7 @@ Features
 | `A.grade(k)` | -- | Grade-k part |
 | `A.proj(blades)` | `proj(A, B)` | Projection |
 | `A.blade_coefs()` | -- | Blade coefficients |
-| `A.components()` | -- | Component dictionary |
+| `A.components()` | -- | List of single-blade components |
 | `A.get_coefs(k)` | -- | Grade-k coefficients |
 
 </details>
