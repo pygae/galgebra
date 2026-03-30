@@ -36,3 +36,4 @@ Submodules
 """
 
 from ._version import __version__  # noqa: F401
+from .interop import Cl  # noqa: F401

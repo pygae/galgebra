@@ -687,3 +687,50 @@ class TestTest:
             assert ga_ortho.dot_product_basis_blades((e_1.obj, e_12.obj), mode='<') == (e_1 < e_12).obj
         with pytest.warns(DeprecationWarning):
             assert ga_ortho.dot_product_basis_blades((e_1.obj, e_12.obj), mode='>') == (e_1 > e_12).obj
+
+    def test_Cl(self):
+        """Test the Cl(p, q, r) interface (issue 524)."""
+        from galgebra.interop import Cl
+
+        # 3D Euclidean: Cl(3)
+        ga3, e1, e2, e3 = Cl(3)
+        assert e1 * e1 == ga3.mv(1)
+        assert e2 * e2 == ga3.mv(1)
+        assert e3 * e3 == ga3.mv(1)
+
+        # 2D Minkowski: Cl(1, 1)
+        ga11, e1, e2 = Cl(1, 1)
+        assert e1 * e1 == ga11.mv(1)
+        assert e2 * e2 == ga11.mv(-1)
+
+        # Degenerate: Cl(2, 0, 1)
+        ga201, e1, e2, e3 = Cl(2, 0, 1)
+        assert e1 * e1 == ga201.mv(1)
+        assert e2 * e2 == ga201.mv(1)
+        assert e3 * e3 == ga201.mv(0)
+
+        # Import from top-level package
+        from galgebra import Cl as Cl2
+        ga_top, e1_top, e2_top = Cl2(2)
+        assert e1_top * e1_top == ga_top.mv(1)
+
+        # Error on zero dimension
+        with pytest.raises(ValueError):
+            Cl(0)
+
+    def test_Cl_kingdon(self):
+        """Test the kingdon-convention Cl (0-indexed, Iinv+ dual)."""
+        from galgebra.interop.kingdon import Cl as KCl
+        from galgebra.ga import Ga
+
+        # Save and restore global dual mode
+        saved = Ga.dual_mode_value
+        try:
+            # 3D PGA: Cl(3, 0, 1) with 0-indexed basis
+            ga, e0, e1, e2, e3 = KCl(3, 0, 1)
+            assert e0 * e0 == ga.mv(1)
+            assert e3 * e3 == ga.mv(0)
+            # Dual mode should be Iinv+
+            assert Ga.dual_mode_value == 'Iinv+'
+        finally:
+            Ga.dual_mode(saved)
