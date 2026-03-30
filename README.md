@@ -58,8 +58,7 @@ Features
 - Symbolic Manipulations
   - `expand`, `factor`, `simplify`, `subs`, `trigsimp` etc.
 
-<details>
-<summary>Overloaded Python operators for GA operations</summary>
+#### Overloaded Python operators for GA operations
 
 | Operation | Python | Description |
 |-----------|--------|-------------|
@@ -76,10 +75,7 @@ Features
 | `abs(A)` | `abs(A)` | Norm |
 | `A[k]` | `A[k]` | Grade-k part |
 
-</details>
-
-<details>
-<summary>Multivector methods and functions</summary>
+#### Multivector methods and functions
 
 | Method | Function | Description |
 |--------|----------|-------------|
@@ -104,8 +100,6 @@ Features
 | `A.blade_coefs()` | -- | Blade coefficients |
 | `A.components()` | -- | List of single-blade components |
 | `A.get_coefs(k)` | -- | Grade-k coefficients |
-
-</details>
 
 ### Geometric Calculus
 
