@@ -589,6 +589,10 @@ class Mv(printer.GaPrintable):
         else:
             return self * (S.One/A)
 
+    def __rtruediv__(self, A):
+        """Allow expressions like ``1/mv`` or ``scalar/mv``."""
+        return Mv(A, ga=self.Ga) * self.inv()
+
     def __str__(self):
         return printer.GaPrinter()._print(self)
 
