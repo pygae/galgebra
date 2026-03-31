@@ -947,7 +947,7 @@ class Mv(printer.GaPrintable):
 
         Sets self.versor_flg and returns value.
 
-        See https://github.com/pygae/galgebra/issues/533 for more discussions.
+        See :issue:`533` for more discussions.
         """
         if self.versor_flg is not None:
             return self.versor_flg

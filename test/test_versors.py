@@ -13,9 +13,6 @@ class TestVersors(unittest.TestCase):
         # G(1,3) - Spacetime algebra
         self.sta = Ga("e0 e1 e2 e3", g=[1, -1, -1, -1])
 
-        # Initialize basis vectors
-        e1, e2, e3 = self.g3d.mv()
-        e0, e1, e2, e3 = self.sta.mv()
 
     def test_basis_vectors_are_versors(self):
         """Individual basis vectors should be versors"""
