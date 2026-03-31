@@ -1956,30 +1956,21 @@ class Ga(metric.Metric):
     def er_blade(self, er, blade, mode='*', left=True):
         r"""
         Product (``*``, ``^``, ``|``, ``<``, ``>``) of reciprocal basis vector
-        'er' and basis
-        blade 'blade' needed for application of derivatives to
-        multivectors.  left is 'True' means 'er' is multiplying 'blade'
-        on the left, 'False' is for 'er' multiplying 'blade' on the
-        right.  Symbolically for left geometric product:
+        'er' and basis blade 'blade' needed for application of derivatives to
+        multivectors.  ``left=True`` means 'er' multiplies 'blade' on the left,
+        ``left=False`` means on the right.  Symbolically for left geometric
+        product:
 
         .. math:: e^{j}*(e_{i_{1}}\wedge ...\wedge e_{i_{r}})
+
+        The mode branching and blade/base conversions are already handled
+        by :meth:`Mul` and the individual product functions, so this method
+        simply delegates to :meth:`Mul`.
         """
-        if mode == '*':
-            base = self.blade_to_base_rep(blade)
-            if left:
-                return self.base_to_blade_rep(self.mul(er, base))
-            else:
-                return self.base_to_blade_rep(self.mul(base, er))
-        elif mode == '^':
-            if left:
-                return self.wedge(er, blade)
-            else:
-                return self.wedge(blade, er)
+        if left:
+            return self.Mul(er, blade, mode=mode)
         else:
-            if left:
-                return self.Mul(er, blade, mode=mode)
-            else:
-                return self.Mul(blade, er, mode=mode)
+            return self.Mul(blade, er, mode=mode)
 
     def blade_derivation(self, blade: Symbol, ib: Union[int, Symbol]) -> Expr:
         """

@@ -520,6 +520,26 @@ class TestTest:
                 else:
                     assert ga.scalar_product(b1, rb2).simplify() == S.Zero
 
+    def test_er_blade(self):
+        """Test er_blade product modes in orthonormal 3D (issue 140)."""
+        ga, e1, e2, e3 = Ga.build('e*1|2|3', g=[1, 1, 1])
+        er1, er2, er3 = ga.r_basis
+        blade12, blade13, blade23 = ga.blades[2]
+
+        # geometric product: e1*(e1^e2) = e2, (e1^e2)*e1 = -e2
+        assert ga.er_blade(er1, blade12, mode='*', left=True) == ga.blades[1][1]
+        assert ga.er_blade(er1, blade12, mode='*', left=False) == -ga.blades[1][1]
+        # e1*(e2^e3) = e1^e2^e3
+        assert ga.er_blade(er1, blade23, mode='*', left=True) == ga.blades[3][0]
+
+        # wedge product: e1^(e1^e2) = 0, e3^(e1^e2) = e1^e2^e3
+        assert ga.er_blade(er1, blade12, mode='^', left=True) == 0
+        assert ga.er_blade(er3, blade12, mode='^', left=True) == ga.blades[3][0]
+
+        # Hestenes dot: e1|(e1^e2) = e2, e2|(e1^e2) = -e1
+        assert ga.er_blade(er1, blade12, mode='|', left=True) == ga.blades[1][1]
+        assert ga.er_blade(er2, blade12, mode='|', left=True) == -ga.blades[1][0]
+
     def test_metric_collect(self):
         ga = Ga('e*1|2', g=[1, 1])
         e1, e2 = ga.basis
