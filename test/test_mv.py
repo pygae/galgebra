@@ -268,6 +268,11 @@ class TestMv:
         B = g3.mv('B', 'bivector')
         assert B.norm().is_nonnegative
 
+        # non-Euclidean: symbolic vector where norm may not be provably nonneg
+        g2mn = Ga('e', g=[1, -1], coords=symbols('x t', real=True))
+        v = g2mn.mv('v', 'vector')
+        assert v.norm(hint='+').is_nonnegative
+
     def test_mag2(self):
         g3coords = symbols('x y z', real=True)
         g3 = Ga('e', g=[1, 1, 1], coords=g3coords)

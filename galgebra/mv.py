@@ -1315,9 +1315,6 @@ class Mv(printer.GaPrintable):
         # sqrt(s**2) to s, but the norm must always be nonneg.
         if result.is_nonnegative:
             return result
-        if result.is_number:
-            return Abs(result)
-        # For symbolic expressions that may be negative, wrap in Abs
         return Abs(result)
     # ## GSG code ends ###
 
