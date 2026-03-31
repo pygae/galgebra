@@ -2186,9 +2186,9 @@ class Ga(metric.Metric):
             for j in range(dim):
                 if j != i:
                     dual = (dual ^ basis[j]).trigsimp()
-            # sign from moving the omitted vector to the front:
-            # removing index i from (0,...,n-1) requires (n-1-i) transpositions
-            sgn = S.NegativeOne ** (dim - 1 - i)
+            # sign from moving basis[i] to position 0:
+            # requires exactly i transpositions
+            sgn = S.NegativeOne ** i
             recpv = (sgn * dual * E).trigsimp()
             rbasis.append(recpv)
 
