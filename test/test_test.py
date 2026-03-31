@@ -398,6 +398,15 @@ class TestTest:
                 else:
                     assert (base | r_base).simplify() == 0
 
+    def test_ReciprocalFrame_2d(self):
+        """Test reciprocal frame in 2D to catch even-dimension sign bugs."""
+        ga2, e1, e2 = Ga.build('e*1|2', g=[1, 1])
+        basis2 = [e1 + e2, e1 - e2]
+        r_basis2 = ga2.ReciprocalFrame(basis2)
+        for i, base in enumerate(basis2):
+            for j, rbase in enumerate(r_basis2):
+                assert (base | rbase).simplify() == (1 if i == j else 0)
+
     def test_ReciprocalFrame_append(self):
         ga, *basis = Ga.build('e*u|v|w')
         *r_basis, E_sq = ga.ReciprocalFrame(basis, mode='append')
