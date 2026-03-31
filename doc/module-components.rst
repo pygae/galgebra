@@ -339,7 +339,7 @@ If we can instantiate multivectors we can use all the multivector class function
 .. method:: galgebra.mv.Mv.dual()
    :noindex:
 
-   The mode of the ``dual()`` function is set by the ``Ga`` class static member function, ``GA.dual_mode(mode='I+')`` of the ``GA`` geometric galgebra which sets the following return values (:math:`I` is the pseudo-scalar for the geometric algebra ``GA``)
+   The mode of the ``dual()`` function is set by the ``Ga`` class static member function, ``GA.dual_mode(mode='Iinv+')`` of the ``GA`` geometric galgebra which sets the following return values (:math:`I` is the pseudo-scalar for the geometric algebra ``GA``)
 
    =========== ================
    ``mode``    Return Value
@@ -356,7 +356,7 @@ If we can instantiate multivectors we can use all the multivector class function
 
    For example if the geometric algebra is ``o3d``, ``A`` is a multivector in ``o3d``, and we wish to use ``mode='I-'``. We set the mode with the function ``o3d.dual('I-')`` and get the dual of ``A`` with the function ``A.dual()`` which returns :math:`-AI`.
 
-   If ``o3d.dual(mode)`` is not called the default for the dual mode is ``mode='I+'`` and ``A*I`` is returned.
+   If ``o3d.dual(mode)`` is not called the default for the dual mode is ``mode='Iinv+'`` and ``A*I^{-1}`` is returned.
 
    Note that ``Ga.dual(mode)`` used the function ``Ga.I()`` to calculate the normalized pseudoscalar. Thus if the metric tensor is not numerical and orthogonal the correct hint for then ``sig`` input of the *Ga* constructor is required.
 

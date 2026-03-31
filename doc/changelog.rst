@@ -8,6 +8,11 @@ Changelog
   \newcommand {\es}[1] {\mathbf{e}_{#1}}
   \newcommand {\til}[1] {\widetilde{#1}}
 
+- :bug:`514` The default dual mode has changed from ``'I+'`` to ``'Iinv+'`` so that
+  ``B * B.dual() == I`` holds for unit blades, matching the standard definition
+  (Doran & Lasenby). To preserve the old behavior, call ``Ga.dual_mode('I+')``
+  at the start of your program.
+
 - :bug:`518` :class:`~galgebra.mv.Mv` now correctly returns ``Mv`` instance when raise to power of zero. But in general, if one needs to call ``Mv`` methods on a result returned by some GA operations, it would be more prudent to initialize it as an ``Mv`` instance first, as sometimes the result becomes a ``sympy`` object.
 
 - :bug:`516` :attr:`~galgebra.mv.Mv.grades` no longer incorrectly returns ``None`` under some circumstances, as now all initialization branch will correctly call :meth:`~galgebra.mv.Mv.characterise_Mv`.

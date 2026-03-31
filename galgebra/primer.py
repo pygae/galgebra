@@ -32,9 +32,8 @@ gFormat()
 # Default `Dmode=True` causes partial differentiation
 #   operators to be displayed in shortened form.
 Ga.dual_mode('Iinv+')
-# Sets multivector dualization to be right multiplication by the
-# by the inverse unit pseudoscalar (the convention used in the
-# textbooks LAGA, VAGC, and GACS).
+# Confirms the default dual mode: right multiplication by the inverse
+# pseudoscalar (convention of LAGA, VAGC, and GACS).
 initializations_list = r"""\textsf{The following initialization commands were executed:}\\
 \quad\texttt{from sys import version}\\
 \quad\texttt{import sympy}\\
