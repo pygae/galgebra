@@ -63,3 +63,15 @@ class TestVersors(unittest.TestCase):
         v1 = e1 + 2*e2  # vector
         v2 = 3*e1 - e3  # vector
         self.assertTrue((v1 * v2).is_versor())
+
+    def test_degenerate_metric(self):
+        """Test versor detection in a degenerate metric G(2,0,1) (PGA)"""
+        pga = Ga("e0 e1 e2", g=[0, 1, 1])  # e0^2=0, e1^2=1, e2^2=1
+        e0, e1, e2 = pga.mv()
+        # Non-null basis vectors are versors
+        self.assertTrue(e1.is_versor())
+        self.assertTrue(e2.is_versor())
+        # Null vector (e0^2 = 0) is not a versor
+        self.assertFalse(e0.is_versor())
+        # Product of non-null vectors is a versor
+        self.assertTrue((e1 * e2).is_versor())
