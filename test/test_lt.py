@@ -1,7 +1,7 @@
 import unittest
 
 import pytest
-from sympy import symbols, S, Matrix
+from sympy import symbols, S, Matrix, Symbol
 
 from galgebra.ga import Ga
 from galgebra.lt import Mlt
@@ -16,6 +16,31 @@ class TestLt(unittest.TestCase):
         A = base.lt([a+b, 2*a-b])
         assert str(A) == 'Lt(a) = a + b\nLt(b) = 2*a - b'
         assert str(A.matrix()) == 'Matrix([[1, 2], [1, -1]])'
+
+    # reproduce gh-461: lt.matrix() on non-Euclidean metrics
+    def test_lt_matrix_oblique(self):
+        # oblique metric g=[[1,1],[1,2]]: matrix() must not include metric factors
+        coords = symbols('x y', real=True)
+        ga, e1, e2 = Ga.build('e*1|2', g=[[1, 1], [1, 2]], coords=coords)
+        L = ga.lt([e1 + e2, 2*e1 - e2])
+        assert L.matrix() == Matrix([[1, 2], [1, -1]])
+
+        # Minkowski metric g=diag(1,-1): same check
+        ga2, f0, f1 = Ga.build('e*0|1', g=[1, -1], coords=symbols('t x', real=True))
+        L2 = ga2.lt([f0 + f1, 2*f0 - f1])
+        assert L2.matrix() == Matrix([[1, 2], [1, -1]])
+
+    # reproduce gh-461: Ga.lt('f') on oblique metric must not mix in metric tensor
+    def test_lt_generic_oblique(self):
+        coords = symbols('x y', real=True)
+        ga, e1, e2 = Ga.build('e*1|2', g=[[1, 1], [1, 2]], coords=coords)
+        F = ga.lt('f')
+        c1 = F(e1).get_coefs(1)
+        c2 = F(e2).get_coefs(1)
+        # each coefficient must be a plain symbol, not a metric-weighted expression
+        assert all(isinstance(s, Symbol) for s in c1 + c2)
+        # and the matrix must match those coefficients exactly
+        assert F.matrix() == Matrix([[c1[0], c2[0]], [c1[1], c2[1]]])
 
     def test_lt_function(self):
         """ Test construction from a function """
