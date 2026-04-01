@@ -13,6 +13,7 @@ from typing import Mapping
 from sympy import (
     expand, symbols, Matrix, Transpose, zeros, Symbol, Function, S, Add, Expr, simplify
 )
+from sympy.matrices import MatrixBase
 from sympy.printing.latex import LatexPrinter as _LatexPrinter
 from sympy.printing.str import StrPrinter as _StrPrinter
 
@@ -323,7 +324,7 @@ class Lt(printer.GaPrintable):
                     self.lt_dict[base1] = tmp
 
         # ## GSG code starts ###
-        elif isinstance(mat_rep, Matrix):    # Matrix input
+        elif isinstance(mat_rep, MatrixBase):    # Matrix input
             self.lt_dict = Matrix_to_dictionary(mat_rep, self.Ga.basis)
         # ## GSG code ends ###
 
