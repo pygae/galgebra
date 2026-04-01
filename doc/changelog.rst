@@ -64,6 +64,10 @@ Changelog
   * ``ReciprocalFrame`` loop rewritten with a cleaner index convention matching the sign formula
     in the reference text (:issue:`249`).
 
+- :bug:`560` :meth:`~galgebra.lt.Lt` callable constructor now accepts the zero multivector as
+  a return value, so projection maps (e.g. ``lambda x: (x | e1) * e1``) no longer raise
+  ``ValueError``. Closes :issue:`540`.
+
 - :support:`535` Fixed CI and linting issues.
 
 - :bug:`518` :class:`~galgebra.mv.Mv` now correctly returns ``Mv`` instance when raise to power of zero. But in general, if one needs to call ``Mv`` methods on a result returned by some GA operations, it would be more prudent to initialize it as an ``Mv`` instance first, as sometimes the result becomes a ``sympy`` object.
