@@ -763,3 +763,18 @@ class TestTest:
             assert Ga.dual_mode_value == 'Iinv+'
         finally:
             Ga.dual_mode(saved)
+
+    def test_Cl_dual_mode_reset(self):
+        """galgebra.interop.Cl must reset dual mode to I+ after kingdon.Cl set Iinv+."""
+        from galgebra.interop.kingdon import Cl as KCl
+        from galgebra.interop import Cl
+        from galgebra.ga import Ga
+
+        saved = Ga.dual_mode_value
+        try:
+            KCl(3)
+            assert Ga.dual_mode_value == 'Iinv+'
+            Cl(3)
+            assert Ga.dual_mode_value == 'I+'
+        finally:
+            Ga.dual_mode(saved)

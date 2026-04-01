@@ -16,6 +16,15 @@ def Cl(p: int, q: int = 0, r: int = 0, root: str = 'e', **kwargs):
     Uses galgebra defaults (basis numbered from 1, dual mode ``'I+'``).
     For kingdon conventions, use ``galgebra.interop.kingdon.Cl`` instead.
 
+    .. note::
+
+        This function resets the session-wide dual mode to ``'I+'``
+        (galgebra default) before building the algebra.  If you have
+        previously called ``galgebra.interop.kingdon.Cl`` in the same
+        session, that call will have set ``'Iinv+'`` globally; this call
+        restores the galgebra default.  See :issue:`555` for the
+        long-term per-instance fix.
+
     Parameters
     ----------
     p : int
@@ -51,6 +60,9 @@ def Cl(p: int, q: int = 0, r: int = 0, root: str = 'e', **kwargs):
     n = p + q + r
     if n == 0:
         raise ValueError("Total dimension p + q + r must be positive.")
+
+    # Reset to galgebra default dual convention
+    Ga.dual_mode('I+')
 
     # Build diagonal metric: p ones, q negative ones, r zeros
     g = [1] * p + [-1] * q + [0] * r
