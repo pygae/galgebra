@@ -45,7 +45,7 @@ Changelog
 
 - :support:`551` Added ``examples/`` tutorial demonstrating how to extract scalar coordinates
   from a multivector using :meth:`~galgebra.mv.Mv.get_coefs` and
-  :meth:`~galgebra.mv.Mv.blade_coefs`.
+  :meth:`~galgebra.mv.Mv.blade_coefs`. See :issue:`483`.
 
 - :support:`548` Improved :doc:`README <../README>` to document the full set of available GA
   operations. See :issue:`523`.
