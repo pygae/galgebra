@@ -1,7 +1,7 @@
 import unittest
 
 import pytest
-from sympy import symbols, S, Matrix
+from sympy import symbols, S, Matrix, Symbol
 
 from galgebra.ga import Ga
 from galgebra.lt import Mlt
@@ -32,7 +32,6 @@ class TestLt(unittest.TestCase):
 
     # reproduce gh-461: Ga.lt('f') on oblique metric must not mix in metric tensor
     def test_lt_generic_oblique(self):
-        from sympy import Symbol
         coords = symbols('x y', real=True)
         ga, e1, e2 = Ga.build('e*1|2', g=[[1, 1], [1, 2]], coords=coords)
         F = ga.lt('f')
