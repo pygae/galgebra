@@ -27,6 +27,15 @@
     api
 
 .. toctree::
+    :caption: Developer guides
+    :maxdepth: 2
+    :hidden:
+
+    dev/release-process
+    dev/bumping-python
+    dev/bumping-sympy
+
+.. toctree::
     :caption: Other information
     :maxdepth: 2
     :hidden:
