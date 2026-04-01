@@ -8,6 +8,68 @@ Changelog
   \newcommand {\es}[1] {\mathbf{e}_{#1}}
   \newcommand {\til}[1] {\widetilde{#1}}
 
+- :feature:`550` Added :func:`galgebra.interop.Cl` and :func:`galgebra.interop.kingdon.Cl` as a
+  ``Cl(p, q, r)`` interface compatible with kingdon and ganja.js conventions, making it easier to
+  port code between galgebra and other GA libraries. See :issue:`524`.
+
+- :feature:`543` :class:`~galgebra.mv.Mv` now supports ``scalar / Mv`` via
+  :meth:`~galgebra.mv.Mv.__rtruediv__`, so expressions like ``1 / spinor`` work without
+  explicitly calling :meth:`~galgebra.mv.Mv.inv`. See :issue:`512`.
+
+- :feature:`530` Added :meth:`~galgebra.mv.Mv.shirokov_inverse` and
+  :meth:`~galgebra.mv.Mv.hitzer_inverse` (and their module-level counterparts
+  :func:`~galgebra.mv.shirokov_inverse`, :func:`~galgebra.mv.hitzer_inverse`) for computing
+  the multivector inverse using the Shirokov and Hitzer algorithms.
+
+- :bug:`556` :func:`galgebra.interop.Cl` now resets the global dual mode to galgebra's default
+  (``'I+'``) after each call, preventing silent contamination when calls to
+  ``galgebra.interop.Cl`` and ``galgebra.interop.kingdon.Cl`` are interleaved. See :issue:`555`.
+
+- :bug:`554` :meth:`~galgebra.mv.Mv.norm` and :func:`~galgebra.mv.norm` now wrap the result in
+  :func:`~sympy.functions.elementary.complexes.Abs` for even-grade multivectors, fixing
+  incorrect simplification to negative values. See :issue:`522`.
+
+- :bug:`536` :meth:`~galgebra.mv.Mv.is_versor` is improved following GSG's analysis: it now
+  checks that (1) the scalar product with the reverse is a nonzero scalar and (2) the
+  grade-involution sandwich maps every basis vector to a vector. Handles degenerate metrics
+  (e.g. PGA ``G(2,0,1)``) correctly. See :issue:`533`.
+
+- :bug:`540` :meth:`~galgebra.lt.Lt` callable constructor now accepts the zero multivector as
+  a return value, so projection maps (e.g. ``lambda x: (x | e1) * e1``) no longer raise
+  ``ValueError``.
+
+- :support:`549` Added examples validating galgebra against Russell Goyder's sundial analysis
+  and geometric algebra cheat sheet (:issue:`506`):
+
+  * ``examples/Terminal/sundial.py``: rotors, reflections, projections, rejections, and the dual
+    in ``G(3,0)`` as used in the sundial problem.
+  * ``test/test_cheatsheet.py`` (:issue:`557`): pytest tests for all 7 sections of the cheat
+    sheet — geometric product decomposition, vector-multivector products, bivector identities,
+    commutator product, pseudoscalar, outermorphism, and adjoint.
+
+- :support:`551` Added ``examples/`` tutorial demonstrating how to extract scalar coordinates
+  from a multivector using :meth:`~galgebra.mv.Mv.get_coefs` and
+  :meth:`~galgebra.mv.Mv.blade_coefs`. See :issue:`483`.
+
+- :support:`548` Improved :doc:`README <../README>` to document the full set of available GA
+  operations. See :issue:`523`.
+
+- :support:`558` Added regression tests for :meth:`~galgebra.lt.Lt.matrix` on oblique and
+  non-Euclidean metrics, and for the generic :meth:`~galgebra.ga.Ga.lt` constructor, confirming
+  the fixes from :issue:`461` hold.
+
+- :support:`545` Added a regression test for the spurious ``\cdot`` in LaTeX output, confirming
+  the fix documented in :issue:`494` holds.
+
+- :support:`552` Refactored internals for clarity and correctness:
+
+  * :meth:`~galgebra.ga.Ga.er_blade` delegates to ``Mul`` instead of hand-rolling the same
+    logic (:issue:`140`).
+  * ``ReciprocalFrame`` loop rewritten with a cleaner index convention matching the sign formula
+    in the reference text (:issue:`249`).
+
+- :support:`535` Fixed CI and linting issues.
+
 - :bug:`518` :class:`~galgebra.mv.Mv` now correctly returns ``Mv`` instance when raise to power of zero. But in general, if one needs to call ``Mv`` methods on a result returned by some GA operations, it would be more prudent to initialize it as an ``Mv`` instance first, as sometimes the result becomes a ``sympy`` object.
 
 - :bug:`516` :attr:`~galgebra.mv.Mv.grades` no longer incorrectly returns ``None`` under some circumstances, as now all initialization branch will correctly call :meth:`~galgebra.mv.Mv.characterise_Mv`.
