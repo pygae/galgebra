@@ -565,7 +565,7 @@ class Ga(metric.Metric):
         =======  ======================
     """
 
-    dual_mode_value = 'I+'
+    dual_mode_value = 'Iinv+'
     dual_mode_lst = ['+I', 'I+', '-I', 'I-', '+Iinv', 'Iinv+', '-Iinv', 'Iinv-']
 
     presets = {'o3d': 'x,y,z:[1,1,1]:[1,1,0]',
@@ -574,12 +574,12 @@ class Ga(metric.Metric):
                'para3d': 'u,v,z:[u**2+v**2,u**2+v**2,1]:[1,1,0]:norm=True'}
 
     @staticmethod
-    def dual_mode(mode='I+'):
+    def dual_mode(mode='Iinv+'):
         """
         Sets mode of multivector dual function for all geometric algebras
         in users program.
 
-        If Ga.dual_mode(mode) not called the default mode is ``'I+'``.
+        If Ga.dual_mode(mode) not called the default mode is ``'Iinv+'``.
 
         =====  ============
         mode   return value
