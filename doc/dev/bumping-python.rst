@@ -1,0 +1,1 @@
+.. mdinclude:: bumping-python.md
