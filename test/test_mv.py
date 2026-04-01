@@ -1,4 +1,4 @@
-import distutils.version
+from packaging.version import Version
 
 import pytest
 import sympy
@@ -204,7 +204,7 @@ class TestMv:
         lambda ga: 1,
         lambda ga: ga.mv(sympy.S.One),
         pytest.param(lambda ga: sympy.S.One, marks=pytest.mark.skipif(
-            distutils.version.LooseVersion(sympy.__version__) < "1.6",
+            Version(sympy.__version__) < Version("1.6"),
             # until sympy/sympy@bec42df53cf2486d485065ddad1c31011a48bf3b
             reason="Cannot override < and > on sympy.Expr"
         ))
