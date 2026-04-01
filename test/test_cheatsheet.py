@@ -7,7 +7,7 @@ products, bivector identities, commutator product, pseudoscalar,
 outermorphism/rotation, and adjoint.
 """
 import pytest
-from sympy import symbols, cos, sin, S, simplify, trigsimp, Symbol, Matrix
+from sympy import symbols, cos, sin, S, simplify, trigsimp
 
 from galgebra.ga import Ga
 
