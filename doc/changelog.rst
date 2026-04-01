@@ -8,8 +8,6 @@ Changelog
   \newcommand {\es}[1] {\mathbf{e}_{#1}}
   \newcommand {\til}[1] {\widetilde{#1}}
 
-- :release:`0.6.0rc1 <2026.04.01>`
-
 - :feature:`550` Added :func:`galgebra.interop.Cl` and :func:`galgebra.interop.kingdon.Cl` as a
   ``Cl(p, q, r)`` interface compatible with kingdon and ganja.js conventions, making it easier to
   port code between galgebra and other GA libraries. See :issue:`524`.
