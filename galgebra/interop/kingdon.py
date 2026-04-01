@@ -20,11 +20,15 @@ def Cl(p: int, q: int = 0, r: int = 0, root: str = 'e', **kwargs):
     - **Basis naming**: uses 0-indexed names (``e_0, e_1, ...``) to match
       kingdon's default for PGA algebras.
 
-    .. warning::
+    .. note::
 
-        The dual mode change is session-wide.  If you mix kingdon and
-        galgebra conventions in the same session, save and restore
-        ``Ga.dual_mode_value`` around the kingdon block::
+        This function sets the session-wide dual mode to ``'Iinv+'``
+        before building the algebra.  ``galgebra.interop.Cl`` resets it
+        back to ``'I+'``.  This means any algebra built under ``'Iinv+'``
+        will compute duals with ``'I+'`` once a subsequent
+        ``galgebra.interop.Cl`` call is made.  For full isolation over a
+        block of kingdon-convention code, save and restore
+        ``Ga.dual_mode_value`` manually::
 
             saved = Ga.dual_mode_value
             try:
