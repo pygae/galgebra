@@ -34,6 +34,10 @@ Changelog
   grade-involution sandwich maps every basis vector to a vector. Handles degenerate metrics
   (e.g. PGA ``G(2,0,1)``) correctly. See :issue:`533`.
 
+- :bug:`540` :meth:`~galgebra.lt.Lt` callable constructor now accepts the zero multivector as
+  a return value, so projection maps (e.g. ``lambda x: (x | e1) * e1``) no longer raise
+  ``ValueError``.
+
 - :support:`549` Added examples validating galgebra against Russell Goyder's sundial analysis
   and geometric algebra cheat sheet (:issue:`506`):
 
@@ -63,10 +67,6 @@ Changelog
     logic (:issue:`140`).
   * ``ReciprocalFrame`` loop rewritten with a cleaner index convention matching the sign formula
     in the reference text (:issue:`249`).
-
-- :bug:`560` :meth:`~galgebra.lt.Lt` callable constructor now accepts the zero multivector as
-  a return value, so projection maps (e.g. ``lambda x: (x | e1) * e1``) no longer raise
-  ``ValueError``. Closes :issue:`540`.
 
 - :support:`535` Fixed CI and linting issues.
 
