@@ -1,26 +1,37 @@
 #!/usr/bin/env python3
 """Validate that a notebook re-execution introduced only cosmetic output changes.
 
-Usage:
+Usage
+-----
+Compare two notebook files directly:
+
     python scripts/validate_nb_refresh.py OLD.ipynb NEW.ipynb
 
-Extracts the two notebook versions from git automatically when given --git:
+Use --git to extract the OLD version automatically from a git ref, comparing
+it against the current working-tree file (NEW).  BEFORE_REF is any git
+revision that existed before the notebook was re-executed:
 
-    python scripts/validate_nb_refresh.py --git BEFORE_REF examples/ipython/gr_metrics.ipynb
+    python scripts/validate_nb_refresh.py --git BEFORE_REF NOTEBOOK_PATH
 
-Exits 0 if every output difference between OLD and NEW is accounted for by the
-known cosmetic changes listed in COSMETIC_NORMALIZERS below.  Exits 1 and prints
-a detailed report if any unexpected difference is found.
+Examples:
 
-Intended use: run locally when reviewing a notebook-refresh PR to confirm the
-re-execution changed nothing mathematically.
+    # Compare the version at the previous commit (HEAD^) against the
+    # current working copy -- typical use when reviewing a refresh PR:
+    python scripts/validate_nb_refresh.py --git HEAD^ examples/ipython/gr_metrics.ipynb
 
+    # Compare the version on master against the current branch:
+    python scripts/validate_nb_refresh.py --git master examples/ipython/gr_metrics.ipynb
+
+    # Compare an explicit saved copy against the refreshed file:
     git show HEAD^:examples/ipython/gr_metrics.ipynb > /tmp/old.ipynb
     python scripts/validate_nb_refresh.py /tmp/old.ipynb examples/ipython/gr_metrics.ipynb
 
-Or using --git shorthand (requires running from the repo root):
+Exits 0 if every output difference is accounted for by known cosmetic changes.
+Exits 1 and prints a detailed report if any unexpected difference is found.
 
-    python scripts/validate_nb_refresh.py --git HEAD^ examples/ipython/gr_metrics.ipynb
+Intended use: run locally when reviewing a notebook-refresh PR to confirm the
+re-execution changed nothing mathematically.  See doc/dev/bumping-sympy.rst for
+the full workflow.
 
 Known cosmetic changes handled
 -------------------------------
