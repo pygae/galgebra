@@ -258,11 +258,8 @@ Readers of [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdona
 These steps are NO LONGER NEEDED since GAlgebra 0.6.0 as they are merge into GAlgebra with tests, copying these files will cause conflicts and regressions of fixed bugs. Instead, you may follow the following steps:
 
 ```bash
-pip uninstall galgebra
-pip install git+https://github.com/pygae/galgebra.git
+pip install galgebra
 ```
-
-GAlgebra will be installed as `0.6.0-dev` as `0.6.0` has not yet been finalized and published to PyPI.
 
 For minor differences to those files, please check out [the change log for GAlgebra 0.6.0](https://galgebra.readthedocs.io/en/latest/changelog.html#0.6.0). Also please note that:
 
