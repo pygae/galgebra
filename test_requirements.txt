@@ -2,6 +2,7 @@
 wheel
 sympy == 1.12
 flake8
+packaging
 pytest-cov
 nbval
 

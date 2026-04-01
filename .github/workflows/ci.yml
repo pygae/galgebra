@@ -45,7 +45,7 @@ jobs:
       if: "matrix.python-version == '3.12'"
       with:
         diff-pdf-version: '0.5'
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       name: Tectonic Cache
       if: "matrix.python-version == '3.12'"
       with:
