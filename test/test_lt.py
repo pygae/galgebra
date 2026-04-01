@@ -9,6 +9,19 @@ from galgebra.lt import Mlt
 
 class TestLt(unittest.TestCase):
 
+    # reproduce gh-540: callable Lt must accept zero (e.g. projection maps)
+    def test_lt_callable_zero(self):
+        ga, e1, e2, e3 = Ga.build('e*1|2|3', g=[1, 1, 1])
+        # projection onto e1: maps e2 and e3 to zero
+        L = ga.lt(lambda x: (x | e1) * e1)
+        assert L(e1) == e1
+        assert L(e2).is_zero()
+        assert L(e3).is_zero()
+        # zero map: every basis vector maps to zero
+        L_zero = ga.lt(lambda x: x - x)
+        for basis_v in [e1, e2, e3]:
+            assert L_zero(basis_v).is_zero()
+
     # reproduce gh-105
     def test_lt_matrix(self):
         base = Ga('a b', g=[1, 1], coords=symbols('x, y', real=True))
