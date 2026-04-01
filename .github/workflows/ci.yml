@@ -41,7 +41,7 @@ jobs:
     - name: Lint
       run: |
         flake8 -v
-    - uses: hidakatsuya/action-setup-diff-pdf@v1.3.0
+    - uses: hidakatsuya/action-setup-diff-pdf@v1.4.0
       if: "matrix.python-version == '3.12'"
       with:
         diff-pdf-version: '0.5'
