@@ -179,6 +179,21 @@ class TestMlt(unittest.TestCase):
             Tyy * a1y * a2y
         )
 
+    def test_str_arithmetic(self):
+        """Mlt arithmetic on string-constructed tensors routes through the
+        component-expression constructor and must not raise NotImplementedError."""
+        coords = symbols('x y', real=True)
+        g, e1, e2 = Ga.build('e*1|2', coords=coords, g=[1, 1])
+
+        a1 = g.mv('a1', 'vector')
+        a2 = g.mv('a2', 'vector')
+
+        S = Mlt('S', g, nargs=2)
+        T = Mlt('T', g, nargs=2)
+
+        assert (S + T)(a1, a2) == S(a1, a2) + T(a1, a2)
+        assert (S - T)(a1, a2) == S(a1, a2) - T(a1, a2)
+
     def test_from_component_expression(self):
         """Mlt constructed from a pre-built component expression (issue #578)."""
         coords = symbols('x y', real=True)
