@@ -10,8 +10,6 @@ range and explains the policy behind it.
   3.12 when 3.13 is already out).  This keeps us current without chasing
   bleeding-edge releases.
 
-The same "recent but not latest" rule applies to the SymPy version bump; see
-[Bumping the SymPy dependency](bumping-sympy.md) for that workflow.
 
 ## Files to update
 
@@ -63,8 +61,8 @@ the `r` prefix: `'\mathbf{e}'` → `r'\mathbf{e}'`.
 ```bash
 uv venv --python 3.12 .venv312
 uv pip install -r test_requirements.txt -e .
-python -m flake8 -v
-python -m pytest \
+flake8 -v
+pytest \
     -vv --durations=50 \
     --cov=galgebra \
     --nbval examples/ipython/ \
@@ -78,7 +76,13 @@ python -m pytest \
 ## Tracking issue pattern
 
 Python bumps often uncover several independent blocking issues (compat
-failures, notebook output changes).  Use the **tracking issue** pattern: one
-tracker issue for the overall bump, sub-issues for each blocker, a PR per
-sub-issue.  See [Bumping the SymPy dependency](bumping-sympy.md) for a
-detailed description of this pattern.
+failures, notebook output changes).  Use the **tracking issue** pattern to
+keep each PR small and reviewable:
+
+1. Open a *tracker* issue describing the overall goal (e.g. "Bump Python to
+   3.10–3.12").  Keep it focused on the goal — do not list specific errors.
+2. For each blocking problem found during testing, open a *sub-issue*
+   describing only that problem.
+3. Add a comment to the tracker referencing all sub-issues.
+4. Open a PR for each sub-issue independently.
+5. Once all sub-PRs are merged, open the final bump PR and close the tracker.
