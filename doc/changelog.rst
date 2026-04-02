@@ -8,6 +8,46 @@ Changelog
   \newcommand {\es}[1] {\mathbf{e}_{#1}}
   \newcommand {\til}[1] {\widetilde{#1}}
 
+- :release:`0.6.1 <2026.04.02>`
+
+- :feature:`580` :class:`~galgebra.lt.Mlt` can now be constructed from a
+  pre-built sympy component expression by passing the expression as ``f`` together
+  with an explicit ``nargs`` argument.  Previously this path raised
+  ``NotImplementedError``; as a secondary effect, :meth:`~galgebra.lt.Mlt.__add__`,
+  :meth:`~galgebra.lt.Mlt.__sub__`, and related arithmetic on string-constructed
+  tensors now work correctly. See :issue:`578`.
+
+- :bug:`537` :meth:`~galgebra.mv.Mv.is_blade` now correctly identifies null
+  vectors (e.g. ``e0 + e1`` in ``G(1,1)``) and null blades (e.g.
+  ``(e0+e1)^e2`` in ``G(1,2)``) as blades.  Previously the method delegated
+  entirely to :meth:`~galgebra.mv.Mv.is_versor`, which returns ``False`` for
+  null multivectors because they have no inverse.  Blade-ness is a metric-free
+  concept; the fix checks grade homogeneity first (grade ≤ 1 is always a blade)
+  then falls back to the outer-product squaring test ``B ^ B == 0`` for the null
+  case. See :issue:`537`.
+
+- :support:`577` Updated the bundled
+  ``doc/books/Macdonald/GAlgebraPrimer.pdf`` to the September 15, 2023 revision
+  by Alan Macdonald and corrected the download URL in README and example
+  documentation. See :issue:`575`.
+
+- :support:`572` Added developer guides for bumping the Python and SymPy
+  versions in CI (``doc/dev/bumping-python.md``, ``doc/dev/bumping-sympy.md``)
+  and a release-process runbook (``doc/dev/releasing.md``). Updated README
+  Python prerequisites. See :issue:`571`, :issue:`573`.
+
+- :support:`570` Refreshed notebook outputs for SymPy 1.13 printing changes
+  (``\cdot`` in ``Mul`` expressions and column-format specifiers in
+  ``\begin{array}``). See :issue:`568`.
+
+- :bug:`569` :class:`~galgebra.lt.Lt` now accepts an
+  :class:`~sympy.matrices.immutable.ImmutableDenseMatrix` as its matrix
+  argument, fixing a ``TypeError`` when constructing linear transformations
+  from SymPy immutable matrices. See :issue:`567`.
+
+- :support:`565` CI now tests on Python 3.10, 3.11, and 3.12; Python 3.8 and
+  3.9 are dropped (both reached end-of-life). See :issue:`564`.
+
 - :release:`0.6.0 <2026.04.01>`
 
 - :feature:`550` Added :func:`galgebra.interop.Cl` and :func:`galgebra.interop.kingdon.Cl` as a
