@@ -19,6 +19,7 @@ The same "recent but not latest" rule applies to the SymPy version bump; see
 |------|----------------|
 | `.github/workflows/ci.yml` | `python-version` matrix; runner OS; action versions; conditions using a specific version (e.g. `== '3.11'`) |
 | `setup.py` | `python_requires`; `Programming Language :: Python :: X.Y` classifiers |
+| `test_requirements.txt` | Add or update compatibility shims (e.g. `packaging` to replace `distutils`) |
 | `README.md` | Prerequisites section Python version line and history note |
 
 ## CI action versions
