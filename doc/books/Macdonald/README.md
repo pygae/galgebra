@@ -3,12 +3,12 @@ Bundled Supplementary Materials for LAGA and VAGC
 
 This directory constains bundled supplementary materials for [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) by Alan Macdonald:
 
-GAlgebraPrimer.pdf (Last update: 1/24/18)
+GAlgebraPrimer.pdf (Last updated September 15, 2023; accessed April 2, 2026)
 --------------------------------------------
 
-From http://www.faculty.luther.edu/~macdonal/laga/index.html:
+From http://www.faculty.luther.edu/~macdonal/:
 
-> [GAlgebraPrimer.pdf](http://www.faculty.luther.edu/~macdonal/laga/GAlgebraPrimer.pdf) contains instructions for installing and using GAlgebra. The primer also downloads with GAlgebra.
+> [GAlgebraPrimer.pdf](http://www.faculty.luther.edu/~macdonal/GAlgebraPrimer.pdf) contains instructions for installing and using GAlgebra. The primer also downloads with GAlgebra.
 
 
 Conformal Model.pdf (Last update: 11/6/18)

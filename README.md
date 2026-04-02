@@ -254,7 +254,7 @@ Migration Guide
 
 ### Migrating guide for readers of LAGA&VAGC
 
-Readers of [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) might be guided by [GAlgebra Primer](http://www.faculty.luther.edu/~macdonal/GAlgebraPrimer.pdf) (version November 29, 2022, accessed May, 2024) to download [GAfiles.zip](http://www.faculty.luther.edu/~macdonal/GAfiles.zip) and copy `gprinter.py`, `lt.py`, `mv.py`, and `GAlgebraInit.py`¸ into where GAlgebra is installed.
+Readers of [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) might be guided by [GAlgebra Primer](http://www.faculty.luther.edu/~macdonal/GAlgebraPrimer.pdf) (version September 15, 2023, accessed April 2, 2026) to download [GAfiles.zip](http://www.faculty.luther.edu/~macdonal/GAfiles.zip) and copy `gprinter.py`, `lt.py`, `mv.py`, and `GAlgebraInit.py`¸ into where GAlgebra is installed.
 
 These steps are NO LONGER NEEDED since GAlgebra 0.6.0 as they are merge into GAlgebra with tests, copying these files will cause conflicts and regressions of fixed bugs. Instead, you may follow the following steps:
 
@@ -279,7 +279,7 @@ Note that in the [doc/books](https://github.com/pygae/galgebra/blob/master/doc/b
 - `BookGA.pdf` which is a collection of notes on Geometric Algebra and Calculus based of "Geometric Algebra for Physicists" by Doran and Lasenby and on some papers by Lasenby and Hestenes.
 - `galgebra.pdf` which is the original main doc of GAlgebra in PDF format, while the math part is still valid, the part describing the installation and usage of GAlgebra is outdated, please read with caution or visit https://galgebra.readthedocs.io/ instead.
 - `Macdonald` which contains bundled supplementary materials for [Linear and Geometric Algebra](http://www.faculty.luther.edu/~macdonal/laga/index.html) and [Vector and Geometric Calculus](http://www.faculty.luther.edu/~macdonal/vagc/index.html) by Alan Macdonald, see [here](https://github.com/pygae/galgebra/blob/master/doc/books/Macdonald/) and [here](https://github.com/pygae/galgebra/blob/master/examples/Macdonald/) for more information.
-  - Particularly, `GAlgebraPrimer.pdf` is an archived version of [GAlgebra Primer](http://www.faculty.luther.edu/~macdonal/GAlgebraPrimer.pdf) by Alan Macdonald, last updated on November 29, 2022.
+  - Particularly, `GAlgebraPrimer.pdf` is an archived version of [GAlgebra Primer](http://www.faculty.luther.edu/~macdonal/GAlgebraPrimer.pdf) by Alan Macdonald, last updated on September 15, 2023.
 
 <!-- end: bundled-resources -->
 

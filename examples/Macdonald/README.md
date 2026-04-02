@@ -6,7 +6,7 @@ This directory constains bundled code for [Linear and Geometric Algebra](http://
 Algebras.py
 --------------------------------------------
 
-From [GAlgebraPrimer.pdf](http://www.faculty.luther.edu/~macdonal/laga/GAlgebraPrimer.pdf):
+From [GAlgebraPrimer.pdf](http://www.faculty.luther.edu/~macdonal/GAlgebraPrimer.pdf):
 
 > Algebras.py. This file is distributed with GAlgebra. It contains code to create many different geometric algebras, including g3 and all others used in this document, as well as others not covered here: homogeneous, spacetime, and conformal algebras.
 
