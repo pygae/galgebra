@@ -49,7 +49,7 @@ It captures lessons learned from the 0.5.1 incident (#517) and the 0.6.0 cycle.
 1. Create a branch:
 
    ```bash
-   git checkout -b utensil/X.Y.ZrcN master
+   git checkout -b utensil/X.Y.Z-rc1 master
    ```
 
 2. Edit `galgebra/_version.py`:
@@ -64,27 +64,29 @@ It captures lessons learned from the 0.5.1 incident (#517) and the 0.6.0 cycle.
 
 ## Step 3 — Tag and create the RC release
 
-Before pushing the tag, verify `_version.py` matches (see the warning in Step 2):
+Verify `_version.py` matches the tag you are about to create (see the warning in Step 2):
 
 ```bash
 python -c "from galgebra._version import __version__; assert __version__ == 'X.Y.ZrcN', f'Mismatch: {__version__}'"
 ```
 
-Then tag, create the GitHub release, and push:
+Create the GitHub release.  `gh release create` auto-creates the tag on
+`master` — no separate `git tag` / `git push` needed.
+
+> **Note:** the tag **must start with `v`**.  The CI release job checks for
+> the `refs/tags/v` prefix to trigger the PyPI publish; a tag like
+> `0.6.0rc1` (without the `v`) will not publish.
 
 ```bash
-git tag vX.Y.ZrcN
-git push origin vX.Y.ZrcN
-
 gh release create vX.Y.ZrcN \
     --prerelease \
+    --target master \
     --title "vX.Y.ZrcN" \
     --notes "Release candidate for X.Y.Z.  See the [changelog](https://galgebra.readthedocs.io/en/latest/changelog.html) for details."
 ```
 
 The CI `Create release and send to PyPI` job publishes the package to PyPI
-automatically on the tag push.  The `gh release create` above creates the
-GitHub release manually.
+automatically once the tag is created.
 
 ---
 
@@ -102,7 +104,7 @@ GitHub release manually.
 1. Create a branch:
 
    ```bash
-   git checkout -b utensil/X.Y.Z master
+   git checkout -b utensil/X.Y.Z-release master
    ```
 
 2. Edit `galgebra/_version.py`:
@@ -119,25 +121,23 @@ GitHub release manually.
 
 ## Step 6 — Tag and create the final release
 
-Verify `_version.py` matches the tag first:
+Verify `_version.py` matches the tag you are about to create:
 
 ```bash
 python -c "from galgebra._version import __version__; assert __version__ == 'X.Y.Z', f'Mismatch: {__version__}'"
 ```
 
-Then tag, create the GitHub release, and push:
+Create the GitHub release (`gh release create` auto-creates the tag on `master`):
 
 ```bash
-git tag vX.Y.Z
-git push origin vX.Y.Z
-
 gh release create vX.Y.Z \
+    --target master \
     --title "vX.Y.Z" \
     --notes "See the [changelog](https://galgebra.readthedocs.io/en/latest/changelog.html) for details."
 ```
 
 The CI `Create release and send to PyPI` job publishes the package to PyPI
-automatically on the tag push.
+automatically once the tag is created.
 
 ---
 
