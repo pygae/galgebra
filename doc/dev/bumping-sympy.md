@@ -82,7 +82,7 @@ both must be changed to `isinstance(x, MatrixBase)` (imported from
 
 SymPy 1.13 changed matrix LaTeX output in two ways:
 
-- `\begin{array}{cccc}` → `\begin{array}{}` (column specs removed)
+- `\begin{array}{}` → `\begin{array}{ccc}` (column specs added)
 - Explicit `\cdot` multiplication dot added/removed in some expressions
 
 These are cosmetic; the computed values are identical.  Fix: re-execute the

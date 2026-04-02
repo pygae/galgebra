@@ -692,8 +692,8 @@ class Mv(printer.GaPrintable):
         obj = expand(self.obj)
         try:
             obj = metric.Simp.apply(obj)
-        except Exception:
-            pass  # simplification failed; display without simplification
+        except ZeroDivisionError:
+            pass  # SymPy trigsimp regression; display without simplification
         self = Mv(obj, ga=self.Ga)
 
         if self.obj == S.Zero:
