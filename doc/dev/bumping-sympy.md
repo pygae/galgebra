@@ -40,10 +40,10 @@ uv venv --python 3.12 .venv312
 uv pip install -r test_requirements.txt -e .
 ```
 
-Run the full CI test command (matches what GitHub Actions runs):
+Run the full CI test command:
 
 ```bash
-python -m pytest \
+pytest \
     -vv --durations=50 \
     --cov=galgebra \
     --nbval examples/ipython/ \
@@ -53,6 +53,9 @@ python -m pytest \
     --nbval-sanitize-with test/.nbval_sanitize.cfg \
     -n 2 --dist loadscope
 ```
+
+CI also accepts a `PYTEST_K_FILTER` environment variable to pass `-k`.
+See `.github/workflows/ci.yml` for the authoritative command.
 
 ## Common compatibility issues
 

@@ -83,9 +83,24 @@ def normalize_latex(text: str) -> str:
     return text
 
 
+_BOX_DRAWING = re.compile(r'[\u2500-\u257F]')
+
+
 def normalize_plaintext(text: str) -> str:
-    """Strip all whitespace — unicode matrix art uses spaces only for alignment."""
-    return re.sub(r'\s+', '', text)
+    """Normalize whitespace in unicode matrix-art lines only.
+
+    Lines containing box-drawing characters (U+2500–U+257F) may shift
+    alignment between SymPy versions — treat any whitespace-only diff there
+    as cosmetic.  Lines without box-drawing chars are left verbatim so that
+    a real content change (e.g. ``- x`` → ``-x``) is still caught.
+    """
+    lines = []
+    for line in text.splitlines():
+        if _BOX_DRAWING.search(line):
+            lines.append(re.sub(r'\s+', '', line))
+        else:
+            lines.append(line)
+    return '\n'.join(lines)
 
 
 # ---------------------------------------------------------------------------
