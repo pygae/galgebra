@@ -430,3 +430,31 @@ class TestMv:
         # mixed multivector: not grade-homogeneous → not a blade
         mixed = e0 + (e0 ^ e1)
         assert mixed.is_blade() is False
+
+    def test_is_blade_known_limitation(self):
+        """is_blade() has a known limitation for grade >= 3 in sufficiently high dimensions.
+
+        For grade >= 3, is_blade() relies on B*B.dual() == 0 as a test, which can
+        give false positives in dimensions >= 6. The Dorst/Fontijne/Mann counterexample
+        (Geometric Algebra for Computer Science, 2007) in R⁶ is:
+
+            B = v₁∧v₂∧v₃ + v₁∧v₄∧v₅ + v₂∧v₄∧v₆ + v₃∧v₅∧v₆
+
+        This satisfies (B^B).is_zero() == True and B.is_zero() == False,
+        but B is NOT a 3-blade (cannot be factored as u∧v∧w).
+        The test confirms the known false positive (is_blade() returns True when it should be False).
+        This is documented as a limitation in the is_blade() docstring.
+        """
+        # Build R⁶ with Euclidean metric
+        ga6, v1, v2, v3, v4, v5, v6 = Ga.build('v*1|2|3|4|5|6')
+
+        # Construct the Dorst/Fontijne/Mann counterexample
+        B = (v1 ^ v2 ^ v3) + (v1 ^ v4 ^ v5) + (v2 ^ v4 ^ v6) + (v3 ^ v5 ^ v6)
+
+        # Verify the properties
+        assert B.is_zero() is False                           # B is not zero
+        assert (B * B.dual()).is_zero() is True              # (B ^ B).is_zero() == True
+
+        # Known false positive: is_blade() returns True
+        # even though B is not a blade (cannot be factored as u∧v∧w)
+        assert B.is_blade() is True  # Known limitation for grade >= 3
