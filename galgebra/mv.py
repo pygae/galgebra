@@ -921,20 +921,45 @@ class Mv(printer.GaPrintable):
 
     def is_blade(self) -> bool:
         """
-        True is self is blade, otherwise False
-        sets self.blade_flg and returns value
+        True if self is a blade (simple r-vector), otherwise False.
+        Sets ``self.blade_flg`` and returns the value.
+
+        A blade is a multivector that can be expressed as an outer product of
+        vectors.  Blade-ness is a metric-free concept: it depends only on the
+        outer product, not on the inner product used to define the algebra.
+
+        Algorithm:
+
+        1. A multivector that is not grade-homogeneous is never a blade.
+        2. Scalars (grade 0) and vectors (grade 1) are always blades.
+        3. For higher grades, non-null blades are versors of definite grade;
+           this case is handled by :meth:`is_versor`.
+        4. Null blades (whose self-reverse product is zero) are detected via
+           the outer-product squaring test: ``self ^ self == 0``.  This is
+           necessary for any blade and sufficient for grade 2.  For grades ≥ 3
+           in algebras of sufficiently high dimension (dim ≥ 2r) it may give
+           false positives for certain non-blade r-vectors; a full
+           factorizability check is not yet implemented for those cases.
         """
         if self.blade_flg is not None:
             return self.blade_flg
-        else:
-            if self.is_versor():
-                if self.i_grade is not None:
-                    self.blade_flg = True
-                else:
-                    self.blade_flg = False
-            else:
-                self.blade_flg = False
+        self.characterise_Mv()
+        # Not grade-homogeneous → not a blade
+        if self.i_grade is None:
+            self.blade_flg = False
             return self.blade_flg
+        # Scalars and vectors are always blades (metric-independent)
+        if self.i_grade <= 1:
+            self.blade_flg = True
+            return self.blade_flg
+        # Non-null case: a versor of definite grade is a blade
+        if self.is_versor():
+            self.blade_flg = True
+            return self.blade_flg
+        # Null case: outer-product squaring test
+        # B ^ B = 0 is necessary for any blade and sufficient for grade 2
+        self.blade_flg = not self.is_zero() and (self ^ self).is_zero()
+        return self.blade_flg
 
     def is_base(self) -> bool:
         coefs, _bases = metric.linear_expand(self.obj)

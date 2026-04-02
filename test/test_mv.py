@@ -397,3 +397,36 @@ class TestMv:
         v2 = e_t + 2 * e_x  # v2*v2 = 1 - 4 = -3 (invertible)
         result = 1 / v2
         assert result * v2 == ga_m.mv(1)
+
+    def test_is_blade_null(self):
+        """is_blade() must handle null vectors and null blades correctly (issue #537).
+
+        Blade-ness is a metric-free concept; a null vector is still a 1-blade
+        even though it has no inverse and therefore fails is_versor().
+        """
+        # G(1,1): two basis vectors, one with +1 and one with -1 norm
+        ga, e0, e1 = Ga.build('e*0|1', g=[1, -1])
+
+        # null vector b = e0 + e1 (b*b = 0)
+        b = e0 + e1
+        assert b.is_zero() is False
+        assert (b * b).is_zero()           # confirms b is null
+        assert b.is_versor() is False      # null → no inverse → not a versor
+        assert b.is_blade() is True        # but it IS a 1-blade
+
+        # non-null vector: always a blade
+        assert e0.is_blade() is True
+        assert e1.is_blade() is True
+
+        # G(1,2): three basis vectors with signature (+,-,-)
+        ga3, f0, f1, f2 = Ga.build('f*0|1|2', g=[1, -1, -1])
+
+        # null 2-blade B = (f0+f1)^f2 (constituent vector f0+f1 is null)
+        B = (f0 + f1) ^ f2
+        assert B.is_zero() is False
+        assert B.is_versor() is False      # null constituent → not a versor
+        assert B.is_blade() is True        # but it IS a 2-blade
+
+        # mixed multivector: not grade-homogeneous → not a blade
+        mixed = e0 + (e0 ^ e1)
+        assert mixed.is_blade() is False
