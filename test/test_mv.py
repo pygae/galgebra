@@ -411,7 +411,7 @@ class TestMv:
         b = e0 + e1
         assert b.is_zero() is False
         assert (b * b).is_zero()           # confirms b is null
-        assert b.is_versor() is False      # null → no inverse → not a versor
+        assert b.is_versor() is False      # null → b*b.rev() = 0 → not a versor
         assert b.is_blade() is True        # but it IS a 1-blade
 
         # non-null vector: always a blade
