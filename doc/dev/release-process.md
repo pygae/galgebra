@@ -64,6 +64,14 @@ It captures lessons learned from the 0.5.1 incident (#517) and the 0.6.0 cycle.
 
 ## Step 3 — Tag and create the RC release
 
+Before pushing the tag, verify `_version.py` matches (see the warning in Step 2):
+
+```bash
+python -c "from galgebra._version import __version__; assert __version__ == 'X.Y.ZrcN', f'Mismatch: {__version__}'"
+```
+
+Then tag, create the GitHub release, and push:
+
 ```bash
 git tag vX.Y.ZrcN
 git push origin vX.Y.ZrcN
@@ -74,7 +82,9 @@ gh release create vX.Y.ZrcN \
     --notes "Release candidate for X.Y.Z.  See the [changelog](https://galgebra.readthedocs.io/en/latest/changelog.html) for details."
 ```
 
-The CI `Create release and send to PyPI` job triggers automatically on the tag.
+The CI `Create release and send to PyPI` job publishes the package to PyPI
+automatically on the tag push.  The `gh release create` above creates the
+GitHub release manually.
 
 ---
 
@@ -109,6 +119,14 @@ The CI `Create release and send to PyPI` job triggers automatically on the tag.
 
 ## Step 6 — Tag and create the final release
 
+Verify `_version.py` matches the tag first:
+
+```bash
+python -c "from galgebra._version import __version__; assert __version__ == 'X.Y.Z', f'Mismatch: {__version__}'"
+```
+
+Then tag, create the GitHub release, and push:
+
 ```bash
 git tag vX.Y.Z
 git push origin vX.Y.Z
@@ -118,6 +136,9 @@ gh release create vX.Y.Z \
     --notes "See the [changelog](https://galgebra.readthedocs.io/en/latest/changelog.html) for details."
 ```
 
+The CI `Create release and send to PyPI` job publishes the package to PyPI
+automatically on the tag push.
+
 ---
 
 ## Step 7 — Post-release checks
@@ -125,6 +146,6 @@ gh release create vX.Y.Z \
 | Check | How |
 |-------|-----|
 | PyPI | https://pypi.org/project/galgebra/#history |
-| Zenodo | Verify a new record was created at https://zenodo.org/search?q=galgebra; if the webhook missed it, trigger manually from the Zenodo settings page for the record |
+| Zenodo | Verify a new record was created at https://zenodo.org/search?q=galgebra; if the webhook missed it, go to https://zenodo.org/account/settings/github/, find the galgebra repo, and click "Sync now" |
 | Close milestone | `gh api repos/pygae/galgebra/milestones --jq '.[] | select(.title=="X.Y.Z") | .number'` then `gh api -X PATCH repos/pygae/galgebra/milestones/N -f state=closed` |
 | README / docs | Open a follow-up PR to update any version references (badge, Prerequisites, install instructions) |
