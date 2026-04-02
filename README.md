@@ -202,10 +202,11 @@ Installing GAlgebra
 ### Prerequisites
 
 - Works on Linux, Windows, Mac OSX
-- [Python](https://www.python.org/) >= 3.8
+- [Python](https://www.python.org/) >= 3.10 (3.10, 3.11, 3.12 tested via CI)
+  - 0.6.0 was the last supported release for Python 3.8/3.9
   - 0.5.0 was the last supported release for Python 3.5-3.7
   - 0.4.x was the last supported release series for Python 2.7
-- [SymPy](https://www.sympy.org) >= 1.3 
+- [SymPy](https://www.sympy.org) >= 1.3
   - Only SymPy 1.12 is tested via CI, see `.github/workflows/ci.yml` for more details
   - 0.5.0 was the last supported release for SymPy 1.7
 
