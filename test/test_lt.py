@@ -179,6 +179,27 @@ class TestMlt(unittest.TestCase):
             Tyy * a1y * a2y
         )
 
+    def test_from_component_expression(self):
+        """Mlt constructed from a pre-built component expression (issue #578)."""
+        coords = symbols('x y', real=True)
+        g, e1, e2 = Ga.build('e*1|2', coords=coords, g=[1, 1])
+
+        a1 = g.mv('a1', 'vector')
+        a2 = g.mv('a2', 'vector')
+
+        # Build the same rank-2 tensor as test_from_str but pass the
+        # fvalue expression directly instead of a string name.
+        T_str = Mlt('T', g, nargs=2)
+        fvalue = T_str.fvalue  # sympy expression in slot variables
+
+        # Reconstruct using the component-expression path
+        T_expr = Mlt(fvalue, g, nargs=2)
+        assert T_expr(a1, a2) == T_str(a1, a2)
+
+        # nargs is required for component expressions
+        with pytest.raises(TypeError):
+            Mlt(fvalue, g)
+
     def test_deprecations(self):
         g = Ga('e*a|b', g=[1, 1])
         with pytest.warns(DeprecationWarning):
