@@ -690,7 +690,10 @@ class Mv(printer.GaPrintable):
         # str representation of multivector
         # note: this just replaces `self` for the rest of this function
         obj = expand(self.obj)
-        obj = metric.Simp.apply(obj)
+        try:
+            obj = metric.Simp.apply(obj)
+        except ZeroDivisionError:
+            pass  # SymPy trigsimp regression; display without simplification
         self = Mv(obj, ga=self.Ga)
 
         if self.obj == S.Zero:

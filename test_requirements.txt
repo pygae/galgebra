@@ -1,6 +1,6 @@
 # requirements for CI
 wheel
-sympy == 1.12
+sympy == 1.13.3
 flake8
 packaging
 pytest-cov

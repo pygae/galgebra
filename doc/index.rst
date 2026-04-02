@@ -33,6 +33,7 @@
 
     dev/release-process
     dev/bumping-python
+    dev/bumping-sympy
 
 .. toctree::
     :caption: Other information
