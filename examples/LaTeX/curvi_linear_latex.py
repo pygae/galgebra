@@ -94,10 +94,10 @@ def derivatives_in_prolate_spheroidal_coordinates():
     # reduction (sinh²+cosh²=1 etc.) happens inside square_root_of_expr via its
     # own trigsimp call and is unaffected by this setting.  Restore the default
     # afterwards so other callers in this file are not impacted.
-    Simp.set([trigsimp])
+    Simp.profile([trigsimp])
     (ps3d,er,eth,ephi) = Ga.build('e_xi e_eta e_phi',X=[a*sinh(xi)*sin(eta)*cos(phi),a*sinh(xi)*sin(eta)*sin(phi),
                                                         a*cosh(xi)*cos(eta)],coords=coords,norm=True)
-    Simp.set([simplify])
+    Simp.profile([simplify])
     grad = ps3d.grad
 
     f = ps3d.mv('f','scalar',f=True)
