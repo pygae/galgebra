@@ -1,8 +1,9 @@
 from __future__ import print_function
 import sys
 
-from sympy import symbols,sin,cos,sinh,cosh
+from sympy import symbols,sin,cos,sinh,cosh,simplify,trigsimp
 from galgebra.ga import Ga
+from galgebra.metric import Simp
 from galgebra.printer import Format, xpdf, Print_Function, Eprint
 
 def derivatives_in_spherical_coordinates():
@@ -88,8 +89,15 @@ def derivatives_in_prolate_spheroidal_coordinates():
     #Print_Function()
     a = symbols('a', real=True)
     coords = (xi,eta,phi) = symbols('xi eta phi', real=True)
+    # Use trigsimp instead of the default simplify for Ga.build to avoid a
+    # severe slowdown with SymPy >= 1.13 (TR3 traversal in fu.py).  The metric
+    # reduction (sinh²+cosh²=1 etc.) happens inside square_root_of_expr via its
+    # own trigsimp call and is unaffected by this setting.  Restore the default
+    # afterwards so other callers in this file are not impacted.
+    Simp.set([trigsimp])
     (ps3d,er,eth,ephi) = Ga.build('e_xi e_eta e_phi',X=[a*sinh(xi)*sin(eta)*cos(phi),a*sinh(xi)*sin(eta)*sin(phi),
                                                         a*cosh(xi)*cos(eta)],coords=coords,norm=True)
+    Simp.set([simplify])
     grad = ps3d.grad
 
     f = ps3d.mv('f','scalar',f=True)
