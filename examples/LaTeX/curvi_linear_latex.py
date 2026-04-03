@@ -10,25 +10,17 @@ from galgebra.printer import Format, xpdf, Print_Function, Eprint
 
 @contextmanager
 def _no_simp_build():
-    """Suppress Simp during Ga.build; restore trigsimp(method='old') afterwards.
+    """Use an identity simplifier during Ga.build, then restore the caller's Simp profile.
 
     ``Ga.build(norm=True)`` calls ``Simp.apply`` ~70 times during metric
-    normalisation.  Since SymPy 1.13 (PR #26390) each call triggers a slow
-    O(N·M) ``.replace()`` traversal inside ``TR3``/``futrig`` that is a no-op
-    for symbolic trig arguments but costs ~25 s per invocation on these
-    curvilinear-coordinate expressions.
+    normalisation.  Since SymPy 1.13 (PR #26390) each call traverses every
+    trig/hyperbolic node via ``.replace(Mul, ...)`` inside ``TR3``/``futrig``,
+    which is always a no-op for symbolic trig arguments but costs ~25 s per call.
 
-    Strategy: use an identity simplifier during the build phase (so the metric
-    components are stored in unsimplified form), then simplify each final output
-    expression once with ``trigsimp(method='old')`` via ``_ts()`` before
-    formatting.  ``trigsimp(method='old')`` uses the ``_trigsimp`` code path
-    which avoids ``fu.py`` / TR3 entirely and runs in < 0.1 s per expression.
-
-    Note: calling plain ``simplify()`` on the final results does **not** help —
-    the unsimplified metric components make the gradient/divergence/curl
-    expressions large enough that TR3 is just as slow on them as it was on the
-    intermediate metric components.  ``trigsimp(method='old')`` is required to
-    avoid the SymPy 1.13 slow path entirely.
+    By substituting an identity simplifier for the build phase we skip all ~70
+    traversals.  The callers' ``Simp.modes`` (set by ``main()`` to
+    ``trigsimp(method='old')``) remain active for the output expressions, so
+    ``_sympystr`` still simplifies each printed result once when formatting.
     """
     orig = Simp.modes[:]
     Simp.profile([lambda e: e])  # identity — no simplification during build
@@ -36,11 +28,6 @@ def _no_simp_build():
         yield
     finally:
         Simp.profile(orig)
-
-
-def _ts(mv):
-    """Apply trigsimp(method='old') to each coefficient of a multivector."""
-    return mv.simplify(modes=lambda e: trigsimp(e, method='old'))
 
 
 def derivatives_in_spherical_coordinates():
@@ -60,11 +47,11 @@ def derivatives_in_spherical_coordinates():
     print('A =',A)
     print('B =',B)
 
-    print('grad*f =',_ts(grad*f))
-    print('grad|A =',_ts(grad|A))
-    print('grad\\times A = -I*(grad^A) =',_ts(-sp3d.i*(grad^A)))
-    print('%\\nabla^{2}f =',_ts(grad|(grad*f)))
-    print('grad^B =',_ts(grad^B))
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('grad\\times A = -I*(grad^A) =',-sp3d.i*(grad^A))
+    print('%\\nabla^{2}f =',grad|(grad*f))
+    print('grad^B =',grad^B)
 
     """
     print '( \\nabla\\W\\nabla )\\bm{e}_{r} =',((grad^grad)*er).trigsimp()
@@ -92,10 +79,10 @@ def derivatives_in_paraboloidal_coordinates():
     print('A =',A)
     print('B =',B)
 
-    print('grad*f =',_ts(grad*f))
-    print('grad|A =',_ts(grad|A))
-    _ts(-par3d.i*(grad^A)).Fmt(3,'grad\\times A = -I*(grad^A)')
-    print('grad^B =',_ts(grad^B))
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    (-par3d.i*(grad^A)).Fmt(3,'grad\\times A = -I*(grad^A)')
+    print('grad^B =',grad^B)
 
     return
 
@@ -118,10 +105,10 @@ def derivatives_in_elliptic_cylindrical_coordinates():
     print('A =',A)
     print('B =',B)
 
-    print('grad*f =',_ts(grad*f))
-    print('grad|A =',_ts(grad|A))
-    print('-I*(grad^A) =',_ts(-elip3d.i*(grad^A)))
-    print('grad^B =',_ts(grad^B))
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('-I*(grad^A) =',-elip3d.i*(grad^A))
+    print('grad^B =',grad^B)
     return
 
 
@@ -144,10 +131,10 @@ def derivatives_in_prolate_spheroidal_coordinates():
     print('A =',A)
     print('B =',B)
 
-    print('grad*f =',_ts(grad*f))
-    print('grad|A =',_ts(grad|A))
-    _ts(-ps3d.i*(grad^A)).Fmt(3,'-I*(grad^A)')
-    _ts(grad^B).Fmt(3,'grad^B')
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    (-ps3d.i*(grad^A)).Fmt(3,'-I*(grad^A)')
+    (grad^B).Fmt(3,'grad^B')
     return
 
 
@@ -168,10 +155,10 @@ def derivatives_in_oblate_spheroidal_coordinates():
     print('A =',A)
     print('B =',B)
 
-    print('grad*f =',_ts(grad*f))
-    print('grad|A =',_ts(grad|A))
-    print('-I*(grad^A) =',_ts(-os3d.i*(grad^A)))
-    print('grad^B =',_ts(grad^B))
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('-I*(grad^A) =',-os3d.i*(grad^A))
+    print('grad^B =',grad^B)
     return
 
 
@@ -191,10 +178,10 @@ def derivatives_in_bipolar_coordinates():
     print('A =',A)
     print('B =',B)
 
-    print('grad*f =',_ts(grad*f))
-    print('grad|A =',_ts(grad|A))
-    print('-I*(grad^A) =',_ts(-bp3d.i*(grad^A)))
-    print('grad^B =',_ts(grad^B))
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('-I*(grad^A) =',-bp3d.i*(grad^A))
+    print('grad^B =',grad^B)
     return
 
 
@@ -216,24 +203,39 @@ def derivatives_in_toroidal_coordinates():
     print('A =',A)
     print('B =',B)
 
-    print('grad*f =',_ts(grad*f))
-    print('grad|A =',_ts(grad|A))
-    print('-I*(grad^A) =',_ts(-t3d.i*(grad^A)))
-    print('grad^B =',_ts(grad^B))
+    print('grad*f =',grad*f)
+    print('grad|A =',grad|A)
+    print('-I*(grad^A) =',-t3d.i*(grad^A))
+    print('grad^B =',grad^B)
     return
 
 
 def main():
     #Eprint()
     Format()
-    derivatives_in_spherical_coordinates()
-    derivatives_in_paraboloidal_coordinates()
-    # FIXME This takes ~600 seconds
-    # derivatives_in_elliptic_cylindrical_coordinates()
-    derivatives_in_prolate_spheroidal_coordinates()
-    #derivatives_in_oblate_spheroidal_coordinates()
-    #derivatives_in_bipolar_coordinates()
-    #derivatives_in_toroidal_coordinates()
+
+    # SymPy >= 1.13 (PR #26390) added a slow O(N*M) traversal inside
+    # sympy.simplify.fu that causes timeouts on curvilinear coordinate
+    # expressions.  Use trigsimp(method='old') via Simp.profile to avoid
+    # that code path entirely for this example.
+    #
+    # _no_simp_build() inside each function further avoids ~70 redundant
+    # Simp.apply calls during Ga.build by substituting an identity simplifier
+    # for the build phase only.  The trigsimp(method='old') profile below
+    # then applies once per output expression via _sympystr at print time.
+    orig_modes = Simp.modes[:]
+    Simp.profile([lambda e: trigsimp(e, method='old')])
+    try:
+        derivatives_in_spherical_coordinates()
+        derivatives_in_paraboloidal_coordinates()
+        # FIXME This takes ~600 seconds
+        # derivatives_in_elliptic_cylindrical_coordinates()
+        derivatives_in_prolate_spheroidal_coordinates()
+        #derivatives_in_oblate_spheroidal_coordinates()
+        #derivatives_in_bipolar_coordinates()
+        #derivatives_in_toroidal_coordinates()
+    finally:
+        Simp.profile(orig_modes)
 
     # xpdf()
     xpdf(pdfprog=None)
