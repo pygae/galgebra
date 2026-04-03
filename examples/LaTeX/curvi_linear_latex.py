@@ -1,9 +1,8 @@
 from __future__ import print_function
 import sys
 
-from sympy import symbols,sin,cos,sinh,cosh,simplify,trigsimp
+from sympy import symbols,sin,cos,sinh,cosh
 from galgebra.ga import Ga
-from galgebra.metric import Simp
 from galgebra.printer import Format, xpdf, Print_Function, Eprint
 
 def derivatives_in_spherical_coordinates():
@@ -182,24 +181,47 @@ def derivatives_in_toroidal_coordinates():
 def main():
     #Eprint()
     Format()
-    # SymPy >= 1.13 (PR 26390) added a .replace() traversal in TR3/fu.py that
-    # causes a severe slowdown on curvilinear coordinate expressions.  Both the
-    # default simplify and the default trigsimp trigger this via futrig/TR3.
-    # Simp.apply is called not only during Ga.build but also when printing any
-    # multivector (Mv._sympystr calls Simp.apply before formatting).
-    # trigsimp(method='old') uses the pre-fu code path and avoids the TR3
-    # traversal entirely, keeping the canonical output form intact.
-    # The profile is restored to the default after all functions have run.
-    Simp.profile([lambda e: trigsimp(e, method='old')])
-    derivatives_in_spherical_coordinates()
-    derivatives_in_paraboloidal_coordinates()
-    # FIXME This takes ~600 seconds
-    # derivatives_in_elliptic_cylindrical_coordinates()
-    derivatives_in_prolate_spheroidal_coordinates()
-    #derivatives_in_oblate_spheroidal_coordinates()
-    #derivatives_in_bipolar_coordinates()
-    #derivatives_in_toroidal_coordinates()
-    Simp.profile([simplify])
+
+    # SymPy >= 1.13 (PR #26390) added a .replace() traversal inside TR3 in
+    # fu.py that is O(N*M) on large expressions.  For galgebra curvilinear
+    # coordinate expressions the trig arguments are pure symbols, so the
+    # traversal is a no-op but still imposes severe overhead.  Temporarily
+    # replacing TR3 with a version that skips the .replace() restores
+    # pre-1.13 performance while producing identical canonical output.
+    from sympy.simplify.fu import TR3 as _orig_TR3
+    import sys as _sys
+    _fu = _sys.modules['sympy.simplify.fu']
+    from sympy.core.traversal import bottom_up
+    from sympy.functions.elementary.trigonometric import (
+        TrigonometricFunction, cos, sin, tan, cot, sec, csc)
+    from sympy.simplify.simplify import signsimp
+    from sympy import S as _S
+
+    def _fast_TR3(rv):
+        def f(rv):
+            if not isinstance(rv, TrigonometricFunction):
+                return rv
+            rv = rv.func(signsimp(rv.args[0]))
+            if not isinstance(rv, TrigonometricFunction):
+                return rv
+            if (rv.args[0] - _S.Pi/4).is_positive is (_S.Pi/2 - rv.args[0]).is_positive is True:
+                fmap = {cos: sin, sin: cos, tan: cot, cot: tan, sec: csc, csc: sec}
+                rv = fmap[type(rv)](_S.Pi/2 - rv.args[0])
+            return rv
+        return bottom_up(rv, f)
+
+    _fu.TR3 = _fast_TR3
+    try:
+        derivatives_in_spherical_coordinates()
+        derivatives_in_paraboloidal_coordinates()
+        # FIXME This takes ~600 seconds
+        # derivatives_in_elliptic_cylindrical_coordinates()
+        derivatives_in_prolate_spheroidal_coordinates()
+        #derivatives_in_oblate_spheroidal_coordinates()
+        #derivatives_in_bipolar_coordinates()
+        #derivatives_in_toroidal_coordinates()
+    finally:
+        _fu.TR3 = _orig_TR3
 
     # xpdf()
     xpdf(pdfprog=None)
