@@ -2,7 +2,7 @@ from packaging.version import Version
 
 import pytest
 import sympy
-from sympy import symbols
+from sympy import symbols, S
 from galgebra.ga import Ga
 from galgebra.mv import proj, undual, g_invol, exp, norm, norm2, mag, mag2, ccon, rev, scalar, qform, sp, inv, shirokov_inverse, hitzer_inverse
 
@@ -398,36 +398,107 @@ class TestMv:
         result = 1 / v2
         assert result * v2 == ga_m.mv(1)
 
-    def test_is_blade_null(self):
-        """is_blade() must handle null vectors and null blades correctly (issue #537).
+    pass  # is_blade tests moved to TestIsBlade below
 
-        Blade-ness is a metric-free concept; a null vector is still a 1-blade
-        even though it has no inverse and therefore fails is_versor().
-        """
-        # G(1,1): two basis vectors, one with +1 and one with -1 norm
+
+class TestIsBlade:
+    """Systematic tests for Mv.is_blade() and related null-blade guards.
+
+    Exercises every branch of is_blade() (gh-537), the result cache,
+    and the ValueError guards in reflect_in_blade() / project_in_blade().
+    """
+
+    # --- grade 0 and zero ---
+
+    def test_zero_is_not_blade(self):
+        ga, e1, e2 = Ga.build('e*1|2', g=[1, 1])
+        assert ga.mv(S.Zero).is_blade() is False
+
+    def test_scalar_is_blade(self):
+        ga, e1, e2 = Ga.build('e*1|2', g=[1, 1])
+        assert ga.mv(S.One).is_blade() is True
+
+    # --- grade 1 ---
+
+    def test_nonnull_vector_is_blade(self):
+        ga, e1, e2 = Ga.build('e*1|2', g=[1, 1])
+        assert e1.is_blade() is True
+        assert e2.is_blade() is True
+
+    def test_null_vector_is_blade(self):
+        """Null vector: is_versor() fails but is_blade() must return True (gh-537)."""
         ga, e0, e1 = Ga.build('e*0|1', g=[1, -1])
-
-        # null vector b = e0 + e1 (b*b = 0)
         b = e0 + e1
         assert b.is_zero() is False
-        assert (b * b).is_zero()           # confirms b is null
-        assert b.is_versor() is False      # null → b*b.rev() = 0 → not a versor
-        assert b.is_blade() is True        # but it IS a 1-blade
+        assert (b * b).is_zero()        # confirm null
+        assert b.is_versor() is False   # no inverse
+        assert b.is_blade() is True     # still a 1-blade
 
-        # non-null vector: always a blade
-        assert e0.is_blade() is True
-        assert e1.is_blade() is True
+    # --- grade 2 ---
 
-        # G(1,2): three basis vectors with signature (+,-,-)
-        ga3, f0, f1, f2 = Ga.build('f*0|1|2', g=[1, -1, -1])
+    def test_nonnull_bivector_is_blade(self):
+        ga, e1, e2, e3 = Ga.build('e*1|2|3', g=[1, 1, 1])
+        assert (e1 ^ e2).is_blade() is True
 
-        # null 2-blade B = (f0+f1)^f2 (constituent vector f0+f1 is null)
+    def test_null_bivector_is_blade(self):
+        """Null 2-blade: outer-product squaring test must detect it (gh-537)."""
+        ga, f0, f1, f2 = Ga.build('f*0|1|2', g=[1, -1, -1])
         B = (f0 + f1) ^ f2
         assert B.is_zero() is False
-        assert B.is_versor() is False      # null constituent → not a versor
-        assert B.is_blade() is True        # but it IS a 2-blade
+        assert B.is_versor() is False   # null constituent → not a versor
+        assert B.is_blade() is True     # but it IS a 2-blade
 
-        # mixed multivector: not grade-homogeneous → not a blade
-        mixed = e0 + (e0 ^ e1)
+    # --- grade 3 ---
+
+    def test_trivector_blade(self):
+        """Grade-3 blade: pseudoscalar of Euclidean R^3."""
+        ga, e1, e2, e3 = Ga.build('e*1|2|3', g=[1, 1, 1])
+        T = e1 ^ e2 ^ e3
+        assert T.is_blade() is True
+
+    def test_grade3_false_positive_known_limitation(self):
+        """is_blade() gives a false positive for certain grade-3 non-blades.
+
+        The Dorst/Fontijne/Mann counterexample: in R^6, the 3-vector
+            X = e1^e2^e5 + e1^e3^e6 + e2^e4^e6 - e3^e4^e5
+        satisfies X^X = 0 but is NOT a simple blade.  Our outer-product
+        squaring test incorrectly returns True — a documented limitation;
+        see is_blade() docstring.  Grade-2 and the non-null grade-3 path
+        are not affected.
+        """
+        ga, e1, e2, e3, e4, e5, e6 = Ga.build('e*1|2|3|4|5|6', g=[1] * 6)
+        X = (e1 ^ e2 ^ e5) + (e1 ^ e3 ^ e6) + (e2 ^ e4 ^ e6) - (e3 ^ e4 ^ e5)
+        assert (X ^ X).is_zero()    # necessary condition satisfied → triggers false positive
+        assert X.is_blade() is True  # known limitation: algorithm returns True
+
+    # --- non-blade ---
+
+    def test_non_homogeneous_is_not_blade(self):
+        ga, e1, e2 = Ga.build('e*1|2', g=[1, 1])
+        mixed = e1 + (e1 ^ e2)
         assert mixed.is_blade() is False
 
+    # --- result cache ---
+
+    def test_result_is_cached(self):
+        """is_blade() must cache its result and return the same value on repeat calls."""
+        ga, e1, e2 = Ga.build('e*1|2', g=[1, 1])
+        assert e1.is_blade() is True
+        assert e1.blade_flg is True   # cache populated
+        assert e1.is_blade() is True  # second call hits cached branch
+
+    # --- null-blade guards in reflect_in_blade / project_in_blade ---
+
+    def test_reflect_in_null_blade_raises(self):
+        """reflect_in_blade() must raise ValueError for null blades (gh-537)."""
+        ga, f0, f1, f2 = Ga.build('f*0|1|2', g=[1, -1, -1])
+        null_blade = (f0 + f1) ^ f2
+        with pytest.raises(ValueError, match='null blade'):
+            f0.reflect_in_blade(null_blade)
+
+    def test_project_in_null_blade_raises(self):
+        """project_in_blade() must raise ValueError for null blades (gh-537)."""
+        ga, f0, f1, f2 = Ga.build('f*0|1|2', g=[1, -1, -1])
+        null_blade = (f0 + f1) ^ f2
+        with pytest.raises(ValueError, match='null blade'):
+            f0.project_in_blade(null_blade)
