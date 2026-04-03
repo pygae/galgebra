@@ -17,7 +17,7 @@ Changelog
   :meth:`~galgebra.lt.Mlt.__sub__`, and related arithmetic on string-constructed
   tensors now work correctly. See :issue:`578`.
 
-- :bug:`537` :meth:`~galgebra.mv.Mv.is_blade` now correctly identifies null
+- :bug:`582` :meth:`~galgebra.mv.Mv.is_blade` now correctly identifies null
   vectors (e.g. ``e0 + e1`` in ``G(1,1)``) and null blades (e.g.
   ``(e0+e1)^e2`` in ``G(1,2)``) as blades.  Previously the method delegated
   entirely to :meth:`~galgebra.mv.Mv.is_versor`, which returns ``False`` for
