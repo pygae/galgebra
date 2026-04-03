@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 
-from sympy import symbols,sin,cos,sinh,cosh,simplify,trigsimp
+from sympy import symbols,sin,cos,sinh,cosh,simplify,trigsimp,cancel
 from galgebra.ga import Ga
 from galgebra.metric import Simp
 from galgebra.printer import Format, xpdf, Print_Function, Eprint
@@ -89,20 +89,8 @@ def derivatives_in_prolate_spheroidal_coordinates():
     #Print_Function()
     a = symbols('a', real=True)
     coords = (xi,eta,phi) = symbols('xi eta phi', real=True)
-    # Use trigsimp(method='old') instead of the default simplify for Ga.build
-    # to avoid a severe slowdown with SymPy >= 1.13 (TR3 traversal in fu.py).
-    # The default simplify and default trigsimp both call futrig/TR3 and are
-    # slow.  method='old' uses a different code path that avoids the expensive
-    # traversal while still applying double-angle identities such as
-    # sin*cos -> sin(2x)/2 and sinh*cosh -> sinh(2x)/2, preserving the
-    # canonical output form.  The metric reduction (sinh^2+cosh^2=1 etc.)
-    # happens inside square_root_of_expr via its own trigsimp call and is
-    # unaffected by this setting.  Restore the default afterwards so other
-    # callers in this file are not impacted.
-    Simp.profile([lambda e: trigsimp(e, method='old')])
     (ps3d,er,eth,ephi) = Ga.build('e_xi e_eta e_phi',X=[a*sinh(xi)*sin(eta)*cos(phi),a*sinh(xi)*sin(eta)*sin(phi),
                                                         a*cosh(xi)*cos(eta)],coords=coords,norm=True)
-    Simp.profile([simplify])
     grad = ps3d.grad
 
     f = ps3d.mv('f','scalar',f=True)
@@ -194,6 +182,16 @@ def derivatives_in_toroidal_coordinates():
 def main():
     #Eprint()
     Format()
+    # SymPy >= 1.13 (PR 26390) added a .replace() traversal in TR3/fu.py that
+    # causes a severe slowdown on curvilinear coordinate expressions.  Both the
+    # default simplify and the default trigsimp trigger this via futrig/TR3.
+    # Simp.apply is called not only during Ga.build but also when printing any
+    # multivector (Mv._sympystr calls Simp.apply before formatting).
+    # cancel() pre-reduces rational factors quickly; trigsimp(method='old') then
+    # applies double-angle identities (sin*cos->sin(2x)/2, sinh*cosh->sinh(2x)/2)
+    # without the TR3 traversal, preserving the canonical output form.
+    # The profile is restored to the default after all functions have run.
+    Simp.profile([lambda e: trigsimp(cancel(e), method='old')])
     derivatives_in_spherical_coordinates()
     derivatives_in_paraboloidal_coordinates()
     # FIXME This takes ~600 seconds
@@ -202,6 +200,7 @@ def main():
     #derivatives_in_oblate_spheroidal_coordinates()
     #derivatives_in_bipolar_coordinates()
     #derivatives_in_toroidal_coordinates()
+    Simp.profile([simplify])
 
     # xpdf()
     xpdf(pdfprog=None)
