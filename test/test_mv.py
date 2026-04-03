@@ -457,6 +457,13 @@ class TestMv:
         assert not (B ^ B).is_zero()
         assert B.is_blade() is False
 
+    def test_is_blade_self_wedge_nonzero(self):
+        """Non-blade correctly rejected: (self ^ self).is_zero() returns False."""
+        ga, e1, e2, e3, e4 = Ga.build('e*1|2|3|4', g=[1, 1, 1, 1])
+        B = (e1 ^ e2) + (e3 ^ e4)  # non-simple; (B ^ B).is_zero() is False
+        assert not (B ^ B).is_zero()
+        assert B.is_blade() is False
+
     def test_is_blade_non_homogeneous(self):
         """Non-grade-homogeneous mv is not a blade."""
         ga, e0, e1 = Ga.build('e*0|1', g=[1, -1])
