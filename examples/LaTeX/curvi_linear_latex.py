@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 
-from sympy import symbols,sin,cos,sinh,cosh,simplify,trigsimp,cancel
+from sympy import symbols,sin,cos,sinh,cosh,simplify,trigsimp
 from galgebra.ga import Ga
 from galgebra.metric import Simp
 from galgebra.printer import Format, xpdf, Print_Function, Eprint
@@ -187,11 +187,10 @@ def main():
     # default simplify and the default trigsimp trigger this via futrig/TR3.
     # Simp.apply is called not only during Ga.build but also when printing any
     # multivector (Mv._sympystr calls Simp.apply before formatting).
-    # cancel() pre-reduces rational factors quickly; trigsimp(method='old') then
-    # applies double-angle identities (sin*cos->sin(2x)/2, sinh*cosh->sinh(2x)/2)
-    # without the TR3 traversal, preserving the canonical output form.
+    # trigsimp(method='old') uses the pre-fu code path and avoids the TR3
+    # traversal entirely, keeping the canonical output form intact.
     # The profile is restored to the default after all functions have run.
-    Simp.profile([lambda e: trigsimp(cancel(e), method='old')])
+    Simp.profile([lambda e: trigsimp(e, method='old')])
     derivatives_in_spherical_coordinates()
     derivatives_in_paraboloidal_coordinates()
     # FIXME This takes ~600 seconds
