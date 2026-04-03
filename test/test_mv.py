@@ -436,6 +436,7 @@ class TestMv:
         ga, e1, e2, e3 = Ga.build('e*1|2|3', g=[1, 1, 1])
         assert (e1 ^ e2 ^ e3).is_blade() is True
 
+    @pytest.mark.slow
     def test_is_blade_grade3_known_limitation(self):
         """Grade >= 3: B^B=0 is not sufficient; is_blade() may give false positives.
 
@@ -448,6 +449,13 @@ class TestMv:
         X = (e1 ^ e2 ^ e5) + (e1 ^ e3 ^ e6) + (e2 ^ e4 ^ e6) - (e3 ^ e4 ^ e5)
         assert (X ^ X).is_zero()    # necessary condition satisfied → triggers false positive
         assert X.is_blade() is True  # known limitation: algorithm returns True
+
+    def test_is_blade_non_simple_bivector(self):
+        """Non-simple bivector: B^B != 0, so is_blade() correctly returns False."""
+        ga, e1, e2, e3, e4 = Ga.build('e*1|2|3|4', g=[1, 1, 1, 1])
+        B = (e1 ^ e2) + (e3 ^ e4)  # non-simple; B^B = 2*e1^e2^e3^e4 != 0
+        assert not (B ^ B).is_zero()
+        assert B.is_blade() is False
 
     def test_is_blade_non_homogeneous(self):
         """Non-grade-homogeneous mv is not a blade."""
