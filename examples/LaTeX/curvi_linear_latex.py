@@ -182,35 +182,15 @@ def main():
     #Eprint()
     Format()
 
-    # SymPy >= 1.13 (PR #26390) added a .replace() traversal inside TR3 in
-    # fu.py that is O(N*M) on large expressions.  For galgebra curvilinear
-    # coordinate expressions the trig arguments are pure symbols, so the
-    # traversal is a no-op but still imposes severe overhead.  Temporarily
-    # replacing TR3 with a version that skips the .replace() restores
-    # pre-1.13 performance while producing identical canonical output.
-    from sympy.simplify.fu import TR3 as _orig_TR3
-    import sys as _sys
-    _fu = _sys.modules['sympy.simplify.fu']
-    from sympy.core.traversal import bottom_up
-    from sympy.functions.elementary.trigonometric import (
-        TrigonometricFunction, cos, sin, tan, cot, sec, csc)
-    from sympy.simplify.simplify import signsimp
-    from sympy import S as _S
+    # SymPy >= 1.13 (PR #26390) added a slow O(N*M) traversal inside
+    # sympy.simplify.fu that causes timeouts on curvilinear coordinate
+    # expressions.  Use trigsimp(method='old') via Simp.profile to avoid
+    # that code path entirely for this example.
+    from sympy import trigsimp
+    from galgebra.metric import Simp
 
-    def _fast_TR3(rv):
-        def f(rv):
-            if not isinstance(rv, TrigonometricFunction):
-                return rv
-            rv = rv.func(signsimp(rv.args[0]))
-            if not isinstance(rv, TrigonometricFunction):
-                return rv
-            if (rv.args[0] - _S.Pi/4).is_positive is (_S.Pi/2 - rv.args[0]).is_positive is True:
-                fmap = {cos: sin, sin: cos, tan: cot, cot: tan, sec: csc, csc: sec}
-                rv = fmap[type(rv)](_S.Pi/2 - rv.args[0])
-            return rv
-        return bottom_up(rv, f)
-
-    _fu.TR3 = _fast_TR3
+    orig_modes = Simp.modes[:]
+    Simp.profile([lambda e: trigsimp(e, method='old')])
     try:
         derivatives_in_spherical_coordinates()
         derivatives_in_paraboloidal_coordinates()
@@ -221,7 +201,7 @@ def main():
         #derivatives_in_bipolar_coordinates()
         #derivatives_in_toroidal_coordinates()
     finally:
-        _fu.TR3 = _orig_TR3
+        Simp.profile(orig_modes)
 
     # xpdf()
     xpdf(pdfprog=None)
