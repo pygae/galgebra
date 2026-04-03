@@ -7,7 +7,7 @@ import warnings
 from typing import List, Optional
 
 from sympy import (
-    diff, trigsimp, Matrix, Rational,
+    cancel, diff, trigsimp, Matrix, Rational,
     sqf_list, sqrt, eye, S, expand, Mul,
     Add, simplify, Expr, Abs, Function, MatrixSymbol
 )
@@ -567,7 +567,7 @@ class Metric(object):
 
             # dG[i][j][k] = S.Half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
             dG = [[[
-                Simp.apply(Gamma_ijk(i, j, k))
+                Simp.apply(cancel(Gamma_ijk(i, j, k)))
                 for k in n_range]
                 for j in n_range]
                 for i in n_range]
@@ -587,7 +587,7 @@ class Metric(object):
                 return sum([Gamma_ijl * self.g_inv[l, k] for l, Gamma_ijl in enumerate(Gamma1[i][j])])
 
             Gamma2 = [[[
-                Simp.apply(Gamma2_ijk(i, j, k))
+                Simp.apply(cancel(Gamma2_ijk(i, j, k)))
                 for k in n_range]
                 for j in n_range]
                 for i in n_range]
@@ -609,9 +609,9 @@ class Metric(object):
             # Normalize derivatives of basis vectors
             for x_i in self.n_range:
                 for jb in self.n_range:
-                    self.de[x_i][jb] = Simp.apply((((self.de[x_i][jb].subs(renorm)
+                    self.de[x_i][jb] = Simp.apply(cancel((self.de[x_i][jb].subs(renorm)
                                                   - diff(self.e_norm[jb], self.coords[x_i]) *
-                                                  self.basis[jb]) / self.e_norm[jb])))
+                                                  self.basis[jb]) / self.e_norm[jb]))
             if self.debug:
                 printer.oprint('e^{i}->e^{i}/|e_{i}|', renorm)
                 for x_i in self.n_range:
@@ -621,7 +621,7 @@ class Metric(object):
         # Normalize metric tensor
         for ib in self.n_range:
             for jb in self.n_range:
-                self.g[ib, jb] = Simp.apply(self.g[ib, jb] / (self.e_norm[ib] * self.e_norm[jb]))
+                self.g[ib, jb] = Simp.apply(cancel(self.g[ib, jb] / (self.e_norm[ib] * self.e_norm[jb])))
 
         if self.debug:
             printer.oprint('renorm(g)', self.g)
