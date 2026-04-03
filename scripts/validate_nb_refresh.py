@@ -259,6 +259,13 @@ def _norm_strip_outer_parens_before_basis(text: str) -> str:
     (e.g. ``\\tan{\\left (\\theta \\right )}``) are always followed by ``}``
     rather than `` \\boldsymbol``, so the non-greedy match stops at the
     correct level.
+
+    Assumption: galgebra's LaTeX output never contains a bare nested
+    ``\\left ( ... \\right )`` group that is itself immediately followed by
+    `` \\boldsymbol``.  If it did, the non-greedy ``.*?`` would greedily stop
+    at the *inner* ``\\right )`` and produce a wrong result.  This holds for
+    all current galgebra output formats; revisit if new expression types are
+    added that wrap sub-expressions in bare parentheses before a basis blade.
     """
     return re.sub(
         r'\\left \( (.*?)\\right \) \\boldsymbol',
