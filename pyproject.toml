@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "galgebra"
+dynamic = ["version"]
+description = "Symbolic Geometric Algebra/Calculus package for SymPy."
+readme = "README.md"
+license = {text = "BSD"}
+authors = [
+    {name = "Alan Bromborsky"},
+]
+maintainers = [
+    {name = "Hugo Hadfield", email = "hadfield.hugo@gmail.com"},
+]
+requires-python = ">=3.10"
+dependencies = ["sympy"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+[project.urls]
+Documentation = "http://galgebra.readthedocs.io"
+"Bug Tracker" = "https://github.com/pygae/galgebra/issues"
+"Source Code" = "https://github.com/pygae/galgebra"
+
+[tool.setuptools.dynamic]
+version = {attr = "galgebra._version.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["galgebra*"]
+
+[tool.pytest.ini_options]
+# The default also includes *_test.py. This matches some example scripts, which are
+# not tests at all, and perform unwanted work and global configuration when
+# pytest scans them for tests.
+python_files = ["test_*.py"]
+markers = [
+    "slow: marks tests as slow-running (deselect with '-m \"not slow\"')",
+]
