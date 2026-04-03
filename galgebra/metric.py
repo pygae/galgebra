@@ -567,7 +567,7 @@ class Metric(object):
 
             # dG[i][j][k] = S.Half * (dg[j][k][i] + dg[i][k][j] - dg[i][j][k])
             dG = [[[
-                Simp.apply(cancel(Gamma_ijk(i, j, k)))
+                Simp.apply(Gamma_ijk(i, j, k))
                 for k in n_range]
                 for j in n_range]
                 for i in n_range]
@@ -587,7 +587,7 @@ class Metric(object):
                 return sum([Gamma_ijl * self.g_inv[l, k] for l, Gamma_ijl in enumerate(Gamma1[i][j])])
 
             Gamma2 = [[[
-                Simp.apply(cancel(Gamma2_ijk(i, j, k)))
+                Simp.apply(Gamma2_ijk(i, j, k))
                 for k in n_range]
                 for j in n_range]
                 for i in n_range]
