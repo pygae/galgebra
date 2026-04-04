@@ -8,7 +8,30 @@ Changelog
   \newcommand {\es}[1] {\mathbf{e}_{#1}}
   \newcommand {\til}[1] {\widetilde{#1}}
 
-- :release:`0.6.1 <2026.04.02>`
+- :release:`0.6.1 <2026.04.04>`
+
+- :support:`590` Worked around a performance regression in SymPy 1.13 that
+  caused ``examples/ipython/LaTeX.ipynb`` (``check('curvi_linear_latex')``) to
+  time out after 600 s on SymPy ≥ 1.13.  SymPy PR #26390 added an O(N·M)
+  ``.replace()`` traversal inside ``TR3``/``futrig`` that is a no-op for
+  galgebra's symbolic trig arguments but dominated each of the ~70
+  ``Simp.apply`` calls during ``Ga.build(norm=True)`` for curvilinear
+  coordinates.  The fix uses ``trigsimp(method='old')`` via ``Simp.profile``
+  for the affected example, cutting run time from > 600 s to < 6 s.
+  A notebook note documents the two cosmetic output differences from the
+  pre-1.13 form; a proper upstream fix is tracked in :issue:`576`.
+
+- :support:`589` Added Step 0 to the release-process runbook
+  (``doc/dev/release-process.md``): open a release issue before preparing the
+  changelog or branching, so that motivation, scope, and unusual pre-release
+  todos are recorded. See :issue:`588`.
+
+- :support:`587` Migrated from ``setup.py`` to ``pyproject.toml`` (PEP 517/621).
+  The build backend is ``setuptools>=61``; ``_version.py`` remains the single
+  source of truth for the version.  The CI publish job now uses
+  ``python -m build`` instead of ``python setup.py sdist bdist_wheel``.
+  ``setup.py`` is removed; ``setup.cfg`` is retained for flake8 configuration.
+  See :issue:`586`.
 
 - :feature:`580` :class:`~galgebra.lt.Mlt` can now be constructed from a
   pre-built sympy component expression by passing the expression as ``f`` together
