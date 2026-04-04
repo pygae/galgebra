@@ -49,19 +49,42 @@ Changelog
   then falls back to the outer-product squaring test ``B ^ B == 0`` for the null
   case. See :issue:`537`.
 
+- :support:`585` Expanded and reorganised :meth:`~galgebra.mv.Mv.is_blade`
+  test coverage: replaced a single ad-hoc test with nine focused methods
+  covering every branch of the fixed implementation, including null vectors,
+  null bivectors, non-homogeneous multivectors, the cached-flag path, and
+  the null-blade guards added to
+  :meth:`~galgebra.mv.Mv.reflect_in_blade` and
+  :meth:`~galgebra.mv.Mv.project_in_blade`.  Added a ``slow``-marked test
+  that documents the known grade-≥ 3 limitation (the ``B ^ B == 0``
+  outer-product test can return a false positive for non-blades in spaces
+  of dimension ≥ 6 without coordinates); the R⁶ DFM counterexample is
+  preserved as an executable regression guard.  Registered the ``slow``
+  pytest marker in ``setup.cfg``.  See :issue:`537`.
+
 - :support:`577` Updated the bundled
   ``doc/books/Macdonald/GAlgebraPrimer.pdf`` to the September 15, 2023 revision
   by Alan Macdonald and corrected the download URL in README and example
   documentation. See :issue:`575`.
 
-- :support:`572` Added developer guides for bumping the Python and SymPy
-  versions in CI (``doc/dev/bumping-python.md``, ``doc/dev/bumping-sympy.md``)
-  and a release-process runbook (``doc/dev/releasing.md``). Updated README
-  Python prerequisites. See :issue:`571`, :issue:`573`.
+- :support:`572` Added ``doc/dev/bumping-python.md`` developer guide for
+  bumping the Python version in CI and a release-process runbook
+  (``doc/dev/releasing.md``). Updated README Python prerequisites.
+  See :issue:`571`, :issue:`573`.
 
 - :support:`570` Refreshed notebook outputs for SymPy 1.13 printing changes
   (``\cdot`` in ``Mul`` expressions and column-format specifiers in
-  ``\begin{array}``). See :issue:`568`.
+  ``\begin{array}``).  Also fixes a SymPy 1.13 regression where
+  :func:`~sympy.simplify.trigsimp.trigsimp` raises ``ZeroDivisionError``
+  on certain trig expressions during LaTeX printing in
+  :meth:`~galgebra.mv.Mv._latex`; the catch is now narrowed to
+  ``ZeroDivisionError`` only, falling back to the expanded form for display.
+  Added ``scripts/validate_nb_refresh.py`` — a reusable tool that mechanically
+  confirms a notebook re-execution introduced only cosmetic changes.
+  Added ``doc/dev/bumping-sympy.md`` developer guide (version policy, local
+  testing, notebook refresh workflow).
+  Bumped ``test_requirements.txt`` pin from ``sympy == 1.12`` to
+  ``sympy == 1.13.3``.  See :issue:`568`, :issue:`566`.
 
 - :bug:`569` :class:`~galgebra.lt.Lt` now accepts an
   :class:`~sympy.matrices.immutable.ImmutableDenseMatrix` as its matrix
