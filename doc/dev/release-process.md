@@ -13,6 +13,25 @@ It captures lessons learned from the 0.5.1 incident (#517) and the 0.6.0 cycle.
 
 ---
 
+## Step 0 — Open a release issue
+
+Before preparing the changelog or branching, open a GitHub issue for the
+release and assign it to the person driving the release.  The issue should:
+
+1. Explain why we are cutting a release now (milestone complete, enough fixes
+   accumulated, dependency compatibility update, etc.).
+2. Summarize what is in the release: major bug fixes, new features, infra
+   updates (Python version, SymPy version, tooling changes).
+3. List any **unusual** pre-release todos as a checklist.  Routine steps
+   (version bump, RC tag, smoke test) do not need listing — those are covered
+   by this runbook.  Only add items specific to this release cycle
+   (e.g. "merge #587 before releasing", "update changelog for #585").
+
+The issue is the coordination point and gives contributors visibility into
+what is going into the release.
+
+---
+
 ## Step 1 — Prepare the changelog
 
 1. Ensure all PRs intended for the release are merged and have entries in
