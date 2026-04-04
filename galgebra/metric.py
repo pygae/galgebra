@@ -7,7 +7,7 @@ import warnings
 from typing import List, Optional
 
 from sympy import (
-    diff, trigsimp, Matrix, Rational,
+    cancel, diff, trigsimp, Matrix, Rational,
     sqf_list, sqrt, eye, S, expand, Mul,
     Add, simplify, Expr, Abs, Function, MatrixSymbol
 )
@@ -609,9 +609,9 @@ class Metric(object):
             # Normalize derivatives of basis vectors
             for x_i in self.n_range:
                 for jb in self.n_range:
-                    self.de[x_i][jb] = Simp.apply((((self.de[x_i][jb].subs(renorm)
+                    self.de[x_i][jb] = Simp.apply(cancel((self.de[x_i][jb].subs(renorm)
                                                   - diff(self.e_norm[jb], self.coords[x_i]) *
-                                                  self.basis[jb]) / self.e_norm[jb])))
+                                                  self.basis[jb]) / self.e_norm[jb]))
             if self.debug:
                 printer.oprint('e^{i}->e^{i}/|e_{i}|', renorm)
                 for x_i in self.n_range:
@@ -621,7 +621,7 @@ class Metric(object):
         # Normalize metric tensor
         for ib in self.n_range:
             for jb in self.n_range:
-                self.g[ib, jb] = Simp.apply(self.g[ib, jb] / (self.e_norm[ib] * self.e_norm[jb]))
+                self.g[ib, jb] = Simp.apply(cancel(self.g[ib, jb] / (self.e_norm[ib] * self.e_norm[jb])))
 
         if self.debug:
             printer.oprint('renorm(g)', self.g)
