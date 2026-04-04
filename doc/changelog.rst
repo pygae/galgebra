@@ -8,7 +8,43 @@ Changelog
   \newcommand {\es}[1] {\mathbf{e}_{#1}}
   \newcommand {\til}[1] {\widetilde{#1}}
 
-- :release:`0.6.1 <2026.04.02>`
+- :release:`0.6.1 <2026.04.04>`
+
+- :bug:`590` Worked around a performance regression in SymPy 1.13 that
+  caused ``examples/ipython/LaTeX.ipynb`` (``check('curvi_linear_latex')``) to
+  time out after 600 s on SymPy ≥ 1.13.  SymPy PR #26390 added an O(N·M)
+  ``.replace()`` traversal inside ``TR3``/``futrig`` that is a no-op for
+  galgebra's symbolic trig arguments but dominated each of the ~70
+  ``Simp.apply`` calls during ``Ga.build(norm=True)`` for curvilinear
+  coordinates.  The fix uses ``trigsimp(method='old')`` via ``Simp.profile``
+  for the affected example, cutting run time from > 600 s to < 6 s.
+  A notebook note documents the two cosmetic output differences from the
+  pre-1.13 form; a proper upstream fix is tracked in :issue:`576`.
+
+- :support:`589` Added Step 0 to the release-process runbook
+  (``doc/dev/release-process.md``): open a release issue before preparing the
+  changelog or branching, so that motivation, scope, and unusual pre-release
+  todos are recorded. See :issue:`588`.
+
+- :support:`587` Migrated from ``setup.py`` to ``pyproject.toml`` (PEP 517/621).
+  The build backend is ``setuptools>=61``; ``_version.py`` remains the single
+  source of truth for the version.  The CI publish job now uses
+  ``python -m build`` instead of ``python setup.py sdist bdist_wheel``.
+  ``setup.py`` is removed; ``setup.cfg`` is retained for flake8 configuration.
+  See :issue:`586`.
+
+- :support:`585` Expanded and reorganised :meth:`~galgebra.mv.Mv.is_blade`
+  test coverage: replaced a single ad-hoc test with nine focused methods
+  covering every branch of the fixed implementation, including null vectors,
+  null bivectors, non-homogeneous multivectors, the cached-flag path, and
+  the null-blade guards added to
+  :meth:`~galgebra.mv.Mv.reflect_in_blade` and
+  :meth:`~galgebra.mv.Mv.project_in_blade`.  Added a ``slow``-marked test
+  that documents the known grade-≥ 3 limitation (the ``B ^ B == 0``
+  outer-product test can return a false positive for non-blades in spaces
+  of dimension ≥ 6 without coordinates); the R⁶ DFM counterexample is
+  preserved as an executable regression guard.  Registered the ``slow``
+  pytest marker in ``setup.cfg``.  See :issue:`537`.
 
 - :feature:`580` :class:`~galgebra.lt.Mlt` can now be constructed from a
   pre-built sympy component expression by passing the expression as ``f`` together
@@ -31,14 +67,26 @@ Changelog
   by Alan Macdonald and corrected the download URL in README and example
   documentation. See :issue:`575`.
 
-- :support:`572` Added developer guides for bumping the Python and SymPy
-  versions in CI (``doc/dev/bumping-python.md``, ``doc/dev/bumping-sympy.md``)
-  and a release-process runbook (``doc/dev/releasing.md``). Updated README
-  Python prerequisites. See :issue:`571`, :issue:`573`.
+- :support:`572` Added ``doc/dev/bumping-python.md`` developer guide for
+  bumping the Python version in CI and a release-process runbook
+  (``doc/dev/releasing.md``). Updated README Python prerequisites.
+  See :issue:`571`, :issue:`573`.
+
+- :bug:`570` Fixed a SymPy 1.13 regression where
+  :func:`~sympy.simplify.trigsimp.trigsimp` raises ``ZeroDivisionError`` on
+  certain trig expressions (e.g. prolate spheroidal coordinates) during LaTeX
+  printing in :meth:`~galgebra.mv.Mv._latex`.  The broad ``except Exception``
+  was narrowed to ``except ZeroDivisionError`` only, falling back to the
+  expanded form for display.  See :issue:`566`.
 
 - :support:`570` Refreshed notebook outputs for SymPy 1.13 printing changes
   (``\cdot`` in ``Mul`` expressions and column-format specifiers in
-  ``\begin{array}``). See :issue:`568`.
+  ``\begin{array}``).  Added ``scripts/validate_nb_refresh.py`` — a reusable
+  tool that mechanically confirms a notebook re-execution introduced only
+  cosmetic changes.  Added ``doc/dev/bumping-sympy.md`` developer guide
+  (version policy, local testing, notebook refresh workflow).  Bumped
+  ``test_requirements.txt`` pin from ``sympy == 1.12`` to
+  ``sympy == 1.13.3``.  See :issue:`568`, :issue:`566`.
 
 - :bug:`569` :class:`~galgebra.lt.Lt` now accepts an
   :class:`~sympy.matrices.immutable.ImmutableDenseMatrix` as its matrix
