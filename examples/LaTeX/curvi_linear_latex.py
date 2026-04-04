@@ -181,14 +181,27 @@ def derivatives_in_toroidal_coordinates():
 def main():
     #Eprint()
     Format()
-    derivatives_in_spherical_coordinates()
-    derivatives_in_paraboloidal_coordinates()
-    # FIXME This takes ~600 seconds
-    # derivatives_in_elliptic_cylindrical_coordinates()
-    derivatives_in_prolate_spheroidal_coordinates()
-    #derivatives_in_oblate_spheroidal_coordinates()
-    #derivatives_in_bipolar_coordinates()
-    #derivatives_in_toroidal_coordinates()
+
+    # SymPy >= 1.13 (PR #26390) added a slow O(N*M) traversal inside
+    # sympy.simplify.fu that causes timeouts on curvilinear coordinate
+    # expressions.  Use trigsimp(method='old') via Simp.profile to avoid
+    # that code path entirely for this example.
+    from sympy import trigsimp
+    from galgebra.metric import Simp
+
+    orig_modes = Simp.modes[:]
+    Simp.profile([lambda e: trigsimp(e, method='old')])
+    try:
+        derivatives_in_spherical_coordinates()
+        derivatives_in_paraboloidal_coordinates()
+        # FIXME This takes ~600 seconds
+        # derivatives_in_elliptic_cylindrical_coordinates()
+        derivatives_in_prolate_spheroidal_coordinates()
+        #derivatives_in_oblate_spheroidal_coordinates()
+        #derivatives_in_bipolar_coordinates()
+        #derivatives_in_toroidal_coordinates()
+    finally:
+        Simp.profile(orig_modes)
 
     # xpdf()
     xpdf(pdfprog=None)
