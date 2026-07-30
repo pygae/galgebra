@@ -10,6 +10,19 @@ Changelog
 
 - :release:`0.6.1 <2026.04.04>`
 
+- :feature:`580` :class:`~galgebra.lt.Mlt` can now be constructed from a
+  pre-built sympy component expression by passing the expression as ``f`` together
+  with an explicit ``nargs`` argument.  Previously this path raised
+  ``NotImplementedError``; as a secondary effect, :meth:`~galgebra.lt.Mlt.__add__`,
+  :meth:`~galgebra.lt.Mlt.__sub__`, and related arithmetic on string-constructed
+  tensors now work correctly. See :issue:`578`.
+
+- :bug:`598` Multivector string and LaTeX display now avoid the same SymPy
+  regression outside that example.  Large expressions with trigonometric and
+  hyperbolic functions under non-integral powers use the bounded
+  ``trigsimp(method='old')`` path.  Algebraic simplification and explicit
+  ``Simp.profile`` modes remain unchanged.
+
 - :bug:`590` Worked around a performance regression in SymPy 1.13 that
   caused ``examples/ipython/LaTeX.ipynb`` (``check('curvi_linear_latex')``) to
   time out after 600 s on SymPy ≥ 1.13.  SymPy PR #26390 added an O(N·M)
@@ -20,11 +33,34 @@ Changelog
   A notebook note documents the two cosmetic output differences from the
   pre-1.13 form.
 
-- :bug:`598` Multivector string and LaTeX display now avoid the same SymPy
-  regression outside that example.  Large expressions with trigonometric and
-  hyperbolic functions under non-integral powers use the bounded
-  ``trigsimp(method='old')`` path.  Algebraic simplification and explicit
-  ``Simp.profile`` modes remain unchanged.
+- :bug:`582` :meth:`~galgebra.mv.Mv.is_blade` now correctly identifies null
+  vectors (e.g. ``e0 + e1`` in ``G(1,1)``) and null blades (e.g.
+  ``(e0+e1)^e2`` in ``G(1,2)``) as blades.  Previously the method delegated
+  entirely to :meth:`~galgebra.mv.Mv.is_versor`, which returns ``False`` for
+  null multivectors because they have no inverse.  Blade-ness is a metric-free
+  concept; the fix checks grade homogeneity first (grade ≤ 1 is always a blade)
+  then falls back to the outer-product squaring test ``B ^ B == 0`` for the null
+  case. See :issue:`537`.
+
+- :bug:`570` Fixed a SymPy 1.13 regression where
+  :func:`~sympy.simplify.trigsimp.trigsimp` raises ``ZeroDivisionError`` on
+  certain trig expressions (e.g. prolate spheroidal coordinates) during LaTeX
+  printing in :meth:`~galgebra.mv.Mv._latex`.  The broad ``except Exception``
+  was narrowed to ``except ZeroDivisionError`` only, falling back to the
+  expanded form for display.  See :issue:`566`.
+
+- :bug:`569` :class:`~galgebra.lt.Lt` now accepts an
+  :class:`~sympy.matrices.immutable.ImmutableDenseMatrix` as its matrix
+  argument, fixing a ``TypeError`` when constructing linear transformations
+  from SymPy immutable matrices. See :issue:`567`.
+
+- :support:`599` Corrected the README DOI badge and ``CITATION.md`` to use
+  galgebra's permanent Zenodo concept DOI, so they consistently refer to all
+  releases rather than the version-specific ``v0.5.1rc2`` record.
+
+- :support:`595` Scoped CI concurrency groups by pull-request branch or full
+  ref, so a release-tag run no longer cancels the preceding ``master`` run or
+  leaves the branch status badge showing as cancelled.
 
 - :support:`589` Added Step 0 to the release-process runbook
   (``doc/dev/release-process.md``): open a release issue before preparing the
@@ -51,22 +87,6 @@ Changelog
   preserved as an executable regression guard.  Registered the ``slow``
   pytest marker in ``setup.cfg``.  See :issue:`537`.
 
-- :feature:`580` :class:`~galgebra.lt.Mlt` can now be constructed from a
-  pre-built sympy component expression by passing the expression as ``f`` together
-  with an explicit ``nargs`` argument.  Previously this path raised
-  ``NotImplementedError``; as a secondary effect, :meth:`~galgebra.lt.Mlt.__add__`,
-  :meth:`~galgebra.lt.Mlt.__sub__`, and related arithmetic on string-constructed
-  tensors now work correctly. See :issue:`578`.
-
-- :bug:`582` :meth:`~galgebra.mv.Mv.is_blade` now correctly identifies null
-  vectors (e.g. ``e0 + e1`` in ``G(1,1)``) and null blades (e.g.
-  ``(e0+e1)^e2`` in ``G(1,2)``) as blades.  Previously the method delegated
-  entirely to :meth:`~galgebra.mv.Mv.is_versor`, which returns ``False`` for
-  null multivectors because they have no inverse.  Blade-ness is a metric-free
-  concept; the fix checks grade homogeneity first (grade ≤ 1 is always a blade)
-  then falls back to the outer-product squaring test ``B ^ B == 0`` for the null
-  case. See :issue:`537`.
-
 - :support:`577` Updated the bundled
   ``doc/books/Macdonald/GAlgebraPrimer.pdf`` to the September 15, 2023 revision
   by Alan Macdonald and corrected the download URL in README and example
@@ -77,13 +97,6 @@ Changelog
   (``doc/dev/releasing.md``). Updated README Python prerequisites.
   See :issue:`571`, :issue:`573`.
 
-- :bug:`570` Fixed a SymPy 1.13 regression where
-  :func:`~sympy.simplify.trigsimp.trigsimp` raises ``ZeroDivisionError`` on
-  certain trig expressions (e.g. prolate spheroidal coordinates) during LaTeX
-  printing in :meth:`~galgebra.mv.Mv._latex`.  The broad ``except Exception``
-  was narrowed to ``except ZeroDivisionError`` only, falling back to the
-  expanded form for display.  See :issue:`566`.
-
 - :support:`570` Refreshed notebook outputs for SymPy 1.13 printing changes
   (``\cdot`` in ``Mul`` expressions and column-format specifiers in
   ``\begin{array}``).  Added ``scripts/validate_nb_refresh.py`` — a reusable
@@ -92,11 +105,6 @@ Changelog
   (version policy, local testing, notebook refresh workflow).  Bumped
   ``test_requirements.txt`` pin from ``sympy == 1.12`` to
   ``sympy == 1.13.3``.  See :issue:`568`, :issue:`566`.
-
-- :bug:`569` :class:`~galgebra.lt.Lt` now accepts an
-  :class:`~sympy.matrices.immutable.ImmutableDenseMatrix` as its matrix
-  argument, fixing a ``TypeError`` when constructing linear transformations
-  from SymPy immutable matrices. See :issue:`567`.
 
 - :support:`565` CI now tests on Python 3.10, 3.11, and 3.12; Python 3.8 and
   3.9 are dropped (both reached end-of-life). See :issue:`564`.
