@@ -2,7 +2,7 @@ Citing This Library
 -------------------
 
 `galgebra` is published to zenodo.
-DOI [10.5281/zenodo.10902114](https://doi.org/10.5281/zenodo.10902114) refers to all versions of `galgebra`.
+DOI [10.5281/zenodo.3857096](https://doi.org/10.5281/zenodo.3857096) refers to all versions of `galgebra`.
 
 If you want to cite all releases, use:
 ```BibTeX

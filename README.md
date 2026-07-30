@@ -8,7 +8,7 @@ Symbolic Geometric Algebra/Calculus package for SymPy.
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/galgebra.svg)](https://pypi.org/project/galgebra/)
 [![Python CI](https://github.com/pygae/galgebra/actions/workflows/ci.yml/badge.svg)](https://github.com/pygae/galgebra/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/galgebra/badge/?version=latest)](https://galgebra.readthedocs.io/en/latest/?badge=latest)
-[![DOI](https://zenodo.org/badge/113447311.svg)](https://zenodo.org/badge/latestdoi/113447311)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.3857096-blue.svg)](https://doi.org/10.5281/zenodo.3857096)
 
 ![](https://raw.githubusercontent.com/pygae/galgebra/master/doc/images/n_vector_positive_spherical.svg?sanitize=true)
 
