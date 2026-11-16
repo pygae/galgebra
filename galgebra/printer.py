@@ -90,6 +90,7 @@ import warnings
 from collections import ChainMap
 
 from sympy import MatrixBase, Basic, S, Symbol, Function, Derivative, Pow
+from sympy.core.function import AppliedUndef
 from sympy.printing.str import StrPrinter
 from sympy.printing.conventions import split_super_sub
 from sympy.printing.latex import (
@@ -309,7 +310,7 @@ class GaPrinter(StrPrinter):
         name = expr.func.__name__
 
         if expr.func.nargs is not None:
-            if name in GaPrinter.function_names:
+            if name in GaPrinter.function_names or not isinstance(expr, AppliedUndef):
                 return expr.func.__name__ + "(%s)" % self.stringify(expr.args, ", ")
 
         return _apply_ansi_color(
