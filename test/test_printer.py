@@ -4,13 +4,30 @@ import textwrap
 import sys
 
 import pytest
-from sympy import Symbol, Derivative
+from sympy import Symbol, Derivative, Function, erf, gamma, besselj, atan2
 
 from galgebra.printer import GaPrinter, GaLatexPrinter, oprint, _texify, Get_Program
 from galgebra.ga import Ga
 
 
 has_ordered_dictionaries = sys.version_info >= (3, 6)
+
+
+@pytest.mark.parametrize('func, args, expected', [
+    (erf, (Symbol('x'),), 'erf(x)'),
+    (gamma, (Symbol('x'),), 'gamma(x)'),
+    (besselj, (Symbol('n'), Symbol('x')), 'besselj(n, x)'),
+    (atan2, (Symbol('y'), Symbol('x')), 'atan2(y, x)'),
+])
+def test_known_function_arguments(func, args, expected):
+    assert GaPrinter().doprint(func(*args)) == expected
+
+
+@pytest.mark.parametrize('function', [Function('f'), Function('f', nargs=1)])
+def test_undefined_function_arguments_remain_abbreviated(function):
+    x = Symbol('x')
+    assert GaPrinter().doprint(function(x)) == 'f'
+    assert GaPrinter().doprint(erf(function(x))) == 'erf(f)'
 
 
 def test_latex_flg_GaPrinter():
